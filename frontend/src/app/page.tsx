@@ -4,7 +4,7 @@ import PublicNavbar from '@/components/common/PublicNavbar';
 const Page = () => {
   return (
     <main className="min-h-screen bg-white">
-      {/* <PublicNavbar /> */}
+      <PublicNavbar />
       <HeroSection />
     </main>
   );
