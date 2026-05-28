@@ -11,6 +11,8 @@ const eslintConfig = defineConfig([
   ...nextTs,
 
   {
+    files: ['**/*.{ts,tsx}'],
+
     plugins: {
       'simple-import-sort': simpleImportSort,
       'unused-imports': unusedImports,
