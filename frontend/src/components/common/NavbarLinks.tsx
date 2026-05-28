@@ -1,14 +1,9 @@
 import Link from 'next/link';
 
 import { publicNavItems } from '@/constants/navigation/publicNav';
+import type { PublicNavbarLinksProps } from '@/types/navigation.types';
 
-type NavbarLinksProps = {
-  className?: string;
-  linkClassName?: string;
-  onNavigate?: () => void;
-};
-
-const NavbarLinks = ({ className = '', linkClassName = '', onNavigate }: NavbarLinksProps) => {
+const NavbarLinks = ({ className = '', linkClassName = '', onNavigate }: PublicNavbarLinksProps) => {
   return (
     <nav className={className} aria-label="Primary navigation">
       {publicNavItems.map((item) => (

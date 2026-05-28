@@ -1,11 +1,13 @@
-//Landing page for the app.
+import HeroSection from '@/components/common/hero/HeroSection';
+import PublicNavbar from '@/components/common/PublicNavbar';
 
-const page = () => {
+const Page = () => {
   return (
-    <div>
-      Hyy
-    </div>
-  )
-}
+    <main className="min-h-screen bg-white">
+      {/* <PublicNavbar /> */}
+      <HeroSection />
+    </main>
+  );
+};
 
-export default page
+export default Page;

@@ -1,9 +1,6 @@
-export type PublicNavItem = {
-  label: string;
-  href: string;
-};
+import type { PublicNavigationItem } from '@/types/navigation.types';
 
-export const publicNavItems: PublicNavItem[] = [
+export const publicNavItems: PublicNavigationItem[] = [
   {
     label: 'Home',
     href: '/',
