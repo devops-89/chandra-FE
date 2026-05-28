@@ -6,7 +6,7 @@ const HeroContent = () => {
   const { cta, description, heading, label } = heroContent;
 
   return (
-    <div className="relative z-10 max-w-2xl text-center bg-amber-300 lg:text-left">
+    <div className="relative z-10 max-w-2xl text-center lg:text-left">
       <p className="mb-5 inline-flex rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-wide text-emerald-700 shadow-sm backdrop-blur">
         {label}
       </p>
