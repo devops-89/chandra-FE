@@ -4,13 +4,13 @@ export const heroContent: HeroContentConfig = {
   label: 'Professional cleaning service',
   heading: 'The Best House Cleaning Service',
   description:
-    'Enjoy a spotless home without rearranging your day. Our trusted cleaning experts bring reliable scheduling, careful service, and fresh results for every room.',
+    'Everything your home needs, all in one place. HiChandra helps you book trusted professionals for cleaning, repairs, maintenance, and more—with flexible scheduling, verified experts, and quality service you can count on.',
   cta: {
     label: 'Book Now',
     href: '/book',
   },
   image: {
-    src: '/images/hero-cleaning.png',
-    alt: 'Professional cleaner refreshing a bright modern living room',
+    src: '/hero.avif',
+    alt: 'HiChandra connects homeowners with trusted experts for every home service need',
   },
 };
