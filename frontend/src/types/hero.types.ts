@@ -1,6 +1,7 @@
 export type HeroContentConfig = {
   label: string;
   heading: string;
+  headingHighlight: string;
   description: string;
   cta: {
     label: string;

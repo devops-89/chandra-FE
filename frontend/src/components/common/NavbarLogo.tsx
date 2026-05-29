@@ -7,8 +7,8 @@ const NavbarLogo = () => {
         C
       </span>
       <span className="flex flex-col leading-none">
-        <span className="text-base font-semibold tracking-tight text-slate-950">Chandra</span>
-        <span className="mt-1 text-xs font-medium text-slate-500">Cleaning Services</span>
+        <span className="text-base font-semibold tracking-tight text-slate-950">HiChandra</span>
+        <span className="mt-1 text-xs font-medium text-slate-500">Trusted Home Services</span>
       </span>
     </Link>
   );

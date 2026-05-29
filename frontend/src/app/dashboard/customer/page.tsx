@@ -1,9 +1,9 @@
-import DashboardShell from '@/dashboard/layout/DashboardShell';
+// import DashboardShell from '@/dashboard/layout/DashboardShell';
 
-export default function CustomerPage() {
-   return (
-      <DashboardShell>
-         <CustomerOverview />
-      </DashboardShell>
-   );
-}
+// export default function CustomerPage() {
+//    return (
+//       <DashboardShell>
+//          <CustomerOverview />
+//       </DashboardShell>
+//    );
+// }
