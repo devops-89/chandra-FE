@@ -8,7 +8,7 @@ const HeroImage = () => {
   return (
     <div className="relative z-10 mx-auto w-full max-w-xl lg:max-w-none">
       <div className="relative overflow-hidden rounded-4xl border border-white/80 bg-white/70 p-3 shadow-2xl shadow-slate-900/10 backdrop-blur">
-        <div className="relative aspect-4/3 overflow-hidden rounded-3xl bg-emerald-50 sm:aspect-[5/4] lg:aspect-[4/3]">
+        <div className="relative aspect-4/3 overflow-hidden rounded-3xl bg-emerald-50 sm:aspect-5/4 lg:aspect-4/3">
           <Image
             src={image.src}
             alt={image.alt}

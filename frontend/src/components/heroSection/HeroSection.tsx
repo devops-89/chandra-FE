@@ -1,6 +1,6 @@
-import HeroContent from '@/components/common/hero/HeroContent';
-import HeroDecorations from '@/components/common/hero/HeroDecorations';
-import HeroImage from '@/components/common/hero/HeroImage';
+import HeroContent from '@/components/heroSection/HeroContent';
+import HeroDecorations from '@/components/heroSection/HeroDecorations';
+import HeroImage from '@/components/heroSection/HeroImage';
 
 const HeroSection = () => {
   return (
