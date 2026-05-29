@@ -1,4 +1,5 @@
 import Image from 'next/image';
+
 import type { ServiceImageProps } from '@/types/services.types';
 
 export function ServiceImage({

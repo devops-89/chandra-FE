@@ -1,4 +1,4 @@
-import { ServiceImage } from './ServiceImage';
+import { ServiceImage } from '@/components/servicesSection/ServiceImage';
 import type { ServiceCardProps } from '@/types/services.types';
 
 export function ServiceCard({

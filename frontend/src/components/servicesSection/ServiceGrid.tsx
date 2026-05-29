@@ -1,8 +1,9 @@
 'use client';
 
 import Grid from '@mui/material/Grid';
+
+import { ServiceCard } from '@/components/servicesSection/ServiceCard';
 import { services } from '@/constants/services/serviceData';
-import { ServiceCard } from './ServiceCard';
 
 export function ServiceGrid() {
   return (
