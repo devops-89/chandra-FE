@@ -7,33 +7,33 @@ const HeroContent = () => {
   const { cta, description, heading, label, headingHighlight } = heroContent;
 
   return (
-    <div className="relative z-10 max-w-2xl text-center lg:text-left">
-      <p className="mb-5 inline-flex rounded-full border border-emerald-200 bg-emerald-100 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-emerald-700 shadow-sm backdrop-blur">
+    <div className="relative z-10 mx-auto max-w-2xl text-center lg:mx-0 lg:text-left xl:max-w-3xl">
+      <p className="mb-4 inline-flex max-w-full rounded-full border border-emerald-200 bg-emerald-100 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-emerald-700 shadow-sm backdrop-blur sm:mb-5 sm:px-4 sm:text-xs sm:tracking-[0.12em]">
         {label}
       </p>
 
-      <h1 className="text-5xl leading-tight text-slate-950 sm:text-6xl lg:text-7xl xl:text-8xl tracking-tighter font-extrabold">
+      <h1 className="text-4xl font-extrabold leading-[1.08] tracking-normal text-slate-950 sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
         {heading}{' '}
         <span className="text-emerald-600">{headingHighlight}</span>
       </h1>
 
-      <p className="mt-8 max-w-152 text-lg leading-[1.8] text-slate-600 sm:text-lg lg:mx-0">
+      <p className="mx-auto mt-5 max-w-xl text-base leading-8 text-slate-600 sm:mt-6 sm:text-lg md:max-w-2xl lg:mx-0 lg:mt-8 xl:max-w-152">
         {description}
       </p>
 
-      <div className="mt-8 flex items-center gap-6 sm:gap-10 sm:flex-row lg:justify-start">
+      <div className="mt-7 flex flex-col items-center gap-5 sm:mt-8 sm:flex-row sm:justify-center sm:gap-8 lg:justify-start xl:gap-10">
         <Link
           href={cta.href}
-          className="inline-flex h-13 items-center justify-center rounded-full bg-emerald-600 px-8 text-base font-bold text-white shadow-xl shadow-emerald-900/15 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-4"
+          className="inline-flex h-12 w-full items-center justify-center rounded-full bg-emerald-600 px-7 text-base font-bold text-white shadow-xl shadow-emerald-900/15 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-4 sm:h-13 sm:w-auto sm:px-8"
         >
           {cta.label}
         </Link>
 
-        <div className="flex items-center gap-5">
+        <div className="flex min-w-0 items-center justify-center gap-4 sm:gap-5">
           <GroupAvatars />
 
           <div className="text-left">
-            <p className="text text-slate-900">
+            <p className="text-sm font-semibold text-slate-900 sm:text-base">
               500+ Customers
             </p>
             <p className="text-xs text-slate-500">
