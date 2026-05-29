@@ -8,13 +8,12 @@ const HeroImage = () => {
   return (
     <div className="relative z-10 mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-none">
       <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-white/70 p-2 shadow-2xl shadow-slate-900/10 backdrop-blur sm:p-3 lg:rounded-4xl">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-emerald-50 sm:aspect-[5/4] sm:rounded-3xl lg:aspect-[4/3]">
+        <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-emerald-50 sm:aspect-5/4 sm:rounded-3xl lg:aspect-4/3">
           <Image
             src={image.src}
             alt={image.alt}
             fill
             priority
-            sizes="(min-width: 1536px) 680px, (min-width: 1280px) 52vw, (min-width: 1024px) 48vw, (min-width: 768px) 680px, (min-width: 640px) 576px, 92vw"
             className="object-cover"
           />
         </div>

@@ -8,16 +8,16 @@ const HeroContent = () => {
 
   return (
     <div className="relative z-10 mx-auto max-w-2xl text-center lg:mx-0 lg:text-left xl:max-w-3xl">
-      <p className="mb-4 inline-flex max-w-full rounded-full border border-emerald-200 bg-emerald-100 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-emerald-700 shadow-sm backdrop-blur sm:mb-5 sm:px-4 sm:text-xs sm:tracking-[0.12em]">
+      <p className="mb-4 inline-flex max-w-full rounded-full border border-emerald-200 bg-emerald-100 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-widest text-emerald-700 shadow-sm backdrop-blur sm:mb-5 sm:px-4 sm:text-xs sm:tracking-[0.12em]">
         {label}
       </p>
 
-      <h1 className="text-4xl font-extrabold leading-[1.08] tracking-normal text-slate-950 sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
+      <h1 className="text-4xl font-extrabold leading-[1.08] tracking-normal text-slate-950 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
         {heading}{' '}
         <span className="text-emerald-600">{headingHighlight}</span>
       </h1>
 
-      <p className="mx-auto mt-5 max-w-xl text-base leading-8 text-slate-600 sm:mt-6 sm:text-lg md:max-w-2xl lg:mx-0 lg:mt-8 xl:max-w-152">
+      <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-slate-600 sm:mt-6 md:max-w-2xl lg:mx-0 xl:max-w-4xl">
         {description}
       </p>
 

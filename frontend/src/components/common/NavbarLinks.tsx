@@ -9,7 +9,10 @@ const NavbarLinks = ({
   onNavigate,
 }: PublicNavbarLinksProps) => {
   return (
-    <nav className={className} aria-label="Primary navigation">
+    <nav
+      className={`${className} md:!gap-4 lg:!gap-6 xl:!gap-8`}
+      aria-label="Primary navigation"
+    >
       {publicNavItems.map((item) => (
         <Link
           key={item.href}
@@ -17,6 +20,11 @@ const NavbarLinks = ({
           onClick={onNavigate}
           className={`
             relative
+            inline-flex
+            min-h-10
+            items-center
+            whitespace-nowrap
+            rounded-full
             text-sm
             font-medium
             text-slate-600
@@ -36,7 +44,10 @@ const NavbarLinks = ({
             focus-visible:outline-none
             focus-visible:ring-2
             focus-visible:ring-emerald-500
-            focus-visible:ring-offset-4
+            focus-visible:ring-offset-2
+            md:min-h-9
+            md:text-[0.82rem]
+            lg:text-sm
             ${linkClassName}
           `}
         >
