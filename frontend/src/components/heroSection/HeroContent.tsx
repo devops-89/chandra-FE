@@ -19,7 +19,7 @@ const HeroContent = () => {
         {description}
       </p>
 
-      <div className="mt-8 flex justify-center lg:justify-start">
+      <div className="mt-8 flex justify-center items-center gap-10 lg:justify-start">
         <Link
           href={cta.href}
           className="inline-flex h-13 items-center justify-center rounded-full bg-emerald-600 px-8 text-base font-bold text-white shadow-xl shadow-emerald-900/15 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-4"
