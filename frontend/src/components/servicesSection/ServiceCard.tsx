@@ -6,8 +6,8 @@ export function ServiceCard({
 }: ServiceCardProps) {
   return (
     <div className="h-full overflow-hidden bg-neutral-100 transition-all duration-300 hover:shadow-lg">
-      <div className="flex bg-gray-300 h-full flex-col justify-between">
-        <div className='text-black'>
+      <div className="flex bg-gray-300 h-full flex-col justify-between rounded-2xl">
+        <div className='text-black p-6'>
           <h3 className="mb-2 text-2xl font-semibold">
             {service.title}
           </h3>
