@@ -14,9 +14,10 @@ const Page = () => {
       <ServiceSection />
       <ChooseSection />
       <TestimonialSection />
-      <Footer />
+      
       <OfferBannerSection />
       <ServiceAvailabilitySection />
+      <Footer />
     </main>
   );
 };
