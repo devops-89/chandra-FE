@@ -8,7 +8,7 @@ export function OfferBannerSection() {
   return (
     <section
       id="offers"
-      className="py-20"
+      className="py-20 bg-[#fff8ed]"
     >
       <div className="mx-auto max-w-7xl px-4">
         <Grid container spacing={3}>

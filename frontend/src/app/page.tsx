@@ -14,7 +14,6 @@ const Page = () => {
       <ServiceSection />
       <ChooseSection />
       <TestimonialSection />
-      
       <OfferBannerSection />
       <ServiceAvailabilitySection />
       <Footer />

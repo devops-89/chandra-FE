@@ -6,9 +6,7 @@ export function RatingSummaryCard() {
       className="
       h-full
       rounded-4xl
-      bg-linear-to-b
-      from-violet-600
-      to-violet-700
+      bg-[#009966]
       p-8
       text-white
       shadow-xl
