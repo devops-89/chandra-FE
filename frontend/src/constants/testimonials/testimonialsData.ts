@@ -1,6 +1,6 @@
 import type {
-  Testimonial,
   RatingSummary,
+  Testimonial,
 } from '@/types/testimonial.types';
 
 export const ratingSummary: RatingSummary = {
@@ -13,7 +13,7 @@ export const testimonials: Testimonial[] = [
   {
     id: 1,
     review:
-      "I've always been a self-learner, but it's easy to lose track or feel unsure about your progress when you're studying alone. ThinkDeck solved that for me.",
+      "Booking a service through HiChandra was incredibly easy. The technician arrived on time, completed the work professionally, and the pricing was completely transparent.",
     name: 'Anirudh K.',
     designation: 'Software Developer',
     location: 'India',
@@ -24,7 +24,7 @@ export const testimonials: Testimonial[] = [
   {
     id: 2,
     review:
-      'We introduced ThinkDeck to our classroom as a supplementary tool, and the results have been incredible. Students are more engaged and motivated.',
+      'Needed an electrician urgently and HiChandra connected me with a skilled professional within hours. The service quality exceeded my expectations.',
     name: 'Prof. Prakash',
     designation: 'Macc Institution',
     location: 'New Delhi, India',

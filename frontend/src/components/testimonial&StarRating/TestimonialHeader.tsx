@@ -4,9 +4,9 @@ export function TestimonialHeader() {
   return (
     <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
       <div>
-        <h2 className="text-4xl font-bold tracking-[-0.04em] md:text-5xl">
+        <h2 className="text-4xl font-bold tracking-[-0.04em] text-slate-950 md:text-5xl">
           Real Stories from{' '}
-          <span className="text-violet-600">
+          <span className="text-emerald-600">
             Real Users
           </span>
         </h2>

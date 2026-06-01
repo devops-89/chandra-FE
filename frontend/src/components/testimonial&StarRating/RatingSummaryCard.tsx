@@ -6,12 +6,10 @@ export function RatingSummaryCard() {
       className="
       h-full
       rounded-4xl
-      bg-linear-to-b
-      from-violet-600
-      to-violet-700
-      p-8
-      text-white
-      shadow-xl
+      bg-[#007A55]
+      // p-8
+      // text-white
+      // shadow-xl
       "
     >
       <p className="text-2xl">

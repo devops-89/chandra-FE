@@ -14,7 +14,7 @@ export function TestimonialCard({
   return (
     <div
       className="
-      h-full
+      flex h-full flex-col
       rounded-[28px]
       bg-[#f6f3ea]
       p-8
@@ -25,7 +25,7 @@ export function TestimonialCard({
         {testimonial.review}
       </p>
 
-      <div className="mt-12 flex items-center justify-between">
+      <div className="mt-12 flex items-center justify-between pt-12">
         <div className="flex items-center gap-4">
           <TestimonialAvatar
             src={testimonial.avatar}
@@ -33,25 +33,25 @@ export function TestimonialCard({
           />
 
           <div>
-            <h4 className="font-semibold">
+            <h4 className="font-semibold text-slate-950">
               {testimonial.name}
             </h4>
 
-            <p className="text-slate-500">
+            <p className="text-stone-950">
               {testimonial.designation},{' '}
               {testimonial.location}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center text-slate-950 gap-1">
           <span className="text-3xl">
             {testimonial.rating}
           </span>
 
           <StarIcon
             sx={{
-              color: '#7c3aed',
+              color: '#009966',
             }}
           />
         </div>
