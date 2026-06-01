@@ -1,6 +1,7 @@
 import HeroSection from '@/components/heroSection/HeroSection';
 import { ServiceSection } from '@/components/servicesSection/ServiceSection';
 import { ChooseSection } from '@/components/chooseUsSection/ChooseSection';
+import { TestimonialSection } from '@/components/testimonial&StarRating/TestimonialSection';
 
 
 const Page = () => {
@@ -9,6 +10,7 @@ const Page = () => {
       <HeroSection />
       <ServiceSection />
       <ChooseSection />
+      <TestimonialSection />
     </main>
   );
 };
