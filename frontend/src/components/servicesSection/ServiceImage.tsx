@@ -11,7 +11,8 @@ export function ServiceImage({
       <Image
         src={src}
         alt={alt}
-        fill
+        width={500}
+        height={300}
         className="object-contain object-bottom"
       />
     </div>
