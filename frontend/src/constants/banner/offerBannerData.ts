@@ -1,4 +1,4 @@
-import type { OfferBanner } from '@/types/offer.types';
+import type { OfferBanner } from '@/types/banner.types';
 
 export const offerBanners: OfferBanner[] = [
   {

@@ -1,4 +1,1 @@
-export interface OfferBanner {
-  id: number;
-  title: string;
-}
+export type { OfferBanner } from './banner.types';

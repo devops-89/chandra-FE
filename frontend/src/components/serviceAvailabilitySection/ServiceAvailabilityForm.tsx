@@ -67,6 +67,8 @@ export const ServiceAvailabilityForm = () => {
               rounded-xl
               bg-zinc-
               px-6
+              border
+              border-gray-300
               text-lg
               outline-none
               transition-all

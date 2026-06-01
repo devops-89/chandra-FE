@@ -1,8 +1,4 @@
-import type { OfferBanner } from '@/types/offer.types';
-
-interface OfferBannerCardProps {
-  banner: OfferBanner;
-}
+import type { OfferBannerCardProps } from '@/types/banner.types';
 
 export function OfferBannerCard({
   banner,
