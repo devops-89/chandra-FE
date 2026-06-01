@@ -5,7 +5,7 @@ export function TestimonialSection() {
   return (
     <section
       id="testimonials"
-      className="bg-[#fff8ed] py-24"
+      className="bg-white py-24"
     >
       <div className="mx-auto max-w-7xl px-4">
         <TestimonialHeader />

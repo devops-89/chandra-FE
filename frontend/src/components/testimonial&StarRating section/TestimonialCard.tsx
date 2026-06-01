@@ -26,7 +26,7 @@ export function TestimonialCard({
       </p>
 
       <div className="mt-12 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 text-slate-950">
           <TestimonialAvatar
             src={testimonial.avatar}
             alt={testimonial.name}
@@ -37,21 +37,21 @@ export function TestimonialCard({
               {testimonial.name}
             </h4>
 
-            <p className="text-slate-500">
+            <p className="text-slate-950">
               {testimonial.designation},{' '}
               {testimonial.location}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center text-slate-950 gap-1">
           <span className="text-3xl">
             {testimonial.rating}
           </span>
 
           <StarIcon
             sx={{
-              color: '#7c3aed',
+              color: '#009966',
             }}
           />
         </div>

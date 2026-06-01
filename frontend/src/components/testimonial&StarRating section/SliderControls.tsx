@@ -9,6 +9,9 @@ export function SliderControls() {
           height: 56,
           bgcolor: '#009966',
           color: 'white',
+          '&:hover': {
+            bgcolor: '#009966',
+          },
         }}
       >
       </IconButton>
@@ -19,6 +22,9 @@ export function SliderControls() {
           height: 56,
           bgcolor: '#009966',
           color: 'white',
+          '&:hover': {
+            bgcolor: '#009966',
+          },
         }}
       >
       </IconButton>

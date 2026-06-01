@@ -5,7 +5,7 @@ export function ServiceSection() {
   return (
     <section
       id="services"
-      className="py-24 bg-[#FFF8EC]"
+      className="py-24 bg-white"
     >
       <div className="mx-auto flex flex-col gap-5 max-w-7xl px-4 py-4">
         <ServiceHeading />
