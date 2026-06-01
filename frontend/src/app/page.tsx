@@ -1,6 +1,6 @@
 import { OfferBannerSection } from '@/components/bannerSection/OfferBannerSection';
 import { ChooseSection } from '@/components/chooseUsSection/ChooseSection';
-import Footer from '@/components/footer/Footer';
+import Footer from '@/components/footerSection/FooterSection';
 import HeroSection from '@/components/heroSection/HeroSection';
 import { ServiceAvailabilitySection } from '@/components/serviceAvailabilitySection/ServiceAvailabilitySection';
 import { ServiceSection } from '@/components/servicesSection/ServiceSection';
@@ -14,9 +14,9 @@ const Page = () => {
       <ServiceSection />
       <ChooseSection />
       <TestimonialSection />
-      <Footer />
       <OfferBannerSection />
       <ServiceAvailabilitySection />
+      <Footer />
     </main>
   );
 };

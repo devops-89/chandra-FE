@@ -2,8 +2,8 @@ import Grid from '@mui/material/Grid';
 
 import { testimonials } from '@/constants/testimonials/testimonialsData';
 
-import { RatingSummaryCard } from './RatingSummaryCard';
-import { TestimonialCard } from './TestimonialCard';
+import { RatingSummaryCard } from '@/components/testimonial&StarRating section/RatingSummaryCard';
+import { TestimonialCard } from '@/components/testimonial&StarRating section/TestimonialCard';
 
 export function TestimonialGrid() {
   return (

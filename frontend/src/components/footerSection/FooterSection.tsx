@@ -1,7 +1,7 @@
-import FooterBottom from '@/components/footer/FooterBottom';
-import FooterBrand from '@/components/footer/FooterBrand';
-import FooterContact from '@/components/footer/FooterContact';
-import FooterLinks from '@/components/footer/FooterLinks';
+import FooterBottom from '@/components/footerSection/FooterBottom';
+import FooterBrand from '@/components/footerSection/FooterBrand';
+import FooterContact from '@/components/footerSection/FooterContact';
+import FooterLinks from '@/components/footerSection/FooterLinks';
 
 export default function Footer() {
   return (

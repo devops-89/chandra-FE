@@ -1,4 +1,4 @@
-import { SliderControls } from './SliderControls';
+import { SliderControls } from '@/components/testimonial&StarRating section/SliderControls';
 
 export function TestimonialHeader() {
   return (

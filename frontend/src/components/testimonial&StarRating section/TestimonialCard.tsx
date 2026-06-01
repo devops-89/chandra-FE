@@ -2,7 +2,7 @@ import StarIcon from '@mui/icons-material/Star';
 
 import type { Testimonial } from '@/types/testimonial.types';
 
-import { TestimonialAvatar } from './TestimonialAvatar';
+import { TestimonialAvatar } from '@/components/testimonial&StarRating section/TestimonialAvatar';
 
 interface Props {
   testimonial: Testimonial;
