@@ -1,11 +1,10 @@
 import Grid from '@mui/material/Grid';
 
-import HeroDecorations from '@/components/heroSection/HeroDecorations';
-
-import { ChooseHeading } from '@/components/chooseUsSection/ChooseHeading';
-import { ChooseImage } from '@/components/chooseUsSection/ChooseImage';
 import { ChooseBenefits } from '@/components/chooseUsSection/ChooseBenefits';
 import { ChooseCTA } from '@/components/chooseUsSection/ChooseCTA';
+import { ChooseHeading } from '@/components/chooseUsSection/ChooseHeading';
+import { ChooseImage } from '@/components/chooseUsSection/ChooseImage';
+import HeroDecorations from '@/components/heroSection/HeroDecorations';
 
 export function ChooseSection() {
   return (
