@@ -63,13 +63,14 @@ export const ServiceAvailabilityForm = () => {
               maxLength={6}
               className={`
               h-16
+              text-black
               rounded-xl
-              bg-zinc-300
+              bg-zinc-
               px-6
               text-lg
               outline-none
               transition-all
-              ${error ? 'ring-2 ring-red-500' : 'focus:ring-2 focus:ring-violet-500'}
+              ${error ? 'ring-2 ring-red-500' : 'focus:ring-2 focus:ring-green-500'}
             `}
             />
             {error && (
@@ -91,12 +92,12 @@ export const ServiceAvailabilityForm = () => {
             className="
               h-14
               rounded-full
-              bg-violet-700
+              bg-green-600
               text-xl
               font-medium
               text-white
               transition-colors
-              hover:bg-violet-800
+              hover:bg-green-700
             "
           >
             Check Availability
