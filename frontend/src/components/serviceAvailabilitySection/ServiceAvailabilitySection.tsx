@@ -1,8 +1,7 @@
-import { availabilityContent } from '@/constants/serviceAvailability/availabilityData';
-
 import { AvailabilityHeading } from '@/components/serviceAvailabilitySection/AvailabilityHeading';
 import { ServiceAvailabilityForm } from '@/components/serviceAvailabilitySection/ServiceAvailabilityForm';
 import { ServiceAvailabilityMap } from '@/components/serviceAvailabilitySection/ServiceAvailabilityMap';
+import { availabilityContent } from '@/constants/serviceAvailability/availabilityData';
 
 export const ServiceAvailabilitySection = () => {
   return (

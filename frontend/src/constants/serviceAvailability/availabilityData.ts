@@ -1,4 +1,4 @@
-import { AvailabilityContent } from '@/types/serviceAvailability.types';
+import type { AvailabilityContent } from '@/types/serviceAvailability.types';
 
 export const availabilityContent: AvailabilityContent = {
   title: 'Check Service Availability',
