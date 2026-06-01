@@ -1,6 +1,7 @@
 import Image from 'next/image';
 
 import { ChooseUs } from '@/constants/chooseUs/ChooseUs';
+
 import { ChooseStats } from './ChooseStats';
 
 export function ChooseImage() {

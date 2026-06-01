@@ -1,6 +1,6 @@
+import { ChooseSection } from '@/components/chooseUsSection/ChooseSection';
 import HeroSection from '@/components/heroSection/HeroSection';
 import { ServiceSection } from '@/components/servicesSection/ServiceSection';
-import { ChooseSection } from '@/components/chooseUsSection/ChooseSection';
 
 
 const Page = () => {
