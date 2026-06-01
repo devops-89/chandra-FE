@@ -3,8 +3,9 @@
 import { useState } from 'react';
 
 import { AVAILABILITY_MESSAGES } from '@/constants/serviceAvailability/availabilityData';
-import { AvailabilityResult } from '@/types/serviceAvailability.types';
 import { validatePincode } from '@/lib/validator/pincode.validator';
+import type { AvailabilityResult } from '@/types/serviceAvailability.types';
+
 import { AvailabilityStatus } from './AvailabilityStatus';
 
 export const ServiceAvailabilityForm = () => {

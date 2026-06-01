@@ -1,4 +1,4 @@
-import { AvailabilityResult } from '@/types/serviceAvailability.types';
+import type { AvailabilityResult } from '@/types/serviceAvailability.types';
 
 interface AvailabilityStatusProps {
   result: AvailabilityResult | null;
