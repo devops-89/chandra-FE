@@ -12,6 +12,7 @@ export const publicNavItems: PublicNavigationItem[] = [
   {
     label: 'Services',
     href: '/services',
+    hasDropdown: true,
   },
   {
     label: 'Pages',

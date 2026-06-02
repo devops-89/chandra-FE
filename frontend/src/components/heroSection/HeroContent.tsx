@@ -1,48 +1,17 @@
-import Link from 'next/link';
-
-import GroupAvatars from '@/components/common/AvatarGroup';
 import { heroContent } from '@/constants/hero/heroContent';
+import HeroContentAnimated from './HeroContentAnimated';
 
 const HeroContent = () => {
   const { cta, description, heading, label, headingHighlight } = heroContent;
 
   return (
-    <div className="relative z-10 mx-auto max-w-2xl text-center lg:mx-0 lg:text-left xl:max-w-3xl">
-      <p className="mb-4 inline-flex max-w-full rounded-full border border-emerald-200 bg-emerald-100 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-widest text-emerald-700 shadow-sm backdrop-blur sm:mb-5 sm:px-4 sm:text-xs sm:tracking-[0.12em]">
-        {label}
-      </p>
-
-      <h1 className="text-4xl font-extrabold leading-[1.08] tracking-normal text-slate-950 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
-        {heading}{' '}
-        <span className="text-emerald-600">{headingHighlight}</span>
-      </h1>
-
-      <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-slate-600 sm:mt-6 md:max-w-2xl lg:mx-0 xl:max-w-4xl">
-        {description}
-      </p>
-
-      <div className="mt-7 flex flex-col items-center gap-5 sm:mt-8 sm:flex-row sm:justify-center sm:gap-8 lg:justify-start xl:gap-10">
-        <Link
-          href={cta.href}
-          className="inline-flex h-12 w-full items-center justify-center rounded-full bg-emerald-600 px-7 text-base font-bold text-white shadow-xl shadow-emerald-900/15 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-4 sm:h-13 sm:w-auto sm:px-8"
-        >
-          {cta.label}
-        </Link>
-
-        <div className="flex min-w-0 items-center justify-center gap-4 sm:gap-5">
-          <GroupAvatars />
-
-          <div className="text-left">
-            <p className="text-sm font-semibold text-slate-900 sm:text-base">
-              500+ Customers
-            </p>
-            <p className="text-xs text-slate-500">
-              Trust our platform
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <HeroContentAnimated
+      label={label}
+      heading={heading}
+      headingHighlight={headingHighlight}
+      description={description}
+      cta={cta}
+    />
   );
 };
 

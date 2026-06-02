@@ -12,3 +12,18 @@ export type HeroContentConfig = {
     alt: string;
   };
 };
+
+export interface HeroContentAnimatedProps {
+  label: string;
+  heading: string;
+  headingHighlight: string;
+  description: string;
+  cta: { href: string; label: string };
+}
+
+export interface HeroImageAnimatedProps {
+  image: {
+    src: string;
+    alt: string;
+  };
+}
