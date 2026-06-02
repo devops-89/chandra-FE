@@ -3,16 +3,16 @@ import type { ServiceCardProps } from '@/types/services.types';
 
 export function ServiceCard({
   service,
+  alignRight,
 }: ServiceCardProps) {
   return (
-    <div className="h-full overflow-hidden bg-neutral-100 transition-all duration-300 hover:shadow-lg">
-      <div className="flex bg-gray-300 h-full flex-col justify-between rounded-2xl">
-        <div className='text-black p-6'>
-          <h3 className="mb-2 text-2xl font-semibold">
+      <div className="flex hover:shadow-lg bg-gray-300 transition-all duration-300 h-full flex-col overflow-hidden justify-between rounded-2xl">
+        <div className='text-black p-5'>
+          <h3 className="mb-1 text-2xl font-semibold">
             {service.title}
           </h3>
 
-          <p className="max-w-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {service.description}
           </p>
         </div>
@@ -20,8 +20,8 @@ export function ServiceCard({
         <ServiceImage
           src={service.image}
           alt={service.title}
+          alignRight={alignRight}
         />
       </div>
-    </div>
   );
 }

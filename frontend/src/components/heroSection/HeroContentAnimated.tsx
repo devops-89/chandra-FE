@@ -19,7 +19,7 @@ const HeroContentAnimated = ({
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.10,
         delayChildren: 0,
       },
     },
@@ -27,14 +27,14 @@ const HeroContentAnimated = ({
 
   // Item variants for staggered animation
   const itemVariants = {
-    hidden: { opacity: 0, y: -20 },
+    hidden: { opacity: 0, y: 0 },
     visible: {
       opacity: 1,
-      y: 0,
+      y: -20,
       transition: {
-        duration: 0.6,
+        duration: 1,
         type: 'spring' as const,
-        bounce: 0.3,
+        bounce: 0.5,
       },
     },
   };

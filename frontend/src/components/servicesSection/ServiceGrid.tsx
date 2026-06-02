@@ -16,7 +16,7 @@ export function ServiceGrid() {
             md: service.gridSize.md,
           }}
         >
-          <ServiceCard service={service} />
+          <ServiceCard service={service} alignRight={service.id === 2 || service.id === 3} />
         </Grid>
       ))}
     </Grid>

@@ -11,8 +11,10 @@ export interface Service {
 export interface ServiceImageProps {
   src: string;
   alt: string;
+  alignRight?: boolean;
 }
 
 export interface ServiceCardProps {
   service: Service;
+  alignRight?: boolean;
 }
