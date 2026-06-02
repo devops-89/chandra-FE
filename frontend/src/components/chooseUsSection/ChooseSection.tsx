@@ -1,9 +1,9 @@
 import Grid from '@mui/material/Grid';
 
-import { ChooseBenefits } from '@/components/chooseUsSection/ChooseBenefits';
-import { ChooseCTA } from '@/components/chooseUsSection/ChooseCTA';
+import { ChooseBenefitsAnimated } from '@/components/chooseUsSection/ChooseBenefitsAnimated';
+import { ChooseCTAAnimated } from '@/components/chooseUsSection/ChooseCTAAnimated';
 import { ChooseHeading } from '@/components/chooseUsSection/ChooseHeading';
-import { ChooseImage } from '@/components/chooseUsSection/ChooseImage';
+import { ChooseImageAnimated } from '@/components/chooseUsSection/ChooseImageAnimated';
 import HeroDecorations from '@/components/heroSection/HeroDecorations';
 
 export function ChooseSection() {
@@ -16,17 +16,17 @@ export function ChooseSection() {
 
         <Grid
           container
-          spacing={6}
+          spacing={8}
             className="mt-16"
         >
           <Grid size={{ xs: 12, lg: 7 }}>
-            <ChooseImage />
+            <ChooseImageAnimated />
           </Grid>
 
           <Grid size={{ xs: 12, lg: 5 }}>
             <div className="space-y-10">
-              <ChooseBenefits />
-              <ChooseCTA />
+              <ChooseBenefitsAnimated />
+              <ChooseCTAAnimated />
             </div>
           </Grid>
         </Grid>

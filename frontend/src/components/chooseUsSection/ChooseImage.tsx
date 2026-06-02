@@ -12,7 +12,7 @@ export function ChooseImage() {
           src={ChooseUs.image.src}
           alt={ChooseUs.image.alt}
           fill
-          className="object-cover"
+          className="object-cover rounded-t-2xl"
         />
       </div>
 

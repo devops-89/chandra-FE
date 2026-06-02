@@ -13,6 +13,7 @@ export function ChooseCTA() {
       justify-center
       bg-emerald-600
       px-10
+      rounded-full
       font-semibold
       text-white
       transition

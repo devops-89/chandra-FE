@@ -2,7 +2,7 @@ import { ChooseUs } from '@/constants/chooseUs/ChooseUs';
 
 export function ChooseStats() {
   return (
-    <div className="grid grid-cols-3 bg-emerald-600 text-white">
+    <div className="grid grid-cols-3 bg-emerald-600 rounded-b-2xl text-white">
       {ChooseUs.stats.map((item) => (
         <div
           key={item.label}
