@@ -6,7 +6,7 @@ export function ServiceCard({
   alignRight,
 }: ServiceCardProps) {
   return (
-      <div className="flex hover:shadow-lg bg-gray-300 transition-all duration-300 h-full flex-col overflow-hidden justify-between rounded-2xl">
+      <div className="flex hover:shadow-lg bg-[#FEF7EC] transition-all duration-300 h-full flex-col overflow-hidden justify-between rounded-2xl">
         <div className='text-black p-5'>
           <h3 className="mb-1 text-2xl font-semibold">
             {service.title}
