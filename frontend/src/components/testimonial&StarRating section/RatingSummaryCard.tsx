@@ -1,8 +1,24 @@
+'use client';
+
+import { motion } from 'framer-motion';
+
 import { ratingSummary } from '@/constants/testimonials/testimonialsData';
 
-export function RatingSummaryCard() {
+interface Props {
+  index?: number;
+}
+
+export function RatingSummaryCard({ index = 0 }: Props) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ 
+        duration: 0.6, 
+        delay: index * 0.2,
+        ease: 'easeOut' 
+      }}
       className="
       h-full
       rounded-4xl
@@ -25,6 +41,6 @@ export function RatingSummaryCard() {
           {ratingSummary.subtitle}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }

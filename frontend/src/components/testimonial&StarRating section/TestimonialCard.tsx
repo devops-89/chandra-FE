@@ -1,18 +1,30 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import StarIcon from '@mui/icons-material/Star';
 
-import type { Testimonial } from '@/types/testimonial.types';
-
 import { TestimonialAvatar } from '@/components/testimonial&StarRating section/TestimonialAvatar';
+import type { Testimonial } from '@/types/testimonial.types';
 
 interface Props {
   testimonial: Testimonial;
+  index?: number;
 }
 
 export function TestimonialCard({
   testimonial,
+  index = 0,
 }: Props) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ 
+        duration: 0.6, 
+        delay: index * 0.2,
+        ease: 'easeOut' 
+      }}
       className="
       h-full
       rounded-[28px]
@@ -56,6 +68,6 @@ export function TestimonialCard({
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
