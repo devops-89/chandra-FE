@@ -1,5 +1,5 @@
-import { TestimonialGrid } from './TestimonialGrid';
-import { TestimonialHeader } from './TestimonialHeader';
+import { TestimonialGrid } from '@/components/testimonial&StarRating section/TestimonialGrid';
+import { TestimonialHeader } from '@/components/testimonial&StarRating section/TestimonialHeader';
 
 export function TestimonialSection() {
   return (

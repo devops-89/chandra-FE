@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
+import NavbarServicesDropdown from '@/components/common/NavbarServicesDropdown';
 import { publicNavItems } from '@/constants/navigation/publicNav';
 import type { PublicNavbarLinksProps } from '@/types/navigation.types';
-import NavbarServicesDropdown from '@/components/common/NavbarServicesDropdown';
 
 const NavbarLinks = ({
   className = '',

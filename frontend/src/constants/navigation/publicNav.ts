@@ -6,21 +6,13 @@ export const publicNavItems: PublicNavigationItem[] = [
     href: '/',
   },
   {
-    label: 'About',
-    href: '/about',
-  },
-  {
     label: 'Services',
     href: '/services',
     hasDropdown: true,
   },
   {
-    label: 'Pages',
-    href: '/pages',
-  },
-  {
-    label: 'News',
-    href: '/news',
+    label: 'About',
+    href: '#about',
   },
   {
     label: 'Contact',

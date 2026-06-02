@@ -1,4 +1,3 @@
-import { OfferBannerSection } from '@/components/bannerSection/OfferBannerSection';
 import { ChooseSection } from '@/components/chooseUsSection/ChooseSection';
 import PublicFooter from '@/components/common/PublicFooter';
 import PublicNavbar from '@/components/common/PublicNavbar';
@@ -16,7 +15,6 @@ const Page = () => {
         <ServiceSection />
         <ChooseSection />
         <TestimonialSection />
-        <OfferBannerSection />
         <ServiceAvailabilitySection />
       </main>
       <PublicFooter />

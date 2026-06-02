@@ -8,7 +8,7 @@ import HeroDecorations from '@/components/heroSection/HeroDecorations';
 
 export function ChooseSection() {
   return (
-    <section className="relative overflow-hidden bg-[#fff8ed] py-24">
+    <section id="about" className="relative overflow-hidden bg-[#fff8ed] py-24">
       <HeroDecorations />
 
       <div className="relative mx-auto max-w-7xl px-4">
