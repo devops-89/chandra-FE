@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { signupContent } from '@/constants/auth/signupContent';
@@ -21,8 +22,27 @@ export const SignupForm = () => {
   return (
     <main className="min-h-screen bg-[#fff8ed] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 lg:flex-row">
-        <section className="flex flex-1 flex-col justify-between bg-emerald-700 p-8 text-white sm:p-10">
-          <div>
+        <section className="flex flex-1 flex-col justify-between p-8 text-white sm:p-10 relative overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            <Image
+              src="/images/signup.png"
+              alt="Signup illustration"
+              fill
+              className="object-cover"
+              priority
+            />
+            {/* Vignette Effect - Black edges with clear center */}
+            <div className="absolute inset-0 bg-linear-to-br from-black/80 via-black/20 to-black/80" />
+            <div className="absolute inset-0 bg-linear-to-tr from-black/80 via-transparent to-black/80" />
+            <div className="absolute inset-0 bg-linear-to-bl from-black/60 via-transparent to-black/60" />
+            <div className="absolute inset-0 bg-linear-to-tl from-black/60 via-transparent to-black/60" />
+            {/* Rounded corners vignette */}
+            <div className="absolute inset-0 shadow-[inset_0_0_120px_40px_rgba(0,0,0,0.8)]" />
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10">
             <p className="text-lg font-bold">
               {signupContent.brand}
             </p>
@@ -37,7 +57,7 @@ export const SignupForm = () => {
             </div>
           </div>
 
-          <div className="mt-12 grid gap-4">
+          <div className="mt-12 grid gap-4 relative z-10">
             {signupContent.trustPoints.map((point) => (
               <div
                 key={point.title}

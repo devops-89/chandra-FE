@@ -6,14 +6,12 @@ interface TestimonialHeaderAnimatedProps {
   heading: string;
   highlightedText: string;
   description: string;
-  sliderControls: React.ReactNode;
 }
 
 export function TestimonialHeaderAnimated({
   heading,
   highlightedText,
   description,
-  sliderControls,
 }: TestimonialHeaderAnimatedProps) {
   // Stagger container variants
   const containerVariants = {
@@ -61,8 +59,6 @@ export function TestimonialHeaderAnimated({
           {description}
         </motion.p>
       </div>
-
-      {sliderControls}
     </motion.div>
   );
 }

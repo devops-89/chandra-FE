@@ -2,8 +2,6 @@
 
 import { motion } from 'framer-motion';
 
-import { SliderControls } from '@/components/testimonial&StarRating section/SliderControls';
-
 export function TestimonialHeader() {
   return (
     <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
@@ -31,8 +29,6 @@ export function TestimonialHeader() {
           Success Stories: Better Decisions Through Better Organization
         </motion.p>
       </div>
-
-      <SliderControls />
     </div>
   );
 }
