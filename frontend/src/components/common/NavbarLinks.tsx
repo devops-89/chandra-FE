@@ -2,8 +2,7 @@ import Link from 'next/link';
 
 import { publicNavItems } from '@/constants/navigation/publicNav';
 import type { PublicNavbarLinksProps } from '@/types/navigation.types';
-import NavDropdown from '@/components/common/NavDropdown';
-import ServiceMegaMenu from '@/components/common/ServiceMegaMenu';
+import NavbarServicesDropdown from '@/components/common/NavbarServicesDropdown';
 
 const NavbarLinks = ({
   className = '',
@@ -14,37 +13,7 @@ const NavbarLinks = ({
     <div className={className}>
       {publicNavItems.map((item) => {
         if (item.hasDropdown) {
-          return (
-            <NavDropdown
-              key={item.label}
-              trigger={
-                <button
-                  className="
-                    relative
-                    inline-flex
-                    min-h-10
-                    items-center
-                    gap-1
-                    text-sm
-                    font-medium
-                    text-slate-600
-                    transition-all
-                    duration-300
-                    hover:text-emerald-700
-                    hover:-translate-y-1
-                  "
-                >
-                  {item.label}
-
-                  <span className="text-xs">
-                    ▼
-                  </span>
-                </button>
-              }
-            >
-              <ServiceMegaMenu />
-            </NavDropdown>
-          );
+          return <NavbarServicesDropdown key={item.label} />;
         }
 
         return (

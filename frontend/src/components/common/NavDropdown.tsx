@@ -1,36 +1,19 @@
 'use client';
 
-import {
-  AnimatePresence,
-  motion,
-} from 'framer-motion';
+import { ReactNode, useState } from 'react';
 
-import { useEffect, useState } from 'react';
-import type { NavDropdownProps } from "@/types/navigation.types"
-import { usePathname } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 
+type NavDropdownProps = {
+  renderTrigger: (open: boolean) => ReactNode;
+  children: ReactNode;
+};
 
 const NavDropdown = ({
-  trigger,
+  renderTrigger,
   children,
 }: NavDropdownProps) => {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    const closeDropdown = () => {
-      setOpen(false);
-    };
-
-    return () => {
-      window.removeEventListener('pageshow', closeDropdown);
-      window.removeEventListener('popstate', closeDropdown);
-    };
-  }, []);
 
   return (
     <div
@@ -38,26 +21,25 @@ const NavDropdown = ({
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      {trigger}
+      {renderTrigger(open)}
 
       <AnimatePresence>
         {open && (
           <motion.div
             initial={{
               opacity: 0,
-              y: -10,
+              y: 10,
             }}
-            style={{pointerEvents: open ? 'auto' : 'none'}}
             animate={{
               opacity: 1,
               y: 0,
             }}
             exit={{
               opacity: 0,
-              y: -10,
+              y: 10,
             }}
             transition={{
-              duration: 0.25,
+              duration: 0.2,
             }}
             className="
               absolute
