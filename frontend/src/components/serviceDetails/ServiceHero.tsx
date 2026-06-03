@@ -1,3 +1,6 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 import type { ServiceDetail } from '@/types/serviceDetails.types';
@@ -9,9 +12,46 @@ interface ServiceHeroProps {
 export default function ServiceHero({
   service,
 }: ServiceHeroProps) {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1.5,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0,
+      },
+    },
+  };
+
+  const contentVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1.5,
+        type: 'spring' as const,
+        bounce: 0.35,
+      },
+    },
+  };
+
+  const imageVariants = {
+    hidden: { opacity: 0, x: 40 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.7,
+        type: 'spring' as const,
+        bounce: 0.3,
+      },
+    },
+  };
+
   return (
     <section className="bg-[#F7F2E8] py-20">
-      <div
+      <motion.div
         className="
           mx-auto
           flex
@@ -22,9 +62,13 @@ export default function ServiceHero({
           px-4
           md:flex-row
         "
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
-        <div className="flex-1">
-          <span
+        <motion.div className="flex-1" variants={containerVariants}>
+          <motion.span
+            variants={contentVariants}
             className="
               inline-flex
               rounded-full
@@ -41,9 +85,10 @@ export default function ServiceHero({
             "
           >
             Professional Service
-          </span>
+          </motion.span>
 
-          <h1
+          <motion.h1
+            variants={contentVariants}
             className="
               mt-6
               text-4xl
@@ -54,9 +99,10 @@ export default function ServiceHero({
             "
           >
             {service.title}
-          </h1>
+          </motion.h1>
 
-          <p
+          <motion.p
+            variants={contentVariants}
             className="
               mt-6
               max-w-2xl
@@ -66,9 +112,9 @@ export default function ServiceHero({
             "
           >
             {service.subtitle}
-          </p>
+          </motion.p>
 
-          <div className="mt-8">
+          <motion.div className="mt-8" variants={contentVariants}>
             <span className="text-slate-500">
               Starting From
             </span>
@@ -82,10 +128,10 @@ export default function ServiceHero({
             >
               {service.startingPrice}
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="flex-1">
+        <motion.div className="flex-1" variants={imageVariants}>
           <Image
             src={service.image}
             alt={service.title}
@@ -99,8 +145,8 @@ export default function ServiceHero({
               bg-white
             "
           />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

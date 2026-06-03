@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { useBookingStore } from '@/store/bookingStore';
 
@@ -82,6 +82,7 @@ export default function BookingAddress() {
             className="
               flex
               cursor-pointer
+              text-slate-950
               items-center
               gap-3
               rounded-xl
@@ -112,6 +113,7 @@ export default function BookingAddress() {
               flex
               cursor-pointer
               items-center
+              text-slate-950
               gap-3
               rounded-xl
               border
@@ -143,6 +145,7 @@ export default function BookingAddress() {
               flex
               cursor-pointer
               items-center
+              text-slate-950
               gap-3
               rounded-xl
               border
@@ -176,6 +179,7 @@ export default function BookingAddress() {
               className="
                 w-full
                 rounded-xl
+                text-slate-950
                 border
                 p-4
               "

@@ -1,3 +1,7 @@
+'use client';
+
+import { motion } from 'framer-motion';
+
 interface ServiceFeaturesProps {
   features: string[];
 }
@@ -5,10 +9,40 @@ interface ServiceFeaturesProps {
 export default function ServiceFeatures({
   features,
 }: ServiceFeaturesProps) {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1.5,
+        type: 'spring' as const,
+        bounce: 0.32,
+      },
+    },
+  };
+
   return (
     <section className="bg-[#F7F2E8] py-20">
-      <div className="mx-auto max-w-7xl px-4">
-        <h2
+      <motion.div
+        className="mx-auto max-w-7xl px-4"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.25 }}
+      >
+        <motion.h2
+          variants={itemVariants}
           className="
             text-center
             text-5xl
@@ -17,9 +51,10 @@ export default function ServiceFeatures({
           "
         >
           What&apos;s Included
-        </h2>
+        </motion.h2>
 
-        <div
+        <motion.div
+          variants={containerVariants}
           className="
             mt-12
             grid
@@ -29,8 +64,9 @@ export default function ServiceFeatures({
           "
         >
           {features.map((feature) => (
-            <div
+            <motion.div
               key={feature}
+              variants={itemVariants}
               className="
                 rounded-3xl
                 bg-white
@@ -63,10 +99,10 @@ export default function ServiceFeatures({
                   {feature}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

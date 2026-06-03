@@ -25,7 +25,7 @@ export default function BookingSummary() {
   };
 
   return (
-    <section className="bg-slate-50 py-16 md:py-24">
+    <section className="bg-[#F7F2E8] py-16 md:py-24">
       <div className="mx-auto max-w-5xl px-4">
         <div
           className="
