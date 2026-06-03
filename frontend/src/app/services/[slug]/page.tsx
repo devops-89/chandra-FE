@@ -3,25 +3,25 @@ import { notFound } from 'next/navigation';
 import ServiceDetailPage from '@/components/serviceDetails/ServiceDetailPage';
 import { acServicingData } from '@/constants/serviceDetails/acServicing';
 import { electricalData } from '@/constants/serviceDetails/electrical';
-import { homeCleaningData } from '@/constants/serviceDetails/homeCleaning';
 import { plumbingData } from '@/constants/serviceDetails/plumbing';
+import { solarCleaningData } from '@/constants/serviceDetails/solarCleaning';
 
 const services = {
-  'home-cleaning': homeCleaningData,
-  plumbing: plumbingData,
-  electrical: electricalData,
+  'solar-cleaning': solarCleaningData,
+  'plumbing': plumbingData,
+  'electrical': electricalData,
   'ac-servicing': acServicingData,
 };
 
 interface PageProps {
-  params: Promise<{
+  params: {
     slug: string;
-  }>;
+  };
 }
 
 export async function generateStaticParams() {
   return [
-    { slug: 'home-cleaning' },
+    { slug: 'solar-cleaning' },
     { slug: 'plumbing' },
     { slug: 'electrical' },
     { slug: 'ac-servicing' },

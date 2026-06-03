@@ -9,7 +9,7 @@ export const electricalData: ServiceDetail = {
     'Safe and reliable electrical repairs and installations.',
 
   description:
-    'Our certified electricians handle repairs, installations, and maintenance work while ensuring complete safety and compliance.',
+    'From minor repairs to complete electrical installations, our certified electricians provide reliable and safe solutions for homes and businesses. We handle wiring, switchboard upgrades, lighting installations, power outlet repairs, circuit troubleshooting, and preventive maintenance. Every job is completed with strict adherence to safety standards, ensuring efficient performance and peace of mind for our customers.',
 
   image: '/images/services/electrical.png',
 
