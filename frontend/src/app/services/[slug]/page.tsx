@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 
 import ServiceDetailPage from '@/components/serviceDetails';
-
 import { homeCleaningData } from '@/constants/serviceDetails/homeCleaning';
 
 const services = {

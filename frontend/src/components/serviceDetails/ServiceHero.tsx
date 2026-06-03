@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { ServiceDetail } from '@/types/serviceDetails.types';
+import type { ServiceDetail } from '@/types/serviceDetails.types';
 
 interface ServiceHeroProps {
   service: ServiceDetail;

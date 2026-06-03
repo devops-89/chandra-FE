@@ -1,7 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import StarIcon from '@mui/icons-material/Star';
+import { motion } from 'framer-motion';
 
 import { TestimonialAvatar } from '@/components/testimonial&StarRating section/TestimonialAvatar';
 import type { Testimonial } from '@/types/testimonial.types';

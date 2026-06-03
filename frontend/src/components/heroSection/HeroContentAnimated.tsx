@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 import GroupAvatars from '@/components/common/AvatarGroup';
 import type { HeroContentAnimatedProps } from '@/types/hero.types';

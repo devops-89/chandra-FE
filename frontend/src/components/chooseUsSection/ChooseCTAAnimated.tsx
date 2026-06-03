@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+
 import { ChooseCTA } from './ChooseCTA';
 
 export function ChooseCTAAnimated() {

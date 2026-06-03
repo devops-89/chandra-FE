@@ -3,14 +3,14 @@
 import { useState } from 'react';
 
 import { validateSignup } from '@/lib/validator/signup.validator';
-
-import {
+import type {
   SignupErrors,
   SignupFormData,
 } from '@/types/auth.types';
 
 const INITIAL_FORM: SignupFormData = {
-  fullName: '',
+  firstName: '',
+  lastName: '',
   phone: '',
   email: '',
   password: '',
@@ -53,8 +53,6 @@ export const useSignupForm = () => {
       setErrors(validationErrors);
       return;
     }
-
-    console.log(form);
 
     /**
      * API Call Here

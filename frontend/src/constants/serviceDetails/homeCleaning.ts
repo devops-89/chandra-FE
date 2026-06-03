@@ -1,4 +1,4 @@
-import { ServiceDetail } from '@/types/serviceDetails.types';
+import type { ServiceDetail } from '@/types/serviceDetails.types';
 
 export const homeCleaningData: ServiceDetail = {
   slug: 'home-cleaning',
