@@ -37,7 +37,7 @@ export default function ServiceOverview({
   return (
     <section className="bg-white py-20">
       <motion.div
-        className="mx-auto max-w-5xl px-4"
+        className="mx-auto max-w-5xl flex flex-col gap-6 px-4"
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"

@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
+import HeroDecorations from '@/components/heroSection/HeroDecorations';
 import type { ServiceDetail } from '@/types/serviceDetails.types';
 
 interface ServiceHeroProps {
@@ -50,9 +51,13 @@ export default function ServiceHero({
   };
 
   return (
-    <section className="bg-[#F7F2E8] py-20">
+    <section className="relative bg-[#FFF8ED] py-20">
+      <HeroDecorations />
+      
       <motion.div
         className="
+          relative
+          z-10
           mx-auto
           flex
           max-w-7xl
