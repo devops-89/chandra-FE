@@ -9,7 +9,8 @@ import type {
 } from '@/types/auth.types';
 
 const INITIAL_FORM: SignupFormData = {
-  fullName: '',
+  firstName: '',
+  lastName: '',
   phone: '',
   email: '',
   password: '',

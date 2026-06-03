@@ -1,4 +1,7 @@
+"use client";
+
 import Link from 'next/link';
+import type { MouseEvent } from 'react';
 
 import { publicNavItems } from '@/constants/navigation/publicNav';
 import type { PublicNavbarLinksProps } from '@/types/navigation.types';
@@ -8,6 +11,28 @@ const NavbarLinks = ({
   linkClassName = '',
   onNavigate,
 }: PublicNavbarLinksProps) => {
+  const handleHashNavigation = (
+  event: MouseEvent<HTMLAnchorElement>,
+  href: string,
+) => {
+  const targetElement = document.querySelector(href);
+
+  if (!targetElement) {
+    onNavigate?.();
+    return;
+  }
+
+  event.preventDefault();
+  onNavigate?.();
+
+  targetElement.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+  });
+
+  window.history.pushState(null, '', href);
+};
+
   return (
     <div className={className}>
       {publicNavItems.map((item) => {
@@ -20,7 +45,7 @@ const NavbarLinks = ({
             <a
               key={item.href}
               href={item.href}
-              onClick={onNavigate}
+              onClick={(event) => handleHashNavigation(event, item.href)}
               className={`
                 relative
                 inline-flex

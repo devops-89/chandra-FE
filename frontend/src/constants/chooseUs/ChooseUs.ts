@@ -10,7 +10,7 @@ export const ChooseUs: ChooseUsConfig = {
   },
 
   cta: {
-    label: 'Call Now',
+    label: 'Contact Us',
     href: '/contact',
   },
 
