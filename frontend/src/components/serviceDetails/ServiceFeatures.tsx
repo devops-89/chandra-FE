@@ -16,7 +16,7 @@ export default function ServiceFeatures({
             text-slate-900
           "
         >
-          What&apos;s Included
+          What&apos;s Included ?
         </h2>
 
         <div

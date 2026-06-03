@@ -9,7 +9,7 @@ export default function ServiceOverview({
 }: ServiceOverviewProps) {
   return (
     <section className="bg-white py-20">
-      <div className="mx-auto max-w-5xl px-4">
+      <div className="mx-auto flex flex-col gap-8 max-w-5xl px-4">
         <h2
           className="
             text-5xl
@@ -23,10 +23,13 @@ export default function ServiceOverview({
 
         <p
           className="
-            mt-6
             text-lg
-            leading-8
+            leading-relaxed
             text-slate-600
+            max-w-3xl
+            mx-auto
+            text-center
+            tracking-wide
           "
         >
           {service.description}
