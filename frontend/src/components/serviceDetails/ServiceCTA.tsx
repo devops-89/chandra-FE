@@ -46,7 +46,7 @@ export default function ServiceCTA({
         </p>
 
         <Link
-          href={`/booking?service=${service.slug}`}
+          href={`/booking?service=${encodeURIComponent(service.title)}`}
           className="
             mt-8
             inline-flex

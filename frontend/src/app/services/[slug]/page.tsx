@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation';
 
+import PublicFooter from '@/components/common/PublicFooter';
+import PublicNavbar from '@/components/common/PublicNavbar';
 import ServiceDetailPage from '@/components/serviceDetails/ServiceDetailPage';
 import { acServicingData } from '@/constants/serviceDetails/acServicing';
 import { electricalData } from '@/constants/serviceDetails/electrical';
@@ -41,8 +43,12 @@ export default async function ServicePage({
   }
 
   return (
-    <ServiceDetailPage
-      service={service}
-    />
+    <>
+      <PublicNavbar />
+      <main className="min-h-screen bg-white">
+        <ServiceDetailPage service={service} />
+      </main>
+      <PublicFooter />
+    </>
   );
 }

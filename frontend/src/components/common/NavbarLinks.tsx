@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import type { MouseEvent } from 'react';
 
 import { publicNavItems } from '@/constants/navigation/publicNav';
@@ -11,27 +12,32 @@ const NavbarLinks = ({
   linkClassName = '',
   onNavigate,
 }: PublicNavbarLinksProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const handleHashNavigation = (
-  event: MouseEvent<HTMLAnchorElement>,
-  href: string,
-) => {
-  const targetElement = document.querySelector(href);
-
-  if (!targetElement) {
+    event: MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    event.preventDefault();
     onNavigate?.();
-    return;
-  }
 
-  event.preventDefault();
-  onNavigate?.();
+    // If we're not on the home page, navigate to home page first
+    if (pathname !== '/') {
+      router.push(`/${href}`);
+      return;
+    }
 
-  targetElement.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start',
-  });
-
-  window.history.pushState(null, '', href);
-};
+    // If we're already on home page, scroll to the section
+    const targetElement = document.querySelector(href);
+    if (targetElement) {
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+      window.history.pushState(null, '', href);
+    }
+  };
 
   return (
     <div className={className}>
