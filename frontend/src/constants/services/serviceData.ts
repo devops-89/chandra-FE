@@ -6,7 +6,7 @@ export const services: Service[] = [
     title: 'Solar Cleaning',
     description: 'Professional cleaning to maximize solar panel efficiency and longevity',
     image: '/images/services/solar-cleaning.png',
-    slug: 'home-cleaning',
+    slug: 'solar-cleaning',
     gridSize: { md: 5 },
   },
   {

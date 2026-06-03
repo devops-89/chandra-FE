@@ -10,7 +10,7 @@ export default function ServiceCTA({
   service,
 }: ServiceCTAProps) {
   return (
-    <section className="py-24">
+    <section className="py-24 bg-white">
       <div
         className="
           mx-auto

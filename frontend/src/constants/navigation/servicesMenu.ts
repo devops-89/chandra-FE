@@ -1,9 +1,9 @@
 export const servicesMenu = [
   {
-    title: 'Home Cleaning',
-    icon: '🏠',
-    href: '/services/home-cleaning',
-    description: 'Professional home cleaning services to keep your space spotless.',
+    title: 'Solar Cleaning',
+    icon: '☀',
+    href: '/services/solar-cleaning',
+    description: 'Professional solar panel cleaning services to maximize efficiency.',
   },
   {
     title: 'Plumbing',

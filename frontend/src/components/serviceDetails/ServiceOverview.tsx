@@ -8,13 +8,14 @@ export default function ServiceOverview({
   service,
 }: ServiceOverviewProps) {
   return (
-    <section className="py-20">
+    <section className="bg-white py-20">
       <div className="mx-auto max-w-5xl px-4">
         <h2
           className="
-            text-3xl
+            text-5xl
             font-bold
             text-slate-900
+            text-center
           "
         >
           Service Overview

@@ -6,17 +6,17 @@ export default function ServiceFeatures({
   features,
 }: ServiceFeaturesProps) {
   return (
-    <section className="bg-slate-50 py-20">
+    <section className="bg-[#F7F2E8] py-20">
       <div className="mx-auto max-w-7xl px-4">
         <h2
           className="
             text-center
-            text-3xl
+            text-5xl
             font-bold
             text-slate-900
           "
         >
-          What's Included ?
+          What&apos;s Included
         </h2>
 
         <div

@@ -93,9 +93,10 @@ export default function ServiceHero({
             height={500}
             className="
               w-full
-              rounded-[32px]
+              rounded-4xl
               object-cover
               shadow-xl
+              bg-white
             "
           />
         </div>
