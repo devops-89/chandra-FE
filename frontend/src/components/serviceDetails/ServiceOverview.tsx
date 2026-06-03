@@ -1,3 +1,7 @@
+'use client';
+
+import { motion } from 'framer-motion';
+
 import type { ServiceDetail } from '@/types/serviceDetails.types';
 
 interface ServiceOverviewProps {
@@ -7,10 +11,40 @@ interface ServiceOverviewProps {
 export default function ServiceOverview({
   service,
 }: ServiceOverviewProps) {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        type: 'spring' as const,
+        bounce: 0.3,
+      },
+    },
+  };
+
   return (
     <section className="bg-white py-20">
-      <div className="mx-auto flex flex-col gap-8 max-w-5xl px-4">
-        <h2
+      <motion.div
+        className="mx-auto max-w-5xl px-4"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.35 }}
+      >
+        <motion.h2
+          variants={itemVariants}
           className="
             text-5xl
             font-bold
@@ -19,9 +53,10 @@ export default function ServiceOverview({
           "
         >
           Service Overview
-        </h2>
+        </motion.h2>
 
-        <p
+        <motion.p
+          variants={itemVariants}
           className="
             text-lg
             leading-relaxed
@@ -33,8 +68,8 @@ export default function ServiceOverview({
           "
         >
           {service.description}
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
     </section>
   );
 }

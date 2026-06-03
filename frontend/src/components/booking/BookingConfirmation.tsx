@@ -19,11 +19,11 @@ export default function BookingConfirmation() {
     );
 
   return (
-    <section className="bg-slate-50 py-16 md:py-24">
+    <section className="bg-[#F7F2E8] py-16 md:py-24">
       <div className="mx-auto max-w-3xl px-4">
         <div
           className="
-            rounded-[32px]
+            rounded-4xl
             bg-white
             p-8
             text-center

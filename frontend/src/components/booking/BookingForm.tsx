@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { useBookingStore } from '@/store/bookingStore';
 import type { BookingFormProps } from '@/types/booking.types';
@@ -75,14 +75,14 @@ export default function BookingForm({
           Book Service
         </h1>
 
-        <p className="mt-3 text-slate-500">
+        <p className="mt-3 text-slate-950">
           Selected Service:
-          <span className="ml-2 font-semibold">
+          <span className="ml-2 font-semibold text-slate-950">
             {service}
           </span>
         </p>
 
-        <div className="mt-8 flex flex-col gap-5">
+        <div className="mt-8 flex flex-col gap-5 text-slate-400">
           <input
             value={name}
             onChange={(e) =>
@@ -91,6 +91,7 @@ export default function BookingForm({
             placeholder="Full Name"
             className="
               rounded-xl
+              text-slate-950
               border
               p-4
             "
@@ -103,6 +104,7 @@ export default function BookingForm({
             }
             placeholder="Phone Number"
             className="
+              text-slate-950
               rounded-xl
               border
               p-4
@@ -117,6 +119,7 @@ export default function BookingForm({
             }
             className="
               rounded-xl
+              text-slate-950
               border
               p-4
             "
@@ -133,6 +136,7 @@ export default function BookingForm({
             placeholder="Special Instructions"
             className="
               rounded-xl
+              text-slate-950
               border
               p-4
             "

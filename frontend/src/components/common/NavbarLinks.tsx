@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname,useRouter } from 'next/navigation';
 import type { MouseEvent } from 'react';
 
 import { publicNavItems } from '@/constants/navigation/publicNav';

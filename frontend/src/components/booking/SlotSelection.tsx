@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { useBookingStore } from '@/store/bookingStore';
 
@@ -52,7 +52,7 @@ export default function SlotSelection() {
         {title}
       </h3>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 ">
         {slots.map((time) => {
           const selected = slot === time;
 
@@ -96,7 +96,7 @@ export default function SlotSelection() {
   );
 
   return (
-    <section className="bg-slate-50 py-16 md:py-24">
+    <section className="bg-[#F7F2E8] py-16 md:py-24">
       <div className="mx-auto max-w-4xl px-4">
         <div
           className="
@@ -133,6 +133,7 @@ export default function SlotSelection() {
                 w-full
                 rounded-xl
                 border
+                text-slate-950
                 border-slate-300
                 p-4
                 outline-none
