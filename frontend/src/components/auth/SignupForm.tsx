@@ -97,25 +97,47 @@ export const SignupForm = () => {
               </p>
             </div>
 
-            <label className="grid gap-1.5">
-              <span className="text-sm font-medium text-slate-700">
-                Full name
-              </span>
-              <input
-                className={inputClassName}
-                name="fullName"
-                type="text"
-                value={form.fullName}
-                onChange={(event) =>
-                  handleChange('fullName', event.target.value)
-                }
-              />
-              {errors.fullName ? (
-                <span className={errorClassName}>
-                  {errors.fullName}
-                </span>
-              ) : null}
-            </label>
+            <div className="grid gap-4 md:grid-cols-2">
+  <label className="grid gap-1.5">
+    <span className="text-sm font-medium text-slate-700">
+      First name
+    </span>
+    <input
+      className={inputClassName}
+      name="firstName"
+      type="text"
+      value={form.firstName}
+      onChange={(event) =>
+        handleChange('firstName', event.target.value)
+      }
+    />
+    {errors.firstName ? (
+      <span className={errorClassName}>
+        {errors.firstName}
+      </span>
+    ) : null}
+  </label>
+
+    <label className="grid gap-1.5">
+      <span className="text-sm font-medium text-slate-700">
+        Last name
+      </span>
+      <input
+        className={inputClassName}
+        name="lastName"
+        type="text"
+        value={form.lastName}
+        onChange={(event) =>
+          handleChange('lastName', event.target.value)
+        }
+      />
+      {errors.lastName ? (
+        <span className={errorClassName}>
+          {errors.lastName}
+        </span>
+      ) : null}
+    </label>
+  </div>
 
             <label className="grid gap-1.5">
               <span className="text-sm font-medium text-slate-700">
