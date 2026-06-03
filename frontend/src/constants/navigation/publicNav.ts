@@ -3,12 +3,11 @@ import type { PublicNavigationItem } from '@/types/navigation.types';
 export const publicNavItems: PublicNavigationItem[] = [
   {
     label: 'Home',
-    href: '/',
+    href: '#home',
   },
   {
     label: 'Services',
-    href: '/services',
-    hasDropdown: true,
+    href: '#services',
   },
   {
     label: 'About',

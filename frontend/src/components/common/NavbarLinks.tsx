@@ -1,6 +1,5 @@
 import Link from 'next/link';
 
-import NavbarServicesDropdown from '@/components/common/NavbarServicesDropdown';
 import { publicNavItems } from '@/constants/navigation/publicNav';
 import type { PublicNavbarLinksProps } from '@/types/navigation.types';
 
@@ -12,9 +11,6 @@ const NavbarLinks = ({
   return (
     <div className={className}>
       {publicNavItems.map((item) => {
-        if (item.hasDropdown) {
-          return <NavbarServicesDropdown key={item.label} />;
-        }
 
         // Check if it's a hash link (same-page anchor)
         const isHashLink = item.href.startsWith('#');

@@ -3,9 +3,9 @@ import type {Service} from '@/types/services.types'
 export const services: Service[] = [
   {
     id: 1,
-    title: 'Home Cleaning',
-    description: 'Deep cleaning for a spotless and healthy home',
-    image: '/images/services/home-cleaning.png',
+    title: 'Solar Cleaning',
+    description: 'Professional cleaning to maximize solar panel efficiency and longevity',
+    image: '/images/services/solar-cleaning.png',
     gridSize: { md: 5 },
   },
   {
