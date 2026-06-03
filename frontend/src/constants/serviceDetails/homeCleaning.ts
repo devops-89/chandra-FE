@@ -1,27 +1,27 @@
-import { ServiceDetail } from '@/types/serviceDetails.types';
+import type { ServiceDetail } from '@/types/serviceDetails.types';
 
 export const homeCleaningData: ServiceDetail = {
   slug: 'home-cleaning',
 
-  title: 'Professional Home Cleaning',
+  title: 'Professional Solar Panel Cleaning',
 
   subtitle:
-    'Deep cleaning services for a spotless and healthy home.',
+    'Maximize your solar panel efficiency and longevity with professional cleaning.',
 
   description:
-    'Our trained cleaning professionals use modern equipment and safe cleaning products to make your home shine.',
+    'Our trained technicians use specialized equipment and techniques to safely clean your solar panels, ensuring optimal energy production.',
 
-  image: '/services/home-cleaning.png',
+  image: '/images/services/solar-cleaning.png',
 
-  startingPrice: '₹499',
+  startingPrice: '₹899',
 
   features: [
-    'Kitchen Cleaning',
-    'Bathroom Cleaning',
-    'Dust Removal',
-    'Floor Cleaning',
-    'Furniture Cleaning',
+    'Panel Surface Cleaning',
+    'Inverter Inspection',
+    'Connection Check',
+    'Performance Assessment',
+    'Safety Inspection',
   ],
 
-  ctaText: 'Book Home Cleaning',
+  ctaText: 'Book Solar Cleaning',
 };

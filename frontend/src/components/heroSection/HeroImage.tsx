@@ -1,4 +1,5 @@
 import { heroContent } from '@/constants/hero/heroContent';
+
 import HeroImageAnimated from './HeroImageAnimated';
 
 const HeroImage = () => {

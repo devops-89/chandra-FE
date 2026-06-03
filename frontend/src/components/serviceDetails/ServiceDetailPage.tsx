@@ -1,9 +1,9 @@
-import { ServiceDetail } from '@/types/serviceDetails.types';
+import type { ServiceDetail } from '@/types/serviceDetails.types';
 
+import ServiceCTA from './ServiceCTA';
+import ServiceFeatures from './ServiceFeatures';
 import ServiceHero from './ServiceHero';
 import ServiceOverview from './ServiceOverview';
-import ServiceFeatures from './ServiceFeatures';
-import ServiceCTA from './ServiceCTA';
 
 interface Props {
   service: ServiceDetail;

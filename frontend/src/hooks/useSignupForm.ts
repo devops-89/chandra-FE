@@ -3,8 +3,7 @@
 import { useState } from 'react';
 
 import { validateSignup } from '@/lib/validator/signup.validator';
-
-import {
+import type {
   SignupErrors,
   SignupFormData,
 } from '@/types/auth.types';
@@ -53,8 +52,6 @@ export const useSignupForm = () => {
       setErrors(validationErrors);
       return;
     }
-
-    console.log(form);
 
     /**
      * API Call Here

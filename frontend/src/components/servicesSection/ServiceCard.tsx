@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { ServiceImage } from '@/components/servicesSection/ServiceImage';
 import type { ServiceCardProps } from '@/types/services.types';
 
@@ -6,7 +8,8 @@ export function ServiceCard({
   alignRight,
 }: ServiceCardProps) {
   return (
-      <div className="flex hover:shadow-lg bg-[#FEF7EC] transition-all duration-300 h-full flex-col overflow-hidden justify-between rounded-2xl">
+    <Link href={`/services/${service.slug}`} className="block h-full">
+      <div className="flex hover:shadow-lg bg-[#FEF7EC] transition-all duration-300 h-full flex-col overflow-hidden justify-between rounded-2xl cursor-pointer">
         <div className='text-black p-5'>
           <h3 className="mb-1 text-2xl font-semibold">
             {service.title}
@@ -23,5 +26,6 @@ export function ServiceCard({
           alignRight={alignRight}
         />
       </div>
+    </Link>
   );
 }

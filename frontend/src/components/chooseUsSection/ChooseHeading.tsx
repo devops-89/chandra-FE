@@ -1,5 +1,5 @@
-import { ChooseUs } from '@/constants/chooseUs/ChooseUs';
 import { ChooseHeadingAnimated } from '@/components/chooseUsSection/ChooseHeadingAnimated';
+import { ChooseUs } from '@/constants/chooseUs/ChooseUs';
 
 export function ChooseHeading() {
   return (

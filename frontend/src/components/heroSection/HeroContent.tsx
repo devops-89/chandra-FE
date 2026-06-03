@@ -1,4 +1,5 @@
 import { heroContent } from '@/constants/hero/heroContent';
+
 import HeroContentAnimated from './HeroContentAnimated';
 
 const HeroContent = () => {

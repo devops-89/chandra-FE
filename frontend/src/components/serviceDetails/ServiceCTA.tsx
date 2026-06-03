@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { ServiceDetail } from '@/types/serviceDetails.types';
+import type { ServiceDetail } from '@/types/serviceDetails.types';
 
 interface ServiceCTAProps {
   service: ServiceDetail;

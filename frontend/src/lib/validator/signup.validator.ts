@@ -1,4 +1,4 @@
-import {
+import type {
   SignupErrors,
   SignupFormData,
 } from '@/types/auth.types';

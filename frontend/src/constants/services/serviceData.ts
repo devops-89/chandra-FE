@@ -6,6 +6,7 @@ export const services: Service[] = [
     title: 'Solar Cleaning',
     description: 'Professional cleaning to maximize solar panel efficiency and longevity',
     image: '/images/services/solar-cleaning.png',
+    slug: 'home-cleaning',
     gridSize: { md: 5 },
   },
   {
@@ -13,6 +14,7 @@ export const services: Service[] = [
     title: 'Plumbing',
     description: 'Quick fixes for leaks, blockages, and installations',
     image: '/images/services/plumbing.png',
+    slug: 'plumbing',
     gridSize: { md: 7 },
   },
   {
@@ -20,6 +22,7 @@ export const services: Service[] = [
     title: 'Electrical',
     description: 'Safe and reliable electrical repairs and setup',
     image: '/images/services/electrical.png',
+    slug: 'electrical',
     gridSize: { md: 7 },
   },
   {
@@ -27,6 +30,7 @@ export const services: Service[] = [
     title: 'AC Servicing',
     description: 'Keep your cooling systems running efficiently',
     image: '/images/services/ac-servicing.png',
+    slug: 'ac-servicing',
     gridSize: { md: 5 },
   },
 ];
