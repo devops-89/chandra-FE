@@ -8,7 +8,7 @@ export const heroContent: HeroContentConfig = {
     'Everything your home needs, all in one place. HiChandra helps you book trusted professionals for cleaning, repairs, maintenance, and more—with flexible scheduling, verified experts, and quality service you can count on.',
   cta: {
     label: 'Book Now',
-    href: '/book',
+    href: '#services',
   },
   image: {
     src: '/hero.avif',
