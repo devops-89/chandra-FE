@@ -1,4 +1,4 @@
-import { Props } from '@/types/services.types';
+import type { Props } from '@/types/services.types';
 
 export default function ServiceCard({
   service,

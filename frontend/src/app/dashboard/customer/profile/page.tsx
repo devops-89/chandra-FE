@@ -1,15 +1,14 @@
 import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
-
+import ChangePasswordCard from '@/components/customerDashboard/profile/ChangePasswordCard';
 import ProfileAvatar from '@/components/customerDashboard/profile/ProfileAvatar';
 import ProfileForm from '@/components/customerDashboard/profile/ProfileForm';
-import ChangePasswordCard from '@/components/customerDashboard/profile/ChangePasswordCard';
 
 export default function ProfilePage() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-bold text-slate-900">
             Profile
           </h1>
 

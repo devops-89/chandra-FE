@@ -10,6 +10,7 @@ export default function FAQSection() {
         bg-white
         p-6
         shadow-sm
+        text-slate-700
       "
     >
       <h2 className="mb-6 text-xl font-bold">

@@ -1,10 +1,10 @@
 import {
-  LayoutDashboard,
   CalendarDays,
-  MapPin,
-  User,
-  Receipt,
   Headphones,
+  LayoutDashboard,
+  MapPin,
+  Receipt,
+  User,
 } from 'lucide-react';
 
 export const customerDashboardSidebarLinks = [

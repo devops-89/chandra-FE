@@ -14,34 +14,36 @@ export default function InvoiceTable() {
     >
       <table className="w-full">
         <thead>
-          <tr className="bg-slate-50">
+          <tr className="bg-slate-50 text-slate-950">
             <th className="px-4 py-4 text-left">
               Invoice
             </th>
 
-            <th className="px-4 py-4 text-left">
+            <th className="px-4 py-4 text-left text-slate-950">
               Service
             </th>
 
-            <th className="px-4 py-4 text-left">
+            <th className="px-4 py-4 text-left text-slate-950">
               Date
             </th>
 
-            <th className="px-4 py-4 text-left">
+            <th className="px-4 py-4 text-left text-slate-950">
               Amount
             </th>
 
-            <th className="px-4 py-4 text-left">
+            <th className="px-4 py-4 text-left text-slate-950">
               Status
             </th>
 
-            <th className="px-4 py-4 text-left">
+            <th className="px-4 py-4 text-left text-slate-950">
               Action
             </th>
           </tr>
         </thead>
 
-        <tbody>
+        <tbody
+          className="text-slate-700"
+        >
           {invoices.map((invoice) => (
             <InvoiceRow
               key={invoice.id}

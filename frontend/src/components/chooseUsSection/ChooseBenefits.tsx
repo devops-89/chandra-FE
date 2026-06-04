@@ -4,7 +4,7 @@ import { ChooseUs } from '@/constants/chooseUs/ChooseUs';
 
 export function ChooseBenefits() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {ChooseUs.benefits.map((item) => (
         <div
           key={item}

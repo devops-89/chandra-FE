@@ -1,5 +1,4 @@
 import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
-
 import SupportOverview from '@/components/customerDashboard/support/SupportOverview';
 
 export default function SupportPage() {
@@ -7,7 +6,7 @@ export default function SupportPage() {
     <DashboardLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-bold text-slate-950">
             Support
           </h1>
 

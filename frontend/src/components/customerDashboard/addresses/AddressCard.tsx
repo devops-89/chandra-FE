@@ -1,4 +1,4 @@
-import { Props } from '@/types/addressTypes/address.types';
+import type { Props } from '@/types/addressTypes/address.types';
 
 export default function AddressCard({
   address,
@@ -10,10 +10,15 @@ export default function AddressCard({
         bg-white
         p-6
         shadow-sm
+        hover:shadow-md
+        hover:border
+        hover:border-emerald-600
+        transition-all
+        duration-100
       "
     >
       <div className="flex justify-between">
-        <h3 className="font-semibold">
+        <h3 className="font-semibold text-slate-950">
           {address.label}
         </h3>
 
@@ -36,7 +41,7 @@ export default function AddressCard({
       <p
         className="
           mt-4
-          text-slate-500
+          text-slate-700
         "
       >
         {address.address}
@@ -49,6 +54,10 @@ export default function AddressCard({
             border
             px-4
             py-2
+            bg-emerald-600
+            text-slate-50
+            cursor-pointer
+            hover:bg-emerald-700
           "
         >
           Edit
@@ -58,10 +67,12 @@ export default function AddressCard({
           className="
             rounded-xl
             border
-            border-red-200
+            bg-red-500
             px-4
             py-2
-            text-red-600
+            text-slate-50
+            hover:bg-red-700
+            cursor-pointer
           "
         >
           Delete

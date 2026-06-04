@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-
 import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 
 interface Props {
   question: string;
@@ -16,7 +15,7 @@ export default function FAQItem({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-2xl border border-slate-200">
+    <div className="rounded-2xl border border-slate-500">
       <button
         onClick={() => setOpen(!open)}
         className="
@@ -26,9 +25,10 @@ export default function FAQItem({
           justify-between
           p-4
           text-left
+          cursor-pointer
         "
       >
-        <span className="font-medium">
+        <span className="font-medium text-slate-700">
           {question}
         </span>
 
@@ -41,7 +41,7 @@ export default function FAQItem({
       </button>
 
       {open && (
-        <div className="border-t p-4 text-slate-600">
+        <div className="font-medium border-t p-4 text-slate-500">
           {answer}
         </div>
       )}

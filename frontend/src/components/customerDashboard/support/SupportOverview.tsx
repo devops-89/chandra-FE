@@ -4,7 +4,7 @@ import RaiseTicketForm from './RaiseTicketForm';
 
 export default function SupportOverview() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-slate-950">
       <div className="grid gap-6 lg:grid-cols-2">
         <ContactCard />
         <RaiseTicketForm />

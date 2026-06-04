@@ -13,6 +13,8 @@ export default function AddAddressButton() {
         py-3
         font-medium
         text-white
+        cursor-pointer
+        hover:bg-emerald-700
       "
     >
       <Plus size={18} />

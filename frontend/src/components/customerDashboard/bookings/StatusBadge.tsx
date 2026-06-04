@@ -1,4 +1,4 @@
-import { BookingStatus } from '@/types/bookingTypes/booking.types';
+import type { BookingStatus } from '@/types/bookingTypes/booking.types';
 
 interface Props {
   status: BookingStatus;

@@ -1,7 +1,6 @@
-import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
-
-import AddressList from '@/components/customerDashboard/addresses/AddressList';
 import AddAddressButton from '@/components/customerDashboard/addresses/AddAddressButton';
+import AddressList from '@/components/customerDashboard/addresses/AddressList';
+import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
 
 export default function AddressesPage() {
   return (
@@ -13,6 +12,7 @@ export default function AddressesPage() {
               className="
                 text-3xl
                 font-bold
+                text-slate-950
               "
             >
               Addresses

@@ -6,6 +6,7 @@ export default function AddressForm() {
         bg-white
         p-6
         shadow-sm
+        text-slate-700
       "
     >
       Address Form Coming Soon

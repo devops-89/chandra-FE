@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { Booking } from '@/types/bookingTypes/booking.types';
+import type { Booking } from '@/types/bookingTypes/booking.types';
 
 import StatusBadge from './StatusBadge';
 
@@ -13,19 +13,19 @@ export default function BookingRow({
 }: Props) {
   return (
     <tr className="border-b">
-      <td className="px-4 py-4">
+      <td className="px-4 py-4 text-slate-700">
         {booking.id}
       </td>
 
-      <td className="px-4 py-4">
+      <td className="px-4 py-4 text-slate-700">
         {booking.serviceName}
       </td>
 
-      <td className="px-4 py-4">
+      <td className="px-4 py-4 text-slate-700">
         {booking.bookingDate}
       </td>
 
-      <td className="px-4 py-4">
+      <td className="px-4 py-4 text-slate-700">
         ₹{booking.amount}
       </td>
 

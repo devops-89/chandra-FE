@@ -14,34 +14,35 @@ export default function BookingTable() {
     >
       <table className="w-full">
         <thead>
-          <tr className="bg-slate-50">
-            <th className="px-4 py-4 text-left">
+          <tr className="bg-emerald-600">
+            <th className="px-4 py-4 text-left text-white">
               Booking ID
             </th>
 
-            <th className="px-4 py-4 text-left">
+            <th className="px-4 py-4 text-left text-white">
               Service
             </th>
 
-            <th className="px-4 py-4 text-left">
+            <th className="px-4 py-4 text-left text-white">
               Date
             </th>
 
-            <th className="px-4 py-4 text-left">
+            <th className="px-4 py-4 text-left text-white">
               Amount
             </th>
 
-            <th className="px-4 py-4 text-left">
+            <th className="px-4 py-4 text-left text-white">
               Status
             </th>
 
-            <th className="px-4 py-4 text-left">
+            <th className="px-4 py-4 text-left text-white">
               Action
             </th>
           </tr>
         </thead>
 
-        <tbody>
+        <tbody
+          className="text-slate-500">
           {bookings.map((booking) => (
             <BookingRow
               key={booking.id}

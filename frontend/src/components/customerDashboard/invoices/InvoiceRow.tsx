@@ -1,8 +1,7 @@
 import { Download } from 'lucide-react';
 
-import { Props } from '@/types/invoicesTypes/invoice.types';
-
 import InvoiceStatusBadge from '@/components/customerDashboard/invoices/InvoiceStatusBadge';
+import type { Props } from '@/types/invoicesTypes/invoice.types';
 
 
 
@@ -40,9 +39,12 @@ export default function InvoiceRow({
             items-center
             gap-2
             text-emerald-700
+            hover:underline
+            cursor-pointer
           "
         >
-          <Download size={16} />
+          <Download size={16}
+            />
           Download
         </button>
       </td>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Props } from '@/types/dashboardTypes/dashboard.types';
+
+import type { Props } from '@/types/dashboardTypes/dashboard.types';
 
 export default function ActionCard({
   title,

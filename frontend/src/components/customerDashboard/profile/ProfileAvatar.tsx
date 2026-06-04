@@ -33,6 +33,13 @@ export default function ProfileAvatar() {
             border
             px-4
             py-2
+            bg-emerald-600
+            text-sm
+            text-white
+            transition-all
+            duration-300
+            hover:bg-emerald-700
+            cursor-pointer
           "
         >
           Change Photo

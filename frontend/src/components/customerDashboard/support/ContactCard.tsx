@@ -10,17 +10,17 @@ export default function ContactCard() {
         shadow-sm
       "
     >
-      <h2 className="mb-6 text-xl font-bold">
+      <h2 className="mb-6 text-xl font-bold text-slate-950">
         Contact Support
       </h2>
 
       <div className="space-y-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 text-slate-700">
           <Phone size={18} />
           <span>+91 9876543210</span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 text-slate-700">
           <Mail size={18} />
           <span>support@hichandra.com</span>
         </div>

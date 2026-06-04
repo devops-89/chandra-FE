@@ -1,4 +1,4 @@
-import { Booking } from '@/types/bookingTypes/booking.types';
+import type { Booking } from '@/types/bookingTypes/booking.types';
 
 export const bookings: Booking[] = [
   {

@@ -46,7 +46,7 @@ export default function ServiceOverview({
         <motion.h2
           variants={itemVariants}
           className="
-            text-5xl
+            text-4xl
             font-bold
             text-slate-900
             text-center
@@ -58,7 +58,7 @@ export default function ServiceOverview({
         <motion.p
           variants={itemVariants}
           className="
-            text-lg
+            text-md
             leading-relaxed
             text-slate-600
             max-w-3xl

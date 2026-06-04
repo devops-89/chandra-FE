@@ -1,8 +1,9 @@
 'use client';
 
-import Link from 'next/link';
-import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/customerDashboardSidebarLinks';
 import { LogOut } from 'lucide-react';
+import Link from 'next/link';
+
+import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/customerDashboardSidebarLinks';
 
 export default function DashboardSidebar() {
 

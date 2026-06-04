@@ -4,6 +4,7 @@ import { ChooseUs } from '@/constants/chooseUs/ChooseUs';
 
 export function ChooseCTA() {
   return (
+    <div className="flex justify-center">
     <Link
       href={ChooseUs.cta.href}
       className="
@@ -22,5 +23,6 @@ export function ChooseCTA() {
     >
       {ChooseUs.cta.label}
     </Link>
+  </div>
   );
 }

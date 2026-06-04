@@ -1,6 +1,7 @@
-import DashboardSidebar from './DashboardSidebar';
+import type { DashboardLayoutProps } from '@/types/dashboardTypes/dashboard.types';
+
 import DashboardHeader from './DashboardHeader';
-import { DashboardLayoutProps } from '@/types/dashboardTypes/dashboard.types';
+import DashboardSidebar from './DashboardSidebar';
 
 export default function DashboardLayout({
   children,

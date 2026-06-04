@@ -1,13 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {
-  Check,
-  UserCheck,
-  Truck,
-  Wrench,
-  BadgeCheck,
-} from 'lucide-react';
 
 import {
   SERVICE_PROGRESS_CURRENT_STEP,

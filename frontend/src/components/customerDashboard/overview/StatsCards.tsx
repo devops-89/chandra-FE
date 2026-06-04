@@ -1,6 +1,6 @@
 import {
-  CalendarClock,
   BadgeCheck,
+  CalendarClock,
   MapPin,
   Wallet,
 } from 'lucide-react';

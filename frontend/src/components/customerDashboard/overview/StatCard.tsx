@@ -1,4 +1,4 @@
-import { Props } from '@/types/statTypes/stats.types';
+import type { Props } from '@/types/statTypes/stats.types';
 
 export default function StatCard({
   title,
