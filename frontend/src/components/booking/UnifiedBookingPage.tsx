@@ -8,9 +8,10 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { useBookingStore } from '@/store/bookingStore';
+
 
 const TIME_SLOTS = {
   morning: ['09:00 AM', '10:00 AM', '11:00 AM'],
@@ -27,7 +28,7 @@ export default function UnifiedBookingPage({
 }: UnifiedBookingPageProps) {
   const router = useRouter();
 
-  const [activeStep, setActiveStep] = useState(0);
+  
 
   const steps = [
     'Select Address',
@@ -80,18 +81,12 @@ export default function UnifiedBookingPage({
 
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (selectedAddress) {
-      setActiveStep(1);
-    }
-  }, [selectedAddress]);
-
-  useEffect(() => {
-    if (selectedAddress && date && slot) {
-      setActiveStep(2);
-    }
-  }, [selectedAddress, date, slot]);
-
+    const activeStep =
+    selectedAddress && date && slot
+      ? 2
+      : selectedAddress
+      ? 1
+      : 0;
   const handleConfirm = () => {
     setError('');
 
@@ -216,8 +211,20 @@ export default function UnifiedBookingPage({
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
             Complete Your Booking
           </h1>
-
-          <Stepper 
+          <div
+            className="
+              sticky
+              top-4
+              z-50
+              rounded-4xl
+              bg-white
+              p-px
+              shadow-lg
+              mt-6
+              opacity-95
+            "
+          >
+          <Stepper
             activeStep={activeStep}
             alternativeLabel
             sx={{ 
@@ -270,6 +277,7 @@ export default function UnifiedBookingPage({
               </Step>
             ))}
           </Stepper>
+          </div>
 
           {/* Step 1: Select Address */}
           <div className="mt-10">
