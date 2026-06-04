@@ -73,7 +73,7 @@ const HeroContentAnimated = ({
           block: 'start',
           });
       }}
-      className="group inline-flex h-12 w-full items-center justify-center rounded-full bg-linear-to-br from-emerald-600 to-emerald-700 px-7 text-base font-bold text-white shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-600/30 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-4 sm:h-13 sm:w-auto sm:px-8"
+      className="group inline-flex h-12 w-full items-center justify-center rounded-full bg-linear-to-br from-emerald-600 cursor-pointer to-emerald-700 px-7 text-base font-bold text-white shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-600/30 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-4 sm:h-13 sm:w-auto sm:px-8"
       >
       {cta.label}
       </button>

@@ -9,14 +9,14 @@ export default function UpcomingServices() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <ServiceCard
-          service="Solar Panel Cleaning"
+          service="Solar Panel Maintenance"
           date="24 June 2026"
           time="09:00 AM"
           status="Assigned"
         />
 
         <ServiceCard
-          service="Home Deep Cleaning"
+          service="Solar Inspection"
           date="28 June 2026"
           time="11:00 AM"
           status="Confirmed"

@@ -45,7 +45,7 @@ export default async function ServicePage({
   return (
     <>
       <PublicNavbar />
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen">
         <ServiceDetailPage service={service} />
       </main>
       <PublicFooter />

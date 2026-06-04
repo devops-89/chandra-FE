@@ -1,4 +1,7 @@
+import BookingAuthGuard from '@/components/booking/BookingAuthGuard';
 import UnifiedBookingPage from '@/components/booking/UnifiedBookingPage';
+import PublicFooter from '@/components/common/PublicFooter';
+import PublicNavbar from '@/components/common/PublicNavbar';
 
 interface BookingPageProps {
   searchParams: Promise<{
@@ -12,8 +15,10 @@ export default async function BookingPage({
   const params = await searchParams;
 
   return (
-    <UnifiedBookingPage
-      service={params.service ?? ''}
-    />
+    <BookingAuthGuard>
+      <PublicNavbar />
+      <UnifiedBookingPage service={params.service ?? ''} />
+      <PublicFooter />
+    </BookingAuthGuard>
   );
 }   

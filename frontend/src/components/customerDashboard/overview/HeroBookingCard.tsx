@@ -46,7 +46,7 @@ export default function HeroBookingCard() {
               font-bold
             "
           >
-            Full Home Deep Cleaning
+            Solar Cleaning
           </h2>
 
           <div className="flex items-center gap-6">
