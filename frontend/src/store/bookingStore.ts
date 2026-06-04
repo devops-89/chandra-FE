@@ -7,6 +7,7 @@ interface BookingStore {
   address: string;
   date: string;
   slot: string;
+  instructions: string;
 
   setBooking: (
     data: Partial<BookingStore>
@@ -21,6 +22,7 @@ export const useBookingStore =
     address: '',
     date: '',
     slot: '',
+    instructions: '',
 
     setBooking: (data) =>
       set((state) => ({

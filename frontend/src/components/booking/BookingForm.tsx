@@ -59,7 +59,7 @@ export default function BookingForm({
         className="
           mx-auto
           max-w-3xl
-          rounded-[32px]
+          rounded-4xl
           bg-white
           p-8
           shadow-xl

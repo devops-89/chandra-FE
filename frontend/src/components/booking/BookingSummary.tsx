@@ -14,6 +14,7 @@ export default function BookingSummary() {
     address,
     date,
     slot,
+    instructions,
   } = useBookingStore();
 
   const servicePrice = 499;
@@ -75,6 +76,13 @@ export default function BookingSummary() {
                 label="Time Slot"
                 value={slot}
               />
+
+              {instructions && (
+                <SummaryItem
+                  label="Special Instructions"
+                  value={instructions}
+                />
+              )}
             </div>
 
             <div
