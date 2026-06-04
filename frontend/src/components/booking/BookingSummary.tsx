@@ -14,6 +14,7 @@ export default function BookingSummary() {
     address,
     date,
     slot,
+    instructions,
   } = useBookingStore();
 
   const servicePrice = 499;
@@ -29,7 +30,7 @@ export default function BookingSummary() {
       <div className="mx-auto max-w-5xl px-4">
         <div
           className="
-            rounded-[32px]
+            rounded-4xl
             bg-white
             p-6
             shadow-xl
@@ -75,6 +76,13 @@ export default function BookingSummary() {
                 label="Time Slot"
                 value={slot}
               />
+
+              {instructions && (
+                <SummaryItem
+                  label="Special Instructions"
+                  value={instructions}
+                />
+              )}
             </div>
 
             <div

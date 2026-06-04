@@ -1,4 +1,4 @@
-import BookingForm from '@/components/booking/BookingForm';
+import UnifiedBookingPage from '@/components/booking/UnifiedBookingPage';
 
 interface BookingPageProps {
   searchParams: Promise<{
@@ -12,8 +12,8 @@ export default async function BookingPage({
   const params = await searchParams;
 
   return (
-    <BookingForm
+    <UnifiedBookingPage
       service={params.service ?? ''}
     />
   );
-}
+}   

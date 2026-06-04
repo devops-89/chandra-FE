@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 
 import GroupAvatars from '@/components/common/AvatarGroup';
 import type { HeroContentAnimatedProps } from '@/types/hero.types';
@@ -64,12 +63,20 @@ const HeroContentAnimated = ({
 
       {/* CTA Section */}
       <motion.div variants={itemVariants} className="mt-8 flex flex-col items-center gap-6 sm:mt-10 sm:flex-row sm:justify-center sm:gap-10 lg:justify-start xl:gap-12">
-        <Link
-          href={cta.href}
-          className="group inline-flex h-12 w-full items-center justify-center rounded-full bg-linear-to-br from-emerald-600 to-emerald-700 px-7 text-base font-bold text-white shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-600/30 hover:-translate-y-1 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-4 sm:h-13 sm:w-auto sm:px-8"
-        >
-          {cta.label}
-        </Link>
+        <button
+          type="button"
+          onClick={() => {
+          document
+          .getElementById('services')
+          ?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          });
+      }}
+      className="group inline-flex h-12 w-full items-center justify-center rounded-full bg-linear-to-br from-emerald-600 to-emerald-700 px-7 text-base font-bold text-white shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-600/30 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-4 sm:h-13 sm:w-auto sm:px-8"
+      >
+      {cta.label}
+      </button>
 
         <div className="flex min-w-0 items-center justify-center gap-4 sm:gap-5">
           <GroupAvatars />
