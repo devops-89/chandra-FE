@@ -30,7 +30,7 @@ export default function BookingSummary() {
       <div className="mx-auto max-w-5xl px-4">
         <div
           className="
-            rounded-[32px]
+            rounded-4xl
             bg-white
             p-6
             shadow-xl
