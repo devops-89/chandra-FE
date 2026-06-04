@@ -1,5 +1,5 @@
-import SlotSelection from '@/components/booking/SlotSelection';
+import { redirect } from 'next/navigation';
 
 export default function SlotPage() {
-  return <SlotSelection />;
+  redirect('/booking');
 }

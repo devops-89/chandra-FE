@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   useState,
 } from 'react';
@@ -9,6 +10,7 @@ import {
 import { loginContent } from '@/constants/auth/loginContent';
 import { validateEmail } from '@/lib/validator/email.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const inputClassName =
   'h-11 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20';
@@ -23,6 +25,8 @@ type LoginFormData = {
 type LoginErrors = Partial<LoginFormData>;
 
 export const LoginForm = () => {
+  const router = useRouter();
+  const login = useAuthStore((state) => state.login);
   const [form, setForm] = useState<LoginFormData>({
     email: '',
     password: '',
@@ -63,6 +67,8 @@ export const LoginForm = () => {
     }
 
     setErrors({});
+    login();
+    router.push('/dashboard/customer');
   };
 
   return (

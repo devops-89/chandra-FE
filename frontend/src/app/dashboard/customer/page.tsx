@@ -12,13 +12,18 @@ export default function CustomerDashboardPage() {
     <DashboardLayout>
       <div
         className="
-          rounded-3xl
+          rounded-2xl
+          sm:rounded-3xl
           border
           border-dashed
           border-slate-300
-          bg-white
-          p-20
+          bg-emerald-300
+          p-4
+          sm:p-6
+          lg:p-10
           text-center
+          space-y-6
+          lg:space-y-8
         "
       >
         <HeroBookingCard />
@@ -26,7 +31,7 @@ export default function CustomerDashboardPage() {
         <StatsCards />
         <QuickActions />
         <UpcomingServices />
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
           <AddressPreview />
           <HistoryPreview />
         </div>

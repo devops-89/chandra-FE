@@ -1,5 +1,5 @@
-import BookingAddress from '@/components/booking/BookingAddress';
+import { redirect } from 'next/navigation';
 
 export default function AddressPage() {
-  return <BookingAddress />;
+  redirect('/booking');
 }

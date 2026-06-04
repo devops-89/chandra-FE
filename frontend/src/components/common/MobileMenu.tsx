@@ -1,15 +1,33 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import NavbarLinks from '@/components/common/NavbarLinks';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const MobileMenu = () => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const isAuthenticated = useAuthStore(
+    (state) => state.isAuthenticated
+  );
+  const logout = useAuthStore((state) => state.logout);
 
   const closeMenu = () => {
     setIsOpen(false);
+  };
+
+  const handleDashboard = () => {
+    closeMenu();
+    router.push('/dashboard/customer');
+  };
+
+  const handleLogout = () => {
+    logout();
+    closeMenu();
+    router.push('/');
   };
 
   return (
@@ -46,22 +64,41 @@ const MobileMenu = () => {
           linkClassName="rounded-2xl px-3 py-2.5 text-sm hover:bg-emerald-50 sm:px-4 sm:py-3 sm:text-base"
         />
 
-        <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 min-[420px]:grid-cols-2 sm:mt-4 sm:gap-3 sm:pt-4">
-          <Link
-            href="/login"
-            onClick={closeMenu}
-            className="inline-flex h-10 items-center justify-center rounded-full border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:border-emerald-200 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:h-11"
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            onClick={closeMenu}
-            className="inline-flex h-10 items-center justify-center rounded-full bg-emerald-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:h-11"
-          >
-            Signup
-          </Link>
-        </div>
+        {isAuthenticated ? (
+          <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 min-[420px]:grid-cols-2 sm:mt-4 sm:gap-3 sm:pt-4">
+            <button
+              type="button"
+              onClick={handleDashboard}
+              className="inline-flex h-10 items-center justify-center rounded-full bg-emerald-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:h-11"
+            >
+              Dashboard
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="inline-flex h-10 items-center justify-center rounded-full border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:border-emerald-200 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:h-11"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 min-[420px]:grid-cols-2 sm:mt-4 sm:gap-3 sm:pt-4">
+            <Link
+              href="/login"
+              onClick={closeMenu}
+              className="inline-flex h-10 items-center justify-center rounded-full border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:border-emerald-200 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:h-11"
+            >
+              Login
+            </Link>
+            <Link
+              href="/signup"
+              onClick={closeMenu}
+              className="inline-flex h-10 items-center justify-center rounded-full bg-emerald-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:h-11"
+            >
+              Signup
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

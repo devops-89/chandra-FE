@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 
 import { useBookingStore } from '@/store/bookingStore';
+import PublicNavbar from '@/components/common/PublicNavbar';
+import PublicFooter from '@/components/common/PublicFooter';
 
 export default function BookingSummary() {
   const router = useRouter();
@@ -26,123 +28,127 @@ export default function BookingSummary() {
   };
 
   return (
-    <section className="bg-[#F7F2E8] py-16 md:py-24">
-      <div className="mx-auto max-w-5xl px-4">
-        <div
-          className="
-            rounded-4xl
-            bg-white
-            p-6
-            shadow-xl
-            md:p-10
-          "
-        >
-          <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
-            Booking Summary
-          </h1>
+    <>
+      <PublicNavbar />
+      <section className="bg-[#F7F2E8] py-16 md:py-24">
+        <div className="mx-auto max-w-5xl px-4">
+          <div
+            className="
+              rounded-4xl
+              bg-white
+              p-6
+              shadow-xl
+              md:p-10
+            "
+          >
+            <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
+              Booking Summary
+            </h1>
 
-          <p className="mt-3 text-slate-500">
-            Please review your booking details before confirmation.
-          </p>
+            <p className="mt-3 text-slate-500">
+              Please review your booking details before confirmation.
+            </p>
 
-          <div className="mt-10 grid gap-8 lg:grid-cols-2">
-            <div className="space-y-5">
-              <SummaryItem
-                label="Service"
-                value={service}
-              />
-
-              <SummaryItem
-                label="Customer Name"
-                value={name}
-              />
-
-              <SummaryItem
-                label="Phone"
-                value={phone}
-              />
-
-              <SummaryItem
-                label="Address"
-                value={address}
-              />
-
-              <SummaryItem
-                label="Date"
-                value={date}
-              />
-
-              <SummaryItem
-                label="Time Slot"
-                value={slot}
-              />
-
-              {instructions && (
+            <div className="mt-10 grid gap-8 lg:grid-cols-2">
+              <div className="space-y-5">
                 <SummaryItem
-                  label="Special Instructions"
-                  value={instructions}
-                />
-              )}
-            </div>
-
-            <div
-              className="
-                rounded-3xl
-                border
-                border-slate-200
-                bg-slate-50
-                p-6
-              "
-            >
-              <h2 className="text-2xl font-bold text-slate-900">
-                Price Details
-              </h2>
-
-              <div className="mt-6 space-y-4">
-                <PriceRow
-                  label="Service Cost"
-                  value={`₹${servicePrice}`}
+                  label="Service"
+                  value={service}
                 />
 
-                <PriceRow
-                  label="Taxes & Fees"
-                  value={`₹${taxes}`}
+                <SummaryItem
+                  label="Customer Name"
+                  value={name}
                 />
 
-                <div className="border-t pt-4">
-                  <PriceRow
-                    label="Total"
-                    value={`₹${total}`}
-                    isTotal
+                <SummaryItem
+                  label="Phone"
+                  value={phone}
+                />
+
+                <SummaryItem
+                  label="Address"
+                  value={address}
+                />
+
+                <SummaryItem
+                  label="Date"
+                  value={date}
+                />
+
+                <SummaryItem
+                  label="Time Slot"
+                  value={slot}
+                />
+
+                {instructions && (
+                  <SummaryItem
+                    label="Special Instructions"
+                    value={instructions}
                   />
-                </div>
+                )}
               </div>
 
-              <button
-                type="button"
-                onClick={handleConfirm}
+              <div
                 className="
-                  mt-8
-                  w-full
-                  rounded-full
-                  bg-emerald-600
-                  px-8
-                  py-4
-                  text-lg
-                  font-semibold
-                  text-white
-                  transition-all
-                  duration-300
-                  hover:bg-emerald-700
+                  rounded-3xl
+                  border
+                  border-slate-200
+                  bg-slate-50
+                  p-6
                 "
               >
-                Confirm Booking
-              </button>
+                <h2 className="text-2xl font-bold text-slate-900">
+                  Price Details
+                </h2>
+
+                <div className="mt-6 space-y-4">
+                  <PriceRow
+                    label="Service Cost"
+                    value={`₹${servicePrice}`}
+                  />
+
+                  <PriceRow
+                    label="Taxes & Fees"
+                    value={`₹${taxes}`}
+                  />
+
+                  <div className="border-t pt-4">
+                    <PriceRow
+                      label="Total"
+                      value={`₹${total}`}
+                      isTotal
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleConfirm}
+                  className="
+                    mt-8
+                    w-full
+                    rounded-full
+                    bg-emerald-600
+                    px-8
+                    py-4
+                    text-lg
+                    font-semibold
+                    text-white
+                    transition-all
+                    duration-300
+                    hover:bg-emerald-700
+                  "
+                >
+                  Confirm Booking
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+      <PublicFooter />
+    </>
   );
 }
 

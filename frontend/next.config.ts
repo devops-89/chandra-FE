@@ -6,10 +6,7 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
     allowedDevOrigins: [
-    '172.30.112.1',
-    '172.30.112.1',
-    '192.168.1.21',
-    '192.168.1.8',
+    '192.168.1.49'
   ],
 };
 
