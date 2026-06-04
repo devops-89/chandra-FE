@@ -1,0 +1,33 @@
+import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
+
+import ProfileAvatar from '@/components/customerDashboard/profile/ProfileAvatar';
+import ProfileForm from '@/components/customerDashboard/profile/ProfileForm';
+import ChangePasswordCard from '@/components/customerDashboard/profile/ChangePasswordCard';
+
+export default function ProfilePage() {
+  return (
+    <DashboardLayout>
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold">
+            Profile
+          </h1>
+
+          <p className="text-slate-500">
+            Manage your account information.
+          </p>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <ProfileAvatar />
+
+          <div className="space-y-6 lg:col-span-2">
+            <ProfileForm />
+
+            <ChangePasswordCard />
+          </div>
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+}

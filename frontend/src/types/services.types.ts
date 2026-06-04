@@ -19,3 +19,10 @@ export interface ServiceCardProps {
   service: Service;
   alignRight?: boolean;
 }
+
+export type Props = {
+  service: string;
+  date: string;
+  time: string;
+  status: string;
+};
