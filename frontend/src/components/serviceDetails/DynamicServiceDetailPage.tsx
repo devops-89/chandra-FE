@@ -47,7 +47,7 @@ export default function DynamicServiceDetailPage({
         instructions: '',
       };
 
-      setBooking(bookingData as any);
+      setBooking(bookingData);
       
       // Redirect to the unified booking page with service slug
       router.push(`/booking?service=${encodeURIComponent(service.slug)}`);
@@ -65,6 +65,7 @@ export default function DynamicServiceDetailPage({
           <div className="rounded-3xl bg-white p-8 shadow-xl">
             <div className="mb-8 text-center">
               <button
+                type="button"
                 onClick={() => setShowBookingForm(false)}
                 className="mb-4 inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700"
               >

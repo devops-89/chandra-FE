@@ -8,6 +8,7 @@ import {
 } from 'react';
 
 import { loginContent } from '@/constants/auth/loginContent';
+import { handlePostAuthRedirect } from '@/lib/auth/redirectUtils';
 import { validateEmail } from '@/lib/validator/email.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -68,7 +69,10 @@ export const LoginForm = () => {
 
     setErrors({});
     login();
-    router.push('/dashboard/customer');
+    
+    // Handle redirect after successful login
+    const redirectPath = handlePostAuthRedirect();
+    router.push(redirectPath);
   };
 
   return (

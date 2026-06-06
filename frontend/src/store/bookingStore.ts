@@ -1,10 +1,12 @@
 import { create } from 'zustand';
 
+import type { BookingFormData } from '@/types/services.types';
+
 interface BookingStore {
   service: string;
   serviceSlug: string;
   servicePrice: number;
-  serviceSpecificData: Record<string, any>;
+  serviceSpecificData: BookingFormData;
   name: string;
   phone: string;
   address: string;

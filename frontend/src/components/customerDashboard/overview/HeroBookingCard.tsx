@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 
 import { DASHBOARD_STATS_DATA } from '@/constants/customerDashboard/dashboardStats';
-import type { StatsCardProps } from '@/types/dashboardOverview.types';
+import type { StatsCardProps } from '@/types/dashboardTypes/dashboardOverview.types';
 
 function StatsCard({ icon: Icon, title, value, isHighlighted = false }: StatsCardProps) {
   return (

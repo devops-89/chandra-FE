@@ -12,7 +12,6 @@ export default function BookingConfirmation() {
   const router = useRouter();
   const {
     service,
-    serviceSlug,
     servicePrice,
     serviceSpecificData,
     date,

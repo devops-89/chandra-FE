@@ -20,7 +20,7 @@ export function validateFiles(
   }
 
   // Validate each file
-  files.forEach((file, index) => {
+  files.forEach((file) => {
     // Check file type
     if (field.accept) {
       const acceptedTypes = field.accept.split(',').map(type => type.trim());

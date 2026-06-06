@@ -1,8 +1,11 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { handlePostAuthRedirect } from '@/lib/auth/redirectUtils';
 import { validateSignup } from '@/lib/validator/signup.validator';
+import { useAuthStore } from '@/store/useAuthStore';
 import type {
   SignupErrors,
   SignupFormData,
@@ -19,6 +22,9 @@ const INITIAL_FORM: SignupFormData = {
 };
 
 export const useSignupForm = () => {
+  const router = useRouter();
+  const login = useAuthStore((state) => state.login);
+  
   const [form, setForm] =
     useState<SignupFormData>(
       INITIAL_FORM,
@@ -55,8 +61,15 @@ export const useSignupForm = () => {
     }
 
     /**
-     * API Call Here
+     * API Call Here - simulate successful signup
      */
+    
+    // Log the user in after successful signup
+    login();
+    
+    // Handle redirect after successful signup
+    const redirectPath = handlePostAuthRedirect();
+    router.push(redirectPath);
    };
 
   return {

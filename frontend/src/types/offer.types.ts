@@ -1,1 +1,0 @@
-export type { OfferBanner } from './banner.types';

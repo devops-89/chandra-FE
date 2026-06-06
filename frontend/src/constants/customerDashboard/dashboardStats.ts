@@ -1,6 +1,6 @@
 import { Calendar, CheckCircle, Clock, MapPin } from 'lucide-react';
 
-import type { StatsCardData } from '@/types/dashboardOverview.types';
+import type { StatsCardData } from '@/types/dashboardTypes/dashboardOverview.types';
 
 export const DASHBOARD_STATS_DATA: StatsCardData[] = [
   {

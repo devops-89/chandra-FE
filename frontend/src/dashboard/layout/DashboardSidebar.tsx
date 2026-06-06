@@ -8,7 +8,6 @@ import {
   type LucideIcon,
   Menu,
   Settings,
-  UserRound,
   Users,
   X,
 } from 'lucide-react';
@@ -37,11 +36,6 @@ const sidebarLinks: SidebarLink[] = [
     label: 'Customers',
     href: '/dashboard/admin/customers',
     icon: Users,
-  },
-  {
-    label: 'Technicians',
-    href: '/dashboard/technician',
-    icon: UserRound,
   },
   {
     label: 'Support',

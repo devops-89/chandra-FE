@@ -42,7 +42,6 @@ export default function ChangePasswordCard() {
             transition-all
             duration-300
             hover:bg-emerald-700
-            text-white
           "
         >
           Update Password
