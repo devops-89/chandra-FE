@@ -1,22 +1,45 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
-import { useBookingStore } from '@/store/bookingStore';
-import PublicNavbar from '@/components/common/PublicNavbar';
 import PublicFooter from '@/components/common/PublicFooter';
+import PublicNavbar from '@/components/common/PublicNavbar';
+import { useBookingStore } from '@/store/bookingStore';
 
 export default function BookingConfirmation() {
+  const router = useRouter();
   const {
     service,
+    serviceSlug,
+    servicePrice,
+    serviceSpecificData,
     date,
     slot,
+    clearBooking,
   } = useBookingStore();
+  
   const bookingId = createTemporaryBookingId(
     service,
     date,
     slot
   );
+
+  // Clear booking data after confirmation
+  React.useEffect(() => {
+    // Clear the booking data after 10 seconds to allow user to see the confirmation
+    const timer = setTimeout(() => {
+      clearBooking();
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, [clearBooking]);
+
+  const handleDashboardRedirect = () => {
+    clearBooking();
+    router.push('/dashboard/customer');
+  };
 
   return (
     <>
@@ -93,6 +116,13 @@ export default function BookingConfirmation() {
                 value={service}
               />
 
+              {servicePrice && servicePrice > 0 && (
+                <InfoRow
+                  label="Service Price"
+                  value={`₹${servicePrice}`}
+                />
+              )}
+
               <InfoRow
                 label="Date"
                 value={date}
@@ -102,6 +132,24 @@ export default function BookingConfirmation() {
                 label="Time Slot"
                 value={slot}
               />
+
+              {serviceSpecificData && Object.keys(serviceSpecificData).length > 0 && (
+                <div className="py-3">
+                  <span className="text-slate-500">Service Details:</span>
+                  <div className="mt-2 space-y-1">
+                    {Object.entries(serviceSpecificData).map(([key, value]) => (
+                      <div key={key} className="flex justify-between text-sm">
+                        <span className="text-slate-500">
+                          {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}:
+                        </span>
+                        <span className="font-medium text-slate-900">
+                          {Array.isArray(value) ? value.join(', ') : String(value)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div
@@ -134,6 +182,7 @@ export default function BookingConfirmation() {
 
               <Link
                 href="/dashboard/customer"
+                onClick={handleDashboardRedirect}
                 className="
                   rounded-full
                   border

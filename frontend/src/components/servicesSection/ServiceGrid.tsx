@@ -3,12 +3,12 @@
 import Grid from '@mui/material/Grid';
 
 import { ServiceCard } from '@/components/servicesSection/ServiceCard';
-import { services } from '@/constants/services/serviceData';
+import { servicesData } from '@/constants/services/serviceData';
 
 export function ServiceGrid() {
   return (
     <Grid container spacing={3}>
-      {services.map((service) => (
+      {servicesData.map((service) => (
         <Grid
           key={service.id}
           size={{
@@ -16,7 +16,7 @@ export function ServiceGrid() {
             md: service.gridSize.md,
           }}
         >
-          <ServiceCard service={service} alignRight={service.id === 2 || service.id === 3} />
+          <ServiceCard service={service} />
         </Grid>
       ))}
     </Grid>

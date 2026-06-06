@@ -1,17 +1,18 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 
-import type { ServiceDetail } from '@/types/serviceDetails.types';
+import type { Service } from '@/types/services.types';
 
-interface ServiceCTAProps {
-  service: ServiceDetail;
+interface DynamicServiceCTAProps {
+  service: Service;
+  onBookingClick: () => void;
 }
 
-export default function ServiceCTA({
+export default function DynamicServiceCTA({
   service,
-}: ServiceCTAProps) {
+  onBookingClick,
+}: DynamicServiceCTAProps) {
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
@@ -65,7 +66,7 @@ export default function ServiceCTA({
             md:text-5xl
           "
         >
-          Ready To Book?
+          {service.ctaTitle}
         </motion.h2>
 
         <motion.p
@@ -76,14 +77,12 @@ export default function ServiceCTA({
             text-emerald-50
           "
         >
-          Schedule your service today and
-          get professional assistance at
-          your doorstep.
+          {service.ctaDescription}
         </motion.p>
 
         <motion.div variants={itemVariants}>
-          <Link
-            href={`/booking?service=${encodeURIComponent(service.title)}`}
+          <button
+            onClick={onBookingClick}
             className="
               mt-8
               inline-flex
@@ -95,11 +94,14 @@ export default function ServiceCTA({
               font-semibold
               text-emerald-700
               transition-all
+              duration-300
               hover:-translate-y-1
+              hover:shadow-lg
+              active:scale-95
             "
           >
-            {service.ctaText}
-          </Link>
+            Book {service.title}
+          </button>
         </motion.div>
       </motion.div>
     </section>

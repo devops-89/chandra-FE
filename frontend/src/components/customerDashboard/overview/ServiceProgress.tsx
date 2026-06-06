@@ -15,7 +15,7 @@ export default function ServiceProgress() {
     <section
       className="
         rounded-3xl
-        bg-white
+        bg-amber-300
         p-8
         shadow-sm
       "

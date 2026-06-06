@@ -1,94 +1,70 @@
-import { CalendarDays, Clock } from 'lucide-react';
+'use client';
+
+import { motion } from 'framer-motion';
+
+import { DASHBOARD_STATS_DATA } from '@/constants/customerDashboard/dashboardStats';
+import type { StatsCardProps } from '@/types/dashboardOverview.types';
+
+function StatsCard({ icon: Icon, title, value, isHighlighted = false }: StatsCardProps) {
+  return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="
+        bg-white
+        p-8
+        rounded-xl
+        shadow-sm
+        border
+        border-slate-200
+        cursor-pointer
+        group
+      "
+    >
+      {/* Icon */}
+      <div className="flex justify-between items-start mb-4">
+        <div className="bg-emerald-50 p-3 rounded-lg">
+          <Icon className="w-6 h-6 text-emerald-600" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <p className="text-sm text-slate-600 font-medium mb-1">
+        {title}
+      </p>
+      
+      <h3 className={`
+        text-3xl font-bold transition-colors duration-200
+        ${isHighlighted 
+          ? 'text-emerald-600 group-hover:text-emerald-700' 
+          : 'text-slate-900 group-hover:text-slate-800'
+        }
+      `}>
+        {value}
+      </h3>
+    </motion.div>
+  );
+}
 
 export default function HeroBookingCard() {
   return (
-    <section
-      className="
-        rounded-3xl
-        bg-emerald-700
-        p-8
-        text-white
-      "
-    >
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <div
-            className="
-              mb-4
-              inline-flex
-              items-center
-              gap-3
-            "
-          >
-            <span
-              className="
-                rounded-full
-                bg-emerald-100
-                px-3
-                py-1
-                text-xs
-                font-semibold
-                text-emerald-700
-              "
-            >
-              CONFIRMED
-            </span>
+    <section className="space-y-6">
+      {/* Section Header */}
+      <h3 className="text-lg font-semibold text-slate-800 uppercase tracking-wide">
+        DASHBOARD OVERVIEW
+      </h3>
 
-            <span className="text-sm">
-              ID: #HC-9821
-            </span>
-          </div>
-
-          <h2
-            className="
-              mb-4
-              text-4xl
-              font-bold
-            "
-          >
-            Solar Cleaning
-          </h2>
-
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <CalendarDays size={18} />
-              <span>Oct 24, 2024</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Clock size={18} />
-              <span>09:00 AM - 12:00 PM</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          <button
-            className="
-              rounded-xl
-              bg-white
-              px-5
-              py-3
-              font-medium
-              text-emerald-700
-            "
-          >
-            Track Service
-          </button>
-
-          <button
-            className="
-              rounded-xl
-              border
-              border-white/30
-              px-5
-              py-3
-              font-medium
-            "
-          >
-            View Booking
-          </button>
-        </div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {DASHBOARD_STATS_DATA.map((stat, index) => (
+          <StatsCard
+            key={index}
+            icon={stat.icon}
+            title={stat.title}
+            value={stat.value}
+            isHighlighted={stat.isHighlighted}
+          />
+        ))}
       </div>
     </section>
   );

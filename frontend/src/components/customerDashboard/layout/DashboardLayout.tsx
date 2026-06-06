@@ -1,11 +1,10 @@
-import type { DashboardLayoutProps } from '@/types/dashboardTypes/dashboard.types';
-
 'use client';
 
 import { useState } from 'react';
-import DashboardSidebar from './DashboardSidebar';
-import DashboardHeader from './DashboardHeader';
-import DashboardSidebar from './DashboardSidebar';
+
+import DashboardHeader from '@/components/customerDashboard/layout/DashboardHeader';
+import DashboardSidebar from '@/components/customerDashboard/layout/DashboardSidebar';
+import type { DashboardLayoutProps } from '@/types/dashboardTypes/dashboard.types';
 
 export default function DashboardLayout({
   children,

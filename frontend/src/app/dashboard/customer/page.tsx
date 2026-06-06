@@ -17,7 +17,7 @@ export default function CustomerDashboardPage() {
           border
           border-dashed
           border-slate-300
-          bg-emerald-300
+          bg-white
           p-4
           sm:p-6
           lg:p-10

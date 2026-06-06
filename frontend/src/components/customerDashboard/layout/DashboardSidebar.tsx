@@ -1,12 +1,9 @@
 'use client';
 
-import { LogOut } from 'lucide-react';
+import { LogOut, X } from 'lucide-react';
 import Link from 'next/link';
 
 import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/customerDashboardSidebarLinks';
-import Link from 'next/link';
-import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/customerDashboardSidebarLinks';
-import { LogOut, X } from 'lucide-react';
 
 interface DashboardSidebarProps {
   isOpen: boolean;

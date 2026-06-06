@@ -2,18 +2,8 @@ import { notFound } from 'next/navigation';
 
 import PublicFooter from '@/components/common/PublicFooter';
 import PublicNavbar from '@/components/common/PublicNavbar';
-import ServiceDetailPage from '@/components/serviceDetails/ServiceDetailPage';
-import { acServicingData } from '@/constants/serviceDetails/acServicing';
-import { electricalData } from '@/constants/serviceDetails/electrical';
-import { plumbingData } from '@/constants/serviceDetails/plumbing';
-import { solarCleaningData } from '@/constants/serviceDetails/solarCleaning';
-
-const services = {
-  'solar-cleaning': solarCleaningData,
-  'plumbing': plumbingData,
-  'electrical': electricalData,
-  'ac-servicing': acServicingData,
-};
+import DynamicServiceDetailPage from '@/components/serviceDetails/DynamicServiceDetailPage';
+import { servicesData } from '@/constants/services/serviceData';
 
 interface PageProps {
   params: {
@@ -22,12 +12,9 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return [
-    { slug: 'solar-cleaning' },
-    { slug: 'plumbing' },
-    { slug: 'electrical' },
-    { slug: 'ac-servicing' },
-  ];
+  return servicesData.map((service) => ({
+    slug: service.slug,
+  }));
 }
 
 export default async function ServicePage({
@@ -35,8 +22,7 @@ export default async function ServicePage({
 }: PageProps) {
   const { slug } = await params;
 
-  const service =
-    services[slug as keyof typeof services];
+  const service = servicesData.find(s => s.slug === slug);
 
   if (!service) {
     notFound();
@@ -46,7 +32,7 @@ export default async function ServicePage({
     <>
       <PublicNavbar />
       <main className="min-h-screen">
-        <ServiceDetailPage service={service} />
+        <DynamicServiceDetailPage service={service} />
       </main>
       <PublicFooter />
     </>

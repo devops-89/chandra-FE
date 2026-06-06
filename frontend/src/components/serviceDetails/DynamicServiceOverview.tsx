@@ -2,15 +2,15 @@
 
 import { motion } from 'framer-motion';
 
-import type { ServiceDetail } from '@/types/serviceDetails.types';
+import type { Service } from '@/types/services.types';
 
-interface ServiceOverviewProps {
-  service: ServiceDetail;
+interface DynamicServiceOverviewProps {
+  service: Service;
 }
 
-export default function ServiceOverview({
+export default function DynamicServiceOverview({
   service,
-}: ServiceOverviewProps) {
+}: DynamicServiceOverviewProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -58,7 +58,7 @@ export default function ServiceOverview({
         <motion.p
           variants={itemVariants}
           className="
-            text-md
+            text-lg
             leading-relaxed
             text-slate-600
             max-w-3xl
@@ -67,7 +67,7 @@ export default function ServiceOverview({
             tracking-wide
           "
         >
-          {service.description}
+          {service.overview}
         </motion.p>
       </motion.div>
     </section>

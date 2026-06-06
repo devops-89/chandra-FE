@@ -27,8 +27,12 @@ export default function UnifiedBookingPage({ service }: UnifiedBookingPageProps)
 
   const steps = ['Select Address', 'Select Date & Time', 'Book Service'];
 
-  // Get saved data from store
+  // Get saved data from store including service-specific data
   const {
+    service: savedService,
+    serviceSlug: savedServiceSlug,
+    servicePrice: savedServicePrice,
+    serviceSpecificData,
     name: savedName,
     phone: savedPhone,
     address: savedAddress,
@@ -36,6 +40,10 @@ export default function UnifiedBookingPage({ service }: UnifiedBookingPageProps)
     slot: savedSlot,
     setBooking,
   } = useBookingStore();
+
+  // Use service from store if available, fallback to prop
+  const currentService = savedService || service;
+  const currentServicePrice = savedServicePrice || 699; // fallback price
 
   // Form state
   const [name, setName] = useState(savedName || '');
@@ -107,7 +115,10 @@ export default function UnifiedBookingPage({ service }: UnifiedBookingPageProps)
 
     // Save all data to Zustand store
     setBooking({
-      service,
+      service: currentService,
+      serviceSlug: savedServiceSlug,
+      servicePrice: currentServicePrice,
+      serviceSpecificData,
       name: name.trim(),
       phone: phone.trim(),
       address: addressToSave,
@@ -480,15 +491,36 @@ export default function UnifiedBookingPage({ service }: UnifiedBookingPageProps)
             {/* Step 3: Book Service - Centered */}
             <div className="mt-8 flex justify-center">
               <div className="w-full max-w-lg">
-                <div className="border-t border-slate-200 pt-8 rounded-xl p-6">
+                <div className="border border-slate-200 pt-8 rounded-xl p-6">
                   <h2 className="text-xl font-semibold text-slate-900 text-center">Book Service</h2>
 
                   <p className="mt-2 text-sm text-slate-500 text-center">
-                    {service && (
+                    {currentService && (
                       <>
                         Selected Service:{' '}
-                        <span className="font-semibold text-emerald-600">{service}</span>
+                        <span className="font-semibold text-emerald-600">{currentService}</span>
+                        {currentServicePrice > 0 && (
+                          <>
+                            {' '}- <span className="font-semibold text-emerald-600">₹{currentServicePrice}</span>
+                          </>
+                        )}
                       </>
+                    )}
+
+                    {serviceSpecificData && Object.keys(serviceSpecificData).length > 0 && (
+                      <div className="mt-4 p-3 bg-emerald-50 rounded-lg text-left">
+                        <h4 className="font-semibold text-emerald-700 mb-2">Service Details:</h4>
+                        <div className="space-y-1 text-xs">
+                          {Object.entries(serviceSpecificData).map(([key, value]) => (
+                            <div key={key} className="flex justify-between">
+                              <span className="font-medium">
+                                {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}:
+                              </span>
+                              <span>{Array.isArray(value) ? value.join(', ') : String(value)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </p>
 

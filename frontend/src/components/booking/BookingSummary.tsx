@@ -2,15 +2,20 @@
 
 import { useRouter } from 'next/navigation';
 
-import { useBookingStore } from '@/store/bookingStore';
-import PublicNavbar from '@/components/common/PublicNavbar';
 import PublicFooter from '@/components/common/PublicFooter';
+import PublicNavbar from '@/components/common/PublicNavbar';
+import { servicesData } from '@/constants/services/serviceData';
+import { formatBookingData } from '@/lib/booking/formatBookingData';
+import { useBookingStore } from '@/store/bookingStore';
 
 export default function BookingSummary() {
   const router = useRouter();
 
   const {
     service,
+    serviceSlug,
+    servicePrice,
+    serviceSpecificData,
     name,
     phone,
     address,
@@ -19,9 +24,16 @@ export default function BookingSummary() {
     instructions,
   } = useBookingStore();
 
-  const servicePrice = 499;
-  const taxes = 89;
-  const total = servicePrice + taxes;
+  // Get service configuration for formatting
+  const serviceData = servicesData.find(s => s.slug === serviceSlug);
+  
+  const basePriceFromStore = servicePrice ?? serviceData?.price ?? 0;
+  const taxes = Math.round(basePriceFromStore * 0.18); // 18% tax
+  const total = basePriceFromStore + taxes;
+
+  const formattedServiceData = serviceData && serviceSpecificData 
+    ? formatBookingData(serviceSpecificData, serviceData.bookingForm)
+    : [];
 
   const handleConfirm = () => {
     router.push('/booking/confirmation');
@@ -87,6 +99,22 @@ export default function BookingSummary() {
                     value={instructions}
                   />
                 )}
+
+                {formattedServiceData.length > 0 && (
+                  <div className="rounded-2xl border border-slate-200 p-4">
+                    <p className="text-sm text-slate-500 mb-3">Service Specific Details</p>
+                    <div className="space-y-2">
+                      {formattedServiceData.map(({ key, label, value }) => (
+                        <div key={key} className="flex justify-between text-sm">
+                          <span className="text-slate-600">{label}:</span>
+                          <span className="font-medium text-slate-900 text-right max-w-[60%]">
+                            {value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div
@@ -105,7 +133,7 @@ export default function BookingSummary() {
                 <div className="mt-6 space-y-4">
                   <PriceRow
                     label="Service Cost"
-                    value={`₹${servicePrice}`}
+                    value={`₹${basePriceFromStore}`}
                   />
 
                   <PriceRow

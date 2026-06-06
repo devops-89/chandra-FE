@@ -2,6 +2,9 @@ import { create } from 'zustand';
 
 interface BookingStore {
   service: string;
+  serviceSlug: string;
+  servicePrice: number;
+  serviceSpecificData: Record<string, any>;
   name: string;
   phone: string;
   address: string;
@@ -12,11 +15,16 @@ interface BookingStore {
   setBooking: (
     data: Partial<BookingStore>
   ) => void;
+
+  clearBooking: () => void;
 }
 
 export const useBookingStore =
   create<BookingStore>((set) => ({
     service: '',
+    serviceSlug: '',
+    servicePrice: 0,
+    serviceSpecificData: {},
     name: '',
     phone: '',
     address: '',
@@ -29,4 +37,18 @@ export const useBookingStore =
         ...state,
         ...data,
       })),
+
+    clearBooking: () =>
+      set({
+        service: '',
+        serviceSlug: '',
+        servicePrice: 0,
+        serviceSpecificData: {},
+        name: '',
+        phone: '',
+        address: '',
+        date: '',
+        slot: '',
+        instructions: '',
+      }),
   }));

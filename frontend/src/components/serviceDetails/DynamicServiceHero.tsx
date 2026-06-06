@@ -4,19 +4,21 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 import HeroDecorations from '@/components/heroSection/HeroDecorations';
-import type { ServiceDetail } from '@/types/serviceDetails.types';
+import type { Service } from '@/types/services.types';
 
-interface ServiceHeroProps {
-  service: ServiceDetail;
+interface DynamicServiceHeroProps {
+  service: Service;
+  onBookingClick: () => void;
 }
 
-export default function ServiceHero({
+export default function DynamicServiceHero({
   service,
-}: ServiceHeroProps) {
+  onBookingClick,
+}: DynamicServiceHeroProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
-      opacity: 1.5,
+      opacity: 1,
       transition: {
         staggerChildren: 0.1,
         delayChildren: 0,
@@ -89,7 +91,7 @@ export default function ServiceHero({
               text-emerald-700
             "
           >
-            Professional Service
+            {service.badge}
           </motion.span>
 
           <motion.h1
@@ -116,7 +118,7 @@ export default function ServiceHero({
               text-slate-600
             "
           >
-            {service.subtitle}
+            {service.description}
           </motion.p>
 
           <motion.div className="mt-8" variants={contentVariants}>
@@ -131,8 +133,32 @@ export default function ServiceHero({
                 text-emerald-600
               "
             >
-              {service.startingPrice}
+              ₹{service.price}
             </p>
+          </motion.div>
+
+          <motion.div className="mt-8" variants={contentVariants}>
+            <button
+              onClick={onBookingClick}
+              className="
+                inline-flex
+                rounded-full
+                bg-emerald-600
+                px-8
+                py-4
+                text-lg
+                font-semibold
+                text-white
+                transition-all
+                duration-300
+                hover:bg-emerald-700
+                hover:shadow-lg
+                hover:-translate-y-1
+                active:scale-95
+              "
+            >
+              Book Now
+            </button>
           </motion.div>
         </motion.div>
 
