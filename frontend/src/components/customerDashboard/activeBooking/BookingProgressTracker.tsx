@@ -1,48 +1,105 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Bike, Check, Home, Play } from 'lucide-react';
 
-import {
-  SERVICE_PROGRESS_CURRENT_STEP,
-  SERVICE_PROGRESS_STEPS,
-} from '@/constants/customerDashboard/dashboard/serviceProgress';
+import type { BookingProgressStatus } from '@/types/dashboardTypes/customerDashboard/customerDashboard.types';
 
-const STEPS = SERVICE_PROGRESS_STEPS;
-const CURRENT_STEP = SERVICE_PROGRESS_CURRENT_STEP;
+type ProgressStep = {
+  id: BookingProgressStatus;
+  label: string;
+  status: 'completed' | 'active' | 'pending';
+};
 
-export default function ServiceProgress() {
+type BookingProgressTrackerProps = {
+  status: BookingProgressStatus;
+};
+
+const STEP_ORDER: BookingProgressStatus[] = [
+  'booked',
+  'assigned',
+  'on-way',
+  'started',
+  'completed',
+];
+
+const getSteps = (
+  currentStatus: BookingProgressStatus,
+): ProgressStep[] => {
+  const labels: Record<BookingProgressStatus, string> = {
+    booked: 'Booked',
+    assigned: 'Assigned',
+    'on-way': 'On The Way',
+    started: 'Started',
+    completed: 'Completed',
+  };
+
+  const currentIndex =
+    STEP_ORDER.indexOf(currentStatus);
+
+  return STEP_ORDER.map((id, index) => ({
+    id,
+    label: labels[id],
+    status:
+      index < currentIndex
+        ? 'completed'
+        : index === currentIndex
+          ? 'active'
+          : 'pending',
+  }));
+};
+
+const StepIcon = ({
+  step,
+}: {
+  step: ProgressStep;
+}) => {
+  if (step.status === 'completed') {
+    return <Check size={18} />;
+  }
+
+  if (step.id === 'on-way') {
+    return <Bike size={18} />;
+  }
+
+  if (step.id === 'started') {
+    return <Play size={18} />;
+  }
+
+  if (step.id === 'completed') {
+    return <Home size={18} />;
+  }
+
+  return <Check size={18} />;
+};
+
+const BookingProgressTracker = ({
+  status,
+}: BookingProgressTrackerProps) => {
+  const steps = getSteps(status);
+
+  const currentStepIndex = steps.findIndex(
+    (step) => step.status === 'active',
+  );
+
   return (
     <section
       className="
         rounded-3xl
-        bg-amber-300
-        p-8
-        shadow-sm
+        p-4
       "
     >
-      <h3
-        className="
-          mb-8
-          text-xl
-          font-semibold
-        "
-      >
-        Active Service Progress
-      </h3>
-
       <div className="flex items-center justify-between">
-        {STEPS.map((step, index) => {
-          const Icon = step.icon;
-
+        {steps.map((step, index) => {
           const completed =
-            index < CURRENT_STEP;
+            step.status === 'completed';
 
           const active =
-            index === CURRENT_STEP;
+            step.status === 'active';
 
           return (
             <div
-              key={step.label}
+              key={step.id}
               className="
                 relative
                 flex
@@ -51,7 +108,7 @@ export default function ServiceProgress() {
                 items-center
               "
             >
-              {index !== STEPS.length - 1 && (
+              {index !== steps.length - 1 && (
                 <div
                   className={`
                     absolute
@@ -60,7 +117,7 @@ export default function ServiceProgress() {
                     h-1
                     w-full
                     ${
-                      index < CURRENT_STEP
+                      index < currentStepIndex
                         ? 'bg-emerald-600'
                         : 'bg-slate-200'
                     }
@@ -89,7 +146,7 @@ export default function ServiceProgress() {
                     text-white
                   "
                 >
-                  <Icon size={18} />
+                  <StepIcon step={step} />
                 </motion.div>
               ) : (
                 <div
@@ -108,16 +165,21 @@ export default function ServiceProgress() {
                     }
                   `}
                 >
-                  <Icon size={18} />
+                  <StepIcon step={step} />
                 </div>
               )}
 
               <span
-                className="
+                className={`
                   mt-3
                   text-sm
                   font-medium
-                "
+                  ${
+                    active || completed
+                      ? 'text-emerald-700'
+                      : 'text-slate-500'
+                  }
+                `}
               >
                 {step.label}
               </span>
@@ -127,4 +189,6 @@ export default function ServiceProgress() {
       </div>
     </section>
   );
-}
+};
+
+export default BookingProgressTracker;

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 
-import { DASHBOARD_STATS_DATA } from '@/constants/customerDashboard/dashboardStats';
+import { DASHBOARD_STATS_DATA } from '@/constants/customerDashboard/sidebar/dashboardStats';
 import type { StatsCardProps } from '@/types/dashboardTypes/dashboardOverview.types';
 
 function StatsCard({ icon: Icon, title, value, isHighlighted = false }: StatsCardProps) {

@@ -1,12 +1,11 @@
-import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
-import HeroBookingCard from '@/components/customerDashboard/overview/HeroBookingCard';
-import ServiceProgress from '@/components/customerDashboard/overview/ServiceProgress';
+import CustomerDashboard from "@/components/customerDashboard/CustomerDashboard";
+import DashboardLayout from "@/components/customerDashboard/layout/DashboardLayout";
+import HeroBookingCard from "@/components/customerDashboard/overview/HeroBookingCard";
 
 export default function CustomerDashboardPage() {
   return (
     <DashboardLayout>
-      <div
-        className="
+      <div className="
           rounded-2xl
           sm:rounded-3xl
           border
@@ -19,10 +18,9 @@ export default function CustomerDashboardPage() {
           text-center
           space-y-6
           lg:space-y-8
-        "
-      >
+        ">
         <HeroBookingCard />
-        <ServiceProgress />
+        <CustomerDashboard />
       </div>
     </DashboardLayout>
   );

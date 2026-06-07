@@ -10,6 +10,31 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Customer Dashboard Design Tokens */
+  --color-primary: #10b981;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #d1fae5;
+  --color-secondary: #475569;
+  --color-on-background: #0f172a;
+  --color-surface-white: #ffffff;
+  --color-surface-container: #e2e8f0;
+  --color-surface-container-low: #f8fafc;
+  --color-success-mint: #d1fae5;
+  --color-emerald-deep: #065f46;
+  --color-outline-variant: #cbd5e1;
+
+  /* Spacing */
+  --spacing-gutter: 2rem;
+
+  /* Typography Scale */
+  --font-size-label-sm: 0.75rem;
+  --font-size-label-md: 0.875rem;
+  --font-size-headline-md: 1.5rem;
+}
+
+@utility ambient-shadow {
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,6 +50,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-html{
+html {
   scroll-behavior: smooth;
 }

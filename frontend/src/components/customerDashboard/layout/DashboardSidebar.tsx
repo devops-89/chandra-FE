@@ -3,7 +3,7 @@
 import { LogOut, X } from 'lucide-react';
 import Link from 'next/link';
 
-import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/customerDashboardSidebarLinks';
+import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/sidebar/customerDashboardSidebarLinks';
 
 interface DashboardSidebarProps {
   isOpen: boolean;
