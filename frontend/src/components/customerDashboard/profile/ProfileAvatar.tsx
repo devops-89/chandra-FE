@@ -2,10 +2,13 @@ export default function ProfileAvatar() {
   return (
     <div
       className="
-        rounded-3xl
-        bg-white
-        p-6
+        rounded-full
+        bg-emerald-100
+        p-8
         shadow-sm
+        w-[280px]
+        h-[280px]
+        mx-auto
       "
     >
       <div className="flex flex-col items-center">

@@ -38,7 +38,7 @@ export default function ChangePasswordCard() {
             px-6
             py-3
             bg-emerald-600
-            text-slate-700
+            text-white
             transition-all
             duration-300
             hover:bg-emerald-700

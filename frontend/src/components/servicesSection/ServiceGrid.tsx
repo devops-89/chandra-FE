@@ -7,7 +7,7 @@ import { servicesData } from '@/constants/services/serviceData';
 
 export function ServiceGrid() {
   return (
-    <Grid container spacing={3}>
+    <Grid container alignItems="stretch" spacing={3} justifyContent="center">
       {servicesData.map((service) => (
         <Grid
           key={service.id}
