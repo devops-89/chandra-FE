@@ -6,7 +6,7 @@ const RecentInvoices = () => {
   const { invoices } = useInvoices();
 
   return (
-    <section className="space-y-6">
+    <section className="mt-14 space-y-7">
       <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">
         Recent Invoices
       </h4>

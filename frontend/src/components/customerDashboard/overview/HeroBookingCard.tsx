@@ -55,7 +55,7 @@ export default function HeroBookingCard() {
       </h3>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
         {DASHBOARD_STATS_DATA.map((stat, index) => (
           <StatsCard
             key={index}

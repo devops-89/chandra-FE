@@ -25,7 +25,7 @@ const ActiveBookingCard = () => {
         </span>
       </div>
 
-      <div className="p-8">
+      <div className="p-6">
         <div className="mb-8 text-black flex flex-col items-start justify-between gap-6 md:flex-row">
           <div>
             <h3 className="mb-2 text-2xl font-bold">

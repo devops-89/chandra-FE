@@ -85,11 +85,17 @@ const BookingProgressTracker = ({
   return (
     <section
       className="
-        rounded-3xl
         p-4
+        rounded-3xl
       "
     >
-      <div className="flex items-center justify-between">
+      <div className="relative flex items-start justify-between">
+        <div className="absolute left-5 right-5 top-5 h-1 bg-slate-200" />
+        <div className="absolute left-5 top-5 h-1 bg-emerald-600"
+          style={{
+          width: `calc(${(currentStepIndex / (steps.length - 1)) * 100}% - 20px)`,
+        }}
+        />
         {steps.map((step, index) => {
           const completed =
             step.status === 'completed';
@@ -108,7 +114,7 @@ const BookingProgressTracker = ({
                 items-center
               "
             >
-              {index !== steps.length - 1 && (
+              {/* {index !== steps.length - 1 && (
                 <div
                   className={`
                     absolute
@@ -123,7 +129,7 @@ const BookingProgressTracker = ({
                     }
                   `}
                 />
-              )}
+              )} */}
 
               {active ? (
                 <motion.div
