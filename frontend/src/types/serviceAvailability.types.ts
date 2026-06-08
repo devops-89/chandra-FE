@@ -1,9 +1,7 @@
-export interface AvailabilityResult {
-  type: 'success' | 'error';
-  message: string;
+export interface AvailabilityFormData {
+  fullName: string;
+  phone: string;
+  pincode: string;
 }
 
-export interface AvailabilityContent {
-  title: string;
-  image: string;
-}
+export type AvailabilityStatus = 'idle' | 'available' | 'unavailable';
