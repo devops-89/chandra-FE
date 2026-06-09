@@ -17,19 +17,27 @@ const menuItems = [
     active: true,
   },
   {
-    label: 'Pending Approvals',
+    label: 'Bookings',
     icon: Clock3,
   },
   {
-    label: 'Active Technicians',
+    label: 'Customers',
     icon: Users,
   },
   {
-    label: 'Active Jobs',
+    label: 'Technicians',
     icon: ClipboardList,
   },
   {
-    label: 'Settings',
+    label: 'Services',
+    icon: Settings,
+  },
+  {
+    label: 'Finance',
+    icon: Settings,
+  },
+  {
+    label: 'Reviews',
     icon: Settings,
   },
 ];
