@@ -1,10 +1,10 @@
-import DashboardShell from '@/dashboard/layout/DashboardShell';
-import AdminOverview from '@/dashboard/modules/AdminOverview';
+import AdminDashboard from '@/components/adminDashboard/dashboard/AdminDashboard';
+import AdminDashboardLayout from '@/components/adminDashboard/dashboard/layout/AdminDashboardLayout';
 
 export default function AdminPage() {
-   return (
-      <DashboardShell>
-         <AdminOverview />
-      </DashboardShell>
-   );
+  return (
+    <AdminDashboardLayout>
+      <AdminDashboard />
+    </AdminDashboardLayout>
+  );
 }

@@ -1,9 +1,9 @@
 import { Calendar, Clock, RefreshCw } from "lucide-react";
 
+import BookingProgressTracker from "@/components/customerDashboard/activeBooking/BookingProgressTracker";
 import { DashboardCard } from "@/components/customerDashboard/shared";
 import { useActiveBooking } from "@/hooks/useActiveBooking";
 
-import BookingProgressTracker from "@/components/customerDashboard/activeBooking/BookingProgressTracker";
 import BookingTechnicianCard from "./BookingTechnicianCard";
 
 const ActiveBookingCard = () => {
