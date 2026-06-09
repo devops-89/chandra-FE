@@ -120,9 +120,6 @@ export interface TechnicianPerformance {
   repeatCustomers: number;
 }
 
-/* ================================================= */
-/* SETTINGS */
-/* ================================================= */
 
 export interface AdminProfile {
   name: string;
@@ -164,9 +161,6 @@ export interface ServiceSettings {
   allowCustomerCancellation: boolean;
 }
 
-/* ================================================= */
-/* FILTERS */
-/* ================================================= */
 
 export interface TechnicianFilter {
   search: string;
