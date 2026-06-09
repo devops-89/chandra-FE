@@ -1,5 +1,10 @@
-import SkillTaggingPage from "@/components/technicianApplication/";
+import OnboardingLayout from '@/components/technicianApplication/layout/OnboardingLayout';
+import SkillTaggingPage from '@/components/technicianApplication/skillTagging/SkillTaggingPage';
 
-export default function Page() {
-  return <SkillTaggingPage />;
+export default function SkillTaggingRoute() {
+  return (
+    <OnboardingLayout currentStep={1}>
+      <SkillTaggingPage />
+    </OnboardingLayout>
+  );
 }

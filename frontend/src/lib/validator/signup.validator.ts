@@ -12,8 +12,12 @@ export const validateSignup = (
 ): SignupErrors => {
   const errors: SignupErrors = {};
 
-  if (!values.fullName.trim()) {
-    errors.fullName = 'Full name is required';
+  if (!values.firstName.trim()) {
+    errors.firstName = 'First name is required';
+  }
+
+  if (!values.lastName.trim()) {
+    errors.lastName = 'Last name is required';
   }
 
   const phoneError = validatePhone(

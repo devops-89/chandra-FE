@@ -1,0 +1,93 @@
+'use client';
+
+import { useState } from 'react';
+import { AVAILABLE_SKILLS } from '@/constants/technicianApplication/skillTagging.constants';
+import SkillGrid from './SkillGrid';
+import SkillLevelSelector from './SkillLevelSelector';
+import BrandExpertiseInput from './BrandExpertiseInput';
+import SkillTaggingFooter from './SkillTaggingFooter';
+import type { SkillTaggingState } from '@/types/technicianApplication/skillTagging.types';
+
+export default function SkillTaggingPage() {
+  const [state, setState] = useState<SkillTaggingState>({
+    selectedSkills: [],
+    skillLevel: null,
+    brandExpertise: [],
+  });
+
+  const handleSelectSkill = (skillId: string) => {
+    setState((prev) => ({
+      ...prev,
+      selectedSkills: prev.selectedSkills.includes(skillId)
+        ? prev.selectedSkills.filter((id) => id !== skillId)
+        : [...prev.selectedSkills, skillId],
+    }));
+  };
+
+  const handleSelectLevel = (
+    level: 'novice' | 'intermediate' | 'expert'
+  ) => {
+    setState((prev) => ({
+      ...prev,
+      skillLevel: level,
+    }));
+  };
+
+  const handleAddBrand = (brand: string) => {
+    setState((prev) => ({
+      ...prev,
+      brandExpertise: [...prev.brandExpertise, brand],
+    }));
+  };
+
+  const handleRemoveBrand = (brand: string) => {
+    setState((prev) => ({
+      ...prev,
+      brandExpertise: prev.brandExpertise.filter((b) => b !== brand),
+    }));
+  };
+
+  const handleNext = () => {
+    // Save state to session storage or context for later use
+    sessionStorage.setItem(
+      'skillTaggingData',
+      JSON.stringify(state)
+    );
+    // Navigation would be handled by a router or context
+    console.log('Skill Tagging Data:', state);
+  };
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          What are your core skills?
+        </h1>
+        <p className="text-gray-600">
+          Select the services you're skilled in and your expertise level
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <SkillGrid
+          skills={AVAILABLE_SKILLS}
+          selectedSkills={state.selectedSkills}
+          onSelectSkill={handleSelectSkill}
+        />
+
+        <SkillLevelSelector
+          selected={state.skillLevel}
+          onSelect={handleSelectLevel}
+        />
+
+        <BrandExpertiseInput
+          tags={state.brandExpertise}
+          onAddTag={handleAddBrand}
+          onRemoveTag={handleRemoveBrand}
+        />
+      </div>
+
+      <SkillTaggingFooter onNext={handleNext} />
+    </div>
+  );
+}

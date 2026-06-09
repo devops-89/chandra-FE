@@ -5,3 +5,10 @@ export interface AvailabilityFormData {
 }
 
 export type AvailabilityStatus = 'idle' | 'available' | 'unavailable';
+
+export interface AvailabilityContent {
+  title: string;
+  description?: string;
+  placeholder?: string;
+  image?: string;
+}

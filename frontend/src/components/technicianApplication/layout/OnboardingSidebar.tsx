@@ -1,8 +1,18 @@
+import Link from 'next/link';
 import { onboardingSteps } from "@/constants/technicianApplication/onboardingSteps";
 
 type Props = {
   currentStep: number;
 };
+
+const stepRoutes = [
+  '/technicianOnboarding/personal-info',
+  '/technicianOnboarding/skill-tagging',
+  '/technicianOnboarding/document-upload',
+  '/technicianOnboarding/tool-inventory',
+  '/technicianOnboarding/service-radius',
+  '/technicianOnboarding/review-submit',
+];
 
 export default function OnboardingSidebar({
   currentStep,
@@ -19,16 +29,17 @@ export default function OnboardingSidebar({
 
       <div className="mt-8 space-y-3">
         {onboardingSteps.map((step, index) => (
-          <div
+          <Link
             key={step}
-            className={`rounded-xl px-4 py-3 ${
+            href={stepRoutes[index]}
+            className={`block rounded-xl px-4 py-3 cursor-pointer transition-colors duration-200 ${
               index === currentStep
                 ? "bg-green-100 text-[#00875A]"
-                : "text-gray-600"
+                : "text-gray-600 hover:bg-gray-100"
             }`}
           >
             {step}
-          </div>
+          </Link>
         ))}
       </div>
     </aside>
