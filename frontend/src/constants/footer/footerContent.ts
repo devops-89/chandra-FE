@@ -41,4 +41,11 @@ export const footerContent = {
     phone: '+91 XXXXX XXXXX',
     email: 'support@hichandra.com',
   },
+
+  professionals: [
+    {
+      label: 'Register as Technician',
+      href: '/technicianOnboarding',
+    },
+  ],
 };
