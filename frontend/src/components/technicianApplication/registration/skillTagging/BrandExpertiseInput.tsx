@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import BrandTag from './BrandTag';
+
 import type { BrandExpertiseInputProps } from '@/types/technicianApplication/skillTagging.types';
+
+import BrandTag from './BrandTag';
 
 export default function BrandExpertiseInput({
   tags,

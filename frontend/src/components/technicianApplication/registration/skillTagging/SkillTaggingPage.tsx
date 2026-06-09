@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+
 import { AVAILABLE_SKILLS } from '@/constants/technicianApplication/skillTagging.constants';
+import type { SkillTaggingState } from '@/types/technicianApplication/skillTagging.types';
+
+import BrandExpertiseInput from './BrandExpertiseInput';
 import SkillGrid from './SkillGrid';
 import SkillLevelSelector from './SkillLevelSelector';
-import BrandExpertiseInput from './BrandExpertiseInput';
 import SkillTaggingFooter from './SkillTaggingFooter';
-import type { SkillTaggingState } from '@/types/technicianApplication/skillTagging.types';
 
 export default function SkillTaggingPage() {
   const [state, setState] = useState<SkillTaggingState>({
@@ -53,8 +55,6 @@ export default function SkillTaggingPage() {
       'skillTaggingData',
       JSON.stringify(state)
     );
-    // Navigation would be handled by a router or context
-    console.log('Skill Tagging Data:', state);
   };
 
   return (

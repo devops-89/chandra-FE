@@ -1,4 +1,5 @@
 import Link from 'next/link';
+
 import { onboardingSteps } from "@/constants/technicianApplication/onboardingSteps";
 
 type Props = {

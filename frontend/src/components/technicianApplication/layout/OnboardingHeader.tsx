@@ -1,7 +1,7 @@
 export default function OnboardingHeader() {
   return (
-    <header className="border-b bg-white">
-      <div className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
+    <header className="border-b">
+      <div className="max-w-7xl mx-auto px-14 h-16 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#00875A]">
           HiChandra
         </h1>

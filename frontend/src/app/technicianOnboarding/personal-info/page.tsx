@@ -1,5 +1,5 @@
 import OnboardingLayout from '@/components/technicianApplication/layout/OnboardingLayout';
-import PersonalInfoForm from '@/components/technicianApplication/personalInfo/PersonalInfoForm';
+import PersonalInfoForm from '@/components/technicianApplication/registration/personalInfo/PersonalInfoForm';
 
 export default function PersonalInfoRoute() {
   return (

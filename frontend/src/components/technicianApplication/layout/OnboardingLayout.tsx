@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import OnboardingBenefits from "./OnboardingBenefits";
+import OnboardingFooter from "./OnboardingFooter";
 import OnboardingHeader from "./OnboardingHeader";
 import OnboardingSidebar from "./OnboardingSidebar";
 
@@ -17,7 +18,7 @@ export default function OnboardingLayout({
     <>
       <OnboardingHeader />
 
-      <main className="max-w-7xl mx-auto px-8 py-10">
+      <main className="max-w-7xl mx-auto px-16 py-10">
         <div className="flex gap-12">
           <OnboardingSidebar
             currentStep={currentStep}
@@ -27,9 +28,11 @@ export default function OnboardingLayout({
             {children}
           </div>
 
-          <OnboardingBenefits />
+          <OnboardingBenefits currentStep={currentStep} />
         </div>
       </main>
+
+      {currentStep === 0 && <OnboardingFooter />}
     </>
   );
 }

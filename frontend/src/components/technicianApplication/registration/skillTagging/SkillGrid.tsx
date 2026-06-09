@@ -1,5 +1,6 @@
-import SkillCard from './SkillCard';
 import type { Skill } from '@/types/technicianApplication/skillTagging.types';
+
+import SkillCard from './SkillCard';
 
 interface SkillGridProps {
   skills: Skill[];
