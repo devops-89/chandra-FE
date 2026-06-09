@@ -1,12 +1,13 @@
 'use client';
 
+import { AttachMoney, Reviews } from '@mui/icons-material';
 import {
   ClipboardList,
   Clock3,
   HelpCircle,
   LayoutDashboard,
   LogOut,
-  Settings,
+  Settings2Icon,
   Users,
 } from 'lucide-react';
 
@@ -30,15 +31,15 @@ const menuItems = [
   },
   {
     label: 'Services',
-    icon: Settings,
+    icon: Settings2Icon,
   },
   {
     label: 'Finance',
-    icon: Settings,
+    icon: AttachMoney,
   },
   {
     label: 'Reviews',
-    icon: Settings,
+    icon: Reviews,
   },
 ];
 
