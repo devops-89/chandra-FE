@@ -3,6 +3,6 @@ export const onboardingSteps = [
   "Skill Tagging",
   "Document Upload",
   "Tool Inventory",
-  "Service Radius",
+  "Service Area",
   "Review & Submit",
 ];

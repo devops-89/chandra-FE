@@ -11,7 +11,7 @@ const stepRoutes = [
   '/technicianOnboarding/skill-tagging',
   '/technicianOnboarding/document-upload',
   '/technicianOnboarding/tool-inventory',
-  '/technicianOnboarding/service-radius',
+  '/technicianOnboarding/service-area',
   '/technicianOnboarding/review-submit',
 ];
 

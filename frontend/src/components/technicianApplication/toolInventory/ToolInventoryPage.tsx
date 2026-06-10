@@ -1,15 +1,16 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import type { ToolInventoryState } from '@/types/technicianApplication/toolInventory.types';
-import ToolInventoryHeader from './ToolInventoryHeader';
-import EquipmentChecklist from './EquipmentChecklist';
-import VehicleAvailabilityCard from './VehicleAvailabilityCard';
+
 import AdditionalEquipmentInput from './AdditionalEquipmentInput';
-import ToolInventoryInfoBanner from './ToolInventoryInfoBanner';
+import EquipmentChecklist from './EquipmentChecklist';
 import ToolInventoryFooter from './ToolInventoryFooter';
+import ToolInventoryHeader from './ToolInventoryHeader';
+import ToolInventoryInfoBanner from './ToolInventoryInfoBanner';
+import VehicleAvailabilityCard from './VehicleAvailabilityCard';
 
 export default function ToolInventoryPage() {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function ToolInventoryPage() {
   const handleSubmit = () => {
     // Save state to session storage for later use
     sessionStorage.setItem('toolInventoryData', JSON.stringify(state));
-    router.push('/technicianOnboarding/service-radius');
+    router.push('/technicianOnboarding/service-area');
   };
 
   return (

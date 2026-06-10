@@ -1,6 +1,7 @@
 'use client';
 
 import { getEquipmentList } from '@/data/technicianOnboarding/toolInventoryData';
+
 import EquipmentCard from './EquipmentCard';
 
 interface EquipmentChecklistProps {
