@@ -8,7 +8,7 @@ const ReviewStatCard = ({
   value,
 }: Props) => {
   return (
-    <div className="rounded-2xl border bg-white p-5">
+    <div className="hover:shadow-xl border border-slate-200 rounded-2xl bg-white p-5">
       <p className="text-sm text-slate-500">
         {title}
       </p>

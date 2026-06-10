@@ -21,7 +21,7 @@ const AdminHeader = () => {
       </div>
 
       <div className="flex items-center gap-5">
-        <button>
+        <button className="text-slate-500 hover:">
           <Bell size={20} />
         </button>
 

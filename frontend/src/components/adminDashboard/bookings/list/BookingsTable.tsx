@@ -4,10 +4,10 @@ import BookingRow from "./BookingRow";
 
 const BookingsTable = () => {
   return (
-    <div className="overflow-hidden rounded-2xl border bg-white">
+    <div className="overflow-hidden rounded-2xl border border-slate-500 bg-white">
       <table className="w-full">
-        <thead className="bg-slate-50">
-          <tr>
+        <thead className="bg-emerald-600">
+          <tr className="text-white">
             <th className="p-4 text-left">
               Booking ID
             </th>

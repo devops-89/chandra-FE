@@ -6,10 +6,10 @@ interface Props {
 
 const CustomerRow = ({ customer }: Props) => {
   return (
-    <tr className="border-b">
-      <td className="p-4">
+    <tr className="border-b border-slate-400">
+      <td className="p-4 ">
         <div>
-          <p className="font-medium">
+          <p className="font-medium text-slate-700">
             {customer.name}
           </p>
 
@@ -19,19 +19,19 @@ const CustomerRow = ({ customer }: Props) => {
         </div>
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {customer.phone}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {customer.city}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {customer.totalBookings}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         ₹{customer.totalSpent}
       </td>
 

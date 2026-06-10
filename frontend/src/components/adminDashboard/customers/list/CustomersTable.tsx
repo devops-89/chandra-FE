@@ -4,9 +4,9 @@ import CustomerRow from "./CustomerRow";
 
 const CustomersTable = () => {
   return (
-    <div className="overflow-hidden rounded-2xl border bg-white">
+    <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
       <table className="w-full">
-        <thead className="bg-slate-50">
+        <thead className="bg-emerald-600 text-white">
           <tr>
             <th className="p-4 text-left">
               Customer

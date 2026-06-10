@@ -9,8 +9,8 @@ const AdminSidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="h-screen w-72 border-r bg-white">
-      <div className="border-b p-6">
+    <aside className="h-screen w-72 bg-white">
+      <div className="p-6">
         <h2 className="text-2xl font-bold text-emerald-600">
           HiChandra
         </h2>

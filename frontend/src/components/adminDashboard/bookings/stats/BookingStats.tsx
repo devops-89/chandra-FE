@@ -2,17 +2,17 @@ import BookingStatusCards from "./BookingStatusCards";
 
 const BookingStats = () => {
   return (
-    <div className="grid gap-4 md:grid-cols-4">
+    <div className="grid gap-4  md:grid-cols-4">
       <BookingStatusCards
         title="Pending"
         value={23}
-        color="text-yellow-500"
+        color="text-slate-950"
       />
 
       <BookingStatusCards
         title="Assigned"
         value={48}
-        color="text-blue-500"
+        color="text-slate-950"
       />
 
       <BookingStatusCards
@@ -24,7 +24,7 @@ const BookingStats = () => {
       <BookingStatusCards
         title="Completed"
         value={542}
-        color="text-slate-900"
+        color="text-slate-950"
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   Briefcase,
   CalendarCheck,
   LayoutDashboard,
@@ -44,4 +45,9 @@ export const adminSidebarItems = [
     href: "/dashboard/admin/reviews",
     icon: Star,
   },
+  {
+    label: "Complaints",
+    href: "/dashboard/admin/complaints",
+    icon: AlertTriangle,
+},
 ];
