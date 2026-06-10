@@ -22,6 +22,7 @@ export default function ProfileSummaryCard({
         <h3 className="text-2xl font-bold text-emerald-deep">Profile Summary</h3>
         {onEdit && (
           <button
+            type="button"
             onClick={onEdit}
             className="text-primary font-semibold flex items-center gap-1 hover:underline transition-colors"
           >
@@ -35,8 +36,11 @@ export default function ProfileSummaryCard({
         <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary-fixed shrink-0">
           <Image
             alt={profile.name}
+            width={96}
+            height={96}
             src={profile.avatarUrl}
             className="w-full h-full object-cover"
+            priority
           />
         </div>
 

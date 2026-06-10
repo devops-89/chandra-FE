@@ -19,7 +19,7 @@ export default function OnboardingSidebar({
   currentStep,
 }: Props) {
   return (
-    <aside className="w-72 shrink-0">
+    <aside className="w-72 shrink-0 sticky top-0 h-screen overflow-y-auto p-6">
       <h2 className="text-2xl font-bold text-[#00875A]">
         Registration
       </h2>

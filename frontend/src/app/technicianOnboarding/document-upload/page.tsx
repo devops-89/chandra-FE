@@ -1,5 +1,5 @@
-import DocumentUploadPage from '@/components/technicianApplication/documentUpload/DocumentUploadPage';
 import OnboardingLayout from '@/components/technicianApplication/layout/OnboardingLayout';
+import DocumentUploadPage from '@/components/technicianApplication/registration/documentUpload/DocumentUploadPage';
 
 export default function DocumentUploadRoute() {
   return (

@@ -133,8 +133,7 @@ export default function LiveJobsMap() {
         className="
           border-t
           border-slate-200
-          p-5\
-          bg-amber-300
+          p-5
           flex
           items-center
           justify-between

@@ -35,8 +35,11 @@ export default function ServiceCoverageCard({
       <div className="h-48 rounded-lg overflow-hidden relative">
         <Image
           alt="Coverage Map"
+          width={600}
+          height={192}
           src={mapImageUrl}
           className="w-full h-full object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent flex items-end p-4">
           <p className="text-white text-sm font-bold">
@@ -47,6 +50,7 @@ export default function ServiceCoverageCard({
 
       {onEdit && (
         <button
+          type="button"
           onClick={onEdit}
           className="mt-4 text-primary font-semibold flex items-center gap-1 hover:underline transition-colors text-sm"
         >

@@ -1,20 +1,29 @@
+'use client';
+
+import { motion } from 'framer-motion';
+
 export default function EmailVerificationCard() {
   return (
-    <div className="border rounded-2xl p-5 bg-gray-50">
-      <h4 className="font-semibold">
+    <motion.div
+      className="border border-slate-200 rounded-lg md:rounded-2xl p-4 md:p-5 bg-gray-50 hover:shadow-sm transition-shadow duration-300"
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2 }}
+    >
+      <h4 className="font-semibold text-sm md:text-base">
         Email Verification
       </h4>
 
-      <p className="text-sm text-gray-500 mt-1">
+      <p className="text-xs md:text-sm text-gray-500 mt-1 md:mt-2">
         Verification link will be sent to email.
       </p>
 
-      <button
+      <motion.button
         type="button"
-        className="mt-4 border rounded-xl px-4 py-2"
+        className="mt-3 bg-white md:mt-4 cursor-pointer border border-slate-300 rounded-lg text-slate-500 md:rounded-xl px-4 py-2 text-xs md:text-sm font-medium hover:bg-emerald-50 hover:border-emerald-300 transition-colors"
+        whileTap={{ scale: 0.98 }}
       >
         Send Link
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 }

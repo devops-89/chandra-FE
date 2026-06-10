@@ -1,12 +1,12 @@
 export default function OnboardingHeader() {
   return (
-    <header className="border-b">
-      <div className="max-w-7xl mx-auto px-14 h-16 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#00875A]">
+    <header className="border-b bg-white sticky top-0 z-20">
+      <div className="w-full px-4 md:px-21 h-14 md:h-16 flex items-center justify-between">
+        <h1 className="text-xl md:text-2xl font-bold text-emerald-700">
           HiChandra
         </h1>
 
-        <button className="text-sm text-gray-600 hover:text-black">
+        <button type="button" className="text-xs md:text-sm text-gray-600 hover:text-black transition-colors">
           Save & Exit
         </button>
       </div>
