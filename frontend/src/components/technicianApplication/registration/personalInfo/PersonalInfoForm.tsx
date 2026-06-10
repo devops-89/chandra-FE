@@ -31,7 +31,7 @@ const itemVariants = {
 export default function PersonalInfoForm() {
   return (
     <motion.div
-      className="border border-slate-200 bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 w-full max-w-4xl mx-aut"
+      className="border border-slate-200 shadow-lg bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 w-full max-w-4xl mx-aut"
       variants={containerVariants}
       initial="hidden"
       animate="visible"

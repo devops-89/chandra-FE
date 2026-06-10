@@ -1,6 +1,6 @@
 export default function OnboardingFooter() {
   return (
-    <section className="mt-12 md:mt-16 px-4 md:px-0">
+    <section className="mt-8 mb-8 px-4 md:px-0">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         <div className="text-center">
           <span className="material-symbols-outlined text-emerald-700 text-3xl md:text-4xl mb-2 md:mb-3 block">

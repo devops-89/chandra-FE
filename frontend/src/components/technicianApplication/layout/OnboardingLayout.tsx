@@ -18,7 +18,7 @@ export default function OnboardingLayout({
       <OnboardingHeader />
 
       {/* Mobile Header - Only visible on mobile */}
-      <div className="md:hidden border-b bg-white sticky top-0 z-10">
+      <div className="md:hidden bg-white sticky top-0 z-10">
         <div className="px-4 py-4">
           <div className="flex justify-between items-start mb-3">
             <h2 className="text-lg font-bold text-emerald-700">
