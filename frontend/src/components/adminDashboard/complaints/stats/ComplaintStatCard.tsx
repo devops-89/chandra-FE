@@ -3,21 +3,21 @@ interface Props {
   value: string;
 }
 
-const RevenueCards = ({
+const ComplaintStatCard = ({
   title,
   value,
 }: Props) => {
   return (
-    <div className="hover:shadow-xl border border-slate-200 rounded-2xl bg-white p-5">
+    <div className="rounded-2xl border bg-white p-5">
       <p className="text-sm text-slate-500">
         {title}
       </p>
 
-      <h3 className="mt-2 text-3xl font-bold text-emerald-600">
+      <h3 className="mt-2 text-3xl font-bold">
         {value}
       </h3>
     </div>
   );
 };
 
-export default RevenueCards;
+export default ComplaintStatCard;

@@ -28,7 +28,6 @@ export default function StatCard({
         transition-all
         hover:shadow-lg
         hover:-translate-y-1
-
         ${
           priority
             ? 'border-red-200 bg-red-50/30'

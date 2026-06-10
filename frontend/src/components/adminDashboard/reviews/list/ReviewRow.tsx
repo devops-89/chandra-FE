@@ -44,7 +44,7 @@ const ReviewRow = ({ review }: Props) => {
       </td>
 
       <td className="p-4">
-        <button className="text-emerald-600">
+        <button className="text-emerald-600 cursor-pointer hover:underline">
           View
         </button>
       </td>

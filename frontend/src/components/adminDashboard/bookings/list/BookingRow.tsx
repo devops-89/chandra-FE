@@ -19,7 +19,7 @@ const BookingRow = ({ booking }: Props) => {
   };
 
   return (
-    <tr className="border-b">
+    <tr>
       <td className="p-4">{booking.id}</td>
 
       <td className="p-4">

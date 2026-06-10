@@ -4,15 +4,15 @@ import TransactionRow from "./TransactionRow";
 
 const TransactionsTable = () => {
   return (
-    <div className="overflow-hidden rounded-2xl border bg-white">
-      <div className="border-b p-5">
+    <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
+      <div className="border-b border-slate-400 p-5">
         <h3 className="font-semibold">
           Transactions
         </h3>
       </div>
 
       <table className="w-full">
-        <thead className="bg-slate-50">
+        <thead className="bg-emerald-600 text-white">
           <tr>
             <th className="p-4 text-left">ID</th>
             <th className="p-4 text-left">Booking</th>

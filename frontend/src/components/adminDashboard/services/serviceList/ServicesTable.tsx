@@ -7,7 +7,7 @@ const ServicesTable = () => {
     <div className="overflow-hidden rounded-2xl border bg-white">
       <table className="w-full">
         <thead>
-          <tr className="bg-slate-50 text-left">
+          <tr className="bg-emerald-600 text-white text-left">
             <th className="p-4">Image</th>
             <th className="p-4">Service</th>
             <th className="p-4">Category</th>
