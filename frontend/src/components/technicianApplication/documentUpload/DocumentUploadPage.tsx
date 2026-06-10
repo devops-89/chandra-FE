@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import type { DocumentUploadState, UploadedFile } from '@/types/technicianApplication/documentUpload.types';
+
 import DocumentUploadFooter from './DocumentUploadFooter';
 import DocumentUploadGrid from './DocumentUploadGrid';
 import SelfieVerificationCard from './SelfieVerificationCard';

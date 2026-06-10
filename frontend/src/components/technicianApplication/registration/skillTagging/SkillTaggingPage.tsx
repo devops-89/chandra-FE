@@ -64,7 +64,7 @@ export default function SkillTaggingPage() {
           What are your core skills?
         </h1>
         <p className="text-gray-600">
-          Select the services you're skilled in and your expertise level
+          Select the services you@aposre skilled in and your expertise level
         </p>
       </div>
 

@@ -1,0 +1,50 @@
+import { techniciansData } from "@/constants/admin/technicianData";
+
+import TechnicianRow from "./TechnicianRow";
+
+const TechniciansTable = () => {
+  return (
+    <div className="overflow-hidden rounded-2xl border bg-white">
+      <table className="w-full">
+        <thead className="bg-slate-50">
+          <tr>
+            <th className="p-4 text-left">
+              Technician
+            </th>
+
+            <th className="p-4 text-left">
+              Experience
+            </th>
+
+            <th className="p-4 text-left">
+              Rating
+            </th>
+
+            <th className="p-4 text-left">
+              Jobs
+            </th>
+
+            <th className="p-4 text-left">
+              Status
+            </th>
+
+            <th className="p-4 text-left">
+              Actions
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {techniciansData.map((technician) => (
+            <TechnicianRow
+              key={technician.id}
+              technician={technician}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default TechniciansTable;
