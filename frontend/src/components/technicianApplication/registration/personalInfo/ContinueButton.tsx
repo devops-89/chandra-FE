@@ -2,24 +2,31 @@
 
 import { motion } from 'framer-motion';
 
-export default function ContinueButton() {
+interface ContinueButtonProps {
+  onClick: () => void;
+  isDisabled?: boolean;
+}
+
+export default function ContinueButton({ onClick, isDisabled = false }: ContinueButtonProps) {
   return (
     <motion.button
       type="submit"
+      onClick={onClick}
+      disabled={isDisabled}
       className="
       w-full
       h-12 md:h-14
-      bg-emerald-600 hover:bg-emerald-700
+      bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed
       text-white
+      cursor-pointer
       rounded-lg md:rounded-2xl
       font-semibold
-      cursor-pointer
       text-sm md:text-lg
       transition-all duration-200
       flex items-center justify-center gap-2
       "
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={!isDisabled ? { y: -2 } : {}}
+      whileTap={!isDisabled ? { scale: 0.98 } : {}}
       transition={{ duration: 0.2 }}
     >
       Verify & Continue

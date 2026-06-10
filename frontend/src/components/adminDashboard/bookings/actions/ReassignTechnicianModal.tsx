@@ -42,7 +42,7 @@ const ReassignTechnicianModal = ({
               New Technician
             </label>
 
-            <select className="w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-emerald-500">
+            <select title="options" className="w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-emerald-500">
               <option>Select Technician</option>
               <option>Rahul Kumar</option>
               <option>Vikram Singh</option>

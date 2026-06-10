@@ -1,12 +1,15 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 import BasicInfoFields from './BasicInfoFields';
 import ContinueButton from './ContinueButton';
+import EmailAndPasswordFields from './EmailAndPasswordFields';
 import EmailVerificationCard from './EmailVerificationCard';
+import { usePersonalInfoForm } from './hooks/usePersonalInfoForm';
 import MobileVerificationCard from './MobileVerificationCard';
-import PasswordField from './PasswordField';
+import TermsAndPrivacy from './TermsAndPrivacy';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,20 +32,65 @@ const itemVariants = {
 };
 
 export default function PersonalInfoForm() {
+  const { formData, errors, touched, handleChange, handleBlur, handleSubmit } =
+    usePersonalInfoForm();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const isValid = handleSubmit();
+    if (isValid) {
+      // Handle form submission
+    }
+  };
+
   return (
-    <motion.div
-      className="border border-slate-200 shadow-lg bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 w-full max-w-4xl mx-aut"
+    <motion.form
+      onSubmit={handleFormSubmit}
+      className="border border-slate-200 shadow-lg bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 w-full max-w-4xl"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       <motion.div className="space-y-6 md:space-y-8" variants={containerVariants}>
         <motion.div variants={itemVariants}>
-          <BasicInfoFields />
+          <BasicInfoFields
+            fullName={formData.fullName}
+            phoneNumber={formData.phoneNumber}
+            email={formData.email}
+            fullNameError={touched.fullName ? errors.fullName : undefined}
+            phoneNumberError={touched.phoneNumber ? errors.phoneNumber : undefined}
+            emailError={
+              touched.email && formData.email && errors.email
+                ? errors.email
+                : undefined
+            }
+            onFullNameChange={(value) => handleChange('fullName', value)}
+            onPhoneNumberChange={(value) => handleChange('phoneNumber', value)}
+            onEmailChange={(value) => handleChange('email', value)}
+            onFullNameBlur={() => handleBlur('fullName')}
+            onPhoneNumberBlur={() => handleBlur('phoneNumber')}
+            onEmailBlur={() => handleBlur('email')}
+          />
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <PasswordField />
+          <EmailAndPasswordFields
+            email={formData.email}
+            password={formData.password}
+            emailError={
+              touched.email && formData.email && errors.email
+                ? errors.email
+                : undefined
+            }
+            passwordError={touched.password ? errors.password : undefined}
+            onEmailChange={(value) => handleChange('email', value)}
+            onPasswordChange={(value) => handleChange('password', value)}
+            onEmailBlur={() => handleBlur('email')}
+            onPasswordBlur={() => handleBlur('password')}
+            showPassword={showPassword}
+            onTogglePassword={() => setShowPassword(!showPassword)}
+          />
         </motion.div>
 
         <motion.div
@@ -58,10 +106,17 @@ export default function PersonalInfoForm() {
           </motion.div>
         </motion.div>
 
+        <motion.div variants={itemVariants}>
+          <TermsAndPrivacy />
+        </motion.div>
+
         <motion.div variants={itemVariants} className="pb-4 md:pb-0">
-          <ContinueButton />
+          <ContinueButton
+            onClick={() => handleSubmit()}
+            isDisabled={false}
+          />
         </motion.div>
       </motion.div>
-    </motion.div>
+    </motion.form>
   );
 }

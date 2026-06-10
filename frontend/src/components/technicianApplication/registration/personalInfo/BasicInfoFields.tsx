@@ -1,15 +1,56 @@
-export default function BasicInfoFields() {
+'use client';
+
+interface BasicInfoFieldsProps {
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+  fullNameError?: string;
+  phoneNumberError?: string;
+  emailError?: string;
+  onFullNameChange: (value: string) => void;
+  onPhoneNumberChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
+  onFullNameBlur: () => void;
+  onPhoneNumberBlur: () => void;
+  onEmailBlur: () => void;
+}
+
+export default function BasicInfoFields({
+  fullName,
+  phoneNumber,
+  email,
+  fullNameError,
+  phoneNumberError,
+  emailError,
+  onFullNameChange,
+  onPhoneNumberChange,
+  onEmailChange,
+  onFullNameBlur,
+  onPhoneNumberBlur,
+  onEmailBlur,
+}: BasicInfoFieldsProps) {
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <div>
           <label className="block mb-2 text-xs md:text-sm font-medium">Full Name</label>
 
           <input
             type="text"
             placeholder="John Doe"
-            className="w-full h-12 border-slate-300 md:h-12 border rounded-lg md:rounded-xl px-4 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+            value={fullName}
+            onChange={(e) => onFullNameChange(e.target.value)}
+            onBlur={onFullNameBlur}
+            className={`w-full h-12 border rounded-lg md:rounded-xl px-4 text-sm md:text-base focus:outline-none focus:ring-2 focus:border-transparent transition ${
+              fullNameError
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-slate-300 focus:ring-emerald-500'
+            }`}
           />
+
+          {fullNameError && (
+            <p className="text-xs text-red-500 mt-1">{fullNameError}</p>
+          )}
         </div>
 
         <div>
@@ -18,21 +59,20 @@ export default function BasicInfoFields() {
           <input
             type="tel"
             placeholder="+91 9876543210"
-            className="w-full h-12 md:h-12 border-slate-300 border rounded-lg md:rounded-xl px-4 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+            value={phoneNumber}
+            onChange={(e) => onPhoneNumberChange(e.target.value)}
+            onBlur={onPhoneNumberBlur}
+            className={`w-full h-12 border rounded-lg md:rounded-xl px-4 text-sm md:text-base focus:outline-none focus:ring-2 focus:border-transparent transition ${
+              phoneNumberError
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-slate-300 focus:ring-emerald-500'
+            }`}
           />
+
+          {phoneNumberError && (
+            <p className="text-xs text-red-500 mt-1">{phoneNumberError}</p>
+          )}
         </div>
-      </div>
-
-      <div>
-        <label className="block mb-2 mt-4 text-xs md:text-sm font-medium">
-          Professional Email Address
-        </label>
-
-        <input
-          type="email"
-          placeholder="john@example.com"
-          className="w-full h-12 md:h-12 border border-slate-300 rounded-lg md:rounded-xl px-4 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
-        />
       </div>
     </>
   );
