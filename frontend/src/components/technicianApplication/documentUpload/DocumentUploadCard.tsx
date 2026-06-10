@@ -1,6 +1,7 @@
 'use client';
 
 import type { DocumentUploadCardProps } from '@/types/technicianApplication/documentUpload.types';
+
 import UploadDropzone from './UploadDropzone';
 
 export default function DocumentUploadCard({

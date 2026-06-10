@@ -1,7 +1,8 @@
 'use client';
 
-import type { UploadedFile } from '@/types/technicianApplication/documentUpload.types';
 import { getDocumentUploadData } from '@/data/technicianOnboarding/documentUploadData';
+import type { UploadedFile } from '@/types/technicianApplication/documentUpload.types';
+
 import DocumentUploadCard from './DocumentUploadCard';
 
 interface DocumentUploadGridProps {
