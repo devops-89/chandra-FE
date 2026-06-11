@@ -6,7 +6,7 @@ export const AVAILABLE_SKILLS: Skill[] = [
     id: 'solar-cleaning',
     name: 'Solar Cleaning',
     description: 'Maintenance and deep cleaning of residential/commercial solar panels.',
-    icon: SolarPanelIcon,
+    icon: "☀️",
   },
   {
     id: 'ac-repair',

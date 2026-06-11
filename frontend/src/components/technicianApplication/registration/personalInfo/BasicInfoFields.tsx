@@ -18,16 +18,12 @@ interface BasicInfoFieldsProps {
 export default function BasicInfoFields({
   fullName,
   phoneNumber,
-  email,
   fullNameError,
   phoneNumberError,
-  emailError,
   onFullNameChange,
   onPhoneNumberChange,
-  onEmailChange,
   onFullNameBlur,
   onPhoneNumberBlur,
-  onEmailBlur,
 }: BasicInfoFieldsProps) {
   return (
     <>
