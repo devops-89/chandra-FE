@@ -8,22 +8,16 @@ const Finance = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
           Finance
         </h1>
-
-        <p className="text-slate-500">
-          Transactions and technician payouts
-        </p>
+        <p className="text-slate-500">Transactions and technician payouts</p>
       </div>
 
       <FinanceOverview />
       <CommissionSettings />
       <CommissionHistory />
-      
-
       <TransactionsTable />
-
       <PayoutTable />
     </div>
   );

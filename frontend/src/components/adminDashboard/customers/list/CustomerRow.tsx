@@ -6,7 +6,7 @@ interface Props {
 
 const CustomerRow = ({ customer }: Props) => {
   return (
-    <tr className="border-b border-slate-400">
+    <tr>
       <td className="p-4 ">
         <div>
           <p className="font-medium text-slate-700">

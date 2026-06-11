@@ -18,7 +18,7 @@ const categories = [
 
 const CategoriesTable = () => {
   return (
-    <div className="overflow-hidden rounded-2xl border bg-white">
+    <div className="overflow-hidden rounded-2xl border text-slate-400 bg-white">
       <table className="w-full">
         <thead className="bg-slate-50">
           <tr>

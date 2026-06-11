@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import type { Service } from "@/constants/admin/serviceData";
 
@@ -7,31 +8,32 @@ interface Props {
 }
 
 const ServiceRow = ({ service }: Props) => {
-  return (
-    <tr className="border-b">
+  const router= useRouter();
+  return (  
+    <tr>
       <td className="p-4">
         <Image
         width={20}
         height={25}
           src={service.image}
           alt={service.name}
-          className="h-12 w-12 rounded-lg object-cover"
+          className="h-12 w-12 rounded-lg text-slate-700 object-cover"
         />
       </td>
 
-      <td className="p-4 font-medium">
+      <td className="p-4 font-medium text-slate-700">
         {service.name}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {service.category}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         ₹{service.price}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {service.duration}
       </td>
 
@@ -47,13 +49,14 @@ const ServiceRow = ({ service }: Props) => {
         </span>
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {service.bookings}
       </td>
 
       <td className="p-4">
         <div className="flex gap-2">
-          <button className="text-white bg-emerald-600 rounded-xl p-2 cursor-pointer hover:bg-emerald-700">
+          <button className="text-white rounded-xl bg-emerald-600 px-4 py-2 cursor-pointer hover:bg-emerald-700"
+           onClick={() => router.push("/dashboard/admin/services/edit")}>
             Edit
           </button>
 
