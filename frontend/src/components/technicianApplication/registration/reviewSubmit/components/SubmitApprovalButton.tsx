@@ -15,7 +15,7 @@ export default function SubmitApprovalButton({
     <motion.button
       onClick={onClick}
       disabled={disabled || isLoading}
-      className="bg-surface-white text-emerald-deep px-12 py-5 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-shadow disabled:opacity-80 disabled:cursor-not-allowed flex items-center gap-4 justify-center min-w-max"
+      className="bg-surface-white cursor-pointer text-emerald-deep px-12 py-5 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-shadow disabled:opacity-80 disabled:cursor-not-allowed flex items-center gap-4 justify-center min-w-max"
       variants={buttonVariants}
       initial="initial"
       whileHover={!disabled ? 'hover' : 'initial'}

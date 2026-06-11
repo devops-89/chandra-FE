@@ -5,8 +5,8 @@ import { useState } from 'react';
 
 import AccountInformationCard from './AccountInformationCard';
 import AutoDetectedBankInfo from './AutoDetectedBankInfo';
-import BankDetailsHeader from './BankDetailsHeader';
 import BankDetailsFooter from './BankDetailsFooter';
+import BankDetailsHeader from './BankDetailsHeader';
 import PayoutMethodCard from './PayoutMethodCard';
 import SecurityBanner from './SecurityBanner';
 import VerificationDocumentsCard from './VerificationDocumentsCard';

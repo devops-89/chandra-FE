@@ -35,7 +35,7 @@ export default function ReviewSubmit() {
   const handleSubmitApplication = async () => {
     const result = await handleSubmit();
     if (result.success) {
-      router.push('/technicianOnboarding/success');
+      router.push('/technicianOnboarding/pending-verification');
     }
   };
 
