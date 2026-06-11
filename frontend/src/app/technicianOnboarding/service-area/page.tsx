@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import OnboardingLayout from '@/components/technicianApplication/layout/OnboardingLayout';
-import ServiceArea from '@/components/technicianApplication/serviceArea/ServiceArea';
+import ServiceArea from '@/components/technicianApplication/registration/serviceArea/ServiceArea';
 
 export default function ServiceAreaPage() {
   const router = useRouter();

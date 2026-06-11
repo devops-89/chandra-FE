@@ -1,10 +1,11 @@
-import { BankDetailsSection } from '@/components/technicianApplication/bankDetails';
 import OnboardingLayout from '@/components/technicianApplication/layout/OnboardingLayout';
+import { BankDetailsSection } from '@/components/technicianApplication/registration/bankDetails';
 
-export default function DocumentUploadRoute() {
+
+export default function BankDetailsRoute() {
   return (
-    <OnboardingLayout currentStep={2}>
-        <BankDetailsSection />
+    <OnboardingLayout currentStep={5}>
+      <BankDetailsSection />
     </OnboardingLayout>
   );
 }

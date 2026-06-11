@@ -67,6 +67,7 @@ export default function PayoutMethodCard({
             whileHover={{ y: -2 }}
           >
             <input
+            title='button'
               type="radio"
               name="payout-method"
               value={option.id}

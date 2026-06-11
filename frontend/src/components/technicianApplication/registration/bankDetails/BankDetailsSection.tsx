@@ -9,6 +9,7 @@ import BankDetailsHeader from './BankDetailsHeader';
 import PayoutMethodCard from './PayoutMethodCard';
 import SecurityBanner from './SecurityBanner';
 import VerificationDocumentsCard from './VerificationDocumentsCard';
+import BankDetailsFooter from './BankDetailsFooter';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -116,7 +117,10 @@ export default function BankDetailsSection() {
       </motion.div>
 
       {/* Spacer for visual separation */}
-      <div className="h-8 md:h-12" />
+      {/* <div className="h-8 md:h-12" /> */}
+      <motion.div variants={itemVariants}>
+        <BankDetailsFooter />
+      </motion.div>
     </motion.div>
   );
 }
