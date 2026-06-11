@@ -9,7 +9,7 @@ const AdminSidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="h-screen w-72 bg-white">
+    <aside className="h-screen w-72 sticky top-0">
       <div className="p-6">
         <h2 className="text-2xl font-bold text-emerald-600">
           HiChandra

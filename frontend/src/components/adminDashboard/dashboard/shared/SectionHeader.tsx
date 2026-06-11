@@ -1,6 +1,7 @@
 'use client';
 
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   title: string;
@@ -11,6 +12,7 @@ export default function SectionHeader({
   title,
   actionText,
 }: Props) {
+  const router= useRouter();
   return (
     <div className="flex items-center justify-between mb-5">
       <h2 className="text-xl font-semibold text-slate-800">
@@ -18,7 +20,8 @@ export default function SectionHeader({
       </h2>
 
       {actionText && (
-        <button className="flex items-center gap-1 text-emerald-700 font-medium">
+        <button className="flex items-center gap-1 hover:underline cursor-pointer text-emerald-700 font-medium"
+          onClick={() => router.push('/dashboard/admin/technicians')}>
           {actionText}
 
           <ChevronRightIcon

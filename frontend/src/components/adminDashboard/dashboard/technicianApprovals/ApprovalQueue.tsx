@@ -32,7 +32,7 @@ const technicians: TechnicianApproval[] = [
     address: 'Noida, India',
     skills: [
       'AC Repair',
-      'Deep Cleaning',
+      'Solar Cleaning',
     ],
   },
 ];

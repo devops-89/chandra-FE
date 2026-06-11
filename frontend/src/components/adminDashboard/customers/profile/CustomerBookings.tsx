@@ -11,7 +11,7 @@ const CustomerBookings = () => {
         </div>
 
         <div className="rounded-xl border p-4">
-          Deep Cleaning - ₹899
+          Solar Cleaning - ₹899
         </div>
 
         <div className="rounded-xl border p-4">

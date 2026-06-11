@@ -1,7 +1,13 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 import ServiceFilters from "./serviceList/ServiceFilters";
 import ServicesTable from "./serviceList/ServicesTable";
 
 const Services = () => {
+  const router = useRouter();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -15,7 +21,10 @@ const Services = () => {
           </p>
         </div>
 
-        <button className="rounded-xl bg-emerald-600 px-5 py-3 text-white font-medium hover:bg-emerald-700">
+        <button
+          onClick={() => router.push("/dashboard/admin/services/add")}
+          className="rounded-xl bg-emerald-600 px-5 py-3 font-medium text-white hover:bg-emerald-700"
+        >
           Add Service
         </button>
       </div>

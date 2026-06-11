@@ -36,6 +36,7 @@ export default function TechnicianApprovalCard({
               width: 72,
               height: 72,
               bgcolor: '#10b981',
+              position: "static"
             }}
           >
             {technician.name
@@ -82,7 +83,7 @@ export default function TechnicianApprovalCard({
                     className="
                       px-3
                       py-1
-                      rounded-full
+                      rounded-2xl
                       bg-emerald-100
                       text-emerald-700
                       text-xs

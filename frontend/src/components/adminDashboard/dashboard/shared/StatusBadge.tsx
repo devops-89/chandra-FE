@@ -24,8 +24,11 @@ export default function StatusBadge({
     <span
       className={`
         px-3
-        py-1
-        rounded-full
+        py-2
+        rounded-2xl
+        mt-4
+        justify-center
+        items-center
         text-xs
         font-semibold
         ${styles[type]}

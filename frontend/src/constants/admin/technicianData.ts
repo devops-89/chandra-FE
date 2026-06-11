@@ -28,7 +28,7 @@ export const techniciansData: Technician[] = [
     avatar: "/images/technicians/priya.jpg",
     experience: 5,
     city: "Delhi",
-    skills: ["AC Repair", "Deep Cleaning"],
+    skills: ["AC Repair", "Solar Cleaning"],
     rating: 4.7,
     completedJobs: 210,
     status: "Active",

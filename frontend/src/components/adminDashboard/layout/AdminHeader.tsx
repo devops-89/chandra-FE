@@ -7,7 +7,7 @@ import {
 
 const AdminHeader = () => {
   return (
-    <header className="flex h-20 items-center justify-between bg-white px-8">
+    <header className="flex h-20 items-center sticky top-0 justify-between bg-[#F8FAFC] px-8">
       <div className="relative w-96">
         <Search
           size={18}

@@ -1,3 +1,5 @@
+import CommissionHistory from "./commission/CommissionHistory";
+import CommissionSettings from "./commission/CommissionSettings";
 import FinanceOverview from "./overview/FinanceOverview";
 import PayoutTable from "./payouts/PayoutTable";
 import TransactionsTable from "./transactions/TransactionsTable";
@@ -16,6 +18,9 @@ const Finance = () => {
       </div>
 
       <FinanceOverview />
+      <CommissionSettings />
+      <CommissionHistory />
+      
 
       <TransactionsTable />
 
