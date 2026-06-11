@@ -6,7 +6,7 @@ interface Props {
 
 const TechnicianRow = ({ technician }: Props) => {
   return (
-    <tr className="border-b">
+    <tr>
       <td className="p-4">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white">
@@ -52,7 +52,7 @@ const TechnicianRow = ({ technician }: Props) => {
       </td>
 
       <td className="p-4">
-        <button className="text-emerald-600">
+        <button className="text-emerald-600 hover:underline cursor-pointer">
           View
         </button>
       </td>

@@ -8,24 +8,24 @@ const TransactionRow = ({
   transaction,
 }: Props) => {
   return (
-    <tr className="border-b">
-      <td className="p-4">
+    <tr>
+      <td className="p-4 text-slate-700">
         {transaction.id}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {transaction.bookingId}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {transaction.customer}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         ₹{transaction.amount}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {transaction.method}
       </td>
 
@@ -43,7 +43,7 @@ const TransactionRow = ({
         </span>
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {transaction.date}
       </td>
     </tr>

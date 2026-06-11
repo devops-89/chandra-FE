@@ -6,14 +6,14 @@ interface Props {
 
 const PayoutRow = ({ payout }: Props) => {
   return (
-    <tr className="border-b">
-      <td className="p-4">{payout.id}</td>
+    <tr>
+      <td className="p-4 text-slate-700">{payout.id}</td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {payout.technician}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         ₹{payout.amount}
       </td>
 
@@ -29,7 +29,7 @@ const PayoutRow = ({ payout }: Props) => {
         </span>
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {payout.date}
       </td>
 

@@ -20,21 +20,21 @@ const BookingRow = ({ booking }: Props) => {
 
   return (
     <tr>
-      <td className="p-4">{booking.id}</td>
+      <td className="p-4 text-slate-700">{booking.id}</td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {booking.customer}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {booking.service}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {booking.technician}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         ₹{booking.amount}
       </td>
 
@@ -48,12 +48,12 @@ const BookingRow = ({ booking }: Props) => {
         </span>
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {booking.date}
       </td>
 
       <td className="p-4">
-        <button className="text-emerald-600">
+        <button className="text-emerald-600 cursor-pointer hover:underline">
           View
         </button>
       </td>

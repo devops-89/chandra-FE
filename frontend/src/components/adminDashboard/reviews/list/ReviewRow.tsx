@@ -6,28 +6,28 @@ interface Props {
 
 const ReviewRow = ({ review }: Props) => {
   return (
-    <tr className="border-b">
-      <td className="p-4">
+    <tr>
+      <td className="p-4 text-slate-700">
         {review.customerName}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {review.technicianName}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {review.serviceName}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         ⭐ {review.rating}
       </td>
 
-      <td className="max-w-xs truncate p-4">
+      <td className="max-w-xs truncate text-slate-700 p-4">
         {review.comment}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 text-slate-700">
         {review.date}
       </td>
 
