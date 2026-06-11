@@ -1,45 +1,81 @@
 import type { SkillCardProps } from '@/types/technicianApplication/skillTagging.types';
+import type { LucideIcon } from 'lucide-react';
 
 export default function SkillCard({
   skill,
   isSelected,
   onSelect,
 }: SkillCardProps) {
+  // Check if icon is a Lucide icon component or string
+  const Icon = typeof skill.icon === 'function' ? (skill.icon as LucideIcon) : null;
+  const iconString = typeof skill.icon === 'string' ? skill.icon : null;
+
   return (
     <button
+      type="button"
       onClick={() => onSelect(skill.id)}
       className={`
-        w-full rounded-xl border-2 p-6 text-left transition-all duration-200
-        cursor-pointer hover:shadow-md
+        group w-full min-h-[20px] rounded-2xl bg-white p-10 text-left
+        shadow-sm transition-all duration-300 cursor-pointer
+        hover:-translate-y-1 hover:shadow-lg
         ${
           isSelected
-            ? 'border-emerald-700 bg-green-50'
-            : 'border-gray-200 bg-white hover:border-emerald-200'
+            ? 'border-2 border-emerald-700 bg-emerald-50'
+            : 'border border-gray-100'
         }
       `}
     >
-      <div className="flex items-center justify-between">
-        <h3 className={`text-lg font-semibold ${
-          isSelected ? 'text-emerald-700' : 'text-gray-900'
-        }`}>
+      {/* Icon */}
+      <div
+        className={`
+          flex h-8 w-8 items-center justify-center rounded-xl
+          transition-colors duration-300
+          ${
+            isSelected
+              ? 'bg-emerald-100'
+              : 'bg-gray-100 group-hover:bg-emerald-50'
+          }
+        `}
+      >
+        {Icon ? (
+          <Icon
+            size={24}
+            className={isSelected ? 'text-emerald-700' : 'text-gray-600'}
+          />
+        ) : (
+          iconString && <span className="text-3xl">{iconString}</span>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="mt-8">
+        <h3 className="text-xl font-medium text-gray-900">
           {skill.name}
         </h3>
-        {isSelected && (
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-700">
+
+        <p className="mt-4 text-lg leading-8 text-gray-500">
+          {skill.description}
+        </p>
+      </div>
+
+      {/* Selected Badge */}
+      {isSelected && (
+        <div className="absolute right-6 top-6">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-700">
             <svg
-              className="h-4 w-4 text-white"
+              className="h-5 w-5 text-white"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
               <path
                 fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                 clipRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
               />
             </svg>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </button>
   );
 }

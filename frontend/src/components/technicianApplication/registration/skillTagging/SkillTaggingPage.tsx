@@ -60,15 +60,15 @@ export default function SkillTaggingPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-2">
           What are your core skills?
         </h1>
         <p className="text-gray-600">
-          Select the services you@aposre skilled in and your expertise level
+          Select the services you are certified to perform. This helps us match you with the right jobs in your area.
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-6 bg-amber-300">
         <SkillGrid
           skills={AVAILABLE_SKILLS}
           selectedSkills={state.selectedSkills}

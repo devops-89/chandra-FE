@@ -106,15 +106,17 @@ export default function PersonalInfoForm() {
           </motion.div>
         </motion.div>
 
-        <motion.div variants={itemVariants}>
-          <TermsAndPrivacy />
-        </motion.div>
+        <motion.div className="space-y-2 md:space-y-3" variants={containerVariants}>
+          <motion.div variants={itemVariants}>
+            <TermsAndPrivacy />
+          </motion.div>
 
-        <motion.div variants={itemVariants} className="pb-4 md:pb-0">
-          <ContinueButton
-            onClick={() => handleSubmit()}
-            isDisabled={false}
-          />
+          <motion.div variants={itemVariants} className="pb-4 md:pb-0">
+            <ContinueButton
+              onClick={() => handleSubmit()}
+              isDisabled={false}
+            />
+          </motion.div>
         </motion.div>
       </motion.div>
     </motion.form>
