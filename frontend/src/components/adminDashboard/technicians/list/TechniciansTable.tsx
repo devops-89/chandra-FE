@@ -4,7 +4,7 @@ import TechnicianRow from "./TechnicianRow";
 
 const TechniciansTable = () => {
   return (
-    <div className="overflow-hidden rounded-2xl border bg-white">
+    <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
       <table className="w-full">
         <thead className="bg-emerald-600 text-white">
           <tr>

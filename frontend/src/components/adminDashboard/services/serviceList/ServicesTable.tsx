@@ -4,7 +4,7 @@ import ServiceRow from "./ServiceRow";
 
 const ServicesTable = () => {
   return (
-    <div className="overflow-hidden rounded-2xl border bg-white">
+    <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
       <table className="w-full">
         <thead>
           <tr className="bg-emerald-600 text-white text-left">

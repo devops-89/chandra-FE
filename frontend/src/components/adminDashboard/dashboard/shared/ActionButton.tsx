@@ -17,7 +17,7 @@ export default function ActionButton({
     reject:
       'bg-slate-100 text-slate-700 hover:bg-slate-200',
     view:
-      'text-emerald-700 hover:bg-emerald-50',
+      'text-emerald-700 hover:underline cursor-pointer',
   };
 
   return (

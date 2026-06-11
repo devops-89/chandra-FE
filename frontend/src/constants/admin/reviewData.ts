@@ -24,7 +24,7 @@ export const reviewsData: Review[] = [
     id: "REV002",
     customerName: "Priya Singh",
     technicianName: "Aman Verma",
-    serviceName: "Deep Cleaning",
+    serviceName: "Solar Cleaning",
     rating: 4,
     comment: "Good service overall.",
     date: "14 Aug 2025",

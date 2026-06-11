@@ -1,5 +1,8 @@
+import ApprovalQueue from '@/components/adminDashboard/dashboard/technicianApprovals/ApprovalQueue';
+
 import TechnicianFilters from "./list/TechnicianFilters";
 import TechniciansTable from "./list/TechniciansTable";
+
 
 const Technicians = () => {
   return (
@@ -15,6 +18,8 @@ const Technicians = () => {
       </div>
 
       <TechnicianFilters />
+
+      <ApprovalQueue />
 
       <TechniciansTable />
     </div>
