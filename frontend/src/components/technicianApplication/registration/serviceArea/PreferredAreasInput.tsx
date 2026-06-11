@@ -42,7 +42,7 @@ export default function PreferredAreasInput({
   };
 
   return (
-    <div className="space-y-4 p-6 bg-white rounded-xl border-2 border-orange-400">
+    <div className="space-y-4 p-6 bg-white rounded-xl border border-slate-200">
       <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
         <span className="material-symbols-outlined">my_location</span>
         {SERVICE_AREA_TEXT.preferredAreasLabel}

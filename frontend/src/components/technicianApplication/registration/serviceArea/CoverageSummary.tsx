@@ -13,7 +13,7 @@ export default function CoverageSummary({
   const kmValue = areaOption?.km || 5;
 
   return (
-    <div className="sticky top-24 bg-white rounded-xl border-2 border-orange-400 p-6 space-y-4">
+    <div className="sticky top-24 bg-white rounded-xl border border-slate-200 p-6 space-y-4">
       <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
         <span className="material-symbols-outlined">map</span>
         {SERVICE_AREA_TEXT.coverageSummaryTitle}

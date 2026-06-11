@@ -6,7 +6,7 @@ export default function OnboardingHeader() {
           HiChandra
         </h1>
 
-        <button type="button" className="text-xs md:text-sm text-gray-600 hover:text-black transition-colors">
+        <button type="button" className="text-xs md:text-sm text-gray-600 cursor-pointer hover:text-black transition-colors">
           Save & Exit
         </button>
       </div>

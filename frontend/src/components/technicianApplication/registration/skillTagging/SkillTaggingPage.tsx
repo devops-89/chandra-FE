@@ -58,7 +58,7 @@ export default function SkillTaggingPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-4xl">
       <div>
         <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-2">
           What are your core skills?

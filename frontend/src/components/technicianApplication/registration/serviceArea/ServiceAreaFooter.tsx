@@ -8,7 +8,7 @@ export default function ServiceAreaFooter({
   onSubmit,
 }: ServiceAreaFooterProps) {
   return (
-    <div className="flex gap-4 justify-between p-6 bg-white rounded-xl border-2">
+    <div className="flex gap-4 justify-between p-6 bg-white rounded-xl border border-slate-400">
       <button
         onClick={onPrevious}
         type="button"

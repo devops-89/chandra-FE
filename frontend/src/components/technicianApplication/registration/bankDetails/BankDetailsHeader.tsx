@@ -14,7 +14,7 @@ const itemVariants = {
 export default function BankDetailsHeader() {
   return (
     <motion.header className="space-y-2" variants={itemVariants}>
-      <h1 className="text-3xl md:text-4xl font-bold text-on-surface">
+      <h1 className="text-3xl md:text-5xl font-bold text-on-surface">
         Add Bank Account For Payouts
       </h1>
       <p className="text-sm md:text-base text-secondary">

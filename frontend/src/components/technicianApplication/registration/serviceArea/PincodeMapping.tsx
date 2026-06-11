@@ -48,7 +48,7 @@ export default function PincodeMapping({
   };
 
   return (
-    <div className="space-y-4 p-6 bg-white rounded-xl border-2 border-orange-400">
+    <div className="space-y-4 p-6 bg-white rounded-xl border border-slate-200">
       <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
         <span className="material-symbols-outlined">pin_drop</span>
         {SERVICE_AREA_TEXT.pincodeLabel}
@@ -71,7 +71,7 @@ export default function PincodeMapping({
           <button
             onClick={handleAddPincode}
             type="button"
-            className="px-4 py-2 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors font-medium"
+            className="px-4 py-2 bg-emerald-700 cursor-pointer text-white rounded-lg hover:bg-emerald-800 transition-colors font-medium"
           >
             Add
           </button>

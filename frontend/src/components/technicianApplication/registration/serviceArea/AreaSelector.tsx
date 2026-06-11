@@ -12,7 +12,7 @@ export default function AreaSelector({
   const kmValue = areaOption?.km || 5;
 
   return (
-    <div className="space-y-6 p-6 bg-white rounded-xl border-2 border-orange-400">
+    <div className="space-y-6 p-6 bg-white rounded-xl border border-slate-200">
       <div>
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <span className="material-symbols-outlined">location_on</span>

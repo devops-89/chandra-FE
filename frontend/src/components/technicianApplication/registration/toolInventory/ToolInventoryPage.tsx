@@ -56,7 +56,7 @@ export default function ToolInventoryPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-4xl">
       <ToolInventoryHeader />
 
       <EquipmentChecklist

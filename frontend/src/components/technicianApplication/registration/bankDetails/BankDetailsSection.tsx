@@ -64,7 +64,7 @@ export default function BankDetailsSection() {
 
   return (
     <motion.div
-      className="w-full max-w-4xl mx-auto space-y-6 md:space-y-8"
+      className="w-full max-w-4xl space-y-6 md:space-y-8"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
