@@ -1,5 +1,6 @@
+import { Pipette, Wrench, Zap } from 'lucide-react';
+
 import type { Skill, SkillLevel } from '@/types/technicianApplication/skillTagging.types';
-import { SolarPanelIcon, Wrench, Pipette, Zap } from 'lucide-react';
 
 export const AVAILABLE_SKILLS: Skill[] = [
   {

@@ -12,6 +12,7 @@ const stepRoutes = [
   '/technicianOnboarding/document-upload',
   '/technicianOnboarding/tool-inventory',
   '/technicianOnboarding/service-area',
+  '/technicianOnboarding/bank-details',
   '/technicianOnboarding/review-submit',
 ];
 

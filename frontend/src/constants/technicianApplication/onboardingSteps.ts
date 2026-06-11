@@ -4,5 +4,6 @@ export const onboardingSteps = [
   "Document Upload",
   "Tool Inventory",
   "Service Area",
+  "Bank Details",
   "Review & Submit",
 ];

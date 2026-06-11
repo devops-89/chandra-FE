@@ -1,5 +1,6 @@
-import type { SkillCardProps } from '@/types/technicianApplication/skillTagging.types';
 import type { LucideIcon } from 'lucide-react';
+
+import type { SkillCardProps } from '@/types/technicianApplication/skillTagging.types';
 
 export default function SkillCard({
   skill,

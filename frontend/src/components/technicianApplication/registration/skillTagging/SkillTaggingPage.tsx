@@ -68,7 +68,7 @@ export default function SkillTaggingPage() {
         </p>
       </div>
 
-      <div className="space-y-6 bg-amber-300">
+      <div className="space-y-6">
         <SkillGrid
           skills={AVAILABLE_SKILLS}
           selectedSkills={state.selectedSkills}
