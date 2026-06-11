@@ -52,8 +52,9 @@ export default function PayoutMethodCard({
         variants={containerVariants}
       >
         {PAYOUT_METHOD_OPTIONS.map((option) => (
-          <motion.label
+          <motion.div
             key={option.id}
+            onClick={() => onMethodChange(option.id as 'bank-transfer' | 'upi')}
             className={`
               relative flex items-center p-4 rounded-xl border-2 cursor-pointer
               transition-all duration-300
@@ -67,7 +68,6 @@ export default function PayoutMethodCard({
             whileHover={{ y: -2 }}
           >
             <input
-            title='button'
               type="radio"
               name="payout-method"
               value={option.id}
@@ -78,13 +78,13 @@ export default function PayoutMethodCard({
 
             {selectedMethod === option.id ? (
               <span
-                className="material-symbols-outlined text-primary mr-3 text-xl"
+                className="material-symbols-outlined text-primary mr-3 text-xl flex-shrink-0"
                 style={{ fontVariationSettings: "'FILL' 1" }}
               >
                 check_circle
               </span>
             ) : (
-              <div className="w-6 h-6 rounded-full border-2 border-outline-variant mr-3" />
+              <div className="w-6 h-6 rounded-full border-2 border-outline-variant mr-3 flex-shrink-0" />
             )}
 
             <div className="flex flex-col">
@@ -93,7 +93,7 @@ export default function PayoutMethodCard({
               </span>
               <span className="text-xs text-secondary">{option.description}</span>
             </div>
-          </motion.label>
+          </motion.div>
         ))}
       </motion.div>
     </motion.section>

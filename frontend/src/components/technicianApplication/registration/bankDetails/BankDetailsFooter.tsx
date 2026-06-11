@@ -1,23 +1,46 @@
 'use client';
 
+import React from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
-interface BankDetailsFooterProps {
-  onPreviousStep: () => void;
-  onSaveContinue: () => void;
-  isLoading?: boolean;
-}
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4 },
+  },
+};
 
-export default function BankDetailsFooter({
-  onPreviousStep,
-  onSaveContinue,
-  isLoading = false,
-}: BankDetailsFooterProps) {
+export default function BankDetailsFooter() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handlePreviousStep = () => {
+    router.push('/technicianOnboarding/service-area');
+  };
+
+  const handleSaveContinue = () => {
+    setIsLoading(true);
+    // Simulate save
+    setTimeout(() => {
+      setIsLoading(false);
+      router.push('/technicianOnboarding/review-submit');
+    }, 500);
+  };
+
   return (
-    <div className="flex justify-between items-center gap-4">
+    <motion.div
+      className="flex justify-between items-center gap-4 mt-8 md:mt-12"
+      variants={itemVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+    >
       <motion.button
         type="button"
-        onClick={onPreviousStep}
+        onClick={handlePreviousStep}
         className="flex items-center gap-2 text-secondary hover:text-primary px-4 md:px-6 py-2 transition-all group font-medium text-sm md:text-base"
         whileHover={{ x: -4 }}
         whileTap={{ scale: 0.98 }}
@@ -28,12 +51,12 @@ export default function BankDetailsFooter({
         >
           arrow_back
         </span>
-        <span>Previous Step</span>
+        <span className="hidden md:inline">Previous Step</span>
       </motion.button>
 
       <motion.button
         type="button"
-        onClick={onSaveContinue}
+        onClick={handleSaveContinue}
         disabled={isLoading}
         className="bg-primary hover:bg-emerald-deep disabled:opacity-50 disabled:cursor-not-allowed text-on-primary rounded-lg md:rounded-xl px-6 md:px-8 py-3 font-medium flex items-center gap-2 transition-all shadow-md hover:shadow-lg text-sm md:text-base"
         whileHover={!isLoading ? { y: -2 } : {}}
@@ -44,6 +67,6 @@ export default function BankDetailsFooter({
           arrow_forward
         </span>
       </motion.button>
-    </div>
+    </motion.div>
   );
 }

@@ -6,10 +6,10 @@ import { useState } from 'react';
 import AccountInformationCard from './AccountInformationCard';
 import AutoDetectedBankInfo from './AutoDetectedBankInfo';
 import BankDetailsHeader from './BankDetailsHeader';
+import BankDetailsFooter from './BankDetailsFooter';
 import PayoutMethodCard from './PayoutMethodCard';
 import SecurityBanner from './SecurityBanner';
 import VerificationDocumentsCard from './VerificationDocumentsCard';
-import BankDetailsFooter from './BankDetailsFooter';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -116,11 +116,13 @@ export default function BankDetailsSection() {
         <SecurityBanner />
       </motion.div>
 
-      {/* Spacer for visual separation */}
-      {/* <div className="h-8 md:h-12" /> */}
+      {/* Navigation Footer */}
       <motion.div variants={itemVariants}>
         <BankDetailsFooter />
       </motion.div>
+
+      {/* Spacer for visual separation */}
+      <div className="h-8 md:h-12" />
     </motion.div>
   );
 }
