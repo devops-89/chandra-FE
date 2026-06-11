@@ -98,7 +98,6 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           flex-col
           border-r
           border-slate-200
-          bg-amber-400
           transform
           transition-transform
           duration-300
@@ -155,7 +154,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           })}
         </nav>
 
-        <div className="p-4 border-t border-amber-500">
+        <div className="p-4 border-t">
           <button
             className="
               flex

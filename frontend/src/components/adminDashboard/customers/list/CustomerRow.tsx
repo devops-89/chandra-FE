@@ -48,7 +48,7 @@ const CustomerRow = ({ customer }: Props) => {
       </td>
 
       <td className="p-4">
-        <button className="text-emerald-600">
+        <button className="text-emerald-600 hover:underline cursor-pointer">
           View
         </button>
       </td>
