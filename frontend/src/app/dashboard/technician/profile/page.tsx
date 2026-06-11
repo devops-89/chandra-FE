@@ -1,12 +1,14 @@
 'use client';
 
+import { TechnicianDashboardLayout } from '@/components/dashboard/technician';
+
 export default function TechnicianProfile() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-surface p-6 md:p-12">
-      <div className="max-w-4xl mx-auto">
+    <TechnicianDashboardLayout>
+      <div className="max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-on-surface mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-on-surface mb-2">
             Your Profile
           </h1>
           <p className="text-lg text-secondary">
@@ -84,6 +86,6 @@ export default function TechnicianProfile() {
           </div>
         </div>
       </div>
-    </div>
+    </TechnicianDashboardLayout>
   );
 }
