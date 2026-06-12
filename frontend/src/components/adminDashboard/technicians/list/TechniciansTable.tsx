@@ -6,6 +6,10 @@ const TechniciansTable = () => {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
       <div className="overflow-x-auto">
+        <div className="border-b border-slate-400 p-5">
+          <h1 className="font-semibold">Current Technicians</h1>
+        </div>
+        
         <table className="w-full min-width:640px">
           <thead className="bg-emerald-600 text-white">
             <tr>

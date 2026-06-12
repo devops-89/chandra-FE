@@ -1,4 +1,6 @@
+
 const ServiceDetails = () => {
+
   return (
     <div className="rounded-2xl border bg-white p-6">
       <div className="mb-6 flex items-center gap-4">
