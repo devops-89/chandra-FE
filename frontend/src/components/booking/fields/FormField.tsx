@@ -10,8 +10,85 @@ export interface FormFieldProps {
   shouldShow: boolean;
 }
 
+// Mandatory fields that require validation
+// Solar Panel Cleaning mandatory fields
+const SOLAR_MANDATORY_FIELDS = [
+  'Number of Solar Panels',
+  'Property Type',
+  'Roof Type',
+  'Preferred Cleaning Frequency',
+];
+
+// AC Servicing mandatory fields
+const AC_MANDATORY_FIELDS = [
+  'Service Type',
+  'AC Type',
+  'AC Brand',
+  'Issue Description',
+];
+
+// Electrical Servicing mandatory fields
+const ELECTRICAL_MANDATORY_FIELDS = [
+  'Type of Electrical Service',
+  'Property Type',
+  'Urgency Level',
+  'Problem Description',
+];
+
+// Plumber Servicing mandatory fields
+const PLUMBER_MANDATORY_FIELDS = [
+  'Service Required',
+  'Problem Area',
+  'Urgency Level',
+  'Problem Description',
+];
+
+// Combined mandatory fields
+const ALL_MANDATORY_FIELDS = [
+  ...SOLAR_MANDATORY_FIELDS,
+  ...AC_MANDATORY_FIELDS,
+  ...ELECTRICAL_MANDATORY_FIELDS,
+  ...PLUMBER_MANDATORY_FIELDS,
+];
+
+const validateMandatoryField = (field: BookingFormField, value: string | number | boolean | File | File[]): string | undefined => {
+  // Check if this is a mandatory field
+  if (ALL_MANDATORY_FIELDS.includes(field.label)) {
+    // Check if value is empty/null/undefined
+    if (value === '' || value === null || value === undefined) {
+      return `${field.label} is required`;
+    }
+
+    // For arrays (File[])
+    if (Array.isArray(value) && value.length === 0) {
+      return `${field.label} is required`;
+    }
+
+    // For select fields, ensure a valid option is selected (not empty string)
+    if (field.type === 'select' && value === '') {
+      return `Please select a ${field.label}`;
+    }
+
+    // For number fields
+    if (field.type === 'number' && (value === '' || value === 0)) {
+      return `${field.label} must be greater than 0`;
+    }
+
+    // For textarea fields (Problem Description, Issue Description, etc.)
+    if ((field.type === 'textarea' && field.required) && (value === '' || (typeof value === 'string' && value.trim() === ''))) {
+      return `${field.label} is required`;
+    }
+  }
+
+  return undefined;
+};
+
 export default function FormField({ field, value, onChange, error, shouldShow }: FormFieldProps) {
   if (!shouldShow) return null;
+
+  // Get validation error
+  const validationError = validateMandatoryField(field, value);
+  const displayError = error || validationError;
 
   const commonClasses = `
     w-full
@@ -25,7 +102,7 @@ export default function FormField({ field, value, onChange, error, shouldShow }:
     focus:border-emerald-500
     focus:ring-2
     focus:ring-emerald-200
-    ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}
+    ${displayError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}
   `;
 
   const fieldId = `field-${field.name}`;
@@ -126,6 +203,10 @@ export default function FormField({ field, value, onChange, error, shouldShow }:
       
       {error && (
         <p className="mt-1 text-sm text-red-600">{error}</p>
+      )}
+      
+      {displayError && (
+        <p className="mt-1 text-sm text-red-600 font-medium">{displayError}</p>
       )}
     </div>
   );
