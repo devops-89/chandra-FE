@@ -5,7 +5,11 @@ import { usePathname } from 'next/navigation';
 
 import { technicianNavigationConfig } from '@/constants/technician/navigationConfig';
 
-export default function TechnicianSidebar() {
+interface TechnicianSidebarProps {
+  onClose?: () => void;
+}
+
+export default function TechnicianSidebar({ onClose }: TechnicianSidebarProps) {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
@@ -17,8 +21,12 @@ export default function TechnicianSidebar() {
     return pathname.startsWith(href);
   };
 
+  const handleLinkClick = () => {
+    onClose?.();
+  };
+
   return (
-    <aside className="h-screen w-64 fixed left-0 top-0 bg-surface-white border-r border-slate-200 flex flex-col py-base z-50">
+    <aside className="flex h-full min-h-screen w-64 flex-col border-r border-slate-200 bg-surface-white py-base">
       {/* Brand Section */}
       <div className="px-6 py-8 mb-4">
         <h1 className="font-headline-md text-headline-md font-bold text-primary tracking-tight">
@@ -38,6 +46,7 @@ export default function TechnicianSidebar() {
             <Link
               key={item.id}
               href={item.href}
+              onClick={handleLinkClick}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                 active
                   ? 'text-emerald-600 font-bold border-r-2 border-primary bg-green-100'
@@ -53,7 +62,10 @@ export default function TechnicianSidebar() {
 
       {/* Support Section */}
       <div className="px-4 mt-auto mb-6">
-        <button className="w-full py-3 bg-secondary-container text-on-secondary-container font-label-md rounded-xl hover:bg-surface-variant transition-colors flex items-center justify-center gap-2">
+        <button
+          type="button"
+          className="w-full py-3 bg-secondary-container text-on-secondary-container font-label-md rounded-xl hover:bg-surface-variant transition-colors flex items-center justify-center gap-2"
+        >
           <span className="material-symbols-outlined text-[20px]">support_agent</span>
           Get Support
         </button>

@@ -138,19 +138,43 @@ const CategoriesTable = () => {
       </div>
 
       <EditServiceForm
-        open={openEditModal}
-        category={selectedCategory}
+        service={selectedCategory && openEditModal ? {
+          id: String(selectedCategory.id),
+          name: selectedCategory.name,
+          category: '',
+          subcategory: '',
+          price: 0,
+          duration: '',
+          status: 'Active' as const,
+          image: '',
+          bookings: 0
+        } : null}
         onClose={() =>
           setOpenEditModal(false)
         }
-        onSave={handleUpdateCategory}
+        onSave={(data) => {
+          if (selectedCategory) {
+            handleUpdateCategory({
+              id: selectedCategory.id,
+              name: data.name || selectedCategory.name,
+              services: selectedCategory.services
+            });
+          }
+        }}
       />
 
       <DeleteCategoryModal
-        open={openDeleteModal}
-        categoryName={
-          selectedCategory?.name ?? ""
-        }
+        service={selectedCategory && openDeleteModal ? {
+          id: String(selectedCategory.id),
+          name: selectedCategory.name,
+          category: '',
+          subcategory: '',
+          price: 0,
+          duration: '',
+          status: 'Active' as const,
+          image: '',
+          bookings: 0
+        } : null}
         onClose={() =>
           setOpenDeleteModal(false)
         }

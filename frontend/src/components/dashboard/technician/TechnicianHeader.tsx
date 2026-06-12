@@ -9,6 +9,8 @@ export interface TechnicianHeaderProps {
   isOnline?: boolean;
   onOnlineToggle?: (isOnline: boolean) => void;
   unreadNotifications?: number;
+  onMenuToggle?: () => void;
+  isSidebarOpen?: boolean;
 }
 
 export default function TechnicianHeader({
@@ -17,6 +19,8 @@ export default function TechnicianHeader({
   isOnline: initialIsOnline = true,
   onOnlineToggle,
   unreadNotifications = 0,
+  onMenuToggle,
+  isSidebarOpen = false,
 }: TechnicianHeaderProps) {
   const [isOnline, setIsOnline] = useState(initialIsOnline);
 
@@ -34,49 +38,75 @@ export default function TechnicianHeader({
   });
 
   return (
-    <header className="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 p-12 bg-white px-margin-desktop h-20 flex justify-between items-center">
-      {/* Left: Welcome Message */}
-      <div>
-        <h2 className="font-headline-sm text-headline-sm font-bold text-primary">
-          Welcome back, {userName}!
-        </h2>
-        <p className="text-charcoal-light font-label-sm">{currentDate}</p>
+    <header className="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 py-3 px-4 md:py-4 md:px-8 bg-white h-auto flex justify-between items-center border-b border-slate-200">
+      {/* Left: Hamburger + Welcome Message */}
+      <div className="flex items-center gap-3 md:gap-4">
+        {/* Mobile Hamburger Menu */}
+        <button
+          type="button"
+          onClick={onMenuToggle}
+          className="md:hidden p-2 text-secondary hover:bg-surface-container rounded-lg transition-colors shrink-0"
+          aria-label="Toggle sidebar menu"
+        >
+          <span className="material-symbols-outlined text-2xl">
+            {isSidebarOpen ? 'close' : 'menu'}
+          </span>
+        </button>
+
+        {/* Welcome Message */}
+        <div className="hidden sm:block">
+          <h2 className="text-lg md:text-xl font-bold text-primary">
+            Welcome back, {userName}!
+          </h2>
+          <p className="text-xs md:text-sm text-charcoal-light">{currentDate}</p>
+        </div>
+
+        {/* Mobile Welcome (Shortened) */}
+        <div className="sm:hidden">
+          <h2 className="text-base font-bold text-primary">
+            Welcome!
+          </h2>
+        </div>
       </div>
 
       {/* Right: Controls */}
-      <div className="flex items-center gap-6">
-        {/* Online Toggle */}
-        <div className="flex items-center gap-3 bg-surface-container rounded-full px-4 py-2">
-          <span className={`text-sm font-label-md ${isOnline ? 'text-emerald-deep' : 'text-secondary'}`}>
-            {isOnline ? 'Go Online' : 'Go Offline'}
-          </span>
-          <button
-            onClick={handleToggleOnline}
-            className={`relative w-12 h-6 rounded-full cursor-pointer flex items-center px-1 transition-all ${
-              isOnline ? 'bg-primary' : 'bg-outline-variant'
+      <div className="flex items-center gap-2 md:gap-4">
+        {/* Online Toggle - Horizontal Button */}
+        <button
+          type="button"
+          onClick={handleToggleOnline}
+          className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-300 ${
+            isOnline
+              ? 'bg-primary text-white hover:bg-primary/90'
+              : 'bg-surface-container text-secondary hover:bg-surface-container-high'
+          }`}
+          aria-label={isOnline ? 'Click to go offline' : 'Click to go online'}
+        >
+          <div
+            className={`w-2 h-2 rounded-full ${
+              isOnline ? 'bg-white animate-pulse' : 'bg-outline-variant'
             }`}
-            aria-label={isOnline ? 'Click to go offline' : 'Click to go online'}
-          >
-            <div
-              className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                isOnline ? 'translate-x-6' : 'translate-x-0'
-              }`}
-            />
-          </button>
-        </div>
+          />
+          <span className="text-xs md:text-sm font-medium whitespace-nowrap">
+            {isOnline ? 'Online' : 'Offline'}
+          </span>
+        </button>
 
         {/* Notifications & Profile */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* Notification Bell */}
-          <button className="p-2 text-secondary cursor-pointer hover:bg-surface-container-high rounded-full transition-all relative">
-            <span className="material-symbols-outlined">notifications</span>
+          <button
+            type="button"
+            className="p-2 text-secondary cursor-pointer hover:bg-surface-container-high rounded-full transition-all relative"
+          >
+            <span className="material-symbols-outlined text-xl">notifications</span>
             {unreadNotifications > 0 && (
-              <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full" />
             )}
           </button>
 
           {/* Profile Avatar */}
-          <div className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border-2 border-white shadow-sm cursor-pointer">
+          <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-surface-container-highest overflow-hidden border-2 border-white shadow-sm cursor-pointer">
             <Image
               alt="Technician profile avatar"
               className="w-full h-full object-cover"
