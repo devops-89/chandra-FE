@@ -71,6 +71,7 @@ function ServiceEditFields({
   onSave: (data: EditServiceFormData) => void;
 }) {
   const [form, setForm] = useState<EditServiceFormData>({
+    id: service.id,
     name:        service.name,
     category:    service.category,
     subcategory: service.subcategory,

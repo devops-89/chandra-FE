@@ -1,19 +1,22 @@
 'use client';
-
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Card from '@mui/material/Card';
+import {motion} from 'framer-motion';
 
 import ActiveJobsTable from './ActiveJobsTable';
 
 export default function ActiveJobsSection() {
   return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="rounded-2xl border border-slate-200 bg-white hover:shadow-lg p-5 cursor-default"
+    >
     <Card
       elevation={0}
       className="
         rounded-2xl
-        border
-        border-slate-200
         overflow-hidden
       "
     >
@@ -21,8 +24,6 @@ export default function ActiveJobsSection() {
         className="
           px-6
           py-5
-          border-b
-          border-slate-200
           flex
           items-center
           justify-between
@@ -37,7 +38,7 @@ export default function ActiveJobsSection() {
             <FilterListIcon />
           </button>
 
-          <button className="text-slate-500 hover:text-emerald-700">
+          <button className="text-slate-500 hover:text-emerald-700 cursor-pointer">
             <MoreVertIcon />
           </button>
         </div>
@@ -45,5 +46,6 @@ export default function ActiveJobsSection() {
 
       <ActiveJobsTable />
     </Card>
+    </motion.div>
   );
 }

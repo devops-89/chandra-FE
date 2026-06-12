@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { servicesData } from '@/constants/admin/serviceData';
+import { useServices } from '@/store/ServiceContext';
 import type { AdminService, EditServiceFormData } from '@/types/admin/service.types';
 
 /**
@@ -15,9 +15,7 @@ import type { AdminService, EditServiceFormData } from '@/types/admin/service.ty
  */
 export function useServiceManager() {
   // Seed from the static constants file; in a real app this would come from an API.
-  const [services, setServices] = useState<AdminService[]>(
-    servicesData as AdminService[],
-  );
+  const {services, setServices,} = useServices();
 
   // ── Edit ────────────────────────────────────────────────────────
   const [editTarget, setEditTarget] = useState<AdminService | null>(null);

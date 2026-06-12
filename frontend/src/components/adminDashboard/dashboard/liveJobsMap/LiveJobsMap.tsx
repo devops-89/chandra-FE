@@ -1,17 +1,20 @@
 'use client';
-
 import Card from '@mui/material/Card';
+import {motion} from 'framer-motion'
 
 // import TechnicianMarker from './TechnicianMarker';
 
 export default function LiveJobsMap() {
   return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="rounded-2xl border border-slate-200 bg-white hover:shadow-lg p-5 cursor-default"
+    >
     <Card
       elevation={0}
       className="
         rounded-2xl
-        border
-        border-slate-200
         overflow-hidden
       "
     >
@@ -162,5 +165,6 @@ export default function LiveJobsMap() {
         </div>
       </div>
     </Card>
+    </motion.div>
   );
 }

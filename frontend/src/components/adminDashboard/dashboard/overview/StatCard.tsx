@@ -1,7 +1,7 @@
 'use client';
-
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import Card from '@mui/material/Card';
+import { motion } from 'framer-motion';
 
 interface StatCardProps {
   title: string;
@@ -19,12 +19,16 @@ export default function StatCard({
   subtitle,
 }: StatCardProps) {
   return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="rounded-2xl border border-slate-200 bg-white hover:shadow-lg p-5 cursor-default"
+    >
     <Card
       elevation={0}
       className={`
         p-6
         rounded-2xl
-        border
         transition-all
         hover:shadow-lg
         hover:-translate-y-1
@@ -94,5 +98,6 @@ export default function StatCard({
         </div>
       </div>
     </Card>
+    </motion.div>
   );
 }

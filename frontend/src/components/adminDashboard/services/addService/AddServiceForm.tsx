@@ -15,6 +15,9 @@ import {
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { useServices }
+from "@/store/ServiceContext";
+
 import BasicInfoStep from './BasicInfoStep';
 import DescriptionStep from './DescriptionStep';
 import PricingStep from './PricingStep';
@@ -78,9 +81,6 @@ function validateStep(step: number, data: FormData): FormErrors {
       errors.basePrice = 'Base price is required.';
     else if (isNaN(Number(data.basePrice)) || Number(data.basePrice) <= 0)
       errors.basePrice = 'Enter a valid price greater than 0.';
-
-    if (!data.duration.trim())
-      errors.duration = 'Service duration is required.';
   }
 
   if (step === 4) {
@@ -123,6 +123,9 @@ export default function AddServiceForm() {
   const [touched, setTouched]     = useState(false);  // whether Next was attempted
   const [submitted, setSubmitted] = useState(false);
 
+  const { addService } =
+  useServices();
+
   const update = (field: string, value: string | File | null) => {
     setData((prev) => ({ ...prev, [field]: value }));
     // clear the error for this field as soon as the user edits it
@@ -148,15 +151,43 @@ export default function AddServiceForm() {
     goTo(step + 1);
   };
 
-  const handleSubmit = () => {
-    const stepErrors = validateStep(step, data);
-    if (Object.keys(stepErrors).length > 0) {
-      setErrors(stepErrors);
-      setTouched(true);
-      return;
-    }
-    console.log('Service submitted:', data);
-    setSubmitted(true);
+  const [isPublishing, setIsPublishing] =
+  useState(false);
+
+
+  const [publishSuccess, setPublishSuccess] =
+  useState(false);
+
+  const handleSubmit = async () => {
+  const errors = validateStep(4, data);
+
+  if (Object.keys(errors).length > 0) {
+    setErrors(errors);
+    return;
+  }
+
+  setIsPublishing(true);
+
+  addService({
+    id: Date.now(),
+    name: data.name,
+    category: data.category,
+    subcategory: data.subcategory,
+    price: Number(data.basePrice),
+    duration: data.duration,
+    status: "Active",
+    image: "/images/service-placeholder.png",
+    bookings: 0,
+  });
+
+  setIsPublishing(false);
+  setSubmitted(true);
+
+  await new Promise((resolve) =>
+    setTimeout(resolve, 4000)
+  );
+
+  router.push("/dashboard/admin/services");
   };
 
   const hasErrors = touched && Object.keys(errors).length > 0;
@@ -177,6 +208,9 @@ export default function AddServiceForm() {
           <p className="mt-2 text-slate-500">
             <span className="font-semibold text-slate-700">{data.name}</span> has
             been added to the services catalogue.
+          </p>
+          <p className="mt-2 text-slate-500">
+            Redirecting to Services...
           </p>
         </div>
         <div className="flex gap-3">
@@ -336,7 +370,7 @@ export default function AddServiceForm() {
               )}
               {step === 2 && (
                 <PricingStep
-                  data={{ pricingType: data.pricingType, basePrice: data.basePrice, duration: data.duration }}
+                  data={{ pricingType: data.pricingType, basePrice: data.basePrice }}
                   errors={errors}
                   onChange={update}
                 />
@@ -389,10 +423,10 @@ export default function AddServiceForm() {
           ) : (
             <button
               onClick={handleSubmit}
-              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
+              disabled={isPublishing || publishSuccess}
+              className="rounded-xl bg-emerald-600 px-6 py-3 hover:bg-emerald-700 cursor-pointer text-white"
             >
-              <Send size={15} />
-              Publish Service
+            Publish Service
             </button>
           )}
         </div>
