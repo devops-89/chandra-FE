@@ -36,6 +36,8 @@ export default function JobRow({
             bg-emerald-100
             text-emerald-700
             text-xs
+            flex
+            justify-center
             font-medium
           "
         >
@@ -43,7 +45,7 @@ export default function JobRow({
         </span>
       </td>
 
-      <td className="px-6 py-4">
+      <td className="flex px-6 py-4">
         <JobStatusBadge
           status={job.status}
         />

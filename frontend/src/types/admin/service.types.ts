@@ -1,7 +1,7 @@
 export type ServiceStatus = 'Active' | 'Inactive';
 
 export interface AdminService {
-  id: string;
+  id: number;
   image: string;
   name: string;
   category: string;
@@ -14,6 +14,7 @@ export interface AdminService {
 
 /** Shape of the edit form's controlled state */
 export interface EditServiceFormData {
+  id: number;
   name: string;
   category: string;
   subcategory: string;
@@ -21,3 +22,18 @@ export interface EditServiceFormData {
   duration: string;
   status: ServiceStatus;
 }
+
+
+export interface Subcategory {
+  id: number;
+  name: string;
+  categoryId: number;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+  subcategories: string[];
+}
+

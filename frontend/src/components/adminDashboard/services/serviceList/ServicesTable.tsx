@@ -24,7 +24,6 @@ const ServicesTable = () => {
                 <th className="p-4">Service</th>
                 <th className="p-4">Category</th>
                 <th className="p-4">Price</th>
-                <th className="p-4">Duration</th>
                 <th className="p-4">Status</th>
                 <th className="p-4">Bookings</th>
                 <th className="p-4">Actions</th>

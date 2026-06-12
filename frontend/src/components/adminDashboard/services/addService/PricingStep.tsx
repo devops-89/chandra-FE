@@ -1,12 +1,8 @@
 'use client';
 
-import { FieldError, type FormErrors } from './AddServiceForm';
+import type { Pricing } from '@/types/admin/category.types';
 
-interface Props {
-  data: { pricingType: string; basePrice: string; duration: string };
-  errors: FormErrors;
-  onChange: (field: string, value: string) => void;
-}
+import { FieldError } from './AddServiceForm';
 
 const PRICING_TYPES = ['Fixed Price', 'Starting Price', 'Inspection Based'];
 
@@ -17,7 +13,7 @@ const inputBase = `
   focus:ring-2 focus:ring-emerald-100
 `;
 
-export default function PricingStep({ data, errors, onChange }: Props) {
+export default function PricingStep({ data, errors, onChange }: Pricing) {
   return (
     <div className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2">
@@ -67,24 +63,6 @@ export default function PricingStep({ data, errors, onChange }: Props) {
           </div>
           <FieldError message={errors.basePrice} />
         </div>
-      </div>
-
-      {/* Duration */}
-      <div>
-        <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          Service Duration <span className="text-red-500">*</span>
-        </label>
-        <input
-          value={data.duration}
-          onChange={(e) => onChange('duration', e.target.value)}
-          placeholder="e.g. 60 mins, 2–3 hours"
-          className={`${inputBase} ${
-            errors.duration
-              ? 'border-red-400 focus:border-red-400'
-              : 'border-slate-200 focus:border-emerald-500'
-          }`}
-        />
-        <FieldError message={errors.duration} />
       </div>
     </div>
   );

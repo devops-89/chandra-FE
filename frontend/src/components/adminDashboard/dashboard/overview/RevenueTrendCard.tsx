@@ -1,12 +1,17 @@
 'use client';
-
 import Card from '@mui/material/Card';
+import {motion} from 'framer-motion';
 
 export default function RevenueTrendCard() {
   return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="rounded-2xl border border-slate-200 bg-white hover:shadow-lg p-5 cursor-default"
+    >
     <Card
       elevation={0}
-      className="p-6 rounded-2xl border border-slate-200"
+      className="p-6 rounded-2xl "
     >
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-slate-800">
@@ -79,5 +84,6 @@ export default function RevenueTrendCard() {
         </svg>
       </div>
     </Card>
+    </motion.div>
   );
 }

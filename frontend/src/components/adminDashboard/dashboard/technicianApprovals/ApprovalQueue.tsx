@@ -1,6 +1,7 @@
 'use client';
 
 import Card from '@mui/material/Card';
+import {motion} from 'framer-motion';
 
 import type { TechnicianApproval } from '@/types/admin.types';
 
@@ -39,13 +40,16 @@ const technicians: TechnicianApproval[] = [
 
 export default function ApprovalQueue() {
   return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="rounded-2xl border border-slate-200 bg-white hover:shadow-lg p-5 cursor-default"
+    >
     <Card
       elevation={0}
       className="
         p-6
         rounded-2xl
-        border
-        border-slate-200
       "
     >
       <SectionHeader
@@ -64,5 +68,6 @@ export default function ApprovalQueue() {
         )}
       </div>
     </Card>
+    </motion.div>
   );
 }

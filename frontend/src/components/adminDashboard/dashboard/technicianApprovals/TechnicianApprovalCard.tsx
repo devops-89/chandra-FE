@@ -2,6 +2,7 @@
 
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
+import {motion} from 'framer-motion';
 import { useState } from 'react';
 
 import type { TechnicianApproval } from '@/types/admin.types';
@@ -21,12 +22,15 @@ export default function TechnicianApprovalCard({
 
   return (
     <>
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="rounded-2xl border border-slate-200 bg-white hover:shadow-lg p-5 cursor-default"
+    >
       <Card
         elevation={0}
         className="
           p-5
-          border
-          border-slate-200
           rounded-2xl
         "
       >
@@ -110,7 +114,7 @@ export default function TechnicianApprovalCard({
           </div>
         </div>
       </Card>
-
+      </motion.div>
       <TechnicianDetailsModal
         open={open}
         onClose={() => setOpen(false)}

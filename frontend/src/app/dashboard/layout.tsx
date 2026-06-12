@@ -1,13 +1,13 @@
-import type { ReactNode } from 'react';
+import { ServiceProvider } from "@/store/ServiceContext";
 
-export default function CustomerDashboardLayout({
+export default function AdminLayout({
   children,
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   return (
-    <div>
+    <ServiceProvider>
       {children}
-    </div>
+    </ServiceProvider>
   );
 }
