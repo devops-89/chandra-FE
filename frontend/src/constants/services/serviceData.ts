@@ -101,7 +101,7 @@ export const servicesData: Service[] = [
     description:
       'Complete AC inspection, cleaning and maintenance by certified technicians.',
     price: 699,
-    gridSize: { md: 5 },
+    gridSize: { md: 7 },
     image: '/images/services/ac-servicing.png',
     overview:
       'Ensure your air conditioner performs efficiently throughout the year with our comprehensive AC servicing. Our skilled technicians provide thorough cleaning and maintenance.',
@@ -187,7 +187,7 @@ export const servicesData: Service[] = [
     description:
       'Complete electrical inspection, cleaning and maintenance by certified technicians.',
     price: 699,
-    gridSize: { md: 5 },
+    gridSize: { md: 7 },
     image: '/images/services/electrical.png',
     overview:
       'Ensure your electrical systems perform efficiently and safely throughout the year. Our certified electricians provide comprehensive electrical maintenance and safety checks.',

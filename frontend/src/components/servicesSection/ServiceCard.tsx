@@ -9,7 +9,7 @@ export function ServiceCard({
 }: ServiceCardProps) {
   return (
     <Link href={`/services/${service.slug}`} className="block h-full">
-      <div className="flex hover:shadow-lg bg-[#FEF7EC] transition-all duration-300 h-full flex-col overflow-hidden justify-between rounded-2xl cursor-pointer">
+      <div className="flex border border-slate-300 hover:shadow-lg bg-white border border-[#E8E2D6] transition-all duration-300 h-full flex-col overflow-hidden justify-between rounded-2xl cursor-pointer">
         <div className='text-black p-5'>
           <h3 className="mb-1 text-2xl font-semibold">
             {service.title}

@@ -7,7 +7,7 @@ export const publicNavItems: PublicNavigationItem[] = [
   },
   {
     label: 'Services',
-    href: '#services',
+    href: '/services',
   },
   {
     label: 'About',
