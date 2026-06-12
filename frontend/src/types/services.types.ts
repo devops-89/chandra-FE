@@ -76,3 +76,18 @@ export type Props = {
   time: string;
   status: string;
 };
+
+export interface EditServiceForm {
+  open: boolean;
+  onClose: () => void;
+  category: {
+    id: number;
+    name: string;
+    services: number;
+  } | null;
+  onSave: (category: {
+    id: number;
+    name: string;
+    services: number;
+  }) => void;
+}
