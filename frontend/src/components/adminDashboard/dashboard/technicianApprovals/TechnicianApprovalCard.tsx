@@ -25,7 +25,7 @@ export default function TechnicianApprovalCard({
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
-      className="rounded-2xl border border-slate-200 bg-white hover:shadow-lg p-5 cursor-default"
+      className="rounded-2xl bg-white hover:shadow-lg p-5 cursor-default"
     >
       <Card
         elevation={0}

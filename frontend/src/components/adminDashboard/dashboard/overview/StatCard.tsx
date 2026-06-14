@@ -27,11 +27,6 @@ export default function StatCard({
     <Card
       elevation={0}
       className={`
-        p-6
-        rounded-2xl
-        transition-all
-        hover:shadow-lg
-        hover:-translate-y-1
         ${
           priority
             ? 'border-red-200 bg-red-50/30'

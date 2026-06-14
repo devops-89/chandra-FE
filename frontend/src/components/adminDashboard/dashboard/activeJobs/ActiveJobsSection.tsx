@@ -34,7 +34,7 @@ export default function ActiveJobsSection() {
         </h2>
 
         <div className="flex items-center gap-3">
-          <button className="text-slate-500 hover:text-emerald-700">
+          <button className="text-slate-500 hover:text-emerald-700 cursor-pointer">
             <FilterListIcon />
           </button>
 
