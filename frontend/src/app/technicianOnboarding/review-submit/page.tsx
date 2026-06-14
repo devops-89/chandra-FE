@@ -5,7 +5,7 @@ import ReviewSubmit from '@/components/technicianApplication/registration/review
 
 export default function ReviewSubmitPage() {
   return (
-    <OnboardingLayout currentStep={6}>
+    <OnboardingLayout currentStep={5}>
       <ReviewSubmit />
     </OnboardingLayout>
   );

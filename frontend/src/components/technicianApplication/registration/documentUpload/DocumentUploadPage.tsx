@@ -45,7 +45,7 @@ export default function DocumentUploadPage() {
   const handleSubmit = () => {
     // Save state to session storage for later use
     sessionStorage.setItem('documentUploadData', JSON.stringify(state));
-    router.push('/technicianOnboarding/tool-inventory');
+    router.push('/technicianOnboarding/service-area');
   };
 
   return (

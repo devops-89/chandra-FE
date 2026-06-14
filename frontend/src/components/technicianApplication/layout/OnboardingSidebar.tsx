@@ -10,7 +10,6 @@ const stepRoutes = [
   '/technicianOnboarding/personal-info',
   '/technicianOnboarding/skill-tagging',
   '/technicianOnboarding/document-upload',
-  '/technicianOnboarding/tool-inventory',
   '/technicianOnboarding/service-area',
   '/technicianOnboarding/bank-details',
   '/technicianOnboarding/review-submit',

@@ -9,7 +9,7 @@ export default function ServiceAreaPage() {
   const router = useRouter();
 
   const handlePrevious = () => {
-    router.push('/technicianOnboarding/tool-inventory');
+    router.push('/technicianOnboarding/service-area');
   };
 
   const handleSubmit = (data: any) => {
@@ -18,7 +18,7 @@ export default function ServiceAreaPage() {
   };
 
   return (
-    <OnboardingLayout currentStep={4}>
+    <OnboardingLayout currentStep={3}>
       <ServiceArea onPrevious={handlePrevious} onSubmit={handleSubmit} />
     </OnboardingLayout>
   );

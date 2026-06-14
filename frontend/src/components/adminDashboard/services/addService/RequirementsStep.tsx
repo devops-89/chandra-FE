@@ -2,7 +2,7 @@
 
 // Step 3 — all fields optional, no errors prop needed
 interface Props {
-  data: { skills: string; tools: string; questions: string };
+  data: { skills: string; questions: string };
   onChange: (field: string, value: string) => void;
 }
 

@@ -4,7 +4,7 @@ import { BankDetailsSection } from '@/components/technicianApplication/registrat
 
 export default function BankDetailsRoute() {
   return (
-    <OnboardingLayout currentStep={5}>
+    <OnboardingLayout currentStep={4}>
       <BankDetailsSection />
     </OnboardingLayout>
   );
