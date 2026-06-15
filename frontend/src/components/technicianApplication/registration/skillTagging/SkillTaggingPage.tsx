@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { AVAILABLE_SKILLS } from '@/constants/technicianApplication/skillTagging.constants';
@@ -16,6 +17,8 @@ export default function SkillTaggingPage() {
     skillLevel: null,
     brandExpertise: [],
   });
+
+  const router = useRouter()
 
   const handleSelectSkill = (skillId: string) => {
     setState((prev) => ({
@@ -55,6 +58,7 @@ export default function SkillTaggingPage() {
       'skillTaggingData',
       JSON.stringify(state)
     );
+    router.push("/technicianOnboarding/document-upload")
   };
 
   return (

@@ -29,7 +29,7 @@ export default function ContinueButton({ onClick, isDisabled = false }: Continue
       whileTap={!isDisabled ? { scale: 0.98 } : {}}
       transition={{ duration: 0.2 }}
     >
-      Verify & Continue
+      Create Account
       <span className="material-symbols-outlined text-base md:text-lg">arrow_outward</span>
     </motion.button>
   );
