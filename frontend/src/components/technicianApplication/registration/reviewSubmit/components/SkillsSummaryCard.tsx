@@ -23,7 +23,7 @@ export default function SkillsSummaryCard({
         {onEdit && (
           <button
             onClick={onEdit}
-            className="text-primary font-semibold flex items-center gap-1 hover:underline transition-colors"
+            className="text-primary font-semibold flex items-center gap-1 hover:underline cursor-pointer transition-colors"
           >
             <span className="material-symbols-outlined text-sm">edit</span>
             Edit

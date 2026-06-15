@@ -58,7 +58,7 @@ export default function BankDetailsFooter() {
         type="button"
         onClick={handleSaveContinue}
         disabled={isLoading}
-        className="bg-primary hover:bg-emerald-deep disabled:opacity-50 disabled:cursor-not-allowed text-on-primary rounded-lg md:rounded-xl px-6 md:px-8 py-3 font-medium flex items-center gap-2 transition-all shadow-md hover:shadow-lg text-sm md:text-base"
+        className="bg-primary hover:bg-emerald-deep disabled:opacity-50 disabled:cursor-not-allowed text-on-primary cursor-pointer rounded-lg md:rounded-xl px-6 md:px-8 py-3 font-medium flex items-center gap-2 transition-all shadow-md hover:shadow-lg text-sm md:text-base"
         whileHover={!isLoading ? { y: -2 } : {}}
         whileTap={!isLoading ? { scale: 0.98 } : {}}
       >

@@ -16,7 +16,7 @@ export default function VerificationSummaryCard({
 
   return (
     <motion.div
-      className="md:col-span-5 bg-surface-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-low"
+      className="md:col-span-5 h-full bg-surface-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-low"
       variants={cardHoverVariants}
       initial="initial"
       whileHover="hover"

@@ -47,55 +47,42 @@ const ServiceCommissionTable = () => {
   return (
     <>
       <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
-        <div className="border-b p-5">
+        <div className="border-b p-5 bg-emerald-600 text-white">
           <h3 className="font-semibold">
             Service Commission Settings
           </h3>
         </div>
 
-        <table className="w-full">
-          <thead className="bg-emerald-600 text-white">
-            <tr>
-              <th className="p-4 text-left">
-                Service
-              </th>
-
-              <th className="p-4 text-left">
-                Commission
-              </th>
-
-              <th className="p-4 text-left">
-                Action
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {services.map((service) => (
-              <tr key={service.name}>
-                <td className="p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-6">
+          {services.map((service) => (
+            <div
+              key={service.name}
+              className="border border-slate-200 rounded-2xl bg-white p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between cursor-default"
+            >
+              <div>
+                <h4 className="font-semibold text-slate-900 leading-snug">
                   {service.name}
-                </td>
+                </h4>
+                <div className="mt-4">
+                  <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Commission Rate</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">{service.commission}%</p>
+                </div>
+              </div>
 
-                <td className="p-4">
-                  {service.commission}%
-                </td>
-
-                <td className="p-4">
-                  <button
-                    onClick={() => {
-                      setSelectedService(service);
-                      setOpenModal(true);
-                    }}
-                    className="cursor-pointer text-emerald-600 hover:underline"
-                  >
-                    Edit
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              <div className="flex justify-end mt-4 pt-3 border-t border-slate-100">
+                <button
+                  onClick={() => {
+                    setSelectedService(service);
+                    setOpenModal(true);
+                  }}
+                  className="cursor-pointer text-emerald-600 hover:text-emerald-700 font-medium text-sm hover:underline"
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <EditCommissionPage

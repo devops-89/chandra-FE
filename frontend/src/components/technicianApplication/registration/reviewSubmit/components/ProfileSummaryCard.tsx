@@ -13,7 +13,7 @@ export default function ProfileSummaryCard({
 }: ProfileSummaryCardProps) {
   return (
     <motion.div
-      className="md:col-span-7 bg-surface-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-low"
+      className="md:col-span-7 h-full bg-surface-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-low"
       variants={cardHoverVariants}
       initial="initial"
       whileHover="hover"
@@ -24,7 +24,7 @@ export default function ProfileSummaryCard({
           <button
             type="button"
             onClick={onEdit}
-            className="text-primary font-semibold flex items-center gap-1 hover:underline transition-colors"
+            className="text-primary font-semibold flex items-center gap-1 hover:underline cursor-pointer transition-colors"
           >
             <span className="material-symbols-outlined text-sm">edit</span>
             Edit

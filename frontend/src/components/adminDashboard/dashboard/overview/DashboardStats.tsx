@@ -1,9 +1,6 @@
 'use client';
 
-import BookOnlineIcon from '@mui/icons-material/BookOnline';
-import EngineeringIcon from '@mui/icons-material/Engineering';
-import PaymentsIcon from '@mui/icons-material/Payments';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import { CalendarCheck, DollarSign, ShieldAlert, Users } from 'lucide-react';
 
 import StatCard from './StatCard';
 
@@ -12,34 +9,31 @@ export default function DashboardStats() {
     {
       title: 'Total Bookings',
       value: '1,284',
-      icon: <BookOnlineIcon />,
+      icon: <CalendarCheck size={22} />,
     },
     {
       title: 'Active Technicians',
       value: '156',
-      icon: <EngineeringIcon />,
+      icon: <Users size={22} />,
     },
     {
       title: 'Pending Approvals',
       value: '12',
       subtitle: 'High Priority',
       priority: true,
-      icon: <VerifiedUserIcon />,
+      icon: <ShieldAlert size={22} />,
     },
     {
       title: "Today's Revenue",
-      value: '$8,420',
-      icon: <PaymentsIcon />,
+      value: '₹8,420',
+      icon: <DollarSign size={22} />,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 round sm:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
       {stats.map((stat) => (
-        <StatCard
-          key={stat.title}
-          {...stat}
-        />
+        <StatCard key={stat.title} {...stat} />
       ))}
     </div>
   );
