@@ -139,7 +139,7 @@ const CategoriesTable = () => {
 
       <EditServiceForm
         service={selectedCategory && openEditModal ? {
-          id: String(selectedCategory.id),
+          id: selectedCategory.id,
           name: selectedCategory.name,
           category: '',
           subcategory: '',
@@ -165,7 +165,7 @@ const CategoriesTable = () => {
 
       <DeleteCategoryModal
         service={selectedCategory && openDeleteModal ? {
-          id: String(selectedCategory.id),
+          id: selectedCategory.id,
           name: selectedCategory.name,
           category: '',
           subcategory: '',

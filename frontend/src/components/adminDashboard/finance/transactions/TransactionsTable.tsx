@@ -1,6 +1,6 @@
 import { transactionsData } from "@/constants/admin/financeData";
 
-import TransactionRow from "./TransactionRow";
+import TransactionCard from "./TransactionCard";
 
 const TransactionsTable = () => {
   return (
@@ -9,26 +9,10 @@ const TransactionsTable = () => {
         <h3 className="font-semibold">Transactions</h3>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[700px]">
-          <thead className="bg-emerald-600 text-white">
-            <tr>
-              <th className="p-4 text-left">ID</th>
-              <th className="p-4 text-left">Booking</th>
-              <th className="p-4 text-left">Customer</th>
-              <th className="p-4 text-left">Amount</th>
-              <th className="p-4 text-left">Method</th>
-              <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-left">Date</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {transactionsData.map((transaction) => (
-              <TransactionRow key={transaction.id} transaction={transaction} />
-            ))}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        {transactionsData.map((transaction) => (
+          <TransactionCard key={transaction.id} transaction={transaction} />
+        ))}
       </div>
     </div>
   );

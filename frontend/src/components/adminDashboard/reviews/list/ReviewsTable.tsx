@@ -1,31 +1,14 @@
 import { reviewsData } from "@/constants/admin/reviewData";
 
-import ReviewRow from "./ReviewRow";
+import ReviewCard from "./ReviewCard";
 
 const ReviewsTable = () => {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[800px]">
-          <thead className="bg-emerald-600 text-white">
-            <tr>
-              <th className="p-4 text-left">Customer</th>
-              <th className="p-4 text-left">Technician</th>
-              <th className="p-4 text-left">Service</th>
-              <th className="p-4 text-left">Rating</th>
-              <th className="p-4 text-left">Comment</th>
-              <th className="p-4 text-left">Date</th>
-              <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-left">Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {reviewsData.map((review) => (
-              <ReviewRow key={review.id} review={review} />
-            ))}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        {reviewsData.map((review) => (
+          <ReviewCard key={review.id} review={review} />
+        ))}
       </div>
     </div>
   );

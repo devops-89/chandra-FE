@@ -14,7 +14,7 @@ export default function SectionHeader({
 }: Props) {
   const router= useRouter();
   return (
-    <div className="flex items-center justify-between mb-5">
+    <div className="flex items-center justify-between mb-2">
       <h2 className="text-xl font-semibold text-slate-800">
         {title}
       </h2>
