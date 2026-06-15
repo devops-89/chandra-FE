@@ -1,6 +1,6 @@
 const CustomerAddresses = () => {
   return (
-    <div className="rounded-2xl border bg-white p-6">
+    <div className="rounded-2xl bg-white p-6">
       <h3 className="mb-4 text-lg font-semibold">
         Saved Addresses
       </h3>

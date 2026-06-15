@@ -1,6 +1,6 @@
 const CustomerOverview = () => {
   return (
-    <div className="rounded-2xl border bg-white p-6">
+    <div className="rounded-2xl border-4 border-emerald-600 bg-white p-6">
       <h3 className="mb-4 text-lg font-semibold">
         Customer Overview
       </h3>
