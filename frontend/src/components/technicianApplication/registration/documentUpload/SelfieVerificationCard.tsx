@@ -71,7 +71,7 @@ export default function SelfieVerificationCard({
 
       <button
         onClick={handleCapture}
-        className="bg-emerald-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-800 transition-colors inline-block"
+        className="bg-emerald-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-800 transition-colors cursor-pointer inline-block"
       >
         {SELFIE_UPLOAD_TEXT.buttonText}
       </button>

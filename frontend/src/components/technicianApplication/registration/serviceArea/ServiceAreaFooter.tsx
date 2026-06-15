@@ -21,7 +21,7 @@ export default function ServiceAreaFooter({
       <button
         onClick={onSubmit}
         type="button"
-        className="flex items-center gap-2 px-6 py-3 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors font-medium"
+        className="flex items-center gap-2 px-6 py-3 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 cursor-pointer transition-colors font-medium"
       >
         {SERVICE_AREA_TEXT.submitButton}
         <span className="material-symbols-outlined">check_circle</span>

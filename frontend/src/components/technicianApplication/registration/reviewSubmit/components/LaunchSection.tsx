@@ -13,7 +13,7 @@ export default function LaunchSection({
 }: LaunchSectionProps) {
   return (
     <motion.div
-      className="mt-32 mb-16 p-10 bg-emerald-deep rounded-4xl text-white flex flex-col items-center text-center shadow-2xl relative overflow-hidden"
+      className="mt-6 mb-16 p-10 bg-emerald-deep rounded-4xl text-white flex flex-col items-center text-center shadow-2xl relative overflow-hidden"
       variants={launchSectionVariants}
       initial="initial"
       animate="visible"
