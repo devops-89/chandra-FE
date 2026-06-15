@@ -103,9 +103,9 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        <div className="flex items-center justify-between px-6 py-6 border-b border-slate-200">
+        <div className="flex items-center justify-between px-6 py-6 border-b">
           <div>
-            <h2 className="text-2xl font-bold text-emerald-600">HiChandra</h2>
+            <h2 className="text-2xl font-bold text-emerald-700">HiChandra</h2>
             <p className="text-sm text-slate-500">Admin Portal</p>
           </div>
           <button

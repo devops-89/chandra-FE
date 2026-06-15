@@ -64,10 +64,6 @@ export default function ActiveJobsTable() {
             <th className="px-6 py-4 text-left text-sm font-semibold text-slate-500">
               Status
             </th>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-slate-500">
-              Action
-            </th>
           </tr>
         </thead>
 
