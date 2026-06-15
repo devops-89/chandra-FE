@@ -21,7 +21,7 @@ export default function TechnicianApprovalCard({ technician }: Props) {
 
   return (
     <>
-      <div className="group rounded-2xl border border-slate-100 bg-slate-50/50 p-4 hover:border-emerald-200 hover:bg-white hover:shadow-sm transition-all duration-200">
+      <div className="group rounded-2xl p-10 border border-slate-100 bg-slate-50/50 hover:border-emerald-200 hover:bg-white hover:shadow-sm transition-all duration-200">
         {/* Top row: Avatar + Info + Status Badge */}
         <div className="flex items-start gap-3">
           {/* Avatar */}

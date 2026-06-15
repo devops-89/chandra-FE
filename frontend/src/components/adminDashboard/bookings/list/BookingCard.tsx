@@ -4,21 +4,29 @@ import { useState } from 'react';
 
 import type { Booking } from '@/constants/admin/bookingData';
 
+import AssignTechnicianModal from '../actions/AssignTechnicianModal';
 import BookingDetailsDrawer from '../details/BookingDetailsDrawer';
 
 interface Props {
   booking: Booking;
 }
 
-const BookingCard = ({ booking }: Props) => {
-  const [open, setOpen] = useState(false);
+const BookingCard = ({ booking: initialBooking }: Props) => {
+  const [booking, setBooking] = useState<Booking>(initialBooking);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [assignOpen, setAssignOpen] = useState(false);
 
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     Pending: 'bg-yellow-100 text-yellow-700',
     Assigned: 'bg-blue-100 text-blue-700',
     'In Progress': 'bg-emerald-100 text-emerald-700',
     Completed: 'bg-green-100 text-green-700',
     Cancelled: 'bg-red-100 text-red-700',
+  };
+
+  const handleAssign = (technicianName: string) => {
+    setBooking((prev) => ({ ...prev, technician: technicianName, status: 'Assigned' }));
+    setAssignOpen(false);
   };
 
   return (
@@ -51,7 +59,19 @@ const BookingCard = ({ booking }: Props) => {
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Technician</p>
-              <p className="text-xs font-semibold text-slate-800 mt-0.5">{booking.technician}</p>
+              {booking.technician && booking.technician !== '-' ? (
+                <p className="text-xs font-semibold text-slate-800 mt-0.5">{booking.technician}</p>
+              ) : (
+                <button
+                  onClick={() => setAssignOpen(true)}
+                  className="mt-0.5 text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer transition-colors flex items-center gap-1"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Assign
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -63,13 +83,11 @@ const BookingCard = ({ booking }: Props) => {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-base font-bold text-slate-900">
-              ₹{booking.amount}
-            </span>
+            <span className="text-base font-bold text-slate-900">₹{booking.amount}</span>
 
             <button
-              onClick={() => setOpen(true)}
-              className="text-emerald-600 hover:text-emerald-700 font-medium text-sm hover:underline cursor-pointer"
+              onClick={() => setDrawerOpen(true)}
+              className="text-emerald-600 hover:text-emerald-700 font-medium text-sm hover:underline cursor-pointer transition-colors"
             >
               View
             </button>
@@ -77,10 +95,19 @@ const BookingCard = ({ booking }: Props) => {
         </div>
       </div>
 
+      {/* Details Drawer */}
       <BookingDetailsDrawer
-        open={open}
-        onClose={() => setOpen(false)}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
         booking={booking}
+      />
+
+      {/* Quick-assign modal (from card shortcut) */}
+      <AssignTechnicianModal
+        open={assignOpen}
+        booking={booking}
+        onClose={() => setAssignOpen(false)}
+        onAssign={handleAssign}
       />
     </>
   );

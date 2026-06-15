@@ -25,7 +25,7 @@ const CustomerCard = ({ customer }: Props) => {
               <h4 className="font-semibold text-slate-900 leading-snug">
                 {customer.name}
               </h4>
-              <p className="text-xs text-slate-400 mt-0.5 max-w-[150px] truncate">
+              <p className="text-xs text-slate-400 mt-0.5 max-w-37.5 truncate">
                 {customer.email}
               </p>
             </div>

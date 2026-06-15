@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -116,4 +118,4 @@ const ReviewDetailsDrawer = ({ open, onClose }: Props) => {
   );
 };
 
-export default ReviewDetailsDrawer;
+export default ReviewDetailsDrawer;
