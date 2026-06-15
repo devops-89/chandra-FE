@@ -95,7 +95,7 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
           {!isPending && (
             <button
               onClick={() => onToggleSuspend(technician.id)}
-              className={`text-xs font-semibold cursor-pointer transition-colors ${
+              className={`text-xs font-semibold cursor-pointer hover:underline transition-colors ${
                 isActive
                   ? "text-red-600 hover:text-red-700"
                   : "text-emerald-600 hover:text-emerald-700"
@@ -108,7 +108,7 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
 
         <button
           onClick={() => onViewDetails?.(technician)}
-          className="flex items-center gap-1 text-emerald-600 hover:text-emerald-700 font-semibold text-sm cursor-pointer transition-colors"
+          className="flex items-center gap-1 text-emerald-600 hover:underline hover:text-emerald-700 font-semibold text-sm cursor-pointer transition-colors"
         >
           <User size={14} />
           {isPending ? "Review Application" : "View Profile"}

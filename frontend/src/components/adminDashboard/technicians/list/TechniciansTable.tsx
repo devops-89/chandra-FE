@@ -10,11 +10,11 @@ interface Props {
 
 const TechniciansTable = ({ technicians, onToggleSuspend, onViewDetails }: Props) => {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <div className="border-b border-slate-200 p-5 bg-slate-50/50 flex items-center justify-between">
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white ">
+      <div className="p-5 bg-emerald-600 flex items-center justify-between">
         <div>
-          <h2 className="font-semibold text-slate-800">Current Technicians</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h2 className="font-semibold text-white">Current Technicians</h2>
+          <p className="text-xs text-white mt-0.5">
             Total of {technicians.length} technician records found
           </p>
         </div>

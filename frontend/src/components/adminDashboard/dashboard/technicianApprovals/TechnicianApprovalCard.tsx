@@ -1,120 +1,113 @@
 'use client';
 
-import Avatar from '@mui/material/Avatar';
-import Card from '@mui/material/Card';
-import {motion} from 'framer-motion';
+import { Briefcase, Check, CheckCircle, Clock, Eye, MapPin, X } from 'lucide-react';
 import { useState } from 'react';
 
 import type { TechnicianApproval } from '@/types/admin.types';
 
-import StatusBadge from '../shared/StatusBadge';
-import ApprovalActions from './ApprovalActions';
 import TechnicianDetailsModal from './TechnicianDetailsModal';
 
 interface Props {
   technician: TechnicianApproval;
 }
 
-export default function TechnicianApprovalCard({
-  technician,
-}: Props) {
+export default function TechnicianApprovalCard({ technician }: Props) {
   const [open, setOpen] = useState(false);
+
+  const initials = technician.name
+    .split(' ')
+    .map((word: string) => word[0])
+    .join('');
 
   return (
     <>
-    <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-      className="rounded-2xl bg-white border border-slate-200 hover:shadow-lg p-5 cursor-default"
-    >
-      <Card
-        elevation={0}
-        className="
-          p-5
-          rounded-2xl
-        "
-      >
-        <div className="flex flex-col md:flex-row gap-5">
-          <Avatar
-            sx={{
-              width: 72,
-              height: 72,
-              bgcolor: '#10b981',
-              position: "static"
-            }}
-          >
-            {technician.name
-              .split(' ')
-              .map(
-                (word: string) =>
-                  word[0]
-              )
-              .join('')}
-          </Avatar>
+      <div className="group rounded-2xl border border-slate-100 bg-slate-50/50 p-4 hover:border-emerald-200 hover:bg-white hover:shadow-sm transition-all duration-200">
+        {/* Top row: Avatar + Info + Status Badge */}
+        <div className="flex items-start gap-3">
+          {/* Avatar */}
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white text-sm font-bold">
+            {initials}
+          </div>
 
-          <div className="flex-1">
-            <div className="flex justify-between">
-              <div>
-                <h4 className="font-semibold text-lg">
+          {/* Name + meta */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <h4 className="font-semibold text-slate-900 text-sm leading-tight truncate">
                   {technician.name}
                 </h4>
-
-                <p className="text-sm text-slate-500">
-                  {technician.experience}{' '}
-                  Years Experience
-                </p>
+                <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <span className="flex items-center gap-1 text-[11px] text-slate-500">
+                    <Briefcase size={11} className="text-slate-400" />
+                    {technician.experience} yrs exp
+                  </span>
+                  <span className="flex items-center gap-1 text-[11px] text-slate-500">
+                    <MapPin size={11} className="text-slate-400" />
+                    {technician.address}
+                  </span>
+                </div>
               </div>
 
-              <StatusBadge
-                label={
+              {/* Verified / Pending badge */}
+              <span
+                className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                   technician.verified
-                    ? 'DOCS VERIFIED'
-                    : 'PENDING'
-                }
-                type={
-                  technician.verified
-                    ? 'success'
-                    : 'warning'
-                }
-              />
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-yellow-100 text-yellow-700'
+                }`}
+              >
+                {technician.verified ? (
+                  <CheckCircle size={10} />
+                ) : (
+                  <Clock size={10} />
+                )}
+                {technician.verified ? 'Docs Verified' : 'Pending'}
+              </span>
             </div>
-
-            <div className="flex flex-wrap gap-2 mt-4">
-              {technician.skills.map(
-                (skill: string) => (
-                  <span
-                    key={skill}
-                    className="
-                      px-3
-                      py-1
-                      rounded-2xl
-                      bg-emerald-100
-                      text-emerald-700
-                      text-xs
-                      font-medium
-                    "
-                  >
-                    {skill}
-                  </span>
-                )
-              )}
-            </div>
-
-            <ApprovalActions
-                onApprove={() =>
-                console.log('approved')
-                }
-                onReject={() =>
-                console.log('rejected')
-                }
-                onView={() =>
-                setOpen(true)
-                }
-            />
           </div>
         </div>
-      </Card>
-      </motion.div>
+
+        {/* Skills */}
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {technician.skills.map((skill: string) => (
+            <span
+              key={skill}
+              className="rounded-lg bg-emerald-100 px-2.5 py-0.5 text-[11px] font-medium text-emerald-700"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+
+        {/* Actions */}
+        <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => console.log('approved', technician.id)}
+              className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition-colors cursor-pointer"
+            >
+              <Check size={12} />
+              Approve
+            </button>
+            <button
+              onClick={() => console.log('rejected', technician.id)}
+              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors cursor-pointer"
+            >
+              <X size={12} />
+              Reject
+            </button>
+          </div>
+
+          <button
+            onClick={() => setOpen(true)}
+            className="flex items-center gap-1 text-xs font-medium text-emerald-700 hover:text-emerald-800 hover:underline transition-colors cursor-pointer"
+          >
+            <Eye size={13} />
+            View Details
+          </button>
+        </div>
+      </div>
+
       <TechnicianDetailsModal
         open={open}
         onClose={() => setOpen(false)}

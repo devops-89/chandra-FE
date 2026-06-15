@@ -5,7 +5,7 @@ import PayoutCard from "./PayoutCard";
 const PayoutTable = () => {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
-      <div className="border-b border-slate-400 p-5">
+      <div className="border-b border-slate-400 p-5 bg-emerald-600 text-white">
         <h3 className="font-semibold">Technician Payouts</h3>
       </div>
 

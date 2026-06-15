@@ -3,12 +3,12 @@ import { commissionHistoryData } from "@/constants/admin/commissionHistoryData";
 const CommissionHistory = () => {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
-      <div className="border-b p-5">
+      <div className="border-b p-5 bg-emerald-600 ">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">
+          <h3 className="text-lg font-semibold text-white ">
             Commission History
           </h3>
-          <p className="mt-1 text-sm text-slate-700">
+          <p className="mt-1 text-sm text-white">
             Track all commission changes made by admins.
           </p>
         </div>

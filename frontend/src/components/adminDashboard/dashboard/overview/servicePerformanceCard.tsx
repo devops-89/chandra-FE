@@ -1,72 +1,45 @@
 'use client';
-import Card from '@mui/material/Card';
-import LinearProgress from '@mui/material/LinearProgress';
-import {motion} from 'framer-motion';
+
+import { motion } from 'framer-motion';
 
 export default function ServicePerformanceCard() {
   const services = [
-    {
-      name: 'Solar',
-      value: 42,
-    },
-    {
-      name: 'AC Repair',
-      value: 28,
-    },
-    {
-      name: 'Plumbing',
-      value: 18,
-    },
-    {
-      name: 'Electrical',
-      value: 12,
-    },
+    { name: 'Solar', value: 42 },
+    { name: 'AC Repair', value: 28 },
+    { name: 'Plumbing', value: 18 },
+    { name: 'Electrical', value: 12 },
   ];
 
   return (
     <motion.div
       whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
-      className="rounded-2xl border border-slate-200 bg-white hover:shadow-lg p-5 cursor-default"
+      className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md p-5 cursor-default transition-shadow"
     >
-    <Card
-      elevation={0}
-      className="p-6 rounded-2xl"
-    >
-      <h3 className="font-semibold text-slate-800 mb-6">
-        Service Performance
-      </h3>
+      <h3 className="font-semibold text-slate-800 mb-1">Service Performance</h3>
+      <p className="text-xs text-slate-400 mb-5">Booking share by category</p>
 
-      <div className="space-y-5">
+      <div className="space-y-4">
         {services.map((service) => (
           <div key={service.name}>
-            <div className="flex justify-between mb-2">
-              <span className="text-sm text-slate-600">
-                {service.name}
-              </span>
-
-              <span className="font-semibold text-slate-800">
-                {service.value}%
-              </span>
+            <div className="flex justify-between mb-1.5">
+              <span className="text-sm text-slate-600 font-medium">{service.name}</span>
+              <span className="text-sm font-bold text-slate-800">{service.value}%</span>
             </div>
 
-            <LinearProgress
-              variant="determinate"
-              value={service.value}
-              sx={{
-                height: 8,
-                borderRadius: 10,
-                backgroundColor: '#e2e8f0',
-                '& .MuiLinearProgress-bar': {
-                  backgroundColor: '#059669',
-                  borderRadius: 10,
-                },
-              }}
-            />
+            {/* Native progress bar — no MUI dependency */}
+            <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+              <motion.div
+                className="h-full rounded-full bg-emerald-600"
+                initial={{ width: 0 }}
+                animate={{ width: `${service.value}%` }}
+                transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
+              />
+            </div>
           </div>
         ))}
       </div>
-    </Card>
     </motion.div>
   );
 }

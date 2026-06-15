@@ -126,7 +126,7 @@ const Technicians = () => {
         >
           <UserCog size={16} />
           All Technicians
-          <span className="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+          <span className="ml-1 rounded-full bg-emerald-600 px-2 py-0.5 text-xs text-white">
             {technicians.length}
           </span>
         </button>

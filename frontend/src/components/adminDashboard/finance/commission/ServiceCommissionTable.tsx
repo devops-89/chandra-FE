@@ -47,7 +47,7 @@ const ServiceCommissionTable = () => {
   return (
     <>
       <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
-        <div className="border-b p-5">
+        <div className="border-b p-5 bg-emerald-600 text-white">
           <h3 className="font-semibold">
             Service Commission Settings
           </h3>
