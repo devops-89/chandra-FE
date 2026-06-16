@@ -14,10 +14,14 @@ export const validateSignup = (
 
   if (!values.firstName.trim()) {
     errors.firstName = 'First name is required';
+  } else if (!/^[A-Za-z\s'-]+$/.test(values.firstName.trim())) {
+    errors.firstName = 'First name must contain letters only';
   }
 
   if (!values.lastName.trim()) {
     errors.lastName = 'Last name is required';
+  } else if (!/^[A-Za-z\s'-]+$/.test(values.lastName.trim())) {
+    errors.lastName = 'Last name must contain letters only';
   }
 
   const phoneError = validatePhone(

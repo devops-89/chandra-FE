@@ -7,10 +7,15 @@ import { handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
 import { validateSignup } from '@/lib/validator/signup.validator';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
-import type {
-  SignupErrors,
-  SignupFormData,
-} from '@/types/auth.types';
+import {
+  generateOtpService,
+  loginService,
+  registerCustomerService,
+  verifyOtpService,
+} from '@/services/auth.service';
+import type { SignupErrors, SignupFormData } from '@/types/auth.types';
+
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const INITIAL_FORM: SignupFormData = {
   firstName: '',
@@ -22,74 +27,174 @@ const INITIAL_FORM: SignupFormData = {
   termsAccepted: false,
 };
 
+/** Default customer address — city/state/pincode filled by user later in profile */
+const DEFAULT_ADDRESS = {
+  latitude: 28.6139,
+  longitude: 77.209,
+  fullAddress: '',
+  city: '',
+  state: '',
+  pincode: '',
+  label: 'Home' as const,
+};
+
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+
 export const useSignupForm = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const [form, setForm] =
-    useState<SignupFormData>(
-      INITIAL_FORM,
-    );
+  // Form state
+  const [form, setForm] = useState<SignupFormData>(INITIAL_FORM);
+  const [errors, setErrors] = useState<SignupErrors>({});
 
-  const [errors, setErrors] =
-    useState<SignupErrors>({});
+  // Step state — controls whether the OTP modal is open
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
-  const handleChange = (
-    name: keyof SignupFormData,
-    value: string | boolean,
-  ) => {
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Loading flags — each step gets its own flag for accurate button states
+  const [isSendingOtp, setIsSendingOtp] = useState(false);   // "Create account" button
+  const [isVerifying, setIsVerifying] = useState(false);      // "Verify OTP" button
+  const [isResending, setIsResending] = useState(false);      // "Resend OTP" link
 
-    setErrors((prev) => ({
-      ...prev,
-      [name]: undefined,
-    }));
+  // Error state — separate for form-level and OTP-modal-level errors
+  const [formApiError, setFormApiError] = useState<string>('');
+  const [otpApiError, setOtpApiError] = useState<string>('');
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+
+  const handleChange = (name: keyof SignupFormData, value: string | boolean) => {
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+    if (formApiError) setFormApiError('');
   };
 
-  const handleSubmit = () => {
-    const validationErrors =
-      validateSignup(form);
+  const extractError = (error: unknown): string => {
+    const err = error as { response?: { data?: { message?: string } } };
+    return err?.response?.data?.message ?? 'Something went wrong. Please try again.';
+  };
 
-    if (
-      Object.keys(validationErrors)
-        .length > 0
-    ) {
+  // ── Step 1: Validate form + call Generate OTP ─────────────────────────────
+
+  const handleSubmit = async () => {
+    const validationErrors = validateSignup(form);
+    if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    /**
-     * API Call Here - simulate successful signup
-     */
+    try {
+      setFormApiError('');
+      setIsSendingOtp(true);
 
-    // Log the user in after successful signup
-    dispatch(
-      setCredentials({
-        user: {
-          id: 1,
-          email: form.email,
-          username: `${form.firstName.toLowerCase()}_${form.lastName.toLowerCase()}`,
-          firstName: form.firstName,
-          lastName: form.lastName,
-          role: 'customer',
-        },
-        accessToken: 'dummy-access-token',
-        refreshToken: 'dummy-refresh-token',
-      })
-    );
+      await generateOtpService({
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        role: 'CUSTOMER',
+      });
 
-    // Handle redirect after successful signup
-    const redirectPath = handlePostAuthRedirect();
-    router.push(redirectPath);
+      // OTP sent — open the modal
+      setShowOtpModal(true);
+    } catch (error: unknown) {
+      setFormApiError(extractError(error));
+    } finally {
+      setIsSendingOtp(false);
+    }
   };
 
+  // ── Step 2: Verify OTP → Register → Auto-login ───────────────────────────
+
+  const handleVerifyOtp = async (otp: string) => {
+    try {
+      setOtpApiError('');
+      setIsVerifying(true);
+
+      // 2a. Verify OTP
+      await verifyOtpService({
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        otp,
+      });
+
+      // 2b. Register customer
+      const username = `${form.firstName.trim().toLowerCase()}_${form.lastName.trim().toLowerCase()}`;
+
+      await registerCustomerService({
+        email: form.email.trim(),
+        username,
+        phone: form.phone.trim(),
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        password: form.password,
+        customerAddress: DEFAULT_ADDRESS,
+      });
+
+      // 2c. Auto-login with the registered credentials
+      const loginResponse = await loginService({
+        email: form.email.trim(),
+        password: form.password,
+      });
+
+      const { user, tokens } = loginResponse.data;
+
+      // Persist tokens
+      localStorage.setItem('accessToken', tokens.accessToken);
+      localStorage.setItem('refreshToken', tokens.refreshToken);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      // Update Redux state
+      dispatch(setCredentials({ user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken }));
+
+      // Redirect
+      const redirectPath = handlePostAuthRedirect();
+      router.push(redirectPath);
+    } catch (error: unknown) {
+      setOtpApiError(extractError(error));
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  // ── Step 2b (resend): call Generate OTP again ────────────────────────────
+
+  const handleResendOtp = async () => {
+    try {
+      setOtpApiError('');
+      setIsResending(true);
+
+      await generateOtpService({
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        role: 'CUSTOMER',
+      });
+    } catch (error: unknown) {
+      setOtpApiError(extractError(error));
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const handleCloseOtpModal = () => {
+    setShowOtpModal(false);
+    setOtpApiError('');
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────
+
   return {
+    // Form
     form,
     errors,
+    formApiError,
+    isSendingOtp,
     handleChange,
     handleSubmit,
+    // OTP modal
+    showOtpModal,
+    otpApiError,
+    isVerifying,
+    isResending,
+    handleVerifyOtp,
+    handleResendOtp,
+    handleCloseOtpModal,
   };
 };
