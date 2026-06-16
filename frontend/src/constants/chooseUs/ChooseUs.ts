@@ -11,7 +11,7 @@ export const ChooseUs: ChooseUsConfig = {
 
   cta: {
     label: 'Contact Us',
-    href: '/contact',
+    href: '#contact',
   },
 
   benefits: [

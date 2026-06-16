@@ -11,14 +11,6 @@ export const footerContent = {
       label: 'About',
       href: '#about',
     },
-    {
-      label: 'FAQ',
-      href: '#faq',
-    },
-    {
-      label: 'Contact',
-      href: '#contact',
-    },
   ],
 
   legal: [

@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 
-import GroupAvatars from '@/components/common/AvatarGroup';
 import type { HeroContentAnimatedProps } from '@/types/hero.types';
 
 const HeroContentAnimated = ({
@@ -77,19 +76,6 @@ const HeroContentAnimated = ({
       >
       {cta.label}
       </button>
-
-        <div className="flex min-w-0 items-center justify-center gap-4 sm:gap-5">
-          <GroupAvatars />
-
-          <div className="text-left">
-            <p className="text-sm font-semibold text-slate-900 sm:text-base">
-              500+ Customers
-            </p>
-            <p className="text-xs text-slate-600">
-              Trust our platform
-            </p>
-          </div>
-        </div>
       </motion.div>
     </motion.div>
   );

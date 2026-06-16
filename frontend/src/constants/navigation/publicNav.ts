@@ -15,6 +15,6 @@ export const publicNavItems: PublicNavigationItem[] = [
   },
   {
     label: 'Contact',
-    href: '/contact',
+    href: '#contact',
   },
 ];
