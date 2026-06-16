@@ -24,29 +24,35 @@ export default function DashboardLayout({
     const userStr = localStorage.getItem('user');
 
     if (!token) {
+      // Only redirect to /login if we're not already navigating away
+      // (e.g. after logout the sidebar already calls router.push('/'))
       router.replace('/login');
-    } else {
-      if (!isAuthenticated && userStr) {
-        try {
-          const user = JSON.parse(userStr);
-          dispatch(
-            setCredentials({
-              user,
-              accessToken: token,
-              refreshToken: refreshToken || '',
-            })
-          );
-        } catch {
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('user');
-          router.replace('/login');
-        }
-      }
-      const id = setTimeout(() => setCheckingAuth(false), 0);
-      return () => clearTimeout(id);
+      return;
     }
-  }, [isAuthenticated, dispatch, router]);
+
+    if (!isAuthenticated && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        dispatch(
+          setCredentials({
+            user,
+            accessToken: token,
+            refreshToken: refreshToken || '',
+          })
+        );
+      } catch {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        router.replace('/login');
+        return;
+      }
+    }
+
+    const id = setTimeout(() => setCheckingAuth(false), 0);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // ← run ONLY on mount, not on every auth state change
 
   if (checkingAuth) {
     return (
@@ -57,18 +63,18 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen overflow-hidden">
       <DashboardSidebar 
         isOpen={sidebarOpen} 
         onClose={() => setSidebarOpen(false)} 
       />
 
-      <main className="flex flex-1 flex-col lg:ml-72 min-w-0">
+      <main className="flex flex-1 flex-col lg:ml-54 min-w-0">
         <DashboardHeader 
           onMenuClick={() => setSidebarOpen(true)} 
         />
 
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <div className="flex-1 p-5 sm:pt-16 lg:p-10 overflow-y-auto">
           {children}
         </div>
       </main>

@@ -22,7 +22,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     dispatch(logout());
-    router.push('/login');
+    router.push('/');
   };
 
   return (
@@ -35,7 +35,6 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           top-0
           z-50
           h-screen
-          w-72
           flex-col
           border-r
           border-slate-200
@@ -43,7 +42,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           lg:flex
         "
       >
-        <div className="px-8 py-8 border-b">
+        <div className="px-8 py-8 border-b border-b-slate-200">
           <h2 className="text-2xl sm:text-3xl font-bold text-emerald-700">
             HiChandra
           </h2>
@@ -77,7 +76,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           })}
         </nav>
 
-        <div className="p-4 border-t">
+        <div className="p-4">
           <button
             onClick={handleLogout}
             className="
@@ -123,7 +122,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <div className="flex items-center justify-between px-6 py-6 border-b">
+        <div className="flex items-center justify-between px-6 py-6 border-b border-b-slate-200">
           <h2 className="text-2xl font-bold text-emerald-700">
             HiChandra
           </h2>
@@ -170,7 +169,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           })}
         </nav>
 
-        <div className="p-4 border-t">
+        <div className="p-4">
           <button
             onClick={() => {
               onClose();

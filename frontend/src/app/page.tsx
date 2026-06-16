@@ -1,3 +1,4 @@
+import PublicRoute from '@/components/auth/PublicRoute';
 import { ChooseSection } from '@/components/chooseUsSection/ChooseSection';
 import PublicFooter from '@/components/common/PublicFooter';
 import PublicNavbar from '@/components/common/PublicNavbar';
@@ -8,7 +9,7 @@ import { TestimonialSection } from '@/components/testimonial&StarRating section/
 
 const Page = () => {
   return (
-    <>
+    <PublicRoute>
       <PublicNavbar />
       <ServiceAvailabilityModal />
       <main className="min-h-screen bg-white">
@@ -18,7 +19,7 @@ const Page = () => {
         <TestimonialSection />
       </main>
       <PublicFooter />
-    </>
+    </PublicRoute>
   );
 };
 
