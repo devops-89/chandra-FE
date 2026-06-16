@@ -149,6 +149,7 @@ export default function OtpModal({
         <div className="mb-6 flex justify-center gap-3">
           {digits.map((digit, i) => (
             <input
+            title='otp-input'
               key={i}
               ref={(el) => { inputRefs.current[i] = el; }}
               type="text"
