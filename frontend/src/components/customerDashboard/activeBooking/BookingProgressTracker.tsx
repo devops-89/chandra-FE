@@ -85,13 +85,13 @@ const BookingProgressTracker = ({
   return (
     <section
       className="
-        p-4
+        p-1
         rounded-3xl
       "
     >
-      <div className="relative flex items-start justify-between">
-        <div className="absolute left-5 right-5 top-5 h-1 bg-slate-200" />
-        <div className="absolute left-5 top-5 h-1 bg-emerald-600"
+      <div className="relative pb-10 w-full flex items-center justify-between">
+        <div className="absolute left-12 right-11 top-5 h-1 bg-slate-200" />
+        <div className="absolute left-12 top-5 h-1 bg-emerald-600"
           style={{
           width: `calc(${(currentStepIndex / (steps.length - 1)) * 100}% - 20px)`,
         }}

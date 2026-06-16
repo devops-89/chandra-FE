@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   MapPin,
   Receipt,
+  Sparkles,
   User,
 } from 'lucide-react';
 
@@ -12,6 +13,11 @@ export const customerDashboardSidebarLinks = [
     label: 'Dashboard',
     href: '/dashboard/customer',
     icon: LayoutDashboard,
+  },
+  {
+    label: 'Services',
+    href: '/services',
+    icon: Sparkles,
   },
   {
     label: 'My Bookings',
@@ -37,5 +43,5 @@ export const customerDashboardSidebarLinks = [
     label: 'Invoices',
     href: '/dashboard/customer/invoices',
     icon: Receipt,
-  }
+  },
 ] as const;

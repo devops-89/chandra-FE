@@ -26,9 +26,9 @@ const ActiveBookingCard = () => {
       </div>
 
       <div className="p-6">
-        <div className="mb-8 text-black flex flex-col items-start justify-between gap-6 md:flex-row">
+        <div className="mb-8 text-black flex flex-col items-center justify-between gap-6 md:flex-row">
           <div>
-            <h3 className="mb-2 text-2xl font-bold">
+            <h3 className="mb-2 text-left text-2xl font-bold">
               {activeBooking.serviceName}
             </h3>
             <div className="flex flex-wrap gap-6 text-sm text-slate-600">

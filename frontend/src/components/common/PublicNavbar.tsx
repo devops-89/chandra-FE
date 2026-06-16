@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import MobileMenu from '@/components/common/MobileMenu';
 import NavbarLinks from '@/components/common/NavbarLinks';
@@ -12,15 +13,26 @@ import { logout } from '@/redux/slices/authSlice';
 const PublicNavbar = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const isAuthenticated = useAppSelector(
-    (state) => state.auth.isAuthenticated
-  );
+  const reduxAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
+  // Fallback: read localStorage to cover the Redux re-hydration gap on page refresh.
+  // Without this, Login/Signup buttons flash briefly before Redux catches up.
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    const id = setTimeout(() => setIsAuthenticated(reduxAuthenticated || !!token), 0);
+    return () => clearTimeout(id);
+  }, [reduxAuthenticated]);
 
   const handleDashboard = () => {
     router.push('/dashboard/customer');
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
     dispatch(logout());
     router.push('/');
   };

@@ -16,13 +16,15 @@ export default function ConfirmButton({ onClick, disabled = false }: ConfirmButt
   };
 
   return (
-    <button
+    <>
+    <div className="flex justify-center">
+      <button
       type="button"
       onClick={handleClick}
       disabled={disabled}
       className="
-        mt-10 w-full rounded-full bg-emerald-600 px-8 py-4 text-lg font-semibold text-white 
-        transition-all duration-300 hover:bg-emerald-700 hover:shadow-lg 
+        mt-10 w-1/2 rounded-full bg-emerald-600 px-8 py-4 text-lg font-semibold text-white
+        transition-all duration-300 hover:bg-emerald-700 hover:shadow-lg
         cursor-pointer
         active:scale-95 active:shadow-md flex items-center justify-center gap-2
         disabled:opacity-50 disabled:cursor-not-allowed
@@ -38,5 +40,7 @@ export default function ConfirmButton({ onClick, disabled = false }: ConfirmButt
       </svg>
       Confirm Booking
     </button>
+    </div>
+    </>
   );
 }
