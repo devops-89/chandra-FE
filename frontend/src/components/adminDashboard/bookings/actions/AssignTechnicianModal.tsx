@@ -101,7 +101,7 @@ const AssignTechnicianModal = ({ open, booking, onClose, onAssign }: Props) => {
         <div className="flex-1 overflow-y-auto px-6 pb-2 space-y-3 min-h-0">
           {filtered.length === 0 ? (
             <div className="py-10 text-center text-slate-400 text-sm">
-              No active technicians found matching "{search}"
+              No active technicians found matching &ldquo;{search}&rdquo;
             </div>
           ) : (
             filtered.map((tech) => {
