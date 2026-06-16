@@ -48,7 +48,7 @@ const HeroImageAnimated = ({ image }: HeroImageAnimatedProps) => {
 
   return (
     <motion.div
-      className="relative z-10 mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-none"
+      className="relative z-10 hidden lg:block"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
