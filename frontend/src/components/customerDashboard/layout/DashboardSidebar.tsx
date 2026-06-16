@@ -2,8 +2,11 @@
 
 import { LogOut, X } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/sidebar/customerDashboardSidebarLinks';
+import { useAppDispatch } from '@/redux/hooks';
+import { logout } from '@/redux/slices/authSlice';
 
 interface DashboardSidebarProps {
   isOpen: boolean;
@@ -11,6 +14,16 @@ interface DashboardSidebarProps {
 }
 
 export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    dispatch(logout());
+    router.push('/login');
+  };
 
   return (
     <>
@@ -66,6 +79,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
 
         <div className="p-4 border-t">
           <button
+            onClick={handleLogout}
             className="
               flex
               w-full
@@ -74,6 +88,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
               rounded-xl
               px-4
               py-3
+              cursor-pointer
               text-red-600
               transition
               hover:bg-red-50
@@ -156,6 +171,10 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
 
         <div className="p-4 border-t">
           <button
+            onClick={() => {
+              onClose();
+              handleLogout();
+            }}
             className="
               flex
               w-full

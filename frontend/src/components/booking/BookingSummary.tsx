@@ -6,7 +6,7 @@ import PublicFooter from '@/components/common/PublicFooter';
 import PublicNavbar from '@/components/common/PublicNavbar';
 import { servicesData } from '@/constants/services/serviceData';
 import { formatBookingData } from '@/lib/booking/formatBookingData';
-import { useBookingStore } from '@/store/bookingStore';
+import { useBookingStore } from '@/redux/legacy/bookingStore';
 
 export default function BookingSummary() {
   const router = useRouter();
@@ -26,12 +26,12 @@ export default function BookingSummary() {
 
   // Get service configuration for formatting
   const serviceData = servicesData.find(s => s.slug === serviceSlug);
-  
+
   const basePriceFromStore = servicePrice ?? serviceData?.price ?? 0;
   const taxes = Math.round(basePriceFromStore * 0.18); // 18% tax
   const total = basePriceFromStore + taxes;
 
-  const formattedServiceData = serviceData && serviceSpecificData 
+  const formattedServiceData = serviceData && serviceSpecificData
     ? formatBookingData(serviceSpecificData, serviceData.bookingForm)
     : [];
 

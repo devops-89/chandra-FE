@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { useServices } from '@/store/ServiceContext';
+import { useServices } from '@/redux/ServiceContext';
 import type { AdminService, EditServiceFormData } from '@/types/admin/service.types';
 
 /**
@@ -15,7 +15,7 @@ import type { AdminService, EditServiceFormData } from '@/types/admin/service.ty
  */
 export function useServiceManager() {
   // Seed from the static constants file; in a real app this would come from an API.
-  const {services, setServices,} = useServices();
+  const { services, setServices, } = useServices();
 
   // ── Edit ────────────────────────────────────────────────────────
   const [editTarget, setEditTarget] = useState<AdminService | null>(null);
@@ -36,14 +36,14 @@ export function useServiceManager() {
       prev.map((s) =>
         s.id === editTarget.id
           ? {
-              ...s,
-              name:        data.name,
-              category:    data.category,
-              subcategory: data.subcategory,
-              price:       parseFloat(data.price) || s.price,
-              duration:    data.duration,
-              status:      data.status,
-            }
+            ...s,
+            name: data.name,
+            category: data.category,
+            subcategory: data.subcategory,
+            price: parseFloat(data.price) || s.price,
+            duration: data.duration,
+            status: data.status,
+          }
           : s,
       ),
     );

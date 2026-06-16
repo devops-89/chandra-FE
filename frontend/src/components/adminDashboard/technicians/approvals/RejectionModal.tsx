@@ -65,7 +65,7 @@ const RejectionModal = ({ open, onClose, onConfirm, technicianName }: Props) => 
           </div>
           <h3 className="text-xl font-bold text-slate-900">Reject Application</h3>
           <p className="text-sm text-slate-500 mt-1">
-            Specify why <span className="font-semibold text-slate-700">{technicianName}</span>'s application is being rejected.
+            Specify why <span className="font-semibold text-slate-700">{technicianName}</span>&apos;s application is being rejected.
           </p>
         </div>
 
@@ -102,7 +102,7 @@ const RejectionModal = ({ open, onClose, onConfirm, technicianName }: Props) => 
 
           {/* Warning Note */}
           <p className="text-[11px] text-red-600/80 leading-relaxed bg-red-50/50 p-3 rounded-lg border border-red-100/30">
-            * Note: This will set the technician's status to <strong>Suspended</strong>. The applicant will receive an automated email containing these comments.
+            * Note: This will set the technician&apos;s status to <strong>Suspended</strong>. The applicant will receive an automated email containing these comments.
           </p>
 
           {/* Actions */}

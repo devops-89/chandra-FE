@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import OnboardingLayout from '@/components/technicianApplication/layout/OnboardingLayout';
 import ServiceArea from '@/components/technicianApplication/registration/serviceArea/ServiceArea';
+import type { ServiceAreaState } from '@/types/technicianOnboarding/serviceArea.types';
 
 export default function ServiceAreaPage() {
   const router = useRouter();
@@ -12,8 +13,8 @@ export default function ServiceAreaPage() {
     router.push('/technicianOnboarding/service-area');
   };
 
-  const handleSubmit = (data: any) => {
-    // Save and navigate to success page
+  // data is intentionally unused — navigation only; stored via sessionStorage inside ServiceArea
+  const handleSubmit = (_data: ServiceAreaState) => {
     router.push('/technicianOnboarding/success');
   };
 

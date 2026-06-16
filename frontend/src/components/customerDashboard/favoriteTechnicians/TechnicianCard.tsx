@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import Image from "next/image";
 
 import type { FavoriteTechnician } from "@/types/dashboardTypes/customerDashboard/customerDashboard.types";
 
@@ -10,10 +11,12 @@ const TechnicianCard = ({ technician }: TechnicianCardProps) => {
   return (
     <div className="flex items-center justify-between rounded-xl border border-slate-200 p-6 ambient-shadow">
       <div className="flex items-center gap-4">
-        <img
+        <Image
           alt={technician.name}
           className="h-12 w-12 rounded-full object-cover"
           src={technician.avatar}
+          width={48}
+          height={48}
         />
         <div>
           <p className="text-sm font-bold">{technician.name}</p>
@@ -35,4 +38,3 @@ const TechnicianCard = ({ technician }: TechnicianCardProps) => {
 };
 
 export default TechnicianCard;
-

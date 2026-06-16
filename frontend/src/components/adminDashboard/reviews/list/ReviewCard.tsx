@@ -56,7 +56,7 @@ const ReviewCard = ({ review }: Props) => {
           </div>
 
           <p className="mt-4 text-sm text-slate-600 italic leading-relaxed line-clamp-3">
-            "{review.comment}"
+          &ldquo;{review.comment}&rdquo;
           </p>
         </div>
 

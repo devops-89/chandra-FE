@@ -6,21 +6,22 @@ import { useRouter } from 'next/navigation';
 import MobileMenu from '@/components/common/MobileMenu';
 import NavbarLinks from '@/components/common/NavbarLinks';
 import NavbarLogo from '@/components/common/NavbarLogo';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { logout } from '@/redux/slices/authSlice';
 
 const PublicNavbar = () => {
   const router = useRouter();
-  const isAuthenticated = useAuthStore(
-    (state) => state.isAuthenticated
+  const dispatch = useAppDispatch();
+  const isAuthenticated = useAppSelector(
+    (state) => state.auth.isAuthenticated
   );
-  const logout = useAuthStore((state) => state.logout);
 
   const handleDashboard = () => {
     router.push('/dashboard/customer');
   };
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     router.push('/');
   };
 

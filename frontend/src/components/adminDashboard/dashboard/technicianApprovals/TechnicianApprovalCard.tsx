@@ -83,14 +83,14 @@ export default function TechnicianApprovalCard({ technician }: Props) {
         <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
           <div className="flex items-center gap-2">
             <button
-              onClick={() => console.log('approved', technician.id)}
+              onClick={() => {}}
               className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition-colors cursor-pointer"
             >
               <Check size={12} />
               Approve
             </button>
             <button
-              onClick={() => console.log('rejected', technician.id)}
+              onClick={() => {}}
               className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors cursor-pointer"
             >
               <X size={12} />

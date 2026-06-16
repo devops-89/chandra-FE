@@ -5,15 +5,16 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import NavbarLinks from '@/components/common/NavbarLinks';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { logout } from '@/redux/slices/authSlice';
 
 const MobileMenu = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const isAuthenticated = useAuthStore(
-    (state) => state.isAuthenticated
+  const dispatch = useAppDispatch();
+  const isAuthenticated = useAppSelector(
+    (state) => state.auth.isAuthenticated
   );
-  const logout = useAuthStore((state) => state.logout);
 
   const closeMenu = () => {
     setIsOpen(false);
@@ -25,7 +26,7 @@ const MobileMenu = () => {
   };
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     closeMenu();
     router.push('/');
   };

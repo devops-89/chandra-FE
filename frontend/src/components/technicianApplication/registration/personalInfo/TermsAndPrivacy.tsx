@@ -18,7 +18,7 @@ export default function TermsAndPrivacy() {
       variants={itemVariants}
     >
       <p className="text-xs md:text-sm text-gray-600">
-        By continuing, you agree to HiChandra's{' '}
+        By continuing, you agree to HiChandra&apos;s{' '}
         <a
           href="/technician-terms"
           className="text-emerald-600 hover:text-emerald-700 font-semibold underline transition-colors"

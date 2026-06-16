@@ -33,9 +33,12 @@ const ACTION_CONFIG: Record<
 const ComplaintDetailsDrawer = ({ open, onClose }: Props) => {
   const [actionTaken, setActionTaken] = useState<Action>(null);
 
-  // Reset state when drawer closes
+  // Reset state when drawer closes — deferred to avoid synchronous setState in effect
   useEffect(() => {
-    if (!open) setActionTaken(null);
+    if (!open) {
+      const id = setTimeout(() => setActionTaken(null), 0);
+      return () => clearTimeout(id);
+    }
   }, [open]);
 
   // Auto-close 1.5 s after an action is taken
@@ -126,4 +129,4 @@ const ComplaintDetailsDrawer = ({ open, onClose }: Props) => {
   );
 };
 
-export default ComplaintDetailsDrawer;
+export default ComplaintDetailsDrawer;

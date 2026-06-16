@@ -16,11 +16,12 @@ export function ServiceAvailabilityModal() {
   const [showModal, setShowModal] = useState(false);
   const [availabilityStatus, setAvailabilityStatus] = useState<AvailabilityStatus>('idle');
 
-  // Show modal on first visit only
+  // Show modal on first visit only — deferred to avoid synchronous setState in effect
   useEffect(() => {
     const alreadyChecked = localStorage.getItem(STORAGE_KEY);
     if (!alreadyChecked) {
-      setShowModal(true);
+      const id = setTimeout(() => setShowModal(true), 0);
+      return () => clearTimeout(id);
     }
   }, []);
 

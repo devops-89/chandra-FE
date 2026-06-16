@@ -32,7 +32,7 @@ export default function SummaryPanel({
       />
 
       {/* Service Area Map Card */}
-      <ServiceAreaMapCard onExpandRange={() => console.log('Expand range')} />
+      <ServiceAreaMapCard onExpandRange={() => {}} />
 
       {/* Earnings Tip Card */}
       <EarningsTipCard />

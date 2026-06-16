@@ -92,7 +92,7 @@ export default function PendingStatus({
                   What happens next?
                 </h3>
                 <p className="text-xs md:text-sm text-yellow-800">
-                  Our team will review your application within 5-7 business days. We'll notify you via email once the review is complete. Make sure your contact information is up to date.
+                  Our team will review your application within 5-7 business days. We&apos;ll notify you via email once the review is complete. Make sure your contact information is up to date.
                 </p>
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function PendingStatus({
 
           {/* Footer Message */}
           <motion.p className="text-xs md:text-sm text-secondary italic">
-            You can close this window. We'll send you an email update at every step of the process.
+            You can close this window. We&apos;ll send you an email update at every step of the process.
           </motion.p>
         </motion.div>
       </div>

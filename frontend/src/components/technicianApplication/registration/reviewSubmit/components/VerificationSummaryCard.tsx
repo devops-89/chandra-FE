@@ -10,8 +10,7 @@ export default function VerificationSummaryCard({
   verificationItems,
   completedCount,
   totalCount,
-  onEdit,
-}: VerificationSummaryCardProps) {
+}: Omit<VerificationSummaryCardProps, 'onEdit'>) {
   const isAllVerified = completedCount === totalCount;
 
   return (

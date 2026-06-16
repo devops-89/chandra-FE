@@ -96,7 +96,7 @@ const BookingProgressTracker = ({
           width: `calc(${(currentStepIndex / (steps.length - 1)) * 100}% - 20px)`,
         }}
         />
-        {steps.map((step, index) => {
+        {steps.map((step, _index) => {
           const completed =
             step.status === 'completed';
 

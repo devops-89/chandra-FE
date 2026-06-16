@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { useServices }
-from "@/store/ServiceContext";
+  from "@/redux/ServiceContext";
 
 import BasicInfoStep from './BasicInfoStep';
 import DescriptionStep from './DescriptionStep';
@@ -26,11 +26,11 @@ import RequirementsStep from './RequirementsStep';
 
 /* ─── Step Config ────────────────────────────────────────────────── */
 const STEPS = [
-  { id: 0, label: 'Basic Info',    icon: Info       },
-  { id: 1, label: 'Description',  icon: BookOpen   },
-  { id: 2, label: 'Pricing',      icon: DollarSign },
-  { id: 3, label: 'Requirements', icon: Wrench     },
-  { id: 4, label: 'Publish',      icon: Send       },
+  { id: 0, label: 'Basic Info', icon: Info },
+  { id: 1, label: 'Description', icon: BookOpen },
+  { id: 2, label: 'Pricing', icon: DollarSign },
+  { id: 3, label: 'Requirements', icon: Wrench },
+  { id: 4, label: 'Publish', icon: Send },
 ];
 
 /* ─── Types ──────────────────────────────────────────────────────── */
@@ -95,7 +95,7 @@ function validateStep(step: number, data: FormData): FormErrors {
 const variants = {
   enter: (direction: number) => ({ x: direction > 0 ? 40 : -40, opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit:  (direction: number) => ({ x: direction > 0 ? -40 : 40, opacity: 0 }),
+  exit: (direction: number) => ({ x: direction > 0 ? -40 : 40, opacity: 0 }),
 };
 
 /* ─── Inline field error component ──────────────────────────────── */
@@ -116,15 +116,15 @@ export function FieldError({ message }: { message?: string }) {
 /* ─── Main form ──────────────────────────────────────────────────── */
 export default function AddServiceForm() {
   const router = useRouter();
-  const [step, setStep]           = useState(0);
+  const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [data, setData]           = useState<FormData>(INITIAL);
-  const [errors, setErrors]       = useState<FormErrors>({});
-  const [touched, setTouched]     = useState(false);  // whether Next was attempted
+  const [data, setData] = useState<FormData>(INITIAL);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState(false);  // whether Next was attempted
   const [submitted, setSubmitted] = useState(false);
 
   const { addService } =
-  useServices();
+    useServices();
 
   const update = (field: string, value: string | File | null) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -152,42 +152,42 @@ export default function AddServiceForm() {
   };
 
   const [isPublishing, setIsPublishing] =
-  useState(false);
+    useState(false);
 
 
-  const [publishSuccess, setPublishSuccess] =
-  useState(false);
+  const [publishSuccess] =
+    useState(false);
 
   const handleSubmit = async () => {
-  const errors = validateStep(4, data);
+    const errors = validateStep(4, data);
 
-  if (Object.keys(errors).length > 0) {
-    setErrors(errors);
-    return;
-  }
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+      return;
+    }
 
-  setIsPublishing(true);
+    setIsPublishing(true);
 
-  addService({
-    id: Date.now(),
-    name: data.name,
-    category: data.category,
-    subcategory: data.subcategory,
-    price: Number(data.basePrice),
-    duration: data.duration,
-    status: "Active",
-    image: "/images/service-placeholder.png",
-    bookings: 0,
-  });
+    addService({
+      id: Date.now(),
+      name: data.name,
+      category: data.category,
+      subcategory: data.subcategory,
+      price: Number(data.basePrice),
+      duration: data.duration,
+      status: "Active",
+      image: "/images/service-placeholder.png",
+      bookings: 0,
+    });
 
-  setIsPublishing(false);
-  setSubmitted(true);
+    setIsPublishing(false);
+    setSubmitted(true);
 
-  await new Promise((resolve) =>
-    setTimeout(resolve, 4000)
-  );
+    await new Promise((resolve) =>
+      setTimeout(resolve, 4000)
+    );
 
-  router.push("/dashboard/admin/services");
+    router.push("/dashboard/admin/services");
   };
 
   const hasErrors = touched && Object.keys(errors).length > 0;
@@ -252,8 +252,8 @@ export default function AddServiceForm() {
       <div className="flex justify-center px-4 py-2">
         <div className="flex min-w-max items-center gap-0">
           {STEPS.map((s, i) => {
-            const Icon  = s.icon;
-            const done   = i < step;
+            const Icon = s.icon;
+            const done = i < step;
             const active = i === step;
 
             return (
@@ -271,25 +271,23 @@ export default function AddServiceForm() {
                       ${done
                         ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-200'
                         : active
-                        ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200 ring-4 ring-emerald-100'
-                        : 'bg-slate-100 text-slate-400'
+                          ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200 ring-4 ring-emerald-100'
+                          : 'bg-slate-100 text-slate-400'
                       }
                     `}
                   >
                     {done ? <Check size={16} strokeWidth={2.5} /> : <Icon size={16} />}
                   </motion.div>
-                  <span className={`text-xs font-medium whitespace-nowrap ${
-                    active ? 'text-emerald-700' : done ? 'text-slate-600' : 'text-slate-400'
-                  }`}>
+                  <span className={`text-xs font-medium whitespace-nowrap ${active ? 'text-emerald-700' : done ? 'text-slate-600' : 'text-slate-400'
+                    }`}>
                     {s.label}
                   </span>
                 </button>
 
                 {i < STEPS.length - 1 && (
                   <div className="mx-1 mb-5 h-0.5 w-8 sm:w-14 rounded-full bg-slate-200 overflow-hidden">
-                    <div className={`h-full rounded-full transition-all duration-500 ${
-                      i < step ? 'w-full bg-emerald-600' : 'w-0'
-                    }`} />
+                    <div className={`h-full rounded-full transition-all duration-500 ${i < step ? 'w-full bg-emerald-600' : 'w-0'
+                      }`} />
                   </div>
                 )}
               </div>
@@ -304,11 +302,13 @@ export default function AddServiceForm() {
         {/* Card header */}
         <div className="border-b border-slate-100 px-6 py-5 bg-slate-50/60">
           <div className="flex items-start gap-3">
-            {(() => { const Icon = STEPS[step].icon; return (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
-                <Icon size={18} />
-              </div>
-            ); })()}
+            {(() => {
+              const Icon = STEPS[step].icon; return (
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                  <Icon size={18} />
+                </div>
+              );
+            })()}
             <div className="flex-1 min-w-0">
               <h2 className="font-semibold text-slate-900">
                 Step {step + 1} of {STEPS.length} — {STEPS[step].label}
@@ -406,9 +406,8 @@ export default function AddServiceForm() {
           {/* Progress dots */}
           <div className="flex gap-1.5">
             {STEPS.map((_, i) => (
-              <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === step ? 'w-5 bg-emerald-600' : i < step ? 'w-1.5 bg-emerald-300' : 'w-1.5 bg-slate-200'
-              }`} />
+              <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === step ? 'w-5 bg-emerald-600' : i < step ? 'w-1.5 bg-emerald-300' : 'w-1.5 bg-slate-200'
+                }`} />
             ))}
           </div>
 
@@ -426,7 +425,7 @@ export default function AddServiceForm() {
               disabled={isPublishing || publishSuccess}
               className="rounded-xl bg-emerald-600 px-6 py-3 hover:bg-emerald-700 cursor-pointer text-white"
             >
-            Publish Service
+              Publish Service
             </button>
           )}
         </div>

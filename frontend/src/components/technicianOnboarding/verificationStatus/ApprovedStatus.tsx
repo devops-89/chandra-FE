@@ -129,9 +129,7 @@ export default function ApprovedStatus({
                   <span className="material-symbols-outlined text-green-600 text-lg">
                     check
                   </span>
-                  <span className="text-sm md:text-base text-green-900">
-                    Profile {profileCompleteness}% complete
-                  </span>
+                <span className="text-sm text-slate-600">Profile {profileCompleteness}% complete</span>
                 </div>
               </div>
             </motion.div>
@@ -146,7 +144,7 @@ export default function ApprovedStatus({
               </span>
               <div className="text-left">
                 <h3 className="font-semibold text-sm md:text-base text-on-surface mb-1">
-                  What's Next?
+                  What&apos;s Next?
                 </h3>
                 <p className="text-xs md:text-sm text-secondary">
                   Head to your dashboard to complete your profile, set availability, and start receiving service requests from customers.

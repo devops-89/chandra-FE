@@ -8,10 +8,11 @@ import {
 } from 'react';
 
 import { loginContent } from '@/constants/auth/loginContent';
-import { handlePostAuthRedirect } from '@/lib/auth/redirectUtils';
 import { validateEmail } from '@/lib/validator/email.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useAppDispatch } from '@/redux/hooks';
+import { setCredentials } from '@/redux/slices/authSlice';
+import { loginService } from '@/services/auth.service';
 
 const inputClassName =
   'h-11 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20';
@@ -27,12 +28,16 @@ type LoginErrors = Partial<LoginFormData>;
 
 export const LoginForm = () => {
   const router = useRouter();
-  const login = useAuthStore((state) => state.login);
   const [form, setForm] = useState<LoginFormData>({
     email: '',
     password: '',
   });
   const [errors, setErrors] = useState<LoginErrors>({});
+  const dispatch = useAppDispatch();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [_apiError, setApiError] = useState<string>('');
 
   const handleChange = (
     name: keyof LoginFormData,
@@ -49,8 +54,9 @@ export const LoginForm = () => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const nextErrors: LoginErrors = {};
+
     const emailError = validateEmail(form.email);
     const passwordError = validatePassword(form.password);
 
@@ -67,12 +73,50 @@ export const LoginForm = () => {
       return;
     }
 
-    setErrors({});
-    login();
-    
-    // Handle redirect after successful login
-    const redirectPath = handlePostAuthRedirect();
-    router.push(redirectPath);
+    try {
+      setApiError('');
+      setIsLoading(true);
+
+      const response = await loginService({
+        email: form.email,
+        password: form.password,
+      });
+
+      const { user, tokens } = response.data;
+
+      localStorage.setItem(
+        'accessToken',
+        tokens.accessToken
+      );
+
+      localStorage.setItem(
+        'refreshToken',
+        tokens.refreshToken
+      );
+
+      localStorage.setItem(
+        'user',
+        JSON.stringify(user)
+      );
+
+      dispatch(
+        setCredentials({
+          user,
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+        })
+      );
+
+      router.push('/dashboard/customer');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      setApiError(
+        err?.response?.data?.message ??
+        'Login failed'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -208,10 +252,11 @@ export const LoginForm = () => {
             </div>
 
             <button
-              className="mt-2 h-11 rounded-lg bg-emerald-600 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+              disabled={isLoading}
+              className="mt-2 h-11 rounded-lg bg-emerald-600 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
               type="submit"
             >
-              Login
+              {isLoading ? 'Logging in...' : 'Login'}
             </button>
           </form>
         </section>

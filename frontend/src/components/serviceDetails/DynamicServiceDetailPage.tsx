@@ -9,8 +9,8 @@ import DynamicServiceFeatures from '@/components/serviceDetails/DynamicServiceFe
 import DynamicServiceHero from '@/components/serviceDetails/DynamicServiceHero';
 import DynamicServiceOverview from '@/components/serviceDetails/DynamicServiceOverview';
 import DynamicServicePricing from '@/components/serviceDetails/DynamicServicePricing';
-import { useBookingStore } from '@/store/bookingStore';
-import type { BookingFormData,Service } from '@/types/services.types';
+import { useBookingStore } from '@/redux/legacy/bookingStore';
+import type { BookingFormData, Service } from '@/types/services.types';
 
 interface DynamicServiceDetailPageProps {
   service: Service;
@@ -30,7 +30,7 @@ export default function DynamicServiceDetailPage({
 
   const handleBookingSubmit = async (formData: BookingFormData) => {
     setIsLoading(true);
-    
+
     try {
       // Store the service-specific form data
       const bookingData = {
@@ -48,7 +48,7 @@ export default function DynamicServiceDetailPage({
       };
 
       setBooking(bookingData);
-      
+
       // Redirect to the unified booking page with service slug
       router.push(`/booking?service=${encodeURIComponent(service.slug)}`);
     } catch (error) {
@@ -74,7 +74,7 @@ export default function DynamicServiceDetailPage({
                 </svg>
                 Back to Service Details
               </button>
-              
+
               <h1 className="text-3xl font-bold text-slate-900">
                 Book {service.title}
               </h1>

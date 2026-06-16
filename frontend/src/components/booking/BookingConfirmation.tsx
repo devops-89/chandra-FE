@@ -6,7 +6,7 @@ import React from 'react';
 
 import PublicFooter from '@/components/common/PublicFooter';
 import PublicNavbar from '@/components/common/PublicNavbar';
-import { useBookingStore } from '@/store/bookingStore';
+import { useBookingStore } from '@/redux/legacy/bookingStore';
 
 export default function BookingConfirmation() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function BookingConfirmation() {
     slot,
     clearBooking,
   } = useBookingStore();
-  
+
   const bookingId = createTemporaryBookingId(
     service,
     date,

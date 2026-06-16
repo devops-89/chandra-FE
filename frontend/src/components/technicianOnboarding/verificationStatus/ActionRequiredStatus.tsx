@@ -126,7 +126,7 @@ export default function ActionRequiredStatus({
                   </li>
                   <li className="flex gap-2">
                     <span className="font-bold shrink-0">2.</span>
-                    <span>Click "Edit Application" to make corrections</span>
+                    <span>Click &ldquo;Edit Application&rdquo; to make corrections</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="font-bold shrink-0">3.</span>

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { type ReactNode, useEffect } from 'react';
 
-import { useAuthStore } from '@/store/useAuthStore';
+import { useAppSelector } from '@/redux/hooks';
 
 interface BookingAuthGuardProps {
   children: ReactNode;
@@ -13,8 +13,8 @@ export default function BookingAuthGuard({
   children,
 }: BookingAuthGuardProps) {
   const router = useRouter();
-  const isAuthenticated = useAuthStore(
-    (state) => state.isAuthenticated
+  const isAuthenticated = useAppSelector(
+    (state) => state.auth.isAuthenticated
   );
 
   useEffect(() => {

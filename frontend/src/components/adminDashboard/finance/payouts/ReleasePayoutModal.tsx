@@ -8,9 +8,12 @@ interface Props {
 const ReleasePayoutModal = ({ open, onClose }: Props) => {
   const [released, setReleased] = useState(false);
 
-  // Reset when modal re-opens
+  // Reset when modal re-opens — deferred to avoid synchronous setState in effect
   useEffect(() => {
-    if (open) setReleased(false);
+    if (open) {
+      const id = setTimeout(() => setReleased(false), 0);
+      return () => clearTimeout(id);
+    }
   }, [open]);
 
   // Auto-close 1.5 s after release
@@ -70,4 +73,4 @@ const ReleasePayoutModal = ({ open, onClose }: Props) => {
   );
 };
 
-export default ReleasePayoutModal;
+export default ReleasePayoutModal;

@@ -1,4 +1,4 @@
-import { ServiceProvider } from "@/store/ServiceContext";
+import { ServiceProvider } from "@/redux/ServiceContext";
 
 export default function AdminLayout({
   children,

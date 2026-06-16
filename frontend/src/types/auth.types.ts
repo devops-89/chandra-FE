@@ -26,3 +26,31 @@ export type SignupFieldsProps = {
     value: string,
   ) => void;
 };
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    message: string;
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+    };
+    user: User;
+  };
+}

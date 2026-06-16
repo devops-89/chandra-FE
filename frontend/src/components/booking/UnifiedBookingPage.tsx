@@ -12,7 +12,7 @@ import TimeSlotSelector from '@/components/booking/TimeSlotSelector';
 import { BOOKING_STEPS } from '@/constants/booking/timeSlots';
 import { getAddressFromSelection, getAddressSelectionFromSaved } from '@/lib/utils/addressUtils';
 import { validateBookingForm } from '@/lib/validation/bookingValidation';
-import { useBookingStore } from '@/store/bookingStore';
+import { useBookingStore } from '@/redux/legacy/bookingStore';
 import type { UnifiedBookingPageProps } from '@/types/bookingTypes/bookingForm.types';
 
 export default function UnifiedBookingPage({ service }: UnifiedBookingPageProps) {
@@ -37,7 +37,7 @@ export default function UnifiedBookingPage({ service }: UnifiedBookingPageProps)
   const currentServicePrice = savedServicePrice || 699; // fallback price
 
   // Initialize address selection from saved data
-  const { selectedAddress: initialAddress, newAddress: initialNewAddress } = 
+  const { selectedAddress: initialAddress, newAddress: initialNewAddress } =
     savedAddress ? getAddressSelectionFromSaved(savedAddress) : { selectedAddress: 'home' as const, newAddress: '' };
 
   // Form state
@@ -58,7 +58,7 @@ export default function UnifiedBookingPage({ service }: UnifiedBookingPageProps)
 
     // Validate all fields
     const validation = validateBookingForm(name, phone, selectedAddress, newAddress, date, slot);
-    
+
     if (!validation.isValid) {
       setError(validation.error || 'Please check all fields');
       return;

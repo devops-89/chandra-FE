@@ -1,5 +1,7 @@
 'use client';
 
+import type { ServiceAreaState } from '@/types/technicianOnboarding/serviceArea.types';
+
 import AreaSelector from './AreaSelector';
 import CoverageSummary from './CoverageSummary';
 import { useServiceArea } from './hooks/useServiceArea';
@@ -10,7 +12,7 @@ import ServiceAreaHeader from './ServiceAreaHeader';
 
 interface ServiceAreaProps {
   onPrevious: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: ServiceAreaState) => void;
 }
 
 export default function ServiceArea({
