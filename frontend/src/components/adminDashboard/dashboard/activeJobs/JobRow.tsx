@@ -1,7 +1,5 @@
 'use client';
 
-import { Eye } from 'lucide-react';
-
 import type { ActiveJob } from '@/types/admin.types';
 
 import JobStatusBadge from './JobStatusBadge';
@@ -33,12 +31,6 @@ export default function JobRow({ job }: JobRowProps) {
 
       <td className="px-5 py-3.5">
         <JobStatusBadge status={job.status} />
-      </td>
-
-      <td className="px-5 py-3.5">
-        <button className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer">
-          <Eye size={15} />
-        </button>
       </td>
     </tr>
   );

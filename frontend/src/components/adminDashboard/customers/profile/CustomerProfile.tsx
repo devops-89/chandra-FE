@@ -8,7 +8,7 @@ const CustomerProfile = () => {
     <div className="space-y-6">
       <div className="rounded-2xl border-4 border-emerald-600 bg-white p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
-          <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-emerald-600 text-xl sm:text-2xl font-bold text-white flex-shrink-0">
+          <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-emerald-600 text-xl sm:text-2xl font-bold text-white shrink-0">
             R
           </div>
 

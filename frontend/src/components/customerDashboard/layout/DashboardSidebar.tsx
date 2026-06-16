@@ -111,6 +111,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           w-80
           max-w-[85vw]
           flex-col
+          bg-white
           border-r
           border-slate-200
           transform
@@ -122,7 +123,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <div className="flex items-center justify-between px-6 py-6 border-b border-amber-500">
+        <div className="flex items-center justify-between px-6 py-6 border-b">
           <h2 className="text-2xl font-bold text-emerald-700">
             HiChandra
           </h2>

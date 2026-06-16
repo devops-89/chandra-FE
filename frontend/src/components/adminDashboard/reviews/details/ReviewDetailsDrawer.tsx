@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -9,7 +10,6 @@ const ReviewDetailsDrawer = ({ open, onClose }: Props) => {
   const [status, setStatus] = useState<'Published' | 'Hidden'>('Published');
   const [lastAction, setLastAction] = useState<string | null>(null);
 
-  // Reset state when drawer re-opens — deferred to avoid synchronous setState in effect
   useEffect(() => {
     if (open) {
       const id = setTimeout(() => {
@@ -17,8 +17,7 @@ const ReviewDetailsDrawer = ({ open, onClose }: Props) => {
         setLastAction(null);
       }, 0);
       return () => clearTimeout(id);
-    }
-  }, [open]);
+    }})
 
   if (!open) return null;
 
@@ -84,6 +83,7 @@ const ReviewDetailsDrawer = ({ open, onClose }: Props) => {
           <div>
             <h4 className="font-semibold text-slate-900">Review:</h4>
             <div className="mt-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-600 italic">
+              {' '}
               &ldquo;Excellent service and very professional technician.&rdquo;
             </div>
           </div>
