@@ -1,10 +1,29 @@
 import { Bell, Menu } from 'lucide-react';
+import { useAppSelector } from '@/redux/hooks';
 
 interface DashboardHeaderProps {
   onMenuClick: () => void;
 }
 
 export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
+  const reduxUser = useAppSelector((data) => data.auth.user);
+
+  const user = reduxUser ?? (() => {
+    if(typeof window === 'undefined') return null;
+
+    try {
+      const raw = localStorage.getItem('user');
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  })()
+
+  const firstName = user?.firstName ?? 'User';
+  const lastName = user?.lastName ?? '';
+  const initials = `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase();
+  const fullName = `${firstName} ${lastName}`.trim();
+
   return (
     <header
       className="
@@ -52,7 +71,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
               text-slate-900
             "
           >
-            Welcome back, Chandra!
+            Welcome back, {firstName}!
           </h1>
 
           <p className="text-sm sm:text-base text-slate-500 hidden sm:block">
@@ -69,7 +88,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             hover:bg-slate-100
             transition-colors
           "
-          title='bellButton'
+          title="bellButton"
         >
           <Bell size={22} />
         </button>
@@ -106,12 +125,10 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
               sm:text-base
             "
           >
-            C
+            {initials}
           </div>
 
-          <span className="font-medium text-sm sm:text-base hidden sm:inline">
-            Chandra K.
-          </span>
+          <span className="font-medium text-sm sm:text-base hidden sm:inline">{fullName}</span>
         </div>
       </div>
     </header>
