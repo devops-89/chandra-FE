@@ -32,7 +32,7 @@ const stats = [
 
 export default function StatsGrid() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 md:gap-6">
       {stats.map((stat) => (
         <StatCard
           key={stat.title}

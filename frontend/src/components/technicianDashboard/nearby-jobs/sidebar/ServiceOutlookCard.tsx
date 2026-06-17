@@ -8,9 +8,7 @@ export default function ServiceOutlookCard() {
       whileHover={{ y: -3 }}
       className="
         rounded-3xl
-        bg-linear-to-br
-        from-emerald-100
-        to-emerald-50
+        bg-emerald-600
         p-8
         border
         border-emerald-200
@@ -21,7 +19,7 @@ export default function ServiceOutlookCard() {
           text-xs
           uppercase
           tracking-[0.2em]
-          text-emerald-500
+          text-emerald-50
           font-semibold
         "
       >

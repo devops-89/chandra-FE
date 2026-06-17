@@ -14,7 +14,7 @@ export default function NearbyJobsHeader() {
     <motion.div
       initial={{ opacity: 0, y: -15 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col gap-2"
+      className="flex flex-col mt-6 gap-2"
     >
       <h1 className="text-3xl font-bold text-slate-900">
         Available Jobs Near Your Service Area

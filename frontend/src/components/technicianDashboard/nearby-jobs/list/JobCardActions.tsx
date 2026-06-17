@@ -22,10 +22,11 @@ export default function JobCardActions() {
             w-full
             py-4
             rounded-2xl
-            bg-emerald-500
+            cursor-pointer
+            bg-emerald-600
             text-white
             font-semibold
-            hover:bg-emerald-600
+            hover:bg-emerald-700
             transition-all
           "
         >
@@ -39,6 +40,7 @@ export default function JobCardActions() {
             py-4
             rounded-2xl
             border
+            cursor-pointer
             border-slate-300
             text-slate-700
             font-semibold
@@ -53,6 +55,8 @@ export default function JobCardActions() {
             flex
             items-center
             gap-2
+            cursor-pointer
+            hover:underline
             text-emerald-500
             font-semibold
             whitespace-nowrap

@@ -50,7 +50,7 @@ export default function TechnicianSidebar({ onClose }: TechnicianSidebarProps) {
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                 active
                   ? 'text-emerald-600 font-bold border-r-2 border-primary bg-green-100'
-                  : 'text-secondary hover:text-primary hover:bg-surface-container'
+                  : 'text-secondary hover:text-primary hover:bg-primary'
               }`}
             >
               <span className="material-symbols-outlined">{item.icon}</span>

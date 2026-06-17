@@ -31,7 +31,7 @@ export default function JobCard({ job }: Props) {
         rounded-3xl
         border
         border-slate-200
-        p-6
+        p-4
         shadow-sm
       "
     >

@@ -12,7 +12,7 @@ export default function NearbyJobsContent() {
 
       <FilterPills />
 
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-6 items-start">
         {/* Jobs */}
         <div className="col-span-12 xl:col-span-8">
           <JobList />

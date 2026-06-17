@@ -82,7 +82,8 @@ export default function ServiceAreaMapCard() {
           rounded-2xl
           border
           border-emerald-500
-          text-emerald-500
+          cursor-pointer
+          text-emerald-600
           font-semibold
           hover:bg-emerald-50
           transition-all

@@ -23,6 +23,7 @@ export default function JobActions({
           md:text-base
           font-bold
           rounded-xl
+          cursor-pointer
           hover:bg-emerald-700
           transition-all
           shadow-md
@@ -45,6 +46,7 @@ export default function JobActions({
           md:text-base
           font-bold
           rounded-xl
+          cursor-pointer
           hover:bg-red-50
           hover:text-red-500
           hover:border-red-300

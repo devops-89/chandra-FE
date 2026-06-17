@@ -9,7 +9,7 @@ export default function ActiveJobCard() {
     <div
       className="
         bg-white
-        p-6 md:p-8
+        p-5 md:p-5
         rounded-xl
         border-l-8
         border-emerald-600

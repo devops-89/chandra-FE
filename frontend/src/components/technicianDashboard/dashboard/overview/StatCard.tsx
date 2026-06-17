@@ -18,7 +18,7 @@ export default function StatCard({
   actionText,
 }: StatCardProps) {
   return (
-    <DashboardCard className="p-4 md:p-6">
+    <DashboardCard className="p-4 md:p-6 hover:shadow-lg">
       <div className="flex justify-between items-start mb-4">
         <span
           className="
