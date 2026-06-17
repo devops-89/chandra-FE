@@ -10,8 +10,8 @@ import ProfileHero from './overview/ProfileHero';
 import ProfileStats from './overview/ProfileStats';
 import PersonalInfoCard from './personal-info/PersonalInfoCard';
 import ProfessionalInfoCard from './professional-info/ProfessionalInfoCard';
-import AccountSettings from './settings/AccountSettings';
-// import NotificationSettings from './settings/NotificationSettings';
+// import AccountSettings from './settings/AccountSettings';
+import NotificationSettings from './settings/NotificationSettings';
 // import SecuritySettings from './settings/SecuritySettings';
 
 export default function ProfileContent() {
@@ -51,17 +51,17 @@ export default function ProfileContent() {
             <PayoutSettings />
         </div> */}
 
-        <div className="col-span-12 xl:col-span-4">
+        {/* <div className="col-span-12 xl:col-span-4">
             <AccountSettings />
-        </div>
+        </div> */}
 
-        {/*<div className="col-span-12 xl:col-span-4">
+        <div className="col-span-12 xl:col-span-4">
             <NotificationSettings />
         </div>
 
-        <div className="col-span-12 xl:col-span-4">
+        {/* <div className="col-span-12 xl:col-span-4">
             <SecuritySettings />
-        </div> */}
+        </div>  */}
         </div>
     </div>
   );

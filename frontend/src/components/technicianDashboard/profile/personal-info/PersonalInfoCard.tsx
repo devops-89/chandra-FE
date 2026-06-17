@@ -33,6 +33,21 @@ export default function PersonalInfoCard() {
       <div className="my-6 border-t border-slate-200" />
 
       <AddressInfo />
+      <button
+          className="
+            w-full
+            p-4
+            mt-12
+            text-white
+            cursor-pointer
+            rounded-2xl
+            hover:bg-emerald-700
+            bg-emerald-600
+          "
+        >
+          Edit Profile Information
+        </button>
+
     </div>
   );
 }

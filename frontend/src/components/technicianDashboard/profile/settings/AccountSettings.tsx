@@ -41,7 +41,7 @@ export default function AccountSettings() {
           Edit Profile Information
         </button>
 
-        <button
+        {/* <button
           className="
             w-full
             text-left
@@ -54,7 +54,7 @@ export default function AccountSettings() {
           "
         >
           Change Profile Picture
-        </button>
+        </button> */}
       </div>
     </div>
   );

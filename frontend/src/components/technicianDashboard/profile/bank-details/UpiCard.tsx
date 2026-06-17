@@ -9,6 +9,7 @@ export default function UpiCard() {
         bg-white
         border
         h-full
+        w-full
         border-slate-200
         rounded-3xl
         p-6
