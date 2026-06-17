@@ -1,6 +1,6 @@
 # HiChandra Frontend — Master Project Context
 
-> **Last updated:** June 16, 2026
+> **Last updated:** June 17, 2026
 > **Purpose:** Permanent handoff document. Paste this file into any new chat to restore full project context instantly.
 
 ---
@@ -81,12 +81,12 @@ frontend/
 | File | Purpose |
 |---|---|
 | `axios.ts` | Configured Axios instance (`api`) with base URL |
-| `endpoints.ts` | Central endpoint constants — `LOGIN`, `GENERATE_OTP`, `VERIFY_OTP` |
+| `endpoints.ts` | Central endpoint constants — `LOGIN`, `GENERATE_OTP`, `VERIFY_OTP`, `REGISTER_CUSTOMER` |
 
 ### `src/services/` — REST Service Functions
 | File | Status | Notes |
 |---|---|---|
-| `auth.service.ts` | ✅ **Live** | `loginService()` → POST `/auth/login` via Axios |
+| `auth.service.ts` | ✅ **Live** | `loginService()`, `generateOtpService()`, `verifyOtpService()`, `registerCustomerService()` — all wired to real APIs |
 | `booking.service.ts` | ❌ Empty | No implementation |
 | `customerDashboard/customerDashboard.service.ts` | 🔶 Mock | Returns from constants, no HTTP |
 
@@ -135,9 +135,9 @@ configureStore({ reducer: { auth: authReducer } })
 
 | Route | Component | Status |
 |---|---|---|
-| `/` | `HeroSection`, `ServiceSection`, `ChooseSection`, `TestimonialSection` | ✅ Complete |
-| `/login` | `LoginForm` | ✅ Complete — **real API** (`loginService` → POST `/auth/login`) |
-| `/signup` | `SignupForm` | ✅ Complete — mock auth only |
+| `/` | `HeroSection`, `ServiceSection`, `ChooseSection`, `TestimonialSection` | ✅ Complete — `PublicRoute` guard prevents logged-in access |
+| `/login` | `LoginForm` | ✅ Complete — **real API** (`loginService` → POST `/auth/login`), `PublicRoute` guard |
+| `/signup` | `SignupForm` | ✅ Complete — **real API** (OTP flow → registration → auto-login), `PublicRoute` guard |
 | `/services` | `ServiceSection` | ✅ Complete |
 | `/services/[slug]` | Dynamic service detail page | ✅ Complete (4 services, `generateStaticParams`) |
 | `/services/[category]/[service]` | — | ❌ Directory exists, no `page.tsx` |
@@ -170,13 +170,22 @@ configureStore({ reducer: { auth: authReducer } })
 
 | Route | Status | Notes |
 |---|---|---|
-| `/dashboard/customer` | ✅ Complete | Stats cards, active booking, recent bookings, quick rebook |
+| `/dashboard/customer` | ✅ Complete | Stats cards, active booking, recent bookings, quick rebook. Sidebar includes Services link. |
 | `/dashboard/customer/bookings` | ✅ Complete | Table with mock data |
 | `/dashboard/customer/bookings/[id]` | ❌ Skeleton | Only shows booking ID, no detail content |
 | `/dashboard/customer/addresses` | ✅ Complete | Address list + add/edit |
 | `/dashboard/customer/invoices` | ✅ Complete | Invoice summary + table |
 | `/dashboard/customer/profile` | ✅ Complete | Profile form + change password |
 | `/dashboard/customer/support` | ✅ Complete | FAQ + raise ticket + contact card |
+
+**Sidebar Navigation:**
+- Dashboard (exact match)
+- **Services** → `/services` (active on `/services*`, `/booking*`)
+- My Bookings
+- Saved Addresses
+- Invoices
+- Profile Settings
+- Help & Support
 
 ### Admin Dashboard
 
@@ -220,8 +229,8 @@ configureStore({ reducer: { auth: authReducer } })
 
 ```
 src/components/
-├── auth/                          LoginForm, SignupForm
-├── common/                        PublicNavbar, PublicFooter, NavbarLinks, NavbarLogo, MobileMenu, AvatarGroup
+├── auth/                          LoginForm (with API error banner), SignupForm (full OTP flow), OtpModal, PublicRoute
+├── common/                        PublicNavbar (auth-conditional Login/Signup vs Dashboard/Logout), PublicFooter, NavbarLinks, NavbarLogo, MobileMenu, AvatarGroup
 ├── heroSection/                   HeroSection + 5 sub-components (animated variants)
 ├── servicesSection/               ServiceSection + 4 sub-components
 ├── chooseUsSection/               ChooseSection + 9 sub-components (animated variants)
@@ -246,7 +255,7 @@ src/components/
 │   ├── technicians/               Technicians + list, approvals, profile
 │   └── shared/                    badges, cards, forms, modals, table, EmptyState
 ├── customerDashboard/
-│   ├── layout/                    DashboardLayout, DashboardHeader, DashboardSidebar
+│   ├── layout/                    DashboardLayout (auth guard on mount), DashboardHeader (displays logged-in user from Redux/localStorage), DashboardSidebar (Services link, active state logic)
 │   ├── overview/                  HeroBookingCard, ServiceProgress
 │   ├── activeBooking/             ActiveBookingCard, BookingProgressTracker, BookingTechnicianCard
 │   ├── recentBookings/            RecentBookings, RecentBookingRow
@@ -284,7 +293,7 @@ src/components/
 | Hook | Status | Purpose |
 |---|---|---|
 | `useBookingAuth` | ✅ | Auth check + redirect to login |
-| `useSignupForm` | ✅ | Signup validation + store + redirect |
+| `useSignupForm` | ✅ | Signup validation + OTP flow (3-step: send OTP → verify → register) + auto-login + redirect |
 | `useFormValidation` | ✅ | Generic form validation |
 | `useActiveBooking` | ✅ | Customer dashboard active booking (mock) |
 | `useFavoriteTechnicians` | ✅ | Customer dashboard favorites (mock) |
@@ -320,7 +329,7 @@ src/components/
 | File | Key Types |
 |---|---|
 | `types/services.types.ts` | `Service`, `BookingFormField`, `BookingFormData` |
-| `types/auth.types.ts` | `User`, `LoginRequest`, `LoginResponse`, `SignupFormData`, `SignupErrors` |
+| `types/auth.types.ts` | `User`, `LoginRequest`, `LoginResponse`, `SignupFormData`, `SignupErrors`, `GenerateOtpRequest`, `GenerateOtpResponse`, `VerifyOtpRequest`, `VerifyOtpResponse`, `RegisterCustomerRequest`, `RegisterCustomerResponse`, `CustomerAddress` |
 | `types/bookingTypes/bookingForm.types.ts` | `UnifiedBookingPageProps`, `TimeSlots`, `BookingStep`, `AddressOption` |
 | `types/admin.types.ts` | `DashboardStat`, `Technician`, `ActiveJob`, `AdminProfile` |
 | `types/admin/service.types.ts` | `AdminService`, `Category`, `Subcategory`, `ServiceStatus` |
@@ -353,21 +362,25 @@ All non-auth data is still fully mocked here:
 ## 13. What's Complete vs Pending
 
 ### ✅ Completed
-- Full public site (home, services, service detail pages)
-- Login — **real API integrated** (POST `/auth/login`, JWT stored, Redux auth state)
+- **Full public site** (home, services, service detail pages)
+- **Login** — real API integrated (POST `/auth/login`, JWT stored, Redux auth state, invalid credentials banner, responsive)
+- **Signup** — **real API integrated** (OTP flow: generate OTP → verify → register → auto-login → redirect to customer dashboard, responsive)
+- **Auth guards** — `PublicRoute` prevents logged-in users from accessing `/`, `/login`, `/signup`
+- **Public navbar** — conditionally shows Login/Signup buttons OR Dashboard/Logout based on auth state (synced with localStorage)
+- **Customer dashboard header** — displays logged-in user's name and initials from Redux/localStorage
+- **Customer dashboard sidebar** — includes "Services" link (active on `/services*`, `/booking*`), smart active state detection
+- **Logout flow** — clears Redux state + localStorage (tokens + user) → redirects to `/`
 - Booking flow UI (all steps complete, API not wired)
 - Customer dashboard (all 6 sections, mock data)
 - Admin dashboard (all 9 sections, mock data)
 - Technician dashboard (main + nearby jobs, mock data)
 - Technician onboarding (all 7 steps, UI complete)
-- All form validators
+- All form validators (including letters-only validation for names)
 - All pricing calculation logic
 - Redux Toolkit store setup (auth slice live)
 - Axios instance + endpoints config
-- `LoginForm` — responsive (left panel hidden on mobile), invalid credentials banner
 
 ### 🔶 In Progress / Partial
-- `signupForm` — UI wired, API call missing (still calls mock)
 - `/technicianOnboarding/pending-verification` — status hardcoded to `'pending'`
 - `/dashboard/admin/finance/edit` — stub save callbacks
 - `ServiceContext` — in-memory CRUD, no API persistence
@@ -391,21 +404,35 @@ All non-auth data is still fully mocked here:
 
 ## 14. Next Development Priorities
 
-1. **Signup API** — Wire `SignupForm` to a real `POST /auth/register` endpoint
-2. **Booking service** — Implement `src/services/booking.service.ts` (POST booking, GET booking list/detail)
-3. **Customer booking detail** — Build out `/dashboard/customer/bookings/[id]`
-4. **Technician profile** — Enable edit + save on `/dashboard/technician/profile`
-5. **Pending verification** — Wire `/technicianOnboarding/pending-verification` to status API
-6. **RTK Query services** — Implement `bookingApi`, `userApi`, `serviceApi` in `src/redux/services/`
-7. **Services category route** — Add `page.tsx` for `/services/[category]/[service]`
-8. **Clean up dead code** — Delete `src/dashboard/` folder and `src/redux/legacy/`
+1. **Booking service** — Implement `src/services/booking.service.ts` (POST booking, GET booking list/detail)
+2. **Customer booking detail** — Build out `/dashboard/customer/bookings/[id]`
+3. **Technician profile** — Enable edit + save on `/dashboard/technician/profile`
+4. **Pending verification** — Wire `/technicianOnboarding/pending-verification` to status API
+5. **RTK Query services** — Implement `bookingApi`, `userApi`, `serviceApi` in `src/redux/services/`
+6. **Services category route** — Add `page.tsx` for `/services/[category]/[service]`
+7. **Clean up dead code** — Delete `src/dashboard/` folder and `src/redux/legacy/`
 
 ---
 
 ## 15. Development Notes
 
-- **Auth is live.** Login calls `POST /auth/login` via Axios. JWT tokens stored in `localStorage` (`accessToken`, `refreshToken`, `user`). Redux `authSlice` holds the session state. `DashboardLayout` restores auth state from `localStorage` on refresh.
-- **Signup is still mock.** `SignupForm` calls `store.login()` directly — needs `POST /auth/register` wired.
+- **Auth is fully live.** Login AND signup both call real APIs:
+  - **Login**: `POST /auth/login` → JWT tokens stored in `localStorage` + Redux
+  - **Signup**: 3-step flow → `POST /auth/generate-otp` → OTP modal → `POST /auth/verify-otp` → `POST /users/register` (multipart) → auto-login → redirect to customer dashboard
+  - **Customer role**: Signup always uses `role: "CUSTOMER"` (hardcoded, no role selector)
+- **Auth state hydration**: Redux state is empty on page refresh. Components check `localStorage.getItem('accessToken')` and `localStorage.getItem('user')` as fallback until Redux rehydrates. This prevents flashing of unauthenticated UI.
+- **Auth guards**:
+  - `PublicRoute` wraps `/`, `/login`, `/signup` → redirects logged-in users to `/dashboard/customer`
+  - `DashboardLayout` wraps all dashboard routes → redirects unauthenticated users to `/login`
+  - `DashboardLayout` only checks auth on mount (`useEffect` with empty deps `[]`) to avoid interfering with logout redirects
+- **Logout flow**: `PublicNavbar` clears `localStorage` (tokens + user) before dispatching Redux `logout()`, then redirects to `/`
+- **Public navbar**: Conditionally renders Login/Signup buttons (when unauthenticated) OR Dashboard/Logout buttons (when authenticated), using `localStorage` check + Redux state
+- **Customer dashboard sidebar**:
+  - "Services" link added below Dashboard, above My Bookings
+  - Routes to `/services` (reuses public services module)
+  - Active state: `/services*` AND `/booking*` routes highlight Services link (entire booking flow stays highlighted)
+  - Dashboard link uses exact match, all others use prefix match
+- **Customer dashboard header**: Displays logged-in user's first name, last name initial, and initials from Redux `state.auth.user` with `localStorage` fallback
 - **Post-login redirect** uses `sessionStorage` via `lib/auth/redirectUtils.ts`.
 - **All other data is mocked** — bookings, customers, technicians, services, etc. still come from `src/constants/`.
 - **Redux over Zustand** — old `src/store/` folder is gone. State lives in `src/redux/`. Legacy Zustand files are in `src/redux/legacy/` for reference.
@@ -414,7 +441,15 @@ All non-auth data is still fully mocked here:
 - **Tailwind v4 syntax** — `@import "tailwindcss"` + `@theme inline { ... }` in `globals.css`. No `tailwind.config.js`.
 - **MUI + Tailwind** coexist — MUI for complex components (tables, drawers, modals), Tailwind for layout and custom styles.
 - **pnpm** — always use `pnpm`, not `npm` or `yarn`.
-- **Login page** — left panel (image) is hidden on mobile (`hidden lg:flex`), form fills full screen on small devices.
+- **Auth pages responsive** — Login and signup forms hide left image panel on mobile (`hidden lg:flex`), form fills full screen on small devices.
+- **Form validation**: Signup form validates names with letters-only regex (`/^[A-Za-z\s'-]+$/`), email, phone, password strength
+- **OTP modal**: 6-digit input boxes, paste support, backspace navigation, 30s resend countdown, separate error state from form errors
+- **ESLint fixes applied**:
+  - Use `setTimeout` defer pattern for `setState` in `useEffect` to avoid React hooks ESLint errors
+  - Prefix intentionally unused function params with `_` (e.g., `_e`, `_index`)
+  - Remove `console.log` statements from production code
+  - Escape HTML entities in JSX strings (`&apos;`, `&quot;`)
+  - Replace `any` types with proper TypeScript types
 
 ---
 

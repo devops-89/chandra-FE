@@ -3,56 +3,110 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   AlertCircle,
-  BookOpen,
   Check,
   ChevronLeft,
   ChevronRight,
+  ClipboardList,
   DollarSign,
   Info,
   Send,
+  Settings2,
   Wrench,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { useServices }
-  from "@/redux/ServiceContext";
+import { useServices } from '@/redux/ServiceContext';
 
 import BasicInfoStep from './BasicInfoStep';
-import DescriptionStep from './DescriptionStep';
 import PricingStep from './PricingStep';
 import PublishStep from './PublishStep';
 import RequirementsStep from './RequirementsStep';
+import SpecificationsStep from './SpecificationsStep';
 
 /* ─── Step Config ────────────────────────────────────────────────── */
 const STEPS = [
-  { id: 0, label: 'Basic Info', icon: Info },
-  { id: 1, label: 'Description', icon: BookOpen },
-  { id: 2, label: 'Pricing', icon: DollarSign },
-  { id: 3, label: 'Requirements', icon: Wrench },
-  { id: 4, label: 'Publish', icon: Send },
+  { id: 0, label: 'Service Info',     icon: Info },
+  { id: 1, label: 'Pricing',          icon: DollarSign },
+  { id: 2, label: 'Specifications',   icon: Settings2 },
+  { id: 3, label: 'Requirements',     icon: Wrench },
+  { id: 4, label: 'Publish',          icon: Send },
 ];
 
-/* ─── Types ──────────────────────────────────────────────────────── */
-type FormData = {
-  name: string; category: string; subcategory: string;
-  description: string; image: File | null;
-  pricingType: string; basePrice: string; duration: string;
-  skills: string; tools: string; questions: string;
-  status: string; cities: string;
+const STEP_SUBTITLES = [
+  'Service name, description, icon and active toggle are required.',
+  'Configure all fare components for this service.',
+  'Define the questions shown to customers at booking.',
+  'Technician skills, tools and instructions (optional).',
+  'Select a publish status to complete.',
+];
+
+/* ─── Specification field type ───────────────────────────────────── */
+export type SpecFieldType = 'text' | 'number' | 'select' | 'textarea' | 'file';
+
+export interface Specification {
+  id: string;           // local uuid
+  label: string;
+  type: SpecFieldType;
+  required: boolean;
+  options: string[];    // only used when type === 'select'
+}
+
+/* ─── Master form state ──────────────────────────────────────────── */
+export type FormData = {
+  // Step 1 — Service Info
+  name: string;
+  description: string;
+  icon: File | null;
+  isActive: boolean;
+
+  // Step 2 — Pricing
+  baseFare: string;
+  perHourRate: string;
+  perKmRate: string;
+  platformFee: string;
+  gst: string;
+  emergencyCharge: string;
+
+  // Step 3 — Specifications (dynamic)
+  specifications: Specification[];
+
+  // Step 4 — Requirements
+  skills: string;
+  tools: string;
+  technicianInstructions: string;
+
+  // Step 5 — Publish
+  status: string;
+  cities: string;
 };
 
-export type FormErrors = Partial<Record<keyof FormData, string>>;
+export type FormErrors = Partial<Record<string, string>>;
 
 const INITIAL: FormData = {
-  name: '', category: '', subcategory: '',
-  description: '', image: null,
-  pricingType: '', basePrice: '', duration: '',
-  skills: '', tools: '', questions: '',
-  status: '', cities: '',
+  name: '',
+  description: '',
+  icon: null,
+  isActive: true,
+
+  baseFare: '',
+  perHourRate: '',
+  perKmRate: '',
+  platformFee: '',
+  gst: '',
+  emergencyCharge: '',
+
+  specifications: [],
+
+  skills: '',
+  tools: '',
+  technicianInstructions: '',
+
+  status: '',
+  cities: '',
 };
 
-/* ─── Per-step validation rules ─────────────────────────────────── */
+/* ─── Per-step validation ────────────────────────────────────────── */
 function validateStep(step: number, data: FormData): FormErrors {
   const errors: FormErrors = {};
 
@@ -62,25 +116,39 @@ function validateStep(step: number, data: FormData): FormErrors {
     else if (data.name.trim().length < 3)
       errors.name = 'Service name must be at least 3 characters.';
 
-    if (!data.category)
-      errors.category = 'Please select a category.';
-  }
-
-  if (step === 1) {
     if (!data.description.trim())
       errors.description = 'Description is required.';
     else if (data.description.trim().length < 20)
       errors.description = 'Description must be at least 20 characters.';
   }
 
-  if (step === 2) {
-    if (!data.pricingType)
-      errors.pricingType = 'Please select a pricing type.';
+  if (step === 1) {
+    if (!data.baseFare)
+      errors.baseFare = 'Base fare is required.';
+    else if (isNaN(Number(data.baseFare)) || Number(data.baseFare) < 0)
+      errors.baseFare = 'Enter a valid amount.';
 
-    if (!data.basePrice)
-      errors.basePrice = 'Base price is required.';
-    else if (isNaN(Number(data.basePrice)) || Number(data.basePrice) <= 0)
-      errors.basePrice = 'Enter a valid price greater than 0.';
+    const numericFields: Array<[keyof FormData, string]> = [
+      ['perHourRate', 'Per hour rate'],
+      ['perKmRate', 'Per KM rate'],
+      ['platformFee', 'Platform fee'],
+      ['gst', 'GST %'],
+      ['emergencyCharge', 'Emergency charge'],
+    ];
+    for (const [field, label] of numericFields) {
+      const val = data[field] as string;
+      if (val && (isNaN(Number(val)) || Number(val) < 0))
+        errors[field] = `${label} must be a valid non-negative number.`;
+    }
+  }
+
+  if (step === 2) {
+    data.specifications.forEach((spec, i) => {
+      if (!spec.label.trim())
+        errors[`spec_label_${i}`] = 'Question label is required.';
+      if (spec.type === 'select' && spec.options.filter(Boolean).length < 2)
+        errors[`spec_options_${i}`] = 'Select type requires at least 2 options.';
+    });
   }
 
   if (step === 4) {
@@ -93,12 +161,12 @@ function validateStep(step: number, data: FormData): FormErrors {
 
 /* ─── Slide animation variants ──────────────────────────────────── */
 const variants = {
-  enter: (direction: number) => ({ x: direction > 0 ? 40 : -40, opacity: 0 }),
+  enter:  (d: number) => ({ x: d > 0 ?  40 : -40, opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit: (direction: number) => ({ x: direction > 0 ? -40 : 40, opacity: 0 }),
+  exit:   (d: number) => ({ x: d > 0 ? -40 :  40, opacity: 0 }),
 };
 
-/* ─── Inline field error component ──────────────────────────────── */
+/* ─── Inline field error ─────────────────────────────────────────── */
 export function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
@@ -116,21 +184,21 @@ export function FieldError({ message }: { message?: string }) {
 /* ─── Main form ──────────────────────────────────────────────────── */
 export default function AddServiceForm() {
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const [step, setStep]           = useState(0);
   const [direction, setDirection] = useState(1);
-  const [data, setData] = useState<FormData>(INITIAL);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState(false);  // whether Next was attempted
+  const [data, setData]           = useState<FormData>(INITIAL);
+  const [errors, setErrors]       = useState<FormErrors>({});
+  const [touched, setTouched]     = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
 
-  const { addService } =
-    useServices();
+  const { addService } = useServices();
 
-  const update = (field: string, value: string | File | null) => {
+  /* Update a single field */
+  const update = (field: string, value: string | boolean | File | null | Specification[]) => {
     setData((prev) => ({ ...prev, [field]: value }));
-    // clear the error for this field as soon as the user edits it
-    if (errors[field as keyof FormData]) {
-      setErrors((prev) => { const e = { ...prev }; delete e[field as keyof FormData]; return e; });
+    if (errors[field]) {
+      setErrors((prev) => { const e = { ...prev }; delete e[field]; return e; });
     }
   };
 
@@ -151,18 +219,11 @@ export default function AddServiceForm() {
     goTo(step + 1);
   };
 
-  const [isPublishing, setIsPublishing] =
-    useState(false);
-
-
-  const [publishSuccess] =
-    useState(false);
-
   const handleSubmit = async () => {
-    const errors = validateStep(4, data);
-
-    if (Object.keys(errors).length > 0) {
-      setErrors(errors);
+    const submitErrors = validateStep(4, data);
+    if (Object.keys(submitErrors).length > 0) {
+      setErrors(submitErrors);
+      setTouched(true);
       return;
     }
 
@@ -171,28 +232,25 @@ export default function AddServiceForm() {
     addService({
       id: Date.now(),
       name: data.name,
-      category: data.category,
-      subcategory: data.subcategory,
-      price: Number(data.basePrice),
-      duration: data.duration,
-      status: "Active",
-      image: "/images/service-placeholder.png",
+      category: '',
+      subcategory: '',
+      price: Number(data.baseFare),
+      duration: '',
+      status: data.isActive ? 'Active' : 'Inactive',
+      image: '/images/service-placeholder.png',
       bookings: 0,
     });
 
     setIsPublishing(false);
     setSubmitted(true);
 
-    await new Promise((resolve) =>
-      setTimeout(resolve, 4000)
-    );
-
-    router.push("/dashboard/admin/services");
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+    router.push('/dashboard/admin/services');
   };
 
   const hasErrors = touched && Object.keys(errors).length > 0;
 
-  /* ── Success screen ─────────────────────────────────────────── */
+  /* ── Success screen ──────────────────────────────────────────── */
   if (submitted) {
     return (
       <motion.div
@@ -209,18 +267,24 @@ export default function AddServiceForm() {
             <span className="font-semibold text-slate-700">{data.name}</span> has
             been added to the services catalogue.
           </p>
-          <p className="mt-2 text-slate-500">
-            Redirecting to Services...
-          </p>
+          <p className="mt-2 text-slate-500">Redirecting to Services...</p>
         </div>
         <div className="flex gap-3">
           <button
-            onClick={() => { setSubmitted(false); setData(INITIAL); setStep(0); setErrors({}); setTouched(false); }}
+            type="button"
+            onClick={() => {
+              setSubmitted(false);
+              setData(INITIAL);
+              setStep(0);
+              setErrors({});
+              setTouched(false);
+            }}
             className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
           >
             Add Another
           </button>
           <button
+            type="button"
             onClick={() => router.push('/dashboard/admin/services')}
             className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
           >
@@ -236,10 +300,11 @@ export default function AddServiceForm() {
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Add New Service</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Create New Service</h1>
           <p className="text-slate-500">Fill in the details to publish a service to the catalogue</p>
         </div>
         <button
+          type="button"
           onClick={() => router.push('/dashboard/admin/services')}
           className="flex items-center gap-2 self-start sm:self-auto rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
         >
@@ -253,12 +318,12 @@ export default function AddServiceForm() {
         <div className="flex min-w-max items-center gap-0">
           {STEPS.map((s, i) => {
             const Icon = s.icon;
-            const done = i < step;
+            const done   = i < step;
             const active = i === step;
-
             return (
               <div key={s.id} className="flex items-center">
                 <button
+                  type="button"
                   onClick={() => i < step && goTo(i)}
                   disabled={i >= step}
                   className="flex flex-col items-center gap-1.5 px-1 disabled:cursor-default"
@@ -272,22 +337,23 @@ export default function AddServiceForm() {
                         ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-200'
                         : active
                           ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200 ring-4 ring-emerald-100'
-                          : 'bg-slate-100 text-slate-400'
-                      }
+                          : 'bg-slate-100 text-slate-400'}
                     `}
                   >
                     {done ? <Check size={16} strokeWidth={2.5} /> : <Icon size={16} />}
                   </motion.div>
-                  <span className={`text-xs font-medium whitespace-nowrap ${active ? 'text-emerald-700' : done ? 'text-slate-600' : 'text-slate-400'
-                    }`}>
+                  <span className={`text-xs font-medium whitespace-nowrap ${
+                    active ? 'text-emerald-700' : done ? 'text-slate-600' : 'text-slate-400'
+                  }`}>
                     {s.label}
                   </span>
                 </button>
 
                 {i < STEPS.length - 1 && (
-                  <div className="mx-1 mb-5 h-0.5 w-8 sm:w-14 rounded-full bg-slate-200 overflow-hidden">
-                    <div className={`h-full rounded-full transition-all duration-500 ${i < step ? 'w-full bg-emerald-600' : 'w-0'
-                      }`} />
+                  <div className="mx-1 mb-5 h-0.5 w-8 sm:w-12 rounded-full bg-slate-200 overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-500 ${
+                      i < step ? 'w-full bg-emerald-600' : 'w-0'
+                    }`} />
                   </div>
                 )}
               </div>
@@ -303,7 +369,8 @@ export default function AddServiceForm() {
         <div className="border-b border-slate-100 px-6 py-5 bg-slate-50/60">
           <div className="flex items-start gap-3">
             {(() => {
-              const Icon = STEPS[step].icon; return (
+              const Icon = STEPS[step].icon;
+              return (
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
                   <Icon size={18} />
                 </div>
@@ -313,13 +380,7 @@ export default function AddServiceForm() {
               <h2 className="font-semibold text-slate-900">
                 Step {step + 1} of {STEPS.length} — {STEPS[step].label}
               </h2>
-              <p className="text-xs text-slate-500">
-                {step === 0 && 'Service name and category are required to continue.'}
-                {step === 1 && 'A description of at least 20 characters is required.'}
-                {step === 2 && 'Pricing type, base price, and duration are required.'}
-                {step === 3 && 'Skills, tools, and questions are optional.'}
-                {step === 4 && 'Select a publish status to complete.'}
-              </p>
+              <p className="text-xs text-slate-500">{STEP_SUBTITLES[step]}</p>
             </div>
           </div>
         </div>
@@ -343,7 +404,7 @@ export default function AddServiceForm() {
         </AnimatePresence>
 
         {/* Animated step content */}
-        <div className="p-6 min-height:320px">
+        <div className="p-6">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={step}
@@ -356,28 +417,44 @@ export default function AddServiceForm() {
             >
               {step === 0 && (
                 <BasicInfoStep
-                  data={{ name: data.name, category: data.category, subcategory: data.subcategory }}
+                  data={{
+                    name:        data.name,
+                    description: data.description,
+                    icon:        data.icon,
+                    isActive:    data.isActive,
+                  }}
                   errors={errors}
                   onChange={update}
                 />
               )}
               {step === 1 && (
-                <DescriptionStep
-                  data={{ description: data.description, image: data.image }}
+                <PricingStep
+                  data={{
+                    baseFare:        data.baseFare,
+                    perHourRate:     data.perHourRate,
+                    perKmRate:       data.perKmRate,
+                    platformFee:     data.platformFee,
+                    gst:             data.gst,
+                    emergencyCharge: data.emergencyCharge,
+                  }}
                   errors={errors}
                   onChange={update}
                 />
               )}
               {step === 2 && (
-                <PricingStep
-                  data={{ pricingType: data.pricingType, basePrice: data.basePrice }}
+                <SpecificationsStep
+                  specifications={data.specifications}
                   errors={errors}
-                  onChange={update}
+                  onChange={(specs) => update('specifications', specs)}
                 />
               )}
               {step === 3 && (
                 <RequirementsStep
-                  data={{ skills: data.skills, tools: data.tools, questions: data.questions }}
+                  data={{
+                    skills:                  data.skills,
+                    tools:                   data.tools,
+                    technicianInstructions:  data.technicianInstructions,
+                  }}
                   onChange={update}
                 />
               )}
@@ -395,6 +472,7 @@ export default function AddServiceForm() {
         {/* Footer navigation */}
         <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/60 px-6 py-4">
           <button
+            type="button"
             onClick={() => goTo(step - 1)}
             disabled={step === 0}
             className="flex items-center gap-2 rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
@@ -406,13 +484,18 @@ export default function AddServiceForm() {
           {/* Progress dots */}
           <div className="flex gap-1.5">
             {STEPS.map((_, i) => (
-              <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === step ? 'w-5 bg-emerald-600' : i < step ? 'w-1.5 bg-emerald-300' : 'w-1.5 bg-slate-200'
-                }`} />
+              <div
+                key={i}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i === step ? 'w-5 bg-emerald-600' : i < step ? 'w-1.5 bg-emerald-300' : 'w-1.5 bg-slate-200'
+                }`}
+              />
             ))}
           </div>
 
           {step < STEPS.length - 1 ? (
             <button
+              type="button"
               onClick={handleNext}
               className="flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
             >
@@ -421,13 +504,15 @@ export default function AddServiceForm() {
             </button>
           ) : (
             <button
+              type="button"
               onClick={handleSubmit}
-              disabled={isPublishing || publishSuccess}
-              className="rounded-xl bg-emerald-600 px-6 py-3 hover:bg-emerald-700 cursor-pointer text-white"
+              disabled={isPublishing}
+              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
             >
-              Publish Service
+              <ClipboardList size={16} />
+              {isPublishing ? 'Publishing…' : 'Publish Service'}
             </button>
-          )}
+          )}``
         </div>
       </div>
     </div>

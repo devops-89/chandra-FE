@@ -20,9 +20,9 @@ const Services = () => {
 
         <button
           onClick={() => router.push("/dashboard/admin/services/add")}
-          className="rounded-xl bg-emerald-600 px-5 py-3 font-medium text-white hover:bg-emerald-700 transition-colors self-start sm:self-auto"
+          className="rounded-xl bg-emerald-600 cursor-pointer px-5 py-3 font-medium text-white hover:bg-emerald-700 transition-colors self-start sm:self-auto"
         >
-          + Add Service
+          Create Service
         </button>
       </div>
 

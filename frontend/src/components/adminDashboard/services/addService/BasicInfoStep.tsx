@@ -1,11 +1,8 @@
 'use client';
 
-import { Plus } from 'lucide-react';
-import { useState } from 'react';
+import { ImageIcon } from 'lucide-react';
+import { useRef } from 'react';
 
-import { useCategoryManager } from '@/hooks/useCategoryManager';
-
-import AddCategoryModal from './AddCategoryModal';
 import { FieldError, type FormErrors } from './AddServiceForm';
 
 /* ─── Shared input class ─────────────────────────────────────────── */
@@ -18,57 +15,38 @@ const inputBase = `
 
 /* ─── Props ──────────────────────────────────────────────────────── */
 interface Props {
-  data: { name: string; category: string; subcategory: string };
-  errors: FormErrors;
-  onChange: (field: string, value: string) => void;
+  data: {
+    name:        string;
+    description: string;
+    icon:        File | null;
+    isActive:    boolean;
+  };
+  errors:   FormErrors;
+  onChange: (field: string, value: string | boolean | File | null) => void;
 }
 
-/* ─── Modal modes ────────────────────────────────────────────────── */
-type ModalState =
-  | { open: false }
-  | { open: true; mode: 'category' }
-  | { open: true; mode: 'subcategory' };
-
-/* ─── Component ─────────────────────────────────────────────────── */
+/* ─── Component ──────────────────────────────────────────────────── */
 export default function BasicInfoStep({ data, errors, onChange }: Props) {
-  const {
-    categories,
-    categoryNames,
-    getSubcategories,
-    addCategory,
-    addSubcategory,
-  } = useCategoryManager();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [modal, setModal] = useState<ModalState>({ open: false });
-
-  const subcategories = getSubcategories(data.category);
-
-  /* Find category id by name (needed to add a subcategory under it) */
-  const selectedCategoryId =
-    categories.find((c) => c.name === data.category)?.id ?? '';
-
-  const handleAddCategory = (name: string) => {
-    addCategory({ name });
-    // Auto-select the newly created category
-    onChange('category', name);
-    onChange('subcategory', '');
-  };
-
-  const handleAddSubcategory = (name: string) => {
-    if (!selectedCategoryId) return;
-    addSubcategory({ name, categoryId: selectedCategoryId });
-    // Auto-select the newly created subcategory
-    onChange('subcategory', name);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    onChange('icon', file);
   };
 
   return (
     <div className="space-y-5">
+
       {/* ── Service Name ─────────────────────────────────────────── */}
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-slate-700">
+        <label
+          htmlFor="svc-name"
+          className="mb-1.5 block text-sm font-medium text-slate-700"
+        >
           Service Name <span className="text-red-500">*</span>
         </label>
         <input
+          id="svc-name"
           value={data.name}
           onChange={(e) => onChange('name', e.target.value)}
           placeholder="e.g. Solar Panel Deep Clean"
@@ -81,93 +59,129 @@ export default function BasicInfoStep({ data, errors, onChange }: Props) {
         <FieldError message={errors.name} />
       </div>
 
-      {/* ── Category ─────────────────────────────────────────────── */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <div className="mb-1.5 flex items-center justify-between">
-            <label className="text-sm font-medium text-slate-700">
-              Category <span className="text-red-500">*</span>
-            </label>
-            <button
-              type="button"
-              onClick={() => setModal({ open: true, mode: 'category' })}
-              className="flex items-center gap-1 text-xs font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
-            >
-              <Plus size={13} strokeWidth={2.5} />
-              New
-            </button>
-          </div>
-          <select
-            value={data.category}
-            onChange={(e) => {
-              onChange('category', e.target.value);
-              onChange('subcategory', '');
-            }}
-            className={`${inputBase} bg-white ${
-              errors.category
-                ? 'border-red-400 focus:border-red-400'
-                : 'border-slate-200 focus:border-emerald-500'
-            }`}
-          >
-            <option value="">Select Category</option>
-            {categoryNames.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-          <FieldError message={errors.category} />
-        </div>
-
-        {/* ── Subcategory ─────────────────────────────────────────── */}
-        <div>
-          <div className="mb-1.5 flex items-center justify-between">
-            <label className="text-sm font-medium text-slate-700">
-              Subcategory
-            </label>
-            <button
-              type="button"
-              disabled={!data.category}
-              onClick={() => setModal({ open: true, mode: 'subcategory' })}
-              className="flex items-center gap-1 text-xs font-medium text-emerald-600 hover:text-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              <Plus size={13} strokeWidth={2.5} />
-              New
-            </button>
-          </div>
-          <select
-            value={data.subcategory}
-            onChange={(e) => onChange('subcategory', e.target.value)}
-            disabled={!data.category}
-            className={`${inputBase} bg-white border-slate-200 focus:border-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed`}
-          >
-            <option value="">Select Subcategory</option>
-            {subcategories.map((sub) => (
-              <option key={sub} value={sub}>
-                {sub}
-              </option>
-            ))}
-          </select>
+      {/* ── Description ──────────────────────────────────────────── */}
+      <div>
+        <label
+          htmlFor="svc-description"
+          className="mb-1.5 block text-sm font-medium text-slate-700"
+        >
+          Description <span className="text-red-500">*</span>
+        </label>
+        <textarea
+          id="svc-description"
+          rows={4}
+          value={data.description}
+          onChange={(e) => onChange('description', e.target.value)}
+          placeholder="Describe what the service includes, what customers can expect, and any preparation needed..."
+          className={`
+            w-full rounded-xl border p-3
+            text-slate-800 placeholder:text-slate-400
+            outline-none transition-all resize-none
+            focus:ring-2 focus:ring-emerald-100
+            ${errors.description
+              ? 'border-red-400 focus:border-red-400'
+              : 'border-slate-200 focus:border-emerald-500'
+            }
+          `}
+        />
+        <div className="mt-1 flex items-center justify-between">
+          <FieldError message={errors.description} />
+          <span className={`ml-auto text-xs ${
+            data.description.length > 0 && data.description.length < 20
+              ? 'text-red-500'
+              : 'text-slate-400'
+          }`}>
+            {data.description.length} / 500
+          </span>
         </div>
       </div>
 
-      {/* ── Add Category / Subcategory modal ─────────────────────── */}
-      {modal.open && modal.mode === 'category' && (
-        <AddCategoryModal
-          mode="category"
-          onClose={() => setModal({ open: false })}
-          onConfirm={handleAddCategory}
-        />
-      )}
+      {/* ── Icon Upload ───────────────────────────────────────────── */}
+      <div>
+        <label className="mb-1.5 block text-sm font-medium text-slate-700">
+          Service Icon
+          <span className="ml-2 text-xs font-normal text-slate-400">(optional)</span>
+        </label>
 
-      {modal.open && modal.mode === 'subcategory' && (
-        <AddCategoryModal
-          mode="subcategory"
-          parentCategoryName={data.category}
-          onClose={() => setModal({ open: false })}
-          onConfirm={handleAddSubcategory}
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className="flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed border-slate-200 px-4 py-5 transition-colors hover:border-emerald-400 hover:bg-emerald-50/40"
+        >
+          {/* Preview or placeholder */}
+          {data.icon ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={URL.createObjectURL(data.icon)}
+              alt="Service icon preview"
+              className="h-12 w-12 rounded-xl object-cover ring-2 ring-emerald-100"
+            />
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-400">
+              <ImageIcon size={22} />
+            </div>
+          )}
+
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-slate-700">
+              {data.icon ? data.icon.name : 'Click to upload icon'}
+            </p>
+            <p className="mt-0.5 text-xs text-slate-400">
+              PNG, JPG or SVG · max 2 MB
+            </p>
+          </div>
+
+          {data.icon && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange('icon', null);
+                if (fileInputRef.current) fileInputRef.current.value = '';
+              }}
+              className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 transition-colors"
+            >
+              Remove
+            </button>
+          )}
+        </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+          aria-label="Upload service icon"
         />
-      )}
+      </div>
+
+      {/* ── Active Toggle ─────────────────────────────────────────── */}
+      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3.5">
+        <div>
+          <p className="text-sm font-medium text-slate-700">Active</p>
+          <p className="mt-0.5 text-xs text-slate-400">
+            When enabled this service will be visible to customers immediately after publishing.
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={data.isActive}
+          onClick={() => onChange('isActive', !data.isActive)}
+          className={`
+            relative ml-4 h-6 w-11 shrink-0 rounded-full transition-colors duration-200
+            ${data.isActive ? 'bg-emerald-600' : 'bg-slate-300'}
+          `}
+        >
+          <span
+            className={`
+              absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200
+              ${data.isActive ? 'translate-x-5' : 'translate-x-0'}
+            `}
+          />
+        </button>
+      </div>
+
     </div>
   );
 }

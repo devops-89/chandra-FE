@@ -5,12 +5,12 @@ import { motion } from 'framer-motion';
 export default function ContactHero() {
   return (
     <section className="max-w-7xl mx-auto px-4 py-12">
-      <motion.p
+      <motion.div
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.6, delay: 0.18, ease: 'easeOut' }}
-          className="mt-4 text-lg text-slate-950"
+          className="mt-4"
         >
         <h1 className="text-5xl md:text-7xl font-bold text-emerald-600 leading-tight">
           Contact <span className="text-slate-950">Us</span>
@@ -20,7 +20,7 @@ export default function ContactHero() {
           Have questions about services, bookings, or support?
           Our team is here to help.
         </p>
-      </motion.p>
+      </motion.div>
     </section>
   );
 }

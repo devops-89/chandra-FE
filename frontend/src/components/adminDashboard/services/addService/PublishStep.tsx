@@ -2,12 +2,17 @@
 
 import { FieldError, type FormErrors } from './AddServiceForm';
 
+/* ─── Props ──────────────────────────────────────────────────────── */
 interface Props {
-  data: { status: string; cities: string };
-  errors: FormErrors;
+  data: {
+    status: string;
+    cities: string;
+  };
+  errors:   FormErrors;
   onChange: (field: string, value: string) => void;
 }
 
+/* ─── Shared input styles ────────────────────────────────────────── */
 const inputBase = `
   w-full rounded-xl border p-3
   text-slate-800 placeholder:text-slate-400
@@ -15,16 +20,24 @@ const inputBase = `
   focus:ring-2 focus:ring-emerald-100
 `;
 
+/* ─── Component ──────────────────────────────────────────────────── */
 export default function PublishStep({ data, errors, onChange }: Props) {
   return (
     <div className="space-y-5">
+
       <div className="grid gap-4 sm:grid-cols-2">
-        {/* Status */}
+
+        {/* ── Status ───────────────────────────────────────────────── */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label
+            htmlFor="pub-status"
+            className="mb-1.5 block text-sm font-medium text-slate-700"
+          >
             Initial Status <span className="text-red-500">*</span>
           </label>
           <select
+            id="pub-status"
+            title="Publish status"
             value={data.status}
             onChange={(e) => onChange('status', e.target.value)}
             className={`${inputBase} bg-white ${
@@ -35,18 +48,22 @@ export default function PublishStep({ data, errors, onChange }: Props) {
           >
             <option value="">Select Status</option>
             <option value="Active">Active</option>
-            <option value="Inactive">Inactive (Draft)</option>
+            <option value="Draft">Draft</option>
           </select>
           <FieldError message={errors.status} />
         </div>
 
-        {/* Cities */}
+        {/* ── Available Cities ─────────────────────────────────────── */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label
+            htmlFor="pub-cities"
+            className="mb-1.5 block text-sm font-medium text-slate-700"
+          >
             Available Cities
             <span className="ml-2 text-xs font-normal text-slate-400">(optional)</span>
           </label>
           <input
+            id="pub-cities"
             value={data.cities}
             onChange={(e) => onChange('cities', e.target.value)}
             placeholder="e.g. Delhi, Noida, Gurgaon"
@@ -56,7 +73,7 @@ export default function PublishStep({ data, errors, onChange }: Props) {
         </div>
       </div>
 
-      {/* Live preview card — only shows once status is chosen */}
+      {/* ── Live preview — only shown once status is selected ──────── */}
       {data.status && (
         <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4">
           <p className="text-sm font-medium text-emerald-800">
@@ -65,12 +82,16 @@ export default function PublishStep({ data, errors, onChange }: Props) {
               {data.status === 'Active' ? 'Active' : 'Draft (Inactive)'}
             </span>
             {data.cities && (
-              <> and available in <span className="font-bold">{data.cities}</span></>
+              <>
+                {' '}and available in{' '}
+                <span className="font-bold">{data.cities}</span>
+              </>
             )}
             .
           </p>
         </div>
       )}
+
     </div>
   );
 }
