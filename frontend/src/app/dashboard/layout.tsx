@@ -1,13 +1,13 @@
-import { ServiceProvider } from "@/redux/ServiceContext";
+import TechnicianDashboardLayout from '@/components/technicianDashboard/layout/TechnicianDashboardLayout';
 
-export default function AdminLayout({
+export default function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <ServiceProvider>
+    <TechnicianDashboardLayout>
       {children}
-    </ServiceProvider>
+    </TechnicianDashboardLayout>
   );
 }
