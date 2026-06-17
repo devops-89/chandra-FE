@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+import activeJobsReducer from './slices/activeJobsSlice';
 import authReducer from './slices/authSlice';
 import nearbyJobsReducer from './slices/nearbyJobsSlice';
 
@@ -8,6 +9,8 @@ export const store = configureStore({
     auth: authReducer,
 
     nearbyJobs: nearbyJobsReducer,
+
+    activeJobs: activeJobsReducer,
   },
 });
 
