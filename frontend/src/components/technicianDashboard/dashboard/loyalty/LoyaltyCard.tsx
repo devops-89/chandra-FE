@@ -31,7 +31,7 @@ export default function LoyaltyCard() {
 
       <div className="relative z-10">
         <h4 className="text-lg font-bold mb-1">
-          ServicePro Star
+          HiChandra Star
         </h4>
 
         <p className="text-white/80 text-sm mb-4">
