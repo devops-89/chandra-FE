@@ -1,7 +1,5 @@
 'use client';
 
-import { TechnicianDashboardLayout } from '@/components/dashboard/technician';
-
 import DashboardContent from './DashboardContent';
 import OverviewStats from './overview/OverviewStats';
 
