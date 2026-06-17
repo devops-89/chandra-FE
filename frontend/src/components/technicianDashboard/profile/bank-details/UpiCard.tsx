@@ -13,6 +13,8 @@ export default function UpiCard() {
         rounded-3xl
         p-6
         shadow-sm
+        flex
+        flex-col
       "
     >
       <div className="flex items-center justify-between mb-6">
@@ -23,19 +25,30 @@ export default function UpiCard() {
         <QrCode2Icon className="text-emerald-500" />
       </div>
 
-      <div>
-        <p className="text-sm text-slate-500">
-          UPI ID
-        </p>
-
-        <p className="font-semibold">
-          vikram@upi
-        </p>
-      </div>
-
+      <div className="space-y-5">
+        <div>
+          <p className="text-sm text-slate-500 mb-1">
+            Name
+          </p>
+        
+          <p className="font-semibold">
+            Vikram Singh
+          </p>
+        </div>
+        
+        <div>
+          <p className="text-sm text-slate-500 mb-1">
+            UPI ID
+          </p>
+        
+          <p className="font-semibold">
+            vikram@upi
+          </p>
+        </div>
+        </div>
       <button
         className="
-          mt-6
+          mt-auto
           w-full
           py-3
           rounded-2xl

@@ -9,9 +9,11 @@ export default function PersonalInfoCard() {
       className="
         bg-white
         border
+        h-full
         border-slate-200
         rounded-3xl
         p-6
+        space-y-8
         shadow-sm
       "
     >
