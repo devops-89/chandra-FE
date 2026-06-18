@@ -9,48 +9,26 @@ import {
   ClipboardList,
   DollarSign,
   Info,
-  Send,
-  Settings2,
-  Wrench,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { useServices } from '@/redux/ServiceContext';
+import { useAppDispatch } from '@/redux/hooks';
+import { createService } from '@/redux/slices/servicesSlice';
 
 import BasicInfoStep from './BasicInfoStep';
 import PricingStep from './PricingStep';
-import PublishStep from './PublishStep';
-import RequirementsStep from './RequirementsStep';
-import SpecificationsStep from './SpecificationsStep';
 
 /* ─── Step Config ────────────────────────────────────────────────── */
 const STEPS = [
-  { id: 0, label: 'Service Info',     icon: Info },
-  { id: 1, label: 'Pricing',          icon: DollarSign },
-  { id: 2, label: 'Specifications',   icon: Settings2 },
-  { id: 3, label: 'Requirements',     icon: Wrench },
-  { id: 4, label: 'Publish',          icon: Send },
+  { id: 0, label: 'Service Info', icon: Info },
+  { id: 1, label: 'Pricing',      icon: DollarSign },
 ];
 
 const STEP_SUBTITLES = [
   'Service name, description, icon and active toggle are required.',
   'Configure all fare components for this service.',
-  'Define the questions shown to customers at booking.',
-  'Technician skills, tools and instructions (optional).',
-  'Select a publish status to complete.',
 ];
-
-/* ─── Specification field type ───────────────────────────────────── */
-export type SpecFieldType = 'text' | 'number' | 'select' | 'textarea' | 'file';
-
-export interface Specification {
-  id: string;           // local uuid
-  label: string;
-  type: SpecFieldType;
-  required: boolean;
-  options: string[];    // only used when type === 'select'
-}
 
 /* ─── Master form state ──────────────────────────────────────────── */
 export type FormData = {
@@ -67,18 +45,6 @@ export type FormData = {
   platformFee: string;
   gst: string;
   emergencyCharge: string;
-
-  // Step 3 — Specifications (dynamic)
-  specifications: Specification[];
-
-  // Step 4 — Requirements
-  skills: string;
-  tools: string;
-  technicianInstructions: string;
-
-  // Step 5 — Publish
-  status: string;
-  cities: string;
 };
 
 export type FormErrors = Partial<Record<string, string>>;
@@ -95,15 +61,6 @@ const INITIAL: FormData = {
   platformFee: '',
   gst: '',
   emergencyCharge: '',
-
-  specifications: [],
-
-  skills: '',
-  tools: '',
-  technicianInstructions: '',
-
-  status: '',
-  cities: '',
 };
 
 /* ─── Per-step validation ────────────────────────────────────────── */
@@ -142,20 +99,6 @@ function validateStep(step: number, data: FormData): FormErrors {
     }
   }
 
-  if (step === 2) {
-    data.specifications.forEach((spec, i) => {
-      if (!spec.label.trim())
-        errors[`spec_label_${i}`] = 'Question label is required.';
-      if (spec.type === 'select' && spec.options.filter(Boolean).length < 2)
-        errors[`spec_options_${i}`] = 'Select type requires at least 2 options.';
-    });
-  }
-
-  if (step === 4) {
-    if (!data.status)
-      errors.status = 'Please select a publish status.';
-  }
-
   return errors;
 }
 
@@ -183,7 +126,9 @@ export function FieldError({ message }: { message?: string }) {
 
 /* ─── Main form ──────────────────────────────────────────────────── */
 export default function AddServiceForm() {
-  const router = useRouter();
+  const router   = useRouter();
+  const dispatch = useAppDispatch();
+
   const [step, setStep]           = useState(0);
   const [direction, setDirection] = useState(1);
   const [data, setData]           = useState<FormData>(INITIAL);
@@ -191,11 +136,11 @@ export default function AddServiceForm() {
   const [touched, setTouched]     = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-
-  const { addService } = useServices();
+  const [apiError, setApiError]   = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   /* Update a single field */
-  const update = (field: string, value: string | boolean | File | null | Specification[]) => {
+  const update = (field: string, value: string | boolean | File | null) => {
     setData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => { const e = { ...prev }; delete e[field]; return e; });
@@ -220,7 +165,7 @@ export default function AddServiceForm() {
   };
 
   const handleSubmit = async () => {
-    const submitErrors = validateStep(4, data);
+    const submitErrors = validateStep(1, data);
     if (Object.keys(submitErrors).length > 0) {
       setErrors(submitErrors);
       setTouched(true);
@@ -228,23 +173,36 @@ export default function AddServiceForm() {
     }
 
     setIsPublishing(true);
+    setApiError(null);
 
-    addService({
-      id: Date.now(),
-      name: data.name,
-      category: '',
-      subcategory: '',
-      price: Number(data.baseFare),
-      duration: '',
-      status: data.isActive ? 'Active' : 'Inactive',
-      image: '/images/service-placeholder.png',
-      bookings: 0,
-    });
+    const result = await dispatch(
+      createService({
+        name:        data.name,
+        description: data.description,
+        icon:        data.icon,
+        isActive:    data.isActive,
+
+        serviceBasePrice: Number(data.baseFare),
+        perHourRate:      data.perHourRate     ? Number(data.perHourRate)     : undefined,
+        perKmRate:        data.perKmRate       ? Number(data.perKmRate)       : undefined,
+        platformFee:      data.platformFee     ? Number(data.platformFee)     : undefined,
+        gst:              data.gst             ? Number(data.gst)             : undefined,
+        emergencyCharge:  data.emergencyCharge ? Number(data.emergencyCharge) : undefined,
+      })
+    );
 
     setIsPublishing(false);
+
+    if (createService.rejected.match(result)) {
+      setApiError(result.payload ?? 'Something went wrong. Please try again.');
+      return;
+    }
+
+    // Show success toast, then redirect
+    setShowToast(true);
     setSubmitted(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 4000));
+    await new Promise((resolve) => setTimeout(resolve, 2500));
     router.push('/dashboard/admin/services');
   };
 
@@ -258,6 +216,21 @@ export default function AddServiceForm() {
         animate={{ opacity: 1, scale: 1 }}
         className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center"
       >
+        {/* Success toast */}
+        <AnimatePresence>
+          {showToast && (
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-medium text-white shadow-lg"
+            >
+              <Check size={16} strokeWidth={2.5} />
+              Service created successfully!
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100">
           <Check className="h-10 w-10 text-emerald-600" />
         </div>
@@ -267,13 +240,14 @@ export default function AddServiceForm() {
             <span className="font-semibold text-slate-700">{data.name}</span> has
             been added to the services catalogue.
           </p>
-          <p className="mt-2 text-slate-500">Redirecting to Services...</p>
+          <p className="mt-2 text-slate-500">Redirecting to Services…</p>
         </div>
         <div className="flex gap-3">
           <button
             type="button"
             onClick={() => {
               setSubmitted(false);
+              setShowToast(false);
               setData(INITIAL);
               setStep(0);
               setErrors({});
@@ -385,7 +359,7 @@ export default function AddServiceForm() {
           </div>
         </div>
 
-        {/* Step-level error banner */}
+        {/* Step-level validation error banner */}
         <AnimatePresence>
           {hasErrors && (
             <motion.div
@@ -398,6 +372,24 @@ export default function AddServiceForm() {
               <p className="flex items-center gap-2 text-sm font-medium text-red-700">
                 <AlertCircle size={15} className="shrink-0" />
                 Please fill in all required fields before continuing.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* API error banner */}
+        <AnimatePresence>
+          {apiError && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="border-b border-red-100 bg-red-50 px-6 py-3"
+            >
+              <p className="flex items-center gap-2 text-sm font-medium text-red-700">
+                <AlertCircle size={15} className="shrink-0" />
+                {apiError}
               </p>
             </motion.div>
           )}
@@ -437,30 +429,6 @@ export default function AddServiceForm() {
                     gst:             data.gst,
                     emergencyCharge: data.emergencyCharge,
                   }}
-                  errors={errors}
-                  onChange={update}
-                />
-              )}
-              {step === 2 && (
-                <SpecificationsStep
-                  specifications={data.specifications}
-                  errors={errors}
-                  onChange={(specs) => update('specifications', specs)}
-                />
-              )}
-              {step === 3 && (
-                <RequirementsStep
-                  data={{
-                    skills:                  data.skills,
-                    tools:                   data.tools,
-                    technicianInstructions:  data.technicianInstructions,
-                  }}
-                  onChange={update}
-                />
-              )}
-              {step === 4 && (
-                <PublishStep
-                  data={{ status: data.status, cities: data.cities }}
                   errors={errors}
                   onChange={update}
                 />
@@ -512,7 +480,7 @@ export default function AddServiceForm() {
               <ClipboardList size={16} />
               {isPublishing ? 'Publishing…' : 'Publish Service'}
             </button>
-          )}``
+          )}
         </div>
       </div>
     </div>

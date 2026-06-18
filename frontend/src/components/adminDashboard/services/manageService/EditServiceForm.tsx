@@ -7,25 +7,6 @@ import { useState } from 'react';
 import { useServiceManager } from '@/hooks/useServiceManager';
 import type { AdminService, EditServiceFormData } from '@/types/admin/service.types';
 
-/* ─── Data ───────────────────────────────────────────────────────── */
-const CATEGORIES = [
-  'Appliance Repair',
-  'Plumbing',
-  'Electrical',
-  'Solar Cleaning',
-  'Home Cleaning',
-  'AC Servicing',
-];
-
-const SUBCATEGORIES: Record<string, string[]> = {
-  'Appliance Repair': ['Air Conditioner', 'Washing Machine', 'Refrigerator'],
-  Plumbing:           ['Leakage', 'Pipe Fitting', 'Drain Cleaning'],
-  Electrical:         ['Wiring', 'Switchboard', 'Fan Installation'],
-  'Solar Cleaning':   ['Panel Cleaning', 'Inverter Check'],
-  'Home Cleaning':    ['Full Home', 'Kitchen', 'Bathroom'],
-  'AC Servicing':     ['Deep Clean', 'Gas Refill', 'Installation'],
-};
-
 /* ─── Shared input class ─────────────────────────────────────────── */
 const inputCls = `
   w-full rounded-xl border border-slate-200 p-3
@@ -39,10 +20,12 @@ const inputCls = `
 function Field({
   label,
   required,
+  hint,
   children,
 }: {
   label: string;
   required?: boolean;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -50,17 +33,59 @@ function Field({
       <label className="block text-sm font-medium text-slate-700">
         {label}
         {required && <span className="ml-0.5 text-red-500">*</span>}
+        {hint && <span className="ml-2 text-xs font-normal text-slate-400">{hint}</span>}
       </label>
       {children}
     </div>
   );
 }
 
+/* ─── Numeric input with optional prefix/suffix ─────────────────── */
+function NumericField({
+  label,
+  required,
+  prefix,
+  suffix,
+  placeholder,
+  value,
+  onChange,
+}: {
+  label:       string;
+  required?:   boolean;
+  prefix?:     string;
+  suffix?:     string;
+  placeholder: string;
+  value:       string;
+  onChange:    (v: string) => void;
+}) {
+  return (
+    <Field label={label} required={required}>
+      <div className="relative">
+        {prefix && (
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-medium text-slate-400">
+            {prefix}
+          </span>
+        )}
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+          className={`${inputCls} ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-10' : ''}`}
+        />
+        {suffix && (
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
+            {suffix}
+          </span>
+        )}
+      </div>
+    </Field>
+  );
+}
+
 /* ─── Inner form ─────────────────────────────────────────────────── */
-/**
- * Keyed on service.id so React re-mounts this component (and resets
- * its state) whenever a different service is opened — no useEffect needed.
- */
 function ServiceEditFields({
   service,
   onClose,
@@ -68,19 +93,22 @@ function ServiceEditFields({
 }: {
   service: AdminService;
   onClose: () => void;
-  onSave: (data: EditServiceFormData) => void;
+  onSave:  (data: EditServiceFormData) => void;
 }) {
   const [form, setForm] = useState<EditServiceFormData>({
-    id: service.id,
-    name:        service.name,
-    category:    service.category,
-    subcategory: service.subcategory,
-    price:       String(service.price),
-    duration:    service.duration,
-    status:      service.status,
+    id:              service.id,
+    name:            service.name,
+    description:     service.description,
+    isActive:        service.isActive,
+    serviceBasePrice:String(service.price),
+    perHourRate:     service.perHourRate     ? String(service.perHourRate)     : '',
+    perKmRate:       service.perKmRate       ? String(service.perKmRate)       : '',
+    platformFee:     service.platformFee     ? String(service.platformFee)     : '',
+    gst:             service.gst             ? String(service.gst)             : '',
+    emergencyCharge: service.emergencyCharge ? String(service.emergencyCharge) : '',
   });
 
-  const set = (field: keyof EditServiceFormData, value: string) =>
+  const set = (field: keyof EditServiceFormData, value: string | boolean | number) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -88,10 +116,10 @@ function ServiceEditFields({
     onSave(form);
   };
 
-  const subcategories = SUBCATEGORIES[form.category] ?? [];
-
   return (
-    <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-5 px-6 py-6">
+    <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-5 px-6 py-6 overflow-y-auto">
+
+      {/* ── Service Name ──────────────────────────────────────────── */}
       <Field label="Service Name" required>
         <input
           value={form.name}
@@ -102,94 +130,101 @@ function ServiceEditFields({
         />
       </Field>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Category" required>
-          <select
-            value={form.category}
-            onChange={(e) => {
-              set('category', e.target.value);
-              set('subcategory', '');
-            }}
-            required
-            className={inputCls}
-          >
-            <option value="">Select Category</option>
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </Field>
-
-        <Field label="Subcategory">
-          <select
-            value={form.subcategory}
-            onChange={(e) => set('subcategory', e.target.value)}
-            disabled={!form.category}
-            className={`${inputCls} disabled:opacity-50 disabled:cursor-not-allowed`}
-          >
-            <option value="">Select Subcategory</option>
-            {subcategories.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        </Field>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Base Price (₹)" required>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 font-medium text-slate-400">
-              ₹
-            </span>
-            <input
-              type="number"
-              min="0"
-              value={form.price}
-              onChange={(e) => set('price', e.target.value)}
-              placeholder="0"
-              required
-              className={`${inputCls} pl-7`}
-            />
-          </div>
-        </Field>
-
-        <Field label="Duration" required>
-          <input
-            value={form.duration}
-            onChange={(e) => set('duration', e.target.value)}
-            placeholder="e.g. 60 mins"
-            required
-            className={inputCls}
-          />
-        </Field>
-      </div>
-
-      <Field label="Status" required>
-        <div className="flex gap-3">
-          {(['Active', 'Inactive'] as const).map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => set('status', s)}
-              className={`
-                flex-1 rounded-xl border py-2.5 text-sm font-medium transition-all
-                ${form.status === s
-                  ? s === 'Active'
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                    : 'border-red-300 bg-red-50 text-red-600'
-                  : 'border-slate-200 text-slate-500 hover:bg-slate-50'
-                }
-              `}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
+      {/* ── Description ───────────────────────────────────────────── */}
+      <Field label="Description">
+        <textarea
+          rows={3}
+          value={form.description}
+          onChange={(e) => set('description', e.target.value)}
+          placeholder="Describe the service..."
+          className={`${inputCls} resize-none`}
+        />
       </Field>
 
-      {/* Pushes footer to bottom when drawer is taller than content */}
+      {/* ── Pricing section ───────────────────────────────────────── */}
+      <div>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          Pricing
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <NumericField
+            label="Base Price"
+            required
+            prefix="₹"
+            placeholder="0"
+            value={form.serviceBasePrice}
+            onChange={(v) => set('serviceBasePrice', v)}
+          />
+          <NumericField
+            label="Per Hour Rate"
+            prefix="₹"
+            suffix="/hr"
+            placeholder="0"
+            value={form.perHourRate}
+            onChange={(v) => set('perHourRate', v)}
+          />
+          <NumericField
+            label="Per KM Rate"
+            prefix="₹"
+            suffix="/km"
+            placeholder="0"
+            value={form.perKmRate}
+            onChange={(v) => set('perKmRate', v)}
+          />
+          <NumericField
+            label="Platform Fee"
+            prefix="₹"
+            placeholder="0"
+            value={form.platformFee}
+            onChange={(v) => set('platformFee', v)}
+          />
+          <NumericField
+            label="GST"
+            suffix="%"
+            placeholder="18"
+            value={form.gst}
+            onChange={(v) => set('gst', v)}
+          />
+          <NumericField
+            label="Emergency Charge"
+            prefix="₹"
+            placeholder="0"
+            value={form.emergencyCharge}
+            onChange={(v) => set('emergencyCharge', v)}
+          />
+        </div>
+      </div>
+
+      {/* ── Active toggle ─────────────────────────────────────────── */}
+      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3.5">
+        <div>
+          <p className="text-sm font-medium text-slate-700">Active</p>
+          <p className="mt-0.5 text-xs text-slate-400">
+            Visible to customers when enabled.
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={form.isActive}
+          onClick={() => set('isActive', !form.isActive)}
+          className={`relative ml-4 h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ${
+            form.isActive ? 'bg-emerald-600' : 'bg-slate-300'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+              form.isActive ? 'translate-x-5' : 'translate-x-0'
+            }`}
+          />
+        </button>
+      </div>
+
+      {/* Spacer */}
       <div className="flex-1" />
 
+      {/* ── Footer ────────────────────────────────────────────────── */}
       <div className="flex gap-3 border-t border-slate-100 pt-5">
         <button
           type="button"
@@ -211,13 +246,12 @@ function ServiceEditFields({
 
 /* ─── Props ──────────────────────────────────────────────────────── */
 interface Props {
-  /** The service being edited — null means the drawer is closed */
   service: AdminService | null;
   onClose: () => void;
-  onSave: (data: EditServiceFormData) => void;
+  onSave:  (data: EditServiceFormData) => void;
 }
 
-/* ─── Outer component — animation shell only ────────────────────── */
+/* ─── Outer component — animation shell ────────────────────────── */
 const EditServiceForm = ({ service, onClose, onSave }: Props) => (
   <AnimatePresence>
     {service !== null && (
@@ -240,15 +274,16 @@ const EditServiceForm = ({ service, onClose, onSave }: Props) => (
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
           transition={{ type: 'tween', duration: 0.28, ease: 'easeInOut' }}
-          className="fixed right-0 top-0 z-50 flex h-screen w-full max-w-lg flex-col bg-white shadow-2xl overflow-y-auto"
+          className="fixed right-0 top-0 z-50 flex h-screen w-full max-w-lg flex-col bg-white shadow-2xl"
         >
-          {/* Drawer header */}
-          <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/70 px-6 py-5">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/70 px-6 py-5 shrink-0">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Edit Service</h2>
               <p className="text-xs text-slate-500">ID: {service.id}</p>
             </div>
             <button
+              type="button"
               onClick={onClose}
               className="rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors"
               aria-label="Close drawer"
@@ -257,7 +292,7 @@ const EditServiceForm = ({ service, onClose, onSave }: Props) => (
             </button>
           </div>
 
-          {/* Keyed inner form — remounts on every new service, resetting state */}
+          {/* Keyed inner form — remounts on every new service */}
           <ServiceEditFields
             key={service.id}
             service={service}
@@ -272,8 +307,4 @@ const EditServiceForm = ({ service, onClose, onSave }: Props) => (
 
 export default EditServiceForm;
 
-/**
- * Re-export the hook so consumers can import both from one place:
- *   import EditServiceForm, { useServiceManager } from '.../EditServiceForm'
- */
 export { useServiceManager };

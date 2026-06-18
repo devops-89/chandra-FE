@@ -1,6 +1,6 @@
 # HiChandra Frontend — Master Project Context
 
-> **Last updated:** June 17, 2026
+> **Last updated:** June 18, 2026
 > **Purpose:** Permanent handoff document. Paste this file into any new chat to restore full project context instantly.
 
 ---
@@ -197,7 +197,7 @@ configureStore({ reducer: { auth: authReducer } })
 | `/dashboard/admin/customers` | ✅ Complete | Table + profile drawer with sub-tabs |
 | `/dashboard/admin/technicians` | ✅ Complete | Table + approval queue + profile drawer |
 | `/dashboard/admin/services` | ✅ Complete | Table + add/edit/delete modals |
-| `/dashboard/admin/services/add` | ✅ Complete | 5-step form (BasicInfo → Pricing → Publish) |
+| `/dashboard/admin/services/add` | ✅ Complete | **2-step form** (Service Info → Pricing) — simplified and backend-aligned |
 | `/dashboard/admin/finance` | ✅ Complete | Overview, commissions, payouts, transactions |
 | `/dashboard/admin/finance/edit` | 🔶 Partial | Stub `onClose/onSave` callbacks — needs real save logic |
 | `/dashboard/admin/reviews` | ✅ Complete | Table + detail drawer + stats |
@@ -244,14 +244,14 @@ src/components/
 │                                  SubmitButton, ConfirmButton, ErrorMessage, BookingDetailsForm
 │   └── fields/                    FormField, FileField
 ├── adminDashboard/
-│   ├── layout/                    AdminDashboardLayout, AdminHeader, AdminSidebar
+│   ├── layout/                    AdminDashboardLayout (role-based auth guard, ADMIN-only), AdminHeader (displays logged-in admin user), AdminSidebar (logout clears localStorage + Redux)
 │   ├── dashboard/                 AdminDashboard + overview, activeJobs, liveJobsMap, technicianApprovals, shared
 │   ├── bookings/                  Bookings + list, details, actions, stats
 │   ├── complaints/                Complaints + list, details, actions, stats
 │   ├── customers/                 Customers + list, profile (5 sub-tabs)
 │   ├── finance/                   Finance + overview, commission, payouts, transactions
 │   ├── reviews/                   Reviews + list, details, stats
-│   ├── services/                  Services + serviceList, categories, addService (5-step form), manageService
+│   ├── services/                  Services + serviceList, categories, addService (5-step refactored form), manageService
 │   ├── technicians/               Technicians + list, approvals, profile
 │   └── shared/                    badges, cards, forms, modals, table, EmptyState
 ├── customerDashboard/
@@ -340,9 +340,48 @@ src/components/
 
 ---
 
+## 12. Services Integration Status
+
+### Admin Service Management (`/dashboard/admin/services`)
+
+**Service List (`/dashboard/admin/services`)**
+- ✅ GET endpoint integrated: `GET /users/service/all`
+- ✅ Normalizer handles backend shape: `ApiService` (with nested `pricingRule`) → `AdminService` (flattened)
+- ✅ Double-wrapped response handling: `response.data.data.data[]` or `response.data.data[]`
+- ✅ Redux slice: `servicesSlice.ts` with `fetchServices`, `createService`, `updateService` thunks
+- ⚠️ Edit/Delete still use in-memory `ServiceContext` (not wired to API)
+
+**Create Service (`/dashboard/admin/services/add`)**
+- ✅ 2-step form: Service Info (name, description, icon, isActive) → Pricing (all fare fields)
+- ✅ Multipart upload: If `icon` file provided, sends `FormData` with `Content-Type: multipart/form-data`
+- ✅ JSON fallback: If no icon, sends JSON with `Content-Type: application/json`
+- ✅ Backend endpoint: `POST /users/admin/service`
+- ✅ Type-safe: `CreateServiceRequest` type matches form payload
+- ❌ API not tested end-to-end yet (previous 500 errors from stale fields now fixed)
+
+**Service Types (`types/admin/service.types.ts`)**
+```typescript
+CreateServiceRequest {
+  name, description, icon, isActive,
+  serviceBasePrice, perHourRate?, perKmRate?,
+  platformFee?, gst?, emergencyCharge?
+}
+
+ApiService { // Backend response shape
+  id, name, description?, iconUrl?, isActive?,
+  pricingRule: { serviceBasePrice, perHourRate, ... }
+}
+
+AdminService { // UI shape (normalized)
+  id, name, description, image, isActive,
+  price, perHourRate, perKmRate, platformFee, gst, emergencyCharge,
+  status, bookings
+}
+```
+
 ## 12. Constants & Mock Data (`src/constants/`)
 
-All non-auth data is still fully mocked here:
+All non-auth data (except admin services list) is still fully mocked here:
 
 | Folder | Contents |
 |---|---|
@@ -361,15 +400,25 @@ All non-auth data is still fully mocked here:
 
 ## 13. What's Complete vs Pending
 
+### ✅ Completed (June 18, 2026 Update)
+- **Admin service creation simplified** — Form reduced from 5 steps to 2 steps (Service Info + Pricing). Removed stale fields that don't exist in backend API: `specifications`, `skills`, `tools`, `technicianInstructions`. Both JSON and multipart branches cleaned up in `service.service.ts`. No TypeScript errors.
+
 ### ✅ Completed
 - **Full public site** (home, services, service detail pages)
 - **Login** — real API integrated (POST `/auth/login`, JWT stored, Redux auth state, invalid credentials banner, responsive)
 - **Signup** — **real API integrated** (OTP flow: generate OTP → verify → register → auto-login → redirect to customer dashboard, responsive)
-- **Auth guards** — `PublicRoute` prevents logged-in users from accessing `/`, `/login`, `/signup`
-- **Public navbar** — conditionally shows Login/Signup buttons OR Dashboard/Logout based on auth state (synced with localStorage)
+- **Auth guards** — `PublicRoute` prevents logged-in users from accessing `/`, `/login`, `/signup`; redirects to correct dashboard based on role (ADMIN → `/dashboard/admin`, CUSTOMER → `/dashboard/customer`)
+- **Admin route protection** — `AdminDashboardLayout` guards all `/dashboard/admin/*` routes; checks token + `role === 'ADMIN'`; redirects non-admins to `/login`
+- **Public navbar** — conditionally shows Login/Signup buttons OR Dashboard/Logout based on auth state; Dashboard button routes based on user role
 - **Customer dashboard header** — displays logged-in user's name and initials from Redux/localStorage
+- **Admin dashboard header** — displays logged-in admin's name and initials from Redux/localStorage
+- **Admin sidebar logout** — clears Redux state + localStorage (tokens + user) → redirects to `/`
 - **Customer dashboard sidebar** — includes "Services" link (active on `/services*`, `/booking*`), smart active state detection
 - **Logout flow** — clears Redux state + localStorage (tokens + user) → redirects to `/`
+- **Admin service creation** — simplified to **2-step backend-aligned form**: Service Info (name, description, icon upload, active toggle) → Pricing (serviceBasePrice, perHourRate, perKmRate, platformFee, GST, emergencyCharge). All stale fields removed (specifications, skills, tools, technicianInstructions).
+- **Material Symbols icon flash fix** — changed `display=optional` to `display=swap` + CSS `font-size:0` hide-during-load pattern in `globals.css`
+- **Hydration fixes** — `<body suppressHydrationWarning>` for browser extension attributes; `<motion.p>` → `<motion.div>` in `ContactHero`
+- **`ServiceProvider`** mounted in admin layout — wraps all `/dashboard/admin/*` routes
 - Booking flow UI (all steps complete, API not wired)
 - Customer dashboard (all 6 sections, mock data)
 - Admin dashboard (all 9 sections, mock data)
@@ -407,10 +456,13 @@ All non-auth data is still fully mocked here:
 1. **Booking service** — Implement `src/services/booking.service.ts` (POST booking, GET booking list/detail)
 2. **Customer booking detail** — Build out `/dashboard/customer/bookings/[id]`
 3. **Technician profile** — Enable edit + save on `/dashboard/technician/profile`
-4. **Pending verification** — Wire `/technicianOnboarding/pending-verification` to status API
-5. **RTK Query services** — Implement `bookingApi`, `userApi`, `serviceApi` in `src/redux/services/`
-6. **Services category route** — Add `page.tsx` for `/services/[category]/[service]`
-7. **Clean up dead code** — Delete `src/dashboard/` folder and `src/redux/legacy/`
+4. **Technician auth guard** — Protect `/dashboard/technician/*` routes (same pattern as admin/customer, `role === 'TECHNICIAN'`)
+5. **Pending verification** — Wire `/technicianOnboarding/pending-verification` to status API
+6. **RTK Query services** — Implement `bookingApi`, `userApi` in `src/redux/services/`
+7. **Services category route** — Add `page.tsx` for `/services/[category]/[service]`
+8. **Admin service edit/delete API** — Wire edit modal + delete action to real `PATCH /users/admin/service/:id` and `DELETE /users/admin/service/:id` endpoints
+9. **Admin service creation testing** — Test end-to-end `POST /users/admin/service` with both icon (multipart) and no-icon (JSON) scenarios
+10. **Clean up dead code** — Delete `src/dashboard/` folder and `src/redux/legacy/`
 
 ---
 
@@ -422,17 +474,20 @@ All non-auth data is still fully mocked here:
   - **Customer role**: Signup always uses `role: "CUSTOMER"` (hardcoded, no role selector)
 - **Auth state hydration**: Redux state is empty on page refresh. Components check `localStorage.getItem('accessToken')` and `localStorage.getItem('user')` as fallback until Redux rehydrates. This prevents flashing of unauthenticated UI.
 - **Auth guards**:
-  - `PublicRoute` wraps `/`, `/login`, `/signup` → redirects logged-in users to `/dashboard/customer`
-  - `DashboardLayout` wraps all dashboard routes → redirects unauthenticated users to `/login`
-  - `DashboardLayout` only checks auth on mount (`useEffect` with empty deps `[]`) to avoid interfering with logout redirects
-- **Logout flow**: `PublicNavbar` clears `localStorage` (tokens + user) before dispatching Redux `logout()`, then redirects to `/`
-- **Public navbar**: Conditionally renders Login/Signup buttons (when unauthenticated) OR Dashboard/Logout buttons (when authenticated), using `localStorage` check + Redux state
-- **Customer dashboard sidebar**:
-  - "Services" link added below Dashboard, above My Bookings
-  - Routes to `/services` (reuses public services module)
-  - Active state: `/services*` AND `/booking*` routes highlight Services link (entire booking flow stays highlighted)
-  - Dashboard link uses exact match, all others use prefix match
-- **Customer dashboard header**: Displays logged-in user's first name, last name initial, and initials from Redux `state.auth.user` with `localStorage` fallback
+  - `PublicRoute` wraps `/`, `/login`, `/signup` → reads user role from Redux/localStorage, redirects to `/dashboard/admin` (ADMIN) or `/dashboard/customer` (CUSTOMER)
+  - `DashboardLayout` wraps all `/dashboard/customer/*` routes → redirects unauthenticated users to `/login`
+  - `AdminDashboardLayout` wraps all `/dashboard/admin/*` routes → checks token + `role === 'ADMIN'`; redirects non-admins/unauthenticated to `/login`
+  - All layout guards run only on mount (`useEffect` with empty deps `[]`) to avoid interfering with logout redirects
+- **Admin route protection**: Same pattern as customer — mount-only `useEffect`, rehydrates Redux from `localStorage`, role check before allowing render
+- **Logout flow**: Sidebar logout buttons (both customer + admin) clear `localStorage` (accessToken, refreshToken, user) + dispatch Redux `logout()` + redirect to `/`
+- **Public navbar**: Dashboard button routes to `/dashboard/admin` or `/dashboard/customer` based on role read from `localStorage`
+- **Admin service creation form** — **2-step flow** maps to backend contract:
+  - Step 1 (Service Info): `name`, `description`, `icon` (File upload), `isActive` (toggle)
+  - Step 2 (Pricing): `serviceBasePrice`, `perHourRate`, `perKmRate`, `platformFee`, `gst`, `emergencyCharge`
+  - **Removed fields**: `specifications[]`, `skills`, `tools`, `technicianInstructions` (no longer in backend API)
+  - Form submits on step 2 completion (no separate publish step needed)
+- **Material Symbols font flash**: Fixed by `display=swap` on Google Fonts link + `.material-symbols-outlined { font-size: 0 }` CSS rule that hides raw text during load; `@supports` block restores size once font is available
+- **ServiceProvider context**: Mounted in `/dashboard/admin/layout.tsx` — wraps all admin routes so `useServices()` is always available
 - **Post-login redirect** uses `sessionStorage` via `lib/auth/redirectUtils.ts`.
 - **All other data is mocked** — bookings, customers, technicians, services, etc. still come from `src/constants/`.
 - **Redux over Zustand** — old `src/store/` folder is gone. State lives in `src/redux/`. Legacy Zustand files are in `src/redux/legacy/` for reference.

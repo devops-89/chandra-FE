@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import { adminSidebarItems } from "@/constants/admin/adminSidebar";
+import { useAppDispatch } from "@/redux/hooks";
+import { logout } from "@/redux/slices/authSlice";
 
 interface AdminSidebarProps {
   isOpen: boolean;
@@ -18,6 +20,15 @@ const SidebarContent = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    dispatch(logout());
+    router.push('/');
+  };
 
   return (
     <>
@@ -46,6 +57,7 @@ const SidebarContent = ({
 
       <div className="p-4 border-t">
         <button
+          type="button"
           className="
             flex
             w-full
@@ -58,7 +70,7 @@ const SidebarContent = ({
             transition
             hover:bg-red-50
           "
-          onClick={() => router.push("/login")}
+          onClick={handleLogout}
         >
           <LogOut size={20} />
           <span className="text-sm sm:text-base">Logout</span>

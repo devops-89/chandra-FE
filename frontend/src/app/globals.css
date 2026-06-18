@@ -43,3 +43,29 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* ─── Material Symbols — hide raw text during font swap ─────────────────────
+   When the icon font hasn't loaded yet (cold start / slow network), the
+   browser renders the ligature keyword as visible text (e.g. "search",
+   "location_on"). Setting font-size:0 on the base class and restoring it
+   with font-size:inherit once the font is available (via @supports) prevents
+   the raw-text flash entirely. The icons appear as soon as the font loads.
+   ────────────────────────────────────────────────────────────────────────── */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-size: 0;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+@supports (font-family: 'Material Symbols Outlined') {
+  .material-symbols-outlined {
+    font-size: inherit;
+  }
+}

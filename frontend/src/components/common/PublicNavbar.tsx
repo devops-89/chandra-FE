@@ -26,7 +26,15 @@ const PublicNavbar = () => {
   }, [reduxAuthenticated]);
 
   const handleDashboard = () => {
-    router.push('/dashboard/customer');
+    let role: string | undefined;
+    try {
+      const str = localStorage.getItem('user');
+      if (str) role = JSON.parse(str)?.role;
+    } catch {
+      // ignore
+    }
+    const dest = role === 'ADMIN' ? '/dashboard/admin' : '/dashboard/customer';
+    router.push(dest);
   };
 
   const handleLogout = () => {
