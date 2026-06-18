@@ -52,7 +52,7 @@ export default function StatusIcon({
 
   return (
     <motion.div
-      className={`${sizeConfig.container} rounded-full ${config.bg} flex items-center justify-center`}
+      className={"${sizeConfig.container} rounded-full ${config.bg} flex items-center justify-center"}
       animate={
         status === 'pending'
           ? { rotate: 360 }
@@ -68,7 +68,7 @@ export default function StatusIcon({
             : { duration: 2, repeat: Infinity }
       }
     >
-      <span className={`material-symbols-outlined ${sizeConfig.icon} ${config.color}`}>
+      <span className={"material-symbols-outlined ${sizeConfig.icon} ${config.color}"}>
         {config.icon}
       </span>
     </motion.div>

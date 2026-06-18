@@ -1,9 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import DashboardCard from '../shared/DashboardCard';
 import ActivityList from './ActivityList';
 
 export default function RecentActivityCard() {
+  const router = useRouter();
+
   return (
     <DashboardCard className="p-4 md:p-6">
       <h4
@@ -22,6 +26,7 @@ export default function RecentActivityCard() {
 
       <button
         type="button"
+        onClick={() => router.push('/dashboard/technician/earnings')}
         className="
           w-full
           mt-6
@@ -30,6 +35,7 @@ export default function RecentActivityCard() {
           hover:bg-emerald-50
           rounded-lg
           transition-all
+          cursor-pointer
         "
       >
         View Full History

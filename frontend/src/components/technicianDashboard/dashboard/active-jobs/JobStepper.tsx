@@ -1,36 +1,48 @@
 'use client';
 
-const steps = [
-  {
-    label: 'Assigned',
-    icon: 'check',
-    completed: true,
-  },
-
-  {
-    label: 'Accepted',
-    icon: 'check',
-    completed: true,
-  },
-
-  {
-    label: 'Travelling',
-    icon: 'directions_car',
-    active: true,
-  },
-
-  {
-    label: 'Started',
-    icon: 'play_arrow',
-  },
-
-  {
-    label: 'Completed',
-    icon: 'task_alt',
-  },
-];
+import { useAppSelector } from '@/redux/hooks';
 
 export default function JobStepper() {
+  const currentJob = useAppSelector((state) => state.activeJobs.currentJob);
+  const status = currentJob?.status || 'assigned';
+  const statusOrder = ['assigned', 'accepted', 'travelling', 'started', 'completed'];
+  const currentIndex = statusOrder.indexOf(status.toLowerCase());
+
+  const steps = [
+    {
+      label: 'Assigned',
+      icon: 'check',
+      completed: currentIndex > 0,
+      active: currentIndex === 0,
+    },
+    {
+      label: 'Accepted',
+      icon: 'check',
+      completed: currentIndex > 1,
+      active: currentIndex === 1,
+    },
+    {
+      label: 'Travelling',
+      icon: 'directions_car',
+      completed: currentIndex > 2,
+      active: currentIndex === 2,
+    },
+    {
+      label: 'Started',
+      icon: 'play_arrow',
+      completed: currentIndex > 3,
+      active: currentIndex === 3,
+    },
+    {
+      label: 'Completed',
+      icon: 'task_alt',
+      completed: currentIndex === 4,
+      active: currentIndex === 4,
+    },
+  ];
+
+  const progressPercent = `${currentIndex * 25}%`;
+
   return (
     <div className="overflow-x-auto pb-2">
       <div className="relative flex justify-between items-center min-w-162.5 px-2">
@@ -38,7 +50,10 @@ export default function JobStepper() {
         <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -translate-y-1/2" />
 
         {/* Progress Line */}
-        <div className="absolute top-1/2 left-0 w-[60%] h-0.5 bg-emerald-600 -translate-y-1/2" />
+        <div 
+          className="absolute top-1/2 left-0 h-0.5 bg-emerald-600 -translate-y-1/2 transition-all duration-300" 
+          style={{ width: progressPercent }}
+        />
 
         {steps.map((step) => (
           <div

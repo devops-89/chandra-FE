@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import activeJobsReducer from './slices/activeJobsSlice';
 import authReducer from './slices/authSlice';
 import nearbyJobsReducer from './slices/nearbyJobsSlice';
+import supportReducer from './slices/supportSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,8 @@ export const store = configureStore({
     nearbyJobs: nearbyJobsReducer,
 
     activeJobs: activeJobsReducer,
+
+    support: supportReducer,
   },
 });
 

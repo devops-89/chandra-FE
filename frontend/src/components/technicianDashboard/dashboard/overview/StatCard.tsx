@@ -8,6 +8,7 @@ interface StatCardProps {
   value: string;
   badge?: string;
   actionText?: string;
+  onClick?: () => void;
 }
 
 export default function StatCard({
@@ -16,19 +17,16 @@ export default function StatCard({
   value,
   badge,
   actionText,
+  onClick,
 }: StatCardProps) {
   return (
-    <DashboardCard className="p-4 md:p-6 hover:shadow-lg">
+    <DashboardCard 
+      className={"p-4 md:p-6 hover:shadow-lg transition-all duration-200 ${onClick ? 'cursor-pointer hover:border-emerald-500' : ''}"}
+      onClick={onClick}
+    >
       <div className="flex justify-between items-start mb-4">
         <span
-          className="
-            material-symbols-outlined
-            text-emerald-600
-            bg-emerald-50
-            p-2
-            rounded-lg
-            text-2xl
-          "
+          className="material-symbols-outlined text-emerald-600 bg-emerald-50 p-2 rounded-lg text-2xl"
         >
           {icon}
         </span>

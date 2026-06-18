@@ -16,6 +16,7 @@ export default function StartJobButton() {
         justify-center
         gap-2
         font-semibold
+        cursor-pointer
         hover:bg-emerald-600
         transition-all
       "

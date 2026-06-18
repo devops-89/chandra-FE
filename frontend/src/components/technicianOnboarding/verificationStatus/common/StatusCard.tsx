@@ -19,7 +19,7 @@ export default function StatusCard({
 }: StatusCardProps) {
   return (
     <motion.div
-      className={`bg-white rounded-3xl shadow-lg border border-outline-variant/30 p-8 md:p-12 ${className}`}
+      className={"bg-white rounded-3xl shadow-lg border border-outline-variant/30 p-8 md:p-12 ${className}"}
       variants={containerVariants}
       initial="hidden"
       animate="visible"

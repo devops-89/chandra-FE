@@ -9,7 +9,7 @@ export default function WeeklyChart() {
 
   return (
     <div>
-      <h4 className="font-semibold text-slate-900 mb-6">
+      <h4 className="font-semibold text-slate-900 mb-5">
         Weekly Earnings
       </h4>
 

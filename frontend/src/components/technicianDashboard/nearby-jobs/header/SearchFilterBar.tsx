@@ -3,7 +3,14 @@
 import SearchIcon from '@mui/icons-material/Search';
 import TuneIcon from '@mui/icons-material/Tune';
 
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { selectNearbyJobsFilters } from '@/redux/selectors/nearbyJobsSelectors';
+import { setServiceTypeFilter } from '@/redux/slices/nearbyJobsSlice';
+
 export default function SearchFilterBar() {
+  const dispatch = useAppDispatch();
+  const filters = useAppSelector(selectNearbyJobsFilters);
+
   return (
     <div className="flex flex-col md:flex-row gap-4">
       {/* Search */}
@@ -26,6 +33,8 @@ export default function SearchFilterBar() {
 
         <input
           type="text"
+          value={filters.serviceType}
+          onChange={(e) => dispatch(setServiceTypeFilter(e.target.value))}
           placeholder="Search service type..."
           className="
             w-full
