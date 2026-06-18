@@ -7,7 +7,7 @@ export default function WalletCard() {
   return (
     <div
       className="
-        bg-gradient-to-br
+        bg-linear-to-br
         from-emerald-500
         to-emerald-700
         rounded-3xl

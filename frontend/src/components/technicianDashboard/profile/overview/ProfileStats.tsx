@@ -14,6 +14,7 @@ export default function ProfileStats() {
             border-slate-200
             rounded-3xl
             p-5
+            hover:shadow-lg
             shadow-sm
           "
         >

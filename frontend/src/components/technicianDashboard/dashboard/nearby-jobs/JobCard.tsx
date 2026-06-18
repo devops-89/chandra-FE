@@ -9,6 +9,8 @@ interface JobCardProps {
   payout: string;
   time: string;
   variant?: 'green' | 'blue';
+  onAccept?: () => void;
+  onReject?: () => void;
 }
 
 export default function JobCard({
@@ -18,6 +20,8 @@ export default function JobCard({
   payout,
   time,
   variant = 'green',
+  onAccept,
+  onReject,
 }: JobCardProps) {
   return (
     <div
@@ -89,7 +93,7 @@ export default function JobCard({
         </span>
       </div>
 
-      <JobActions />
+      <JobActions onAccept={onAccept} onReject={onReject} />
     </div>
   );
 }

@@ -42,6 +42,14 @@ export const technicianNavigationConfig: NavigationItem[] = [
     icon: 'person',
     section: 'main',
   },
+  {
+    id: 'support',
+    label: 'Get Support',
+    href: '/dashboard/technician/support',
+    icon: 'help',
+    section: 'main',
+  },
+
 ];
 
 export const getTechnicianNavigationBySection = (section: 'main' | 'support') => {

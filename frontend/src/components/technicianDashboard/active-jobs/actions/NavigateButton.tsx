@@ -15,6 +15,7 @@ export default function NavigateButton() {
         items-center
         justify-center
         gap-2
+        cursor-pointer
         font-medium
         hover:border-emerald-500
         transition-all

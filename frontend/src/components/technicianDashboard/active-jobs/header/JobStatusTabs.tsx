@@ -21,6 +21,7 @@ export default function JobStatusTabs() {
             border
             text-sm
             font-medium
+            cursor-pointer
             transition-all
 
             ${

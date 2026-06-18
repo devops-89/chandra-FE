@@ -11,6 +11,9 @@ export default function NotificationSettings() {
         border-slate-200
         rounded-3xl
         p-6
+        flex
+        flex-col
+        h-full
         shadow-sm
       "
     >
@@ -22,7 +25,7 @@ export default function NotificationSettings() {
         </h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-10 mt-6">
         <div className="flex justify-between">
           <span>Push Notifications</span>
           <span className="text-emerald-600">

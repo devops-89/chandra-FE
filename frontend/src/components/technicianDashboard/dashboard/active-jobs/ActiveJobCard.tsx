@@ -1,15 +1,42 @@
 'use client';
 
+import Link from 'next/link';
+
+import { useAppSelector } from '@/redux/hooks';
+
 import ActiveJobStatus from './ActiveJobStatus';
 import JobStepper from './JobStepper';
 import QuickActions from './QuickActions';
 
 export default function ActiveJobCard() {
+  const currentJob = useAppSelector((state) => state.activeJobs.currentJob);
+
+  if (!currentJob) {
+    return (
+      <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm text-center py-12">
+        <span className="material-symbols-outlined text-slate-350 text-5xl mb-3">work_history</span>
+        <h5 className="text-xl font-bold text-slate-900 mb-2">No Active Job</h5>
+        <p className="text-slate-500 text-sm max-w-xs mx-auto mb-6 leading-relaxed">
+          You don&apost have any active jobs currently assigned. Browse nearby requests to start earning!
+        </p>
+        <Link
+          href="/dashboard/technician/nearby-jobs"
+          className="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors text-sm cursor-pointer"
+        >
+          Browse Nearby Jobs
+        </Link>
+      </div>
+    );
+  }
+
+  // Capitalize status
+  const formattedStatus = currentJob.status.charAt(0).toUpperCase() + currentJob.status.slice(1);
+
   return (
     <div
       className="
         bg-white
-        p-5 md:p-5
+        p-5 md:p-6
         rounded-xl
         border-l-8
         border-emerald-600
@@ -48,12 +75,12 @@ export default function ActiveJobCard() {
         "
       >
         <div>
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-2 flex-wrap">
             <h5 className="text-2xl font-bold text-slate-900">
-              Full House Deep Cleaning
+              {currentJob.serviceType}
             </h5>
 
-            <ActiveJobStatus status="Travelling" />
+            <ActiveJobStatus status={formattedStatus} />
           </div>
 
           <p
@@ -62,18 +89,16 @@ export default function ActiveJobCard() {
               flex
               items-center
               gap-2
+              text-sm
             "
           >
             <span
-              className="
-                material-symbols-outlined
-                text-emerald-600
-              "
+              className="material-symbols-outlined text-emerald-600 text-[18px]"
             >
               location_on
             </span>
 
-            Sector 52, Gurgaon, Apartment 402
+            {currentJob.address}
           </p>
         </div>
 
@@ -89,7 +114,7 @@ export default function ActiveJobCard() {
               text-emerald-600
             "
           >
-            12 Mins
+            {currentJob.status === 'completed' ? 'Done' : currentJob.eta}
           </p>
         </div>
       </div>

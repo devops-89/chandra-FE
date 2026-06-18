@@ -11,7 +11,7 @@ export default function EarningsChart() {
         border
         border-slate-200
         rounded-3xl
-        p-6
+        p-5
         shadow-sm
       "
     >
@@ -41,7 +41,7 @@ export default function EarningsChart() {
         </span>
       </div>
 
-      <div className="space-y-10">
+      <div className="space-y-7">
         <WeeklyChart />
 
         <div className="border-t border-slate-200" />

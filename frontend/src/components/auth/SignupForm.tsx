@@ -195,7 +195,7 @@ export const SignupForm = () => {
                 <span>
                   I agree to the terms and conditions.
                   {errors.termsAccepted && (
-                    <span className={`mt-1 block ${errorClassName}`}>{errors.termsAccepted}</span>
+                    <span className={"mt-1 block ${errorClassName}"}>{errors.termsAccepted}</span>
                   )}
                 </span>
               </label>

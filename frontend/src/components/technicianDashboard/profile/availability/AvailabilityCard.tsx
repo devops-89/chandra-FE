@@ -11,6 +11,7 @@ export default function AvailabilityCard() {
         border
         border-slate-200
         rounded-3xl
+        h-full
         p-6
         shadow-sm
       "
@@ -20,7 +21,7 @@ export default function AvailabilityCard() {
           text-xl
           font-bold
           text-slate-900
-          mb-6
+          mb-8
         "
       >
         Availability Settings

@@ -20,9 +20,12 @@ interface Props {
     payout: string;
     urgency: string;
   };
+  onAccept?: () => void;
+  onReject?: () => void;
+  onViewDetails?: () => void;
 }
 
-export default function JobCard({ job }: Props) {
+export default function JobCard({ job, onAccept, onReject, onViewDetails }: Props) {
   return (
     <motion.div
       whileHover={{ y: -3 }}
@@ -31,13 +34,17 @@ export default function JobCard({ job }: Props) {
         rounded-3xl
         border
         border-slate-200
-        p-4
+        p-6
         shadow-sm
       "
     >
       <JobDetails job={job} />
 
-      <JobCardActions />
+      <JobCardActions
+        onAccept={onAccept}
+        onReject={onReject}
+        onViewDetails={onViewDetails}
+      />
     </motion.div>
   );
 }

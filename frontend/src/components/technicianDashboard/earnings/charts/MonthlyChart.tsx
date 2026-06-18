@@ -16,7 +16,7 @@ export default function MonthlyChart() {
       <div className="space-y-5">
         {MONTHLY_EARNINGS.map((item) => (
           <div key={item.month}>
-            <div className="flex justify-between mb-2">
+            <div className="flex justify-between">
               <span className="text-slate-600">
                 {item.month}
               </span>

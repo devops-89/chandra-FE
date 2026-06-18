@@ -52,10 +52,10 @@ export default function StatusBadge({
 
   return (
     <div
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${styles.bg} ${styles.border} ${className}`}
+      className={"inline-flex items-center gap-2 px-4 py-2 rounded-full border ${styles.bg} ${styles.border} ${className}"}
     >
       <div
-        className={`w-2 h-2 rounded-full ${
+        className={"w-2 h-2 rounded-full ${
           status === 'pending' ? 'animate-pulse' : ''
         } ${
           status === 'pending'
@@ -63,9 +63,9 @@ export default function StatusBadge({
             : status === 'approved'
               ? 'bg-green-500'
               : 'bg-red-500'
-        }`}
+        }"}
       />
-      <span className={`text-sm font-semibold ${styles.text}`}>
+      <span className={"text-sm font-semibold ${styles.text}"}>
         {getBadgeLabel()}
       </span>
     </div>

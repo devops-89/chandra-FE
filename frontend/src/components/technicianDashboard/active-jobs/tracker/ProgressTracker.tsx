@@ -1,8 +1,16 @@
 'use client';
 
+import { useAppSelector } from '@/redux/hooks';
+
 import JobStepper from './JobStepper';
 
 export default function ProgressTracker() {
+  const currentJob = useAppSelector((state) => state.activeJobs.currentJob);
+  const status = currentJob?.status || 'assigned';
+  const statusOrder = ['assigned', 'accepted', 'travelling', 'started', 'completed'];
+  const currentIndex = statusOrder.indexOf(status.toLowerCase());
+  const stepNumber = currentIndex >= 0 ? currentIndex + 1 : 1;
+
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-5">
@@ -21,7 +29,7 @@ export default function ProgressTracker() {
             font-medium
           "
         >
-          Step 3 of 5
+          Step {stepNumber} of 5
         </span>
       </div>
 

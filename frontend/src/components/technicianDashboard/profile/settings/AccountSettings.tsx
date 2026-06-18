@@ -11,7 +11,10 @@ export default function AccountSettings() {
         border-slate-200
         rounded-3xl
         p-6
+        h-full
         shadow-sm
+        flex
+        flex-col
       "
     >
       <div className="flex items-center gap-3 mb-6">
@@ -22,7 +25,7 @@ export default function AccountSettings() {
         </h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 mt-auto">
         <button
           className="
             w-full
@@ -38,7 +41,7 @@ export default function AccountSettings() {
           Edit Profile Information
         </button>
 
-        <button
+        {/* <button
           className="
             w-full
             text-left
@@ -51,7 +54,7 @@ export default function AccountSettings() {
           "
         >
           Change Profile Picture
-        </button>
+        </button> */}
       </div>
     </div>
   );

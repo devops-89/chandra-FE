@@ -4,7 +4,7 @@ export default function GoalsCard() {
   return (
     <div
       className="
-        bg-gradient-to-br
+        bg-linear-to-br
         from-slate-900
         to-slate-800
         rounded-3xl

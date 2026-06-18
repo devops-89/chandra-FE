@@ -1,7 +1,7 @@
 'use client';
 
 import ActiveJobsSection from './active-jobs/ActiveJobsSection';
-import LoyaltyCard from './loyalty/LoyaltyCard';
+// import LoyaltyCard from './loyalty/LoyaltyCard';
 import NearbyJobsSection from './nearby-jobs/NearbyJobsSection';
 import PerformanceCard from './performance/PerformanceCard';
 import RecentActivityCard from './recent-activity/RecentActivityCard';
@@ -19,7 +19,7 @@ export default function DashboardContent() {
       <div className="col-span-12 lg:col-span-4 space-y-6">
         <PerformanceCard />
         <RecentActivityCard />
-        <LoyaltyCard />
+        {/* <LoyaltyCard /> */}
       </div>
     </div>
   );

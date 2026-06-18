@@ -1,8 +1,16 @@
-'use client';
-
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-export default function JobCardActions() {
+interface JobCardActionsProps {
+  onAccept?: () => void;
+  onReject?: () => void;
+  onViewDetails?: () => void;
+}
+
+export default function JobCardActions({
+  onAccept,
+  onReject,
+  onViewDetails,
+}: JobCardActionsProps) {
   return (
     <>
       <div className="border-t border-slate-200 my-6" />
@@ -17,6 +25,7 @@ export default function JobCardActions() {
         "
       >
         <button
+          onClick={onAccept}
           className="
             flex-1
             w-full
@@ -34,6 +43,7 @@ export default function JobCardActions() {
         </button>
 
         <button
+          onClick={onReject}
           className="
             flex-1
             w-full
@@ -51,6 +61,7 @@ export default function JobCardActions() {
         </button>
 
         <button
+          onClick={onViewDetails}
           className="
             flex
             items-center

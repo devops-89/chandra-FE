@@ -8,6 +8,7 @@ export default function BankDetailsCard() {
       className="
         bg-white
         border
+        w-full
         border-slate-200
         rounded-3xl
         p-6
