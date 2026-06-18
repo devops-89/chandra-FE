@@ -5,8 +5,8 @@ import servicesReducer from './slices/servicesSlice';
 
 export const store = configureStore({
   reducer: {
-    auth:       authReducer,
-    services:   servicesReducer,
+    auth: authReducer,
+    services: servicesReducer,
   },
 });
 

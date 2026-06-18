@@ -44,20 +44,20 @@ const MobileMenu = () => {
         <span className="sr-only">{isOpen ? 'Close menu' : 'Open menu'}</span>
         <span className="relative h-4 w-5" aria-hidden="true">
           <span
-            className={"absolute left-0 top-0 h-0.5 w-5 rounded-full bg-current transition-transform duration-300 ${isOpen ? 'translate-y-1.75 rotate-45' : ''}"}
+            className={`absolute left-0 top-0 h-0.5 w-5 rounded-full bg-current transition-transform duration-300 ${isOpen ? 'translate-y-1.75 rotate-45' : ''}`}
           />
           <span
-            className={"absolute left-0 top-1.75 h-0.5 w-5 rounded-full bg-current transition-opacity duration-200 ${isOpen ? 'opacity-0' : 'opacity-100'}"}
+            className={`absolute left-0 top-1.75 h-0.5 w-5 rounded-full bg-current transition-opacity duration-200 ${isOpen ? 'opacity-0' : 'opacity-100'}`}
           />
           <span
-            className={"absolute bottom-0 left-0 h-0.5 w-5 rounded-full bg-current transition-transform duration-300 ${isOpen ? '-translate-y-1.75 -rotate-45' : ''}"}
+            className={`absolute bottom-0 left-0 h-0.5 w-5 rounded-full bg-current transition-transform duration-300 ${isOpen ? '-translate-y-1.75 -rotate-45' : ''}`}
           />
         </span>
       </button>
 
       <div
         id="mobile-navigation"
-        className={"absolute inset-x-3 top-[calc(100%+0.625rem)] origin-top rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-2xl shadow-slate-900/10 backdrop-blur-xl transition-all duration-300 min-[420px]:inset-x-4 sm:rounded-3xl sm:p-4 ${isOpen ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-3 opacity-0'}"}
+        className={`absolute inset-x-3 top-[calc(100%+0.625rem)] origin-top rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-2xl shadow-slate-900/10 backdrop-blur-xl transition-all duration-300 min-[420px]:inset-x-4 sm:rounded-3xl sm:p-4 ${isOpen ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-3 opacity-0'}`}
       >
         <NavbarLinks
           onNavigate={closeMenu}
