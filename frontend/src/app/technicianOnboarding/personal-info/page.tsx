@@ -1,14 +1,12 @@
 import OnboardingLayout from '@/components/technicianApplication/layout/OnboardingLayout';
+import Heading from '@/components/technicianApplication/registration/personalInfo/Heading';
 import PersonalInfoForm from '@/components/technicianApplication/registration/personalInfo/PersonalInfoForm';
 
 export default function PersonalInfoRoute() {
   return (
     <OnboardingLayout currentStep={0}>
-      <div className="max-w-4xl">
-        <div className="bg-red-500 text-white p-4 mb-4">
-          INLINE HEADING
-        </div>
-
+      <div className='max-w-4xl'>
+        <Heading />
         <PersonalInfoForm />
       </div>
     </OnboardingLayout>
