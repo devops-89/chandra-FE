@@ -33,7 +33,7 @@ const tickets = [
 export default function TicketList() {
   return (
     <div
-      className=" bg-white border border-slate-200 rounded-3xl shadow-sm
+      className=" bg-white border border-slate-200 rounded-3xl shadow-sm mb-6
       "
     >
       <div className="p-6 border-b border-slate-200">

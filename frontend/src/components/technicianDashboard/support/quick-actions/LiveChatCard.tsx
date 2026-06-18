@@ -11,6 +11,7 @@ export default function LiveChatCard() {
         border
         border-slate-200
         p-6
+        mt-4
         shadow-sm
         hover:border-emerald-500
         transition-all

@@ -11,6 +11,7 @@ export default function SupportStatsCard() {
         to-emerald-700
         rounded-3xl
         p-6
+        mb-8
         text-white
         shadow-lg
       "

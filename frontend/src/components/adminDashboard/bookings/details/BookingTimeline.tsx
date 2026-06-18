@@ -30,7 +30,7 @@ const BookingTimeline = ({ status }: Props) => {
 
       {isCancelled ? (
         <div className="flex items-center gap-3 rounded-xl bg-red-50 border border-red-100 px-4 py-3">
-          <div className="h-4 w-4 rounded-full bg-red-500 flex-shrink-0" />
+          <div className="h-4 w-4 rounded-full bg-red-500 shrink-0" />
           <p className="text-sm font-medium text-red-700">Booking Cancelled</p>
         </div>
       ) : (
@@ -41,7 +41,7 @@ const BookingTimeline = ({ status }: Props) => {
             return (
               <div key={step} className="flex items-center gap-4">
                 <div
-                  className={`h-4 w-4 rounded-full flex-shrink-0 transition-colors ${
+                  className={`h-4 w-4 rounded-full shrink-0 transition-colors ${
                     isActive
                       ? 'bg-emerald-600 ring-4 ring-emerald-100'
                       : isCompleted

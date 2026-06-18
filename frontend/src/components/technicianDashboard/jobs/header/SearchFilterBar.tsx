@@ -1,8 +1,8 @@
 'use client';
 
 import SearchIcon from '@mui/icons-material/Search';
-import TuneIcon from '@mui/icons-material/Tune';
 
+// import TuneIcon from '@mui/icons-material/Tune';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectNearbyJobsFilters } from '@/redux/selectors/nearbyJobsSelectors';
 import { setServiceTypeFilter } from '@/redux/slices/nearbyJobsSlice';
@@ -45,7 +45,7 @@ export default function SearchFilterBar() {
         />
       </div>
 
-      {/* Filter Button */}
+      {/* Filter Button
       <button
         className="
           flex
@@ -68,7 +68,7 @@ export default function SearchFilterBar() {
         <span className="font-medium">
           Filter
         </span>
-      </button>
+      </button> */}
     </div>
   );
 }

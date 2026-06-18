@@ -15,7 +15,6 @@ const containerVariants = {
 
 export default function StatusCard({
   children,
-  className = '',
 }: StatusCardProps) {
   return (
     <motion.div

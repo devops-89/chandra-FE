@@ -70,7 +70,7 @@ const BookingDetailsDrawer = ({ open, onClose, booking: initialBooking }: Props)
                 <h3 className="font-semibold text-slate-900">{booking.customer}</h3>
                 <p className="text-sm text-slate-500 mt-0.5">{booking.service}</p>
               </div>
-              <div className="text-right flex-shrink-0">
+              <div className="text-right shrink-0">
                 <p className="text-lg font-bold text-slate-900">₹{booking.amount}</p>
                 <p className="text-xs text-slate-500">{booking.date}</p>
               </div>
@@ -114,7 +114,7 @@ const BookingDetailsDrawer = ({ open, onClose, booking: initialBooking }: Props)
                 </div>
                 <button
                   onClick={() => setAssignOpen(true)}
-                  className="flex-shrink-0 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition-colors cursor-pointer flex items-center gap-2"
+                  className="shrink-0 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition-colors cursor-pointer flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -134,7 +134,7 @@ const BookingDetailsDrawer = ({ open, onClose, booking: initialBooking }: Props)
                 </div>
                 <button
                   onClick={() => setReassignOpen(true)}
-                  className="flex-shrink-0 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer flex items-center gap-2"
+                  className="shrink-0 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />

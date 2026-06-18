@@ -13,6 +13,7 @@ export default function ServiceAreaMapCard() {
         border
         border-slate-200
         p-4
+        mt-6
         shadow-sm
       "
     >

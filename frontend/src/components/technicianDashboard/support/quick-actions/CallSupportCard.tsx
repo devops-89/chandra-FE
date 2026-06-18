@@ -12,6 +12,7 @@ export default function CallSupportCard() {
         border-slate-200
         p-6
         shadow-sm
+        mt-4
         hover:border-emerald-500
         transition-all
       "

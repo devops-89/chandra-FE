@@ -71,7 +71,7 @@ const BookingTabs = ({ active, bookings, onChange }: Props) => {
             >
               {tab.dotColor && (
                 <span
-                  className={`h-2 w-2 rounded-full flex-shrink-0 ${
+                  className={`h-2 w-2 rounded-full shrink-0 ${
                     isActive ? 'bg-white/70' : tab.dotColor
                   }`}
                 />

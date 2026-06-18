@@ -1,20 +1,19 @@
 'use client';
 
 import EarningsChart from './charts/EarningsChart';
-import EarningsTabs from './header/EarningsTabs';
+// import EarningsTabs from './header/EarningsTabs';
 import EarningsStats from './overview/EarningsStats';
 import BankDetailsCard from './payout/BankDetailsCard';
 import WalletCard from './payout/WalletCard';
 import WithdrawalCard from './payout/WithdrawalCard';
 import EarningsInsightsCard from './sidebar/EarningsInsightsCard';
-import GoalsCard from './sidebar/GoalsCard';
 import PerformanceCard from './sidebar/PerformanceCard';
 import TransactionsTable from './transactions/TransactionsTable';
 
 export default function EarningsContent() {
   return (
     <div className="space-y-6">
-      <EarningsTabs />
+      {/* <EarningsTabs /> */}
 
       <EarningsStats />
 
@@ -34,7 +33,6 @@ export default function EarningsContent() {
             <BankDetailsCard />
             <EarningsInsightsCard />
             <PerformanceCard />
-            <GoalsCard />
         </div>
       </div>
     </div>
