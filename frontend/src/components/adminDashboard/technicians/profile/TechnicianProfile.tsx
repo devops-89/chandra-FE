@@ -2,7 +2,7 @@ const TechnicianProfile = () => {
   return (
     <div className="rounded-2xl border bg-white p-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
-        <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-emerald-500 text-white text-xl sm:text-2xl flex-shrink-0">
+        <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-emerald-500 text-white text-xl sm:text-2xl shrink-0">
           A
         </div>
 

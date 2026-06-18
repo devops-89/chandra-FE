@@ -9,6 +9,7 @@ export default function ResolutionCard() {
         border-slate-200
         rounded-3xl
         p-6
+        mt-6
         shadow-sm
       "
     >

@@ -12,7 +12,9 @@ export default function ContactInfoCard() {
         border-slate-200
         rounded-3xl
         p-6
+        mt-4
         shadow-sm
+        m-auto
       "
     >
       <h3 className="text-xl font-bold mb-6">

@@ -1,7 +1,7 @@
 'use client';
 
 import FAQItem from './FAQItem';
-import FAQSearch from './FAQSearch';
+// import FAQSearch from './FAQSearch';
 
 const faqs = [
   {
@@ -53,7 +53,7 @@ export default function FAQSection() {
         </p>
       </div>
 
-      <FAQSearch />
+      {/* <FAQSearch /> */}
 
       <div className="mt-6 space-y-4">
         {faqs.map((faq) => (

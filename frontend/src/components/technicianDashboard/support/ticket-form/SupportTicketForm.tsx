@@ -7,7 +7,7 @@ import PrioritySelect from './PrioritySelect';
 export default function SupportTicketForm() {
   return (
     <div
-      className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm m-6"
+      className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm mb-6"
     >
       <div className="mb-6">
         <h3 className="text-xl font-bold text-slate-900">

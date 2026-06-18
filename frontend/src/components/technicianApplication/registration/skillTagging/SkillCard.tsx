@@ -16,7 +16,7 @@ export default function SkillCard({
       type="button"
       onClick={() => onSelect(skill.id)}
       className={`
-        group w-full min-h-[20px] rounded-2xl bg-white p-10 text-left
+        group w-full min-h-5 rounded-2xl bg-white p-10 text-left
         shadow-sm transition-all duration-300 cursor-pointer
         hover:-translate-y-1 hover:shadow-lg
         ${

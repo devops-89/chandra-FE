@@ -16,8 +16,8 @@ export const technicianNavigationConfig: NavigationItem[] = [
   },
   {
     id: 'nearby-jobs',
-    label: 'Nearby Jobs',
-    href: '/dashboard/technician/nearby-jobs',
+    label: 'Jobs',
+    href: '/dashboard/technician/jobs',
     icon: 'location_on',
     section: 'main',
   },

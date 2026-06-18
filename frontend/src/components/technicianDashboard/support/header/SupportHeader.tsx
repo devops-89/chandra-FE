@@ -9,7 +9,7 @@ export default function SupportHeader() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-2"
     >
-      <h1 className="text-4xl font-bold text-slate-900 mt-8">
+      <h1 className="text-4xl font-bold text-slate-900 mt-6">
         Get Support
       </h1>
 

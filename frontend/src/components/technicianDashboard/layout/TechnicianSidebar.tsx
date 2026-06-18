@@ -42,7 +42,7 @@ export default function TechnicianSidebar({ onClose }: TechnicianSidebarProps) {
       <aside className="flex h-full min-h-screen w-64 flex-col border-r border-slate-200 bg-surface-white py-base">
         {/* Brand Section */}
         <div className="px-6 py-8 mb-4">
-          <h1 className="font-headline-md text-headline-md font-bold text-primary tracking-tight">
+          <h1 className="font-headline-md text-headline-md font-bold text-emerald-600 tracking-tight">
             HiChandra
           </h1>
           <p className="text-secondary font-label-sm uppercase tracking-widest mt-1 opacity-70">
@@ -62,8 +62,8 @@ export default function TechnicianSidebar({ onClose }: TechnicianSidebarProps) {
                 onClick={handleLinkClick}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                   active
-                    ? 'text-emerald-600 font-bold border-r-2 border-primary bg-green-100'
-                    : 'text-secondary hover:text-primary hover:bg-surface-container'
+                    ? 'text-emerald-700 font-bold border-r-2 border-emerald-600 bg-green-100'
+                    : 'text-slate-500 hover:text-primary hover:bg-emerald-100'
                 }`}
               >
                 <span className="material-symbols-outlined">{item.icon}</span>

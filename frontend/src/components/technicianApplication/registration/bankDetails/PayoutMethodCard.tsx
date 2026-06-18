@@ -78,13 +78,13 @@ export default function PayoutMethodCard({
 
             {selectedMethod === option.id ? (
               <span
-                className="material-symbols-outlined text-primary mr-3 text-xl flex-shrink-0"
+                className="material-symbols-outlined text-primary mr-3 text-xl shrink-0"
                 style={{ fontVariationSettings: "'FILL' 1" }}
               >
                 check_circle
               </span>
             ) : (
-              <div className="w-6 h-6 rounded-full border-2 border-outline-variant mr-3 flex-shrink-0" />
+              <div className="w-6 h-6 rounded-full border-2 border-outline-variant mr-3 shrink-0" />
             )}
 
             <div className="flex flex-col">

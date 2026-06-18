@@ -11,6 +11,7 @@ export default function EmergencyHelpCard() {
         to-red-600
         rounded-3xl
         p-6
+        mt-4
         text-white
         shadow-lg
       "
