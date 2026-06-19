@@ -354,12 +354,28 @@ src/components/
 - ✅ Maps backend `AdminService` → customer-facing `Service` format
 - ✅ Falls back to placeholder image if `iconUrl` is missing
 - ✅ Works on both `/services` page and homepage
-- ❌ Service detail pages (`/services/[slug]`) still use mock data from `serviceData.ts`
+- ✅ Links to `/services/[id]` for service details
+
+**Service Detail Page (`/services/[slug]`)**
+- ✅ SEO-friendly slug URLs (e.g., `/services/ac-service`, `/services/plumber-details`)
+- ✅ Slug generated from service name: `name.toLowerCase().replace(/\s+/g, '-')`
+- ✅ Looks up service ID by matching slug to service name
+- ✅ GET endpoint integrated: `GET /users/service/:id` (fetches by ID after slug lookup)
+- ✅ Redux thunk: `fetchServiceById(id)` stores service in `selectedService`
+- ✅ Loads services list first (if not already loaded) to enable slug-to-ID lookup
+- ✅ Loading state: Centered spinner
+- ✅ Error state: Error card with retry button
+- ✅ Empty state: "Service Not Found" with link to browse services
+- ✅ Displays: name, description, iconUrl (with fallback), serviceBasePrice
+- ✅ Hides internal pricing fields: perHourRate, perKmRate, surgeFactor, weekendMultiplier, peakHourMultiplier, distanceChargePerKm, freeDistanceKm
+- ✅ Shows customer-focused pricing: base price, GST, platform fee, emergency charge
+- ✅ "Book Now" button redirects to `/booking?serviceId={id}`
+- ❌ Specifications display not implemented yet (backend doesn't return specifications field)
 - ❌ Booking flow not integrated yet
 
 **Data Mapping**
 ```typescript
-AdminService (backend) → Service (customer UI)
+AdminService (backend) → Service (customer UI - listing)
 {
   id → id (converted to string)
   name → title, slug (kebab-case)
@@ -367,6 +383,15 @@ AdminService (backend) → Service (customer UI)
   image (iconUrl) → image
   price (serviceBasePrice) → price
   isActive → filtered (only show if true)
+}
+
+AdminService (backend) → ServiceDetailContent (detail page)
+{
+  id, name, description, image (iconUrl)
+  price (serviceBasePrice) → displayed as "Starting From"
+  gst, platformFee, emergencyCharge → shown as separate cards
+  isActive → controls "Book Now" button availability
+  // Hidden: perHourRate, perKmRate, surgeFactor, etc.
 }
 ```
 
@@ -429,12 +454,13 @@ All non-auth data (except admin services list) is still fully mocked here:
 ## 13. What's Complete vs Pending
 
 ### ✅ Completed (June 18, 2026 Update)
-- **Customer-facing services integrated** — `/services` page and homepage now fetch from `GET /users/service/all`. Shows loading spinner, error state with retry, empty state. Only displays active services. No dependency on `serviceData.ts` for listing. Backend `AdminService` mapped to customer `Service` format. Service detail pages and booking flow still use mock data.
+- **Service detail page with SEO-friendly URLs** — `/services/[slug]` uses slug URLs like `/services/ac-service` instead of `/services/16`. Slug is generated from service name (kebab-case). Page looks up service by slug from Redux services list, then fetches full details by ID from `GET /users/service/:id`. Shows loading/error/empty states. Displays name, description, iconUrl, base price, GST, platform fee, emergency charge. Hides internal pricing fields. "Book Now" button ready for future booking flow.
+- **Customer-facing services integrated** — `/services` page and homepage now fetch from `GET /users/service/all`. Shows loading spinner, error state with retry, empty state. Only displays active services. No dependency on `serviceData.ts` for listing. Backend `AdminService` mapped to customer `Service` format. Service cards link to `/services/[slug]`.
 - **Admin service creation simplified** — Form reduced from 5 steps to 2 steps (Service Info + Pricing). Removed stale fields that don't exist in backend API: `specifications`, `skills`, `tools`, `technicianInstructions`. Both JSON and multipart branches cleaned up in `service.service.ts`. No TypeScript errors.
 
 ### ✅ Completed
 - **Full public site** (home, services)
-- **Services listing** — backend-integrated on `/services` page and homepage. Fetches from `GET /users/service/all`, shows loading/error/empty states, filters to active services only. Service detail pages still use mock data.
+- **Services listing and detail** — backend-integrated. Listing on `/services` page and homepage fetches from `GET /users/service/all`. Detail page `/services/[slug]` uses slug in URL (SEO-friendly) but fetches by ID from `GET /users/service/:id`. Shows loading/error/empty states, filters to active services only.
 - **Login** — real API integrated (POST `/auth/login`, JWT stored, Redux auth state, invalid credentials banner, responsive)
 - **Signup** — **real API integrated** (OTP flow: generate OTP → verify → register → auto-login → redirect to customer dashboard, responsive)
 - **Auth guards** — `PublicRoute` prevents logged-in users from accessing `/`, `/login`, `/signup`; redirects to correct dashboard based on role (ADMIN → `/dashboard/admin`, CUSTOMER → `/dashboard/customer`)
@@ -460,7 +486,6 @@ All non-auth data (except admin services list) is still fully mocked here:
 - Axios instance + endpoints config
 
 ### 🔶 In Progress / Partial
-- **Service detail pages** — `/services/[slug]` routes exist and work, but still use mock data from `serviceData.ts`. Need to fetch from backend and match by slug or ID.
 - `/technicianOnboarding/pending-verification` — status hardcoded to `'pending'`
 - `/dashboard/admin/finance/edit` — stub save callbacks
 - `ServiceContext` — in-memory CRUD, no API persistence
@@ -484,18 +509,9 @@ All non-auth data (except admin services list) is still fully mocked here:
 
 ## 14. Next Development Priorities
 
-1. **Service detail pages** — Replace mock data in `/services/[slug]` dynamic routes with backend data
-2. **Booking flow backend** — Integrate booking submission with POST endpoint
-3. **Customer booking detail** — Build out `/dashboard/customer/bookings/[id]`
-4. **Technician profile** — Enable edit + save on `/dashboard/technician/profile`
-5. **Technician auth guard** — Protect `/dashboard/technician/*` routes (same pattern as admin/customer, `role === 'TECHNICIAN'`)
-6. **Pending verification** — Wire `/technicianOnboarding/pending-verification` to status API
-7. **RTK Query services** — Implement `bookingApi`, `userApi` in `src/redux/services/`
-8. **Services category route** — Add `page.tsx` for `/services/[category]/[service]`
-9. **Admin service edit/delete API** — Wire edit modal + delete action to real `PATCH /users/admin/service/:id` and `DELETE /users/admin/service/:id` endpoints
-10. **Admin service creation testing** — Test end-to-end `POST /users/admin/service` with both icon (multipart) and no-icon (JSON) scenarios
-11. **Clean up dead code** — Delete `src/dashboard/` folder and `src/redux/legacy/`
-4. **Technician profile** — Enable edit + save on `/dashboard/technician/profile`
+1. **Booking flow backend** — Integrate booking submission with POST endpoint, update to use `serviceId` instead of `slug`
+2. **Customer booking detail** — Build out `/dashboard/customer/bookings/[id]`
+3. **Technician profile** — Enable edit + save on `/dashboard/technician/profile`
 4. **Technician auth guard** — Protect `/dashboard/technician/*` routes (same pattern as admin/customer, `role === 'TECHNICIAN'`)
 5. **Pending verification** — Wire `/technicianOnboarding/pending-verification` to status API
 6. **RTK Query services** — Implement `bookingApi`, `userApi` in `src/redux/services/`
@@ -531,8 +547,8 @@ All non-auth data (except admin services list) is still fully mocked here:
 - **Post-login redirect** uses `sessionStorage` via `lib/auth/redirectUtils.ts`.
 - **All other data is mocked** — bookings, customers, technicians (not service listings anymore), etc. still come from `src/constants/`.
 - **Redux over Zustand** — old `src/store/` folder is gone. State lives in `src/redux/`. Legacy Zustand files are in `src/redux/legacy/` for reference. Services reducer wired and active.
-- **Service listing** — `/services` page and homepage use `GET /users/service/all` via Redux `fetchServices` thunk. Only active services shown. Falls back to placeholder image if no `iconUrl`.
-- **Service detail pages** — still use mock data from `src/constants/services/serviceData.ts`. Adding a new service via admin creates it in backend, but detail pages won't show it until integrated.
+- **Service listing** — `/services` page and homepage use `GET /users/service/all` via Redux `fetchServices` thunk. Only active services shown. Falls back to placeholder image if no `iconUrl`. Service cards link to `/services/[slug]` using SEO-friendly slugs.
+- **Service detail pages** — `/services/[slug]` uses SEO-friendly slug URLs (e.g., `/services/ac-service`). Slug is generated from service name as kebab-case. Page looks up service ID by matching slug, then fetches details via `GET /users/service/:id` using Redux `fetchServiceById` thunk. Shows name, description, image, base price, GST, platform fee, emergency charge. Hides internal pricing fields. "Book Now" button ready.
 - **Dynamic pricing** is client-side in `lib/pricing/`. AC and Solar have custom engines; Electrical and Plumbing are fixed-price.
 - **Tailwind v4 syntax** — `@import "tailwindcss"` + `@theme inline { ... }` in `globals.css`. No `tailwind.config.js`.
 - **MUI + Tailwind** coexist — MUI for complex components (tables, drawers, modals), Tailwind for layout and custom styles.

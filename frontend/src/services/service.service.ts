@@ -59,6 +59,34 @@ export const getAllServicesService = async (): Promise<AdminService[]> => {
   return raw.map(normalizeService);
 };
 
+// ─── Fetch service by ID ───────────────────────────────────────────────────────
+
+export const getServiceByIdService = async (id: number): Promise<AdminService> => {
+  const response = await api.get<GetAllServicesResponse>(`${ENDPOINTS.GET_SERVICE_BY_ID}/${id}`);
+  
+  // Backend triple-wraps: response.data.data.data
+  let raw: ApiService;
+  
+  const outer = response.data.data;
+  
+  // Try to extract the service from various response formats
+  if (outer && typeof outer === 'object') {
+    if ('data' in outer && outer.data && typeof outer.data === 'object' && !Array.isArray(outer.data)) {
+      // Triple-wrapped: response.data.data.data
+      raw = outer.data as ApiService;
+    } else if ('id' in outer && 'name' in outer) {
+      // Double-wrapped: response.data.data (direct service)
+      raw = outer as unknown as ApiService;
+    } else {
+      throw new Error('Invalid response format');
+    }
+  } else {
+    throw new Error('Invalid response format');
+  }
+
+  return normalizeService(raw);
+};
+
 // ─── Create service ────────────────────────────────────────────────────────────
 
 export const createServiceService = async (

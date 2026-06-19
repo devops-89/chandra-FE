@@ -1,21 +1,23 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { createServiceService, getAllServicesService, updateServiceApiCall } from '@/services/service.service';
+import { createServiceService, getAllServicesService, getServiceByIdService, updateServiceApiCall } from '@/services/service.service';
 import type { AdminService, CreateServiceRequest, UpdateServiceRequest } from '@/types/admin/service.types';
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
 interface ServicesState {
-  items:     AdminService[];
-  isLoading: boolean;
-  error:     string | null;
+  items:           AdminService[];
+  selectedService: AdminService | null;
+  isLoading:       boolean;
+  error:           string | null;
 }
 
 const initialState: ServicesState = {
-  items:     [],
-  isLoading: false,
-  error:     null,
+  items:           [],
+  selectedService: null,
+  isLoading:       false,
+  error:           null,
 };
 
 // ─── Async thunk: fetch all ───────────────────────────────────────────────────
@@ -32,6 +34,25 @@ export const fetchServices = createAsyncThunk<
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : 'Failed to load services.';
+      return rejectWithValue(message);
+    }
+  }
+);
+
+// ─── Async thunk: fetch by ID ─────────────────────────────────────────────────
+
+export const fetchServiceById = createAsyncThunk<
+  AdminService,
+  number,
+  { rejectValue: string }
+>(
+  'services/fetchById',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await getServiceByIdService(id);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to load service details.';
       return rejectWithValue(message);
     }
   }
@@ -112,6 +133,11 @@ const servicesSlice = createSlice({
     clearServicesError(state) {
       state.error = null;
     },
+
+    // Clear selected service
+    clearSelectedService(state) {
+      state.selectedService = null;
+    },
   },
 
   extraReducers: (builder) => {
@@ -156,6 +182,22 @@ const servicesSlice = createSlice({
       .addCase(updateService.rejected, (state, action) => {
         state.isLoading = false;
         state.error     = action.payload ?? 'Unknown error.';
+      })
+
+      // ── fetchServiceById ───────────────────────────────────────
+      .addCase(fetchServiceById.pending, (state) => {
+        state.isLoading       = true;
+        state.error           = null;
+        state.selectedService = null;
+      })
+      .addCase(fetchServiceById.fulfilled, (state, action) => {
+        state.isLoading       = false;
+        state.selectedService = action.payload;
+      })
+      .addCase(fetchServiceById.rejected, (state, action) => {
+        state.isLoading       = false;
+        state.error           = action.payload ?? 'Unknown error.';
+        state.selectedService = null;
       });
   },
 });
@@ -165,6 +207,7 @@ export const {
   updateServiceAction,
   deleteServiceAction,
   clearServicesError,
+  clearSelectedService,
 } = servicesSlice.actions;
 
 export default servicesSlice.reducer;

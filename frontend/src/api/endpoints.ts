@@ -10,7 +10,8 @@ export const ENDPOINTS = {
   REGISTER_CUSTOMER: '/users/register',
 
   // Services
-  GET_ALL_SERVICES: '/users/service/all',
-  CREATE_SERVICE:   '/users/admin/service',
-  UPDATE_SERVICE:   '/users/admin/service',  // PATCH /users/admin/service/:id
+  GET_ALL_SERVICES:   '/users/service/all',
+  GET_SERVICE_BY_ID:  '/users/service',      // GET /users/service/:id
+  CREATE_SERVICE:     '/users/admin/service',
+  UPDATE_SERVICE:     '/users/admin/service',  // PATCH /users/admin/service/:id
 } as const;
