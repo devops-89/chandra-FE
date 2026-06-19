@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { loginContent } from '@/constants/auth/loginContent';
 import { validateEmail } from '@/lib/validator/email.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
+import { handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
 import { loginService } from '@/services/auth.service';
@@ -65,6 +66,11 @@ export const LoginForm = () => {
 
       const { user, tokens } = response.data;
 
+      // Read the redirect target BEFORE dispatching credentials.
+      // PublicRoute triggers on setCredentials and would race to /dashboard
+      // if we called handlePostAuthRedirect() after dispatch.
+      const redirectTo = handlePostAuthRedirect();
+
       localStorage.setItem('accessToken', tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
@@ -77,7 +83,7 @@ export const LoginForm = () => {
         })
       );
 
-      router.push('/dashboard/customer');
+      router.push(redirectTo);
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
       setApiError(err?.response?.data?.message ?? 'Invalid credentials');

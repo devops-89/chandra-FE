@@ -10,7 +10,16 @@ import { fetchServices } from '@/redux/slices/servicesSlice';
 
 import { ServiceCard } from './ServiceCard';
 
-export function ServiceGrid() {
+interface ServiceGridProps {
+  /**
+   * Base URL prefix for service detail links.
+   * Defaults to '/services' (public route).
+   * Pass '/dashboard/customer/services' to link into the dashboard.
+   */
+  linkPrefix?: string;
+}
+
+export function ServiceGrid({ linkPrefix = '/services' }: ServiceGridProps) {
   const dispatch = useAppDispatch();
   const { items: services, isLoading, error } = useAppSelector((state) => state.services);
 
@@ -43,6 +52,7 @@ export function ServiceGrid() {
             <p className="mt-2 text-sm text-red-700">{error}</p>
           </div>
           <button
+            type="button"
             onClick={() => dispatch(fetchServices())}
             className="mt-2 rounded-xl bg-red-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700"
           >
@@ -106,7 +116,7 @@ export function ServiceGrid() {
             md: service.gridSize.md,
           }}
         >
-          <ServiceCard service={service} />
+          <ServiceCard service={service} linkPrefix={linkPrefix} />
         </Grid>
       ))}
     </Grid>

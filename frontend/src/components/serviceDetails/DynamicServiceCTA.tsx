@@ -84,6 +84,7 @@ export default function DynamicServiceCTA({
 
         <motion.div variants={itemVariants}>
           <button
+            type="button"
             onClick={() => handleBookingClick(onBookingClick)}
             className="
               mt-8

@@ -16,16 +16,19 @@ interface DashboardSidebarProps {
 /**
  * Returns true when the current pathname should highlight this sidebar link.
  * - Exact match for dashboard root (avoids highlighting Dashboard on every page).
- * - Prefix match for /services* (covers /services, /services/[slug], /booking).
+ * - Prefix match for /dashboard/customer/services/* and /booking/* (booking flow).
  * - Prefix match for all other dashboard sub-routes.
  */
 function isActive(href: string, pathname: string): boolean {
   if (href === '/dashboard/customer') {
     return pathname === '/dashboard/customer';
   }
-  // /services covers /services, /services/[slug], and /booking flows
-  if (href === '/services') {
-    return pathname.startsWith('/services') || pathname.startsWith('/booking');
+  // Services link covers service detail and the downstream booking flow
+  if (href === '/dashboard/customer/services') {
+    return (
+      pathname.startsWith('/dashboard/customer/services') ||
+      pathname.startsWith('/booking')
+    );
   }
   return pathname.startsWith(href);
 }

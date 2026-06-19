@@ -16,7 +16,7 @@ export const customerDashboardSidebarLinks = [
   },
   {
     label: 'Services',
-    href: '/services',
+    href: '/dashboard/customer/services',
     icon: Sparkles,
   },
   {

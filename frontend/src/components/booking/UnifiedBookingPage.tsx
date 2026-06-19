@@ -15,12 +15,13 @@ import { validateBookingForm } from '@/lib/validation/bookingValidation';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
 import type { UnifiedBookingPageProps } from '@/types/bookingTypes/bookingForm.types';
 
-export default function UnifiedBookingPage({ service }: UnifiedBookingPageProps) {
+export default function UnifiedBookingPage({ service, serviceId }: UnifiedBookingPageProps) {
   const router = useRouter();
 
   // Get saved data from store including service-specific data
   const {
     service: savedService,
+    serviceId: savedServiceId,
     serviceSlug: savedServiceSlug,
     servicePrice: savedServicePrice,
     serviceSpecificData,
@@ -32,9 +33,10 @@ export default function UnifiedBookingPage({ service }: UnifiedBookingPageProps)
     setBooking,
   } = useBookingStore();
 
-  // Use service from store if available, fallback to prop
-  const currentService = savedService || service;
-  const currentServicePrice = savedServicePrice || 699; // fallback price
+  // Priority: booking store (pre-seeded by DynamicServiceDetailPage) > props
+  const currentService    = savedService    || service;
+  const currentServiceId  = savedServiceId  ?? serviceId ?? null;
+  const currentServicePrice = savedServicePrice || 0;
 
   // Initialize address selection from saved data
   const { selectedAddress: initialAddress, newAddress: initialNewAddress } =
@@ -68,13 +70,14 @@ export default function UnifiedBookingPage({ service }: UnifiedBookingPageProps)
 
     // Save all data to Zustand store
     setBooking({
-      service: currentService,
-      serviceSlug: savedServiceSlug,
+      service:      currentService,
+      serviceId:    currentServiceId,
+      serviceSlug:  savedServiceSlug,
       servicePrice: currentServicePrice,
       serviceSpecificData,
-      name: name.trim(),
-      phone: phone.trim(),
-      address: addressToSave,
+      name:         name.trim(),
+      phone:        phone.trim(),
+      address:      addressToSave,
       date,
       slot,
       instructions: instructions.trim(),

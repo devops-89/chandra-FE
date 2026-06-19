@@ -3,9 +3,7 @@
 import { AlertCircle, Loader2, PackageOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 
-import DynamicBookingForm from '@/components/booking/DynamicBookingForm';
 import DynamicServiceCTA from '@/components/serviceDetails/DynamicServiceCTA';
 import DynamicServiceFeatures from '@/components/serviceDetails/DynamicServiceFeatures';
 import DynamicServiceHero from '@/components/serviceDetails/DynamicServiceHero';
@@ -13,9 +11,9 @@ import DynamicServiceOverview from '@/components/serviceDetails/DynamicServiceOv
 import DynamicServicePricing from '@/components/serviceDetails/DynamicServicePricing';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
 import type { AdminService } from '@/types/admin/service.types';
-import type { BookingFormData, Service } from '@/types/services.types';
+import type { Service } from '@/types/services.types';
 
-interface DynamicServiceDetailPageProps {
+export interface DynamicServiceDetailPageProps {
   service: AdminService | null;
   isLoading: boolean;
   error: string | null;
@@ -29,14 +27,12 @@ export default function DynamicServiceDetailPage({
   onRetry,
 }: DynamicServiceDetailPageProps) {
   const router = useRouter();
-  const [showBookingForm, setShowBookingForm] = useState(false);
-  const [isBookingLoading, setIsBookingLoading] = useState(false);
-  const setBooking = useBookingStore(state => state.setBooking);
+  const setBooking = useBookingStore((state) => state.setBooking);
 
-  // Loading state
+  // ── Loading ──────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="flex min-h-[600px] items-center justify-center bg-gradient-to-b from-[#FFF8ED] to-white">
+      <div className="flex min-h-[600px] items-center justify-center bg-linear-to-b from-[#FFF8ED] to-white">
         <div className="flex flex-col items-center gap-4 text-center">
           <Loader2 className="h-16 w-16 animate-spin text-emerald-600" />
           <p className="text-lg font-medium text-slate-700">Loading service details...</p>
@@ -45,10 +41,10 @@ export default function DynamicServiceDetailPage({
     );
   }
 
-  // Error state
+  // ── Error ─────────────────────────────────────────────────────────────
   if (error) {
     return (
-      <div className="flex min-h-[600px] items-center justify-center bg-gradient-to-b from-[#FFF8ED] to-white px-4">
+      <div className="flex min-h-[600px] items-center justify-center bg-linear-to-b from-[#FFF8ED] to-white px-4">
         <div className="flex flex-col items-center gap-6 rounded-3xl border border-red-100 bg-red-50 p-8 text-center max-w-md">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
             <AlertCircle className="h-10 w-10 text-red-600" />
@@ -69,10 +65,10 @@ export default function DynamicServiceDetailPage({
     );
   }
 
-  // Empty state (service not found or inactive)
+  // ── Not found ─────────────────────────────────────────────────────────
   if (!service) {
     return (
-      <div className="flex min-h-[600px] items-center justify-center bg-gradient-to-b from-[#FFF8ED] to-white px-4">
+      <div className="flex min-h-[600px] items-center justify-center bg-linear-to-b from-[#FFF8ED] to-white px-4">
         <div className="flex flex-col items-center gap-6 text-center max-w-md">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
             <PackageOpen className="h-10 w-10 text-slate-400" />
@@ -94,17 +90,19 @@ export default function DynamicServiceDetailPage({
     );
   }
 
-  // Map AdminService to Service format for existing UI components
+  // ── Map AdminService → Service (for existing child components) ────────
+  const slug = service.name.toLowerCase().replace(/\s+/g, '-');
+
   const mappedService: Service = {
-    id: String(service.id),
-    title: service.name,
+    id:          String(service.id),
+    title:       service.name,
     description: service.description,
-    image: service.image || '/images/service-placeholder.png',
-    slug: service.name.toLowerCase().replace(/\s+/g, '-'),
-    badge: service.isActive ? 'Available Now' : 'Unavailable',
-    price: service.price,
-    gridSize: { md: 6 },
-    overview: service.description,
+    image:       service.image || '/images/service-placeholder.png',
+    slug,
+    badge:       service.isActive ? 'Available Now' : 'Unavailable',
+    price:       service.price,
+    gridSize:    { md: 6 },
+    overview:    service.description,
     includes: [
       'Professional certified technicians',
       'All tools and equipment included',
@@ -113,86 +111,25 @@ export default function DynamicServiceDetailPage({
       'Post-service support',
       'Transparent pricing',
     ],
-    ctaTitle: `Ready to book ${service.name}?`,
-    ctaDescription: `Get professional service at your doorstep. Book now to secure your slot.`,
-    bookingForm: [],
-    formConfig: {
-      showPriceSummary: true,
-      pricingEngine: 'fixed',
-    },
+    ctaTitle:       `Ready to book ${service.name}?`,
+    ctaDescription: 'Get professional service at your doorstep. Book now and secure your slot.',
+    bookingForm:    [],
+    formConfig:     { showPriceSummary: true, pricingEngine: 'fixed' },
   };
 
+  // ── Booking handler (runs only when user IS authenticated) ────────────
+  // useBookingAuth (inside Hero/CTA) handles the guest redirect.
+  // This callback fires only after authentication is confirmed.
   const handleBookingClick = () => {
-    // Redirect to booking with service ID
+    // Pre-seed the booking store so UnifiedBookingPage has service context.
+    setBooking({
+      service:      mappedService.title,
+      serviceId:    service.id,
+      serviceSlug:  mappedService.slug,
+      servicePrice: mappedService.price,
+    });
     router.push(`/booking?serviceId=${service.id}`);
   };
-
-  const handleBookingSubmit = async (formData: BookingFormData) => {
-    setIsBookingLoading(true);
-
-    try {
-      // Store the service-specific form data
-      const bookingData = {
-        service: mappedService.title,
-        serviceSlug: mappedService.slug,
-        servicePrice: mappedService.price,
-        serviceSpecificData: formData,
-        // These will be filled in the unified booking flow
-        name: '',
-        phone: '',
-        address: '',
-        date: '',
-        slot: '',
-        instructions: '',
-      };
-
-      setBooking(bookingData);
-
-      // Redirect to the unified booking page with service ID
-      router.push(`/booking?serviceId=${service.id}`);
-    } catch (err) {
-      console.error('Error processing booking:', err);
-    } finally {
-      setIsBookingLoading(false);
-    }
-  };
-
-  if (showBookingForm) {
-    return (
-      <div className="min-h-screen bg-[#F7F2E8] py-16">
-        <div className="mx-auto max-w-2xl px-4">
-          <div className="rounded-3xl bg-white p-8 shadow-xl">
-            <div className="mb-8 text-center">
-              <button
-                type="button"
-                onClick={() => setShowBookingForm(false)}
-                className="mb-4 inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700"
-              >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Service Details
-              </button>
-
-              <h1 className="text-3xl font-bold text-slate-900">
-                Book {mappedService.title}
-              </h1>
-              <p className="mt-2 text-slate-600">
-                Fill out the service-specific information below
-              </p>
-            </div>
-
-            <DynamicBookingForm
-              fields={mappedService.bookingForm}
-              service={mappedService}
-              onSubmit={handleBookingSubmit}
-              isLoading={isBookingLoading}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <main>

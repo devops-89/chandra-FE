@@ -141,6 +141,7 @@ export default function DynamicServiceHero({
 
           <motion.div className="mt-8" variants={contentVariants}>
             <button
+              type="button"
               onClick={() => handleBookingClick(onBookingClick)}
               className="
                 inline-flex
