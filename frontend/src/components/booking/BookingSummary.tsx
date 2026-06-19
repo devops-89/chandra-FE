@@ -38,8 +38,8 @@ export function BookingSummaryContent({
   };
 
   return (
-    <section className="bg-[#F7F2E8] py-16 md:py-24">
-      <div className="mx-auto max-w-5xl px-4">
+    <section className="bg-white py-4 md:py-4">
+      <div className="max-w-full">
         <div className="rounded-4xl bg-white p-6 shadow-xl md:p-10">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
             Booking Summary

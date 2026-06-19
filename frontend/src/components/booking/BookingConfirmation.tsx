@@ -27,7 +27,7 @@ export function BookingConfirmationContent() {
   };
 
   return (
-    <section className="bg-[#F7F2E8] py-16 md:py-24">
+    <section className="bg-white py-16 md:py-24">
       <div className="mx-auto max-w-3xl px-4">
         <div className="rounded-4xl bg-white p-8 text-center shadow-xl md:p-12">
           <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-emerald-100 text-5xl">

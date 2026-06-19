@@ -86,7 +86,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   };
 
   return (
-    <section className="bg-[#F7F2E8] py-16 md:py-24">
+    <section className="bg-white py-4 md:py-2">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="py-4">
