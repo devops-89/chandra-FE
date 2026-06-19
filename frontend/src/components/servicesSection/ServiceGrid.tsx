@@ -1,9 +1,8 @@
 'use client';
 
+import Grid from '@mui/material/Grid';
 import { AlertCircle, Loader2, PackageOpen } from 'lucide-react';
 import { useEffect } from 'react';
-
-import Grid from '@mui/material/Grid';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchServices } from '@/redux/slices/servicesSlice';
@@ -21,7 +20,7 @@ export function ServiceGrid() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
+      <div className="flex min-h-100 items-center justify-center">
         <div className="flex flex-col items-center gap-4 text-center">
           <Loader2 className="h-12 w-12 animate-spin text-emerald-600" />
           <p className="text-lg font-medium text-slate-700">Loading services...</p>
@@ -33,7 +32,7 @@ export function ServiceGrid() {
   // Error state
   if (error) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
+      <div className="flex min-h-100 items-center justify-center">
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-red-100 bg-red-50 p-8 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
             <AlertCircle className="h-8 w-8 text-red-600" />
@@ -59,7 +58,7 @@ export function ServiceGrid() {
   // Empty state
   if (activeServices.length === 0) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
+      <div className="flex min-h-100 items-center justify-center">
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
             <PackageOpen className="h-8 w-8 text-slate-400" />
@@ -102,9 +101,11 @@ export function ServiceGrid() {
         <Grid
           key={service.id}
           size={{
-            xs: 12,
-            md: service.gridSize.md,
-          }}
+          xs: 12,
+          sm: 6,
+          md: 4,
+          lg: 3,
+        }}
         >
           <ServiceCard service={service} />
         </Grid>
