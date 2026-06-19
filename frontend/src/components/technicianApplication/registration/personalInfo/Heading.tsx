@@ -13,7 +13,7 @@ const itemVariants = {
 
 export default function Heading() {
   return (
-    <motion.div className="mb-6 md:mb-8" variants={itemVariants}>
+    <motion.div className="mb-6 md:mb-8" initial="hidden" animate="visible" variants={itemVariants}>
       <h1 className="text-3xl md:text-5xl font-bold">
         Create your professional account
       </h1>

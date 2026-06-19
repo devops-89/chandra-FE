@@ -5,7 +5,7 @@ export default function ChangePasswordCard() {
         rounded-3xl
         bg-white
         p-6
-        shadow-sm
+        shadow-lg
       "
     >
       <h2 className="mb-6 text-xl font-bold text-slate-950">
@@ -16,19 +16,19 @@ export default function ChangePasswordCard() {
         <input
           type="password"
           placeholder="Current Password"
-          className="rounded-xl border p-4 text-slate-700"
+          className="rounded-xl border border-emerald-600 outline-emerald-600 p-4 text-slate-700"
         />
 
         <input
           type="password"
           placeholder="New Password"
-          className="rounded-xl border p-4 text-slate-700"
+          className="rounded-xl border border-emerald-600 outline-emerald-600 p-4 text-slate-700"
         />
 
         <input
           type="password"
           placeholder="Confirm Password"
-          className="rounded-xl border p-4 text-slate-700"
+          className="rounded-xl border border-emerald-600 outline-emerald-600 p-4 text-slate-700"
         />
 
         <button
