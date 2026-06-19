@@ -15,7 +15,7 @@ import { validateBookingForm } from '@/lib/validation/bookingValidation';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
 import type { UnifiedBookingPageProps } from '@/types/bookingTypes/bookingForm.types';
 
-export default function UnifiedBookingPage({ service, serviceId }: UnifiedBookingPageProps) {
+export default function UnifiedBookingPage({ service, serviceId, summaryPath = '/booking/summary' }: UnifiedBookingPageProps) {
   const router = useRouter();
 
   // Get saved data from store including service-specific data
@@ -82,7 +82,7 @@ export default function UnifiedBookingPage({ service, serviceId }: UnifiedBookin
       slot,
       instructions: instructions.trim(),
     });
-    router.push('/booking/summary');
+    router.push(summaryPath);
   };
 
   return (

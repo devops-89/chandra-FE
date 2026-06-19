@@ -67,6 +67,7 @@ export default function DashboardServiceDetailPage() {
         isLoading={isLoading}
         error={error}
         onRetry={handleRetry}
+        bookingBasePath="/dashboard/customer/booking"
       />
     </DashboardLayout>
   );

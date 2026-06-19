@@ -18,6 +18,13 @@ export interface DynamicServiceDetailPageProps {
   isLoading: boolean;
   error: string | null;
   onRetry: () => void;
+  /**
+   * Base path for the booking route.
+   * Defaults to '/booking' (public flow with navbar/footer).
+   * Pass '/dashboard/customer/booking' to keep the entire booking flow
+   * (booking → summary → confirmation) inside DashboardLayout.
+   */
+  bookingBasePath?: string;
 }
 
 export default function DynamicServiceDetailPage({
@@ -25,6 +32,7 @@ export default function DynamicServiceDetailPage({
   isLoading,
   error,
   onRetry,
+  bookingBasePath = '/booking',
 }: DynamicServiceDetailPageProps) {
   const router = useRouter();
   const setBooking = useBookingStore((state) => state.setBooking);
@@ -128,7 +136,7 @@ export default function DynamicServiceDetailPage({
       serviceSlug:  mappedService.slug,
       servicePrice: mappedService.price,
     });
-    router.push(`/booking?serviceId=${service.id}`);
+    router.push(`${bookingBasePath}?serviceId=${service.id}`);
   };
 
   return (

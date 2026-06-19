@@ -1,6 +1,7 @@
 export interface UnifiedBookingPageProps {
-  service:    string;       // legacy slug (backward compat)
-  serviceId?: number;       // preferred — numeric ID from /booking?serviceId=N
+  service:     string;       // legacy slug (backward compat)
+  serviceId?:  number;       // preferred — numeric ID from /booking?serviceId=N
+  summaryPath?: string;      // where "Confirm" navigates. Default: '/booking/summary'
 }
 
 export interface TimeSlots {
