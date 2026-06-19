@@ -55,20 +55,10 @@ const SidebarContent = ({
         })}
       </nav>
 
-      <div className="p-4 border-t">
+      <div className="p-4">
         <button
           type="button"
-          className="
-            flex
-            w-full
-            items-center
-            gap-3
-            rounded-xl
-            px-4
-            py-3
-            text-red-600
-            transition
-            hover:bg-red-50
+          className=" flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-600 transition  hover:bg-red-50
           "
           onClick={handleLogout}
         >
@@ -85,7 +75,7 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex h-screen w-72 sticky top-0 flex-col border-r border-slate-200 bg-white">
-        <div className="p-6 border-b">
+        <div className="h-20 px-5 flex flex-col justify-center border-b border-slate-200">
           <h2 className="text-2xl font-bold text-emerald-600">HiChandra</h2>
           <p className="text-sm text-slate-500">Admin Portal</p>
         </div>
@@ -94,24 +84,7 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
 
       {/* Mobile Sidebar Drawer */}
       <aside
-        className={`
-          fixed
-          left-0
-          top-0
-          z-50
-          h-screen
-          w-80
-          max-w-[85vw]
-          flex
-          flex-col
-          bg-white
-          border-r
-          border-slate-200
-          transform
-          transition-transform
-          duration-300
-          ease-in-out
-          lg:hidden
+        className={` fixed left-0 top-0 z-50 h-screen w-80 max-w-[85vw] flex flex-col bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out lg:hidden
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
@@ -122,13 +95,7 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
           </div>
           <button
             onClick={onClose}
-            className="
-              rounded-full
-              p-2
-              text-emerald-700
-              hover:bg-emerald-100
-              transition-colors
-            "
+            className=" rounded-full p-2 text-emerald-700 hover:bg-emerald-100 transition-colors "
           >
             <X size={24} />
           </button>

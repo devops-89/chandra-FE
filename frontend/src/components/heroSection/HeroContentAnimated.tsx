@@ -45,7 +45,19 @@ const HeroContentAnimated = ({
       animate="visible"
     >
       {/* Premium Badge */}
-      <motion.p variants={itemVariants} className="mb-4 inline-flex max-w-full rounded-full border border-emerald-300/50 bg-linear-to-r from-emerald-50 to-emerald-100/50 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-emerald-700 shadow-sm backdrop-blur sm:mb-5 sm:px-4 sm:text-xs">
+      <motion.p
+      animate={{
+        translateY: [0, -4, 0],
+      }}
+      transition={{
+        duration: 3.5,
+        repeat: Infinity,
+        ease: 'easeInOut',
+      }}
+      style={{
+        willChange: 'transform',
+      }}
+       className="mb-4 inline-flex max-w-full rounded-full border border-emerald-300/50 bg-linear-to-r from-emerald-50 to-emerald-100/50 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-emerald-700 shadow-sm backdrop-blur sm:mb-5 sm:px-4 sm:text-xs">
         {label}
       </motion.p>
 

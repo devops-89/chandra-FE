@@ -67,7 +67,20 @@ const HeroImageAnimated = ({ image }: HeroImageAnimatedProps) => {
       </motion.div>
 
       {/* Premium Info Card */}
-      <motion.div variants={cardVariants} className="absolute -bottom-6 left-4 hidden rounded-2xl border border-white/70 bg-white/95 px-4 py-3 shadow-lg shadow-slate-900/15 backdrop-blur-md sm:block sm:left-6 sm:px-5 sm:py-4 lg:left-8">
+      <motion.div variants={cardVariants}
+      animate={{
+        y: [0, -6, 0],
+      }}
+      transition={{
+        duration: 4,
+        repeat: Infinity,
+        repeatType: 'reverse',
+        ease: 'easeInOut',
+      }}
+      style={{
+        willChange: 'transform',
+      }}
+      className="absolute -bottom-6 left-4 hidden rounded-2xl border border-white/70 bg-white/95 px-4 py-3 shadow-lg shadow-slate-900/15 backdrop-blur-md sm:block sm:left-6 sm:px-5 sm:py-4 lg:left-8">
         <p className="text-sm font-bold text-slate-950">Same-day slots</p>
         <p className="mt-1 text-xs font-medium text-slate-600">Available in selected areas</p>
       </motion.div>

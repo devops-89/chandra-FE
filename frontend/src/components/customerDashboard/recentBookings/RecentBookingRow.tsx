@@ -18,7 +18,7 @@ const RecentBookingRow = ({ booking }: RecentBookingRowProps) => {
       <td className="px-8 py-5 text-right">
         <button
           type="button"
-          className="text-sm font-bold text-emerald-600 opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer"
+          className="text-sm font-bold text-emerald-600 hover:underline opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer"
         >
           View
         </button>
