@@ -14,7 +14,7 @@ function StatsCard({ icon: Icon, title, value, isHighlighted = false }: StatsCar
         bg-white
         p-8
         rounded-xl
-        shadow-sm
+        shadow-lg
         border
         border-slate-200
         cursor-pointer

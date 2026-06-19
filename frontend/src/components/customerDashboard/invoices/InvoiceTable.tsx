@@ -9,7 +9,7 @@ export default function InvoiceTable() {
         overflow-hidden
         rounded-3xl
         bg-white
-        shadow-sm
+        shadow-lg
       "
     >
       <table className="w-full">

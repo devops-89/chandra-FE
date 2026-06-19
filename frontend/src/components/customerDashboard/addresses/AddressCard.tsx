@@ -9,8 +9,8 @@ export default function AddressCard({
         rounded-3xl
         bg-white
         p-6
-        shadow-sm
-        hover:shadow-md
+        shadow-md
+        hover:shadow-lg
         hover:border
         hover:border-emerald-600
         transition-all

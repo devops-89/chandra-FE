@@ -4,7 +4,7 @@ import { rebookServices } from "@/constants/customerDashboard/dashboard/rebookSe
 
 const QuickRebook = () => {
   return (
-    <section className="mt-14 space-y-6">
+    <section className="mt-17 space-y-6">
       <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">
         Quick Rebook
       </h4>

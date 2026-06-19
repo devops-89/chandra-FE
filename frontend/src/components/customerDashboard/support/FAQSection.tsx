@@ -9,7 +9,7 @@ export default function FAQSection() {
         rounded-3xl
         bg-white
         p-6
-        shadow-sm
+        shadow-lg
         text-slate-700
       "
     >
