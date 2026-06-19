@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
-import HeroDecorations from '@/components/heroSection/HeroDecorations';
 import { useBookingAuth } from '@/hooks';
 import type { Service } from '@/types/services.types';
 
@@ -55,8 +54,7 @@ export default function DynamicServiceHero({
   };
 
   return (
-    <section className="relative bg-[#FFF8ED] py-20">
-      <HeroDecorations />
+    <section className="relative bg-slate-50 rounded-2xl shadow-lg py-20">
       
       <motion.div
         className="
@@ -99,7 +97,7 @@ export default function DynamicServiceHero({
           <motion.h1
             variants={contentVariants}
             className="
-              mt-6
+              mt-2
               text-4xl
               font-bold
               leading-tight
@@ -113,9 +111,8 @@ export default function DynamicServiceHero({
           <motion.p
             variants={contentVariants}
             className="
-              mt-6
               max-w-2xl
-              text-lg
+              text-md
               leading-8
               text-slate-600
             "

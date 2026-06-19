@@ -40,7 +40,7 @@ export default function DynamicServiceDetailPage({
   // ── Loading ──────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="flex min-h-[600px] items-center justify-center bg-linear-to-b from-[#FFF8ED] to-white">
+      <div className="flex min-h-150 items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4 text-center">
           <Loader2 className="h-16 w-16 animate-spin text-emerald-600" />
           <p className="text-lg font-medium text-slate-700">Loading service details...</p>
@@ -52,7 +52,7 @@ export default function DynamicServiceDetailPage({
   // ── Error ─────────────────────────────────────────────────────────────
   if (error) {
     return (
-      <div className="flex min-h-[600px] items-center justify-center bg-linear-to-b from-[#FFF8ED] to-white px-4">
+      <div className="flex min-h-150 items-center justify-center bg-white px-4">
         <div className="flex flex-col items-center gap-6 rounded-3xl border border-red-100 bg-red-50 p-8 text-center max-w-md">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
             <AlertCircle className="h-10 w-10 text-red-600" />
@@ -76,7 +76,7 @@ export default function DynamicServiceDetailPage({
   // ── Not found ─────────────────────────────────────────────────────────
   if (!service) {
     return (
-      <div className="flex min-h-[600px] items-center justify-center bg-linear-to-b from-[#FFF8ED] to-white px-4">
+      <div className="flex min-h-150 items-center justify-center bg-white px-4">
         <div className="flex flex-col items-center gap-6 text-center max-w-md">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
             <PackageOpen className="h-10 w-10 text-slate-400" />

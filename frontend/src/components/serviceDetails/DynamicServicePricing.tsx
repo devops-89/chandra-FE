@@ -14,8 +14,7 @@ export default function DynamicServicePricing({
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
-      opacity: 1,
-      y: 0,
+      opacity: 0,
       transition: {
         duration: 0.8,
         type: 'spring' as const,
@@ -25,7 +24,7 @@ export default function DynamicServicePricing({
   };
 
   return (
-    <section className="bg-white py-20">
+    <section className="bg-white py-12">
       <div className="mx-auto max-w-4xl px-4">
         <motion.div
           className="text-center mb-12"
@@ -43,15 +42,7 @@ export default function DynamicServicePricing({
         </motion.div>
 
         <motion.div
-          className="
-            rounded-3xl
-            border-2
-            border-emerald-200
-            bg-emerald-50
-            p-8
-            text-center
-            md:p-12
-          "
+          className=" rounded-3xl border-2 border-emerald-200 bg-emerald-50 p-8 text-center md:p-12"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"

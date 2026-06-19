@@ -35,7 +35,7 @@ export default function DynamicServiceFeatures({
   };
 
   return (
-    <section className="bg-slate-50 py-20">
+    <section className="bg-slate-50 rounded-2xl shadow-lg py-20">
       <motion.div
         className="mx-auto max-w-6xl px-4"
         variants={containerVariants}

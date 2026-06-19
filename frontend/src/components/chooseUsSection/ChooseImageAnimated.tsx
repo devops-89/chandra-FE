@@ -9,7 +9,7 @@ export function ChooseImageAnimated() {
     hidden: { opacity: 0, x: 0 },
     visible: {
       opacity: 1,
-      x: 10,
+      x: 0,
       transition: {
         duration: 1,
         type: 'spring' as const,
