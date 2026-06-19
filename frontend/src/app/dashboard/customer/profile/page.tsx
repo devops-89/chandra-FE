@@ -1,6 +1,5 @@
 import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
 import ChangePasswordCard from '@/components/customerDashboard/profile/ChangePasswordCard';
-import ProfileAvatar from '@/components/customerDashboard/profile/ProfileAvatar';
 import ProfileForm from '@/components/customerDashboard/profile/ProfileForm';
 
 export default function ProfilePage() {
@@ -17,15 +16,11 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          <ProfileAvatar />
-
-          <div className="space-y-6 lg:col-span-2">
+          <div className="grid gap-6 lg:grid-cols-2">
             <ProfileForm />
 
             <ChangePasswordCard />
           </div>
-        </div>
       </div>
     </DashboardLayout>
   );

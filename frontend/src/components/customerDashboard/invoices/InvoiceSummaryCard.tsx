@@ -5,7 +5,7 @@ export default function InvoiceSummaryCard() {
         rounded-3xl
         bg-white
         p-6
-        shadow-sm
+        shadow-lg
       "
     >
       <h2 className="text-xl font-bold text-slate-950">

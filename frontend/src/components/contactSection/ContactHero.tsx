@@ -4,7 +4,9 @@ import { motion } from 'framer-motion';
 
 export default function ContactHero() {
   return (
-    <section className="max-w-7xl mx-auto px-4 py-12">
+    <section className="max-w-7xl mx-auto px-4 py-12"
+    id='contact'
+    >
       <motion.div
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}

@@ -57,7 +57,7 @@ const ActiveBookingCard = () => {
           </button>
           <button
             type="button"
-            className="flex-1 cursor-pointer rounded-xl border-2 border-slate-300 py-4 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50"
+            className="flex-1 cursor-pointer rounded-xl border-2 border-slate-300 py-4 text-sm font-bold text-slate-700 transition-all hover:bg-slate-100"
           >
             Contact Technician
           </button>

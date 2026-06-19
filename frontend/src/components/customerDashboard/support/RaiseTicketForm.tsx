@@ -6,7 +6,7 @@ export default function RaiseTicketForm() {
         rounded-3xl
         bg-white
         p-6
-        shadow-sm
+        shadow-lg
       "
     >
       <h2 className="mb-6 text-xl font-bold">
