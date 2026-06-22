@@ -89,7 +89,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
     <section className="bg-white py-4 md:py-2">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-          <div className="py-4">
+          <div className="sticky top-0 z-30 bg-white py-4">
             <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">Complete Your Booking</h1>
           </div>
 

@@ -40,7 +40,7 @@ export function BookingSummaryContent({
   return (
     <section className="bg-white py-4 md:py-4">
       <div className="max-w-full">
-        <div className="rounded-4xl bg-white p-6 shadow-xl md:p-10">
+        <div className="rounded-4xl bg-white p-6 shadow-xl md:px-10">
           <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
             Booking Summary
           </h1>
