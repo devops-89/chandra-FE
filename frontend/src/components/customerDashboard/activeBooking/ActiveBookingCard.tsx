@@ -20,7 +20,7 @@ const ActiveBookingCard = () => {
           <RefreshCw className="h-5 w-5" />
           IN PROGRESS
         </h4>
-        <span className="text-sm text-white opacity-80">
+        <span className="text-sm text-left text-white opacity-80">
           Booking ID #{activeBooking.id}
         </span>
       </div>
