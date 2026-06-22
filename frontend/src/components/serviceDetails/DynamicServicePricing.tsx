@@ -14,7 +14,7 @@ export default function DynamicServicePricing({
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
-      opacity: 0,
+      opacity: 1,
       transition: {
         duration: 0.8,
         type: 'spring' as const,
