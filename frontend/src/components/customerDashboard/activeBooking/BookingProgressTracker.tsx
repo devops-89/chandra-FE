@@ -55,22 +55,22 @@ const StepIcon = ({
   step: ProgressStep;
 }) => {
   if (step.status === 'completed') {
-    return <Check size={18} />;
+    return <Check className="h-4 w-4 sm:h-4.5 sm:w-4.5" />;
   }
 
   if (step.id === 'on-way') {
-    return <Bike size={18} />;
+    return <Bike className="h-4 w-4 sm:h-4.5 sm:w-4.5" />;
   }
 
   if (step.id === 'started') {
-    return <Play size={18} />;
+    return <Play className="h-4 w-4 sm:h-4.5 sm:w-4.5" />;
   }
 
   if (step.id === 'completed') {
-    return <Home size={18} />;
+    return <Home className="h-4 w-4 sm:h-4.5 sm:w-4.5" />;
   }
 
-  return <Check size={18} />;
+  return <Check className="h-4 w-4 sm:h-4.5 sm:w-4.5" />;
 };
 
 const BookingProgressTracker = ({
@@ -84,14 +84,12 @@ const BookingProgressTracker = ({
 
   return (
     <section
-      className="
-        p-1
-        rounded-3xl
-      "
+      className="p-1 rounded-3xl"
     >
       <div className="relative pb-10 w-full flex items-center justify-between">
-        <div className="absolute left-12 right-11 top-5 h-1 bg-slate-200" />
-        <div className="absolute left-12 top-5 h-1 bg-emerald-600"
+        <div className="absolute left-8 right-8 sm:left-12 sm:right-12 top-4 sm:top-5 h-1 rounded-full bg-slate-200" />
+        <div
+          className="absolute left-8 sm:left-12 top-4 sm:top-5 h-1 rounded-full bg-emerald-600 transition-all duration-500"
           style={{
           width: `calc(${(currentStepIndex / (steps.length - 1)) * 100}% - 20px)`,
         }}
@@ -106,13 +104,7 @@ const BookingProgressTracker = ({
           return (
             <div
               key={step.id}
-              className="
-                relative
-                flex
-                flex-1
-                flex-col
-                items-center
-              "
+              className="relative flex flex-1 flex-col items-center"
             >
               {/* {index !== steps.length - 1 && (
                 <div
@@ -143,8 +135,10 @@ const BookingProgressTracker = ({
                   className="
                     z-10
                     flex
-                    h-10
-                    w-10
+                    h-8
+                    w-8
+                    sm:h-10
+                    sm:w-10
                     items-center
                     justify-center
                     rounded-full
@@ -159,8 +153,10 @@ const BookingProgressTracker = ({
                   className={`
                     z-10
                     flex
-                    h-10
-                    w-10
+                    h-8
+                    w-8
+                    sm:h-10
+                    sm:w-10
                     items-center
                     justify-center
                     rounded-full
@@ -177,15 +173,19 @@ const BookingProgressTracker = ({
 
               <span
                 className={`
-                  mt-3
-                  text-sm
+                  mt-2
+                  text-center
+                  leading-tight
+                  text-[10px]
+                  sm:text-xs
+                  md:text-sm
                   font-medium
-                  ${
-                    active || completed
-                      ? 'text-emerald-700'
-                      : 'text-slate-500'
-                  }
-                `}
+                ${
+                  active || completed
+                  ? 'text-emerald-700'
+                  : 'text-slate-500'
+                }
+              `}
               >
                 {step.label}
               </span>

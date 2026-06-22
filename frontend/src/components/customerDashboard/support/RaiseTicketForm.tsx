@@ -41,6 +41,8 @@ export default function RaiseTicketForm() {
             bg-emerald-600
             px-6
             py-3
+            cursor-pointer
+            hover:bg-emerald-700
             text-white
           "
         >

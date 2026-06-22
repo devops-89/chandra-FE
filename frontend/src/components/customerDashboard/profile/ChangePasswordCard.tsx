@@ -12,7 +12,7 @@ export default function ChangePasswordCard() {
         Change Password
       </h2>
 
-      <div className="grid gap-4">
+      <div className="grid gap-5">
         <input
           type="password"
           placeholder="Current Password"
@@ -37,6 +37,7 @@ export default function ChangePasswordCard() {
             border
             px-6
             py-3
+            cursor-pointer
             bg-emerald-600
             text-white
             transition-all

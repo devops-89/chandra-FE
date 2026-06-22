@@ -15,7 +15,7 @@ const ActiveBookingCard = () => {
 
   return (
     <DashboardCard className="overflow-hidden p-0">
-      <div className="flex items-center justify-between rounded-lg bg-emerald-600 px-8 py-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-lg bg-emerald-600 px-4 sm:px-6 lg:px-8 py-4">
         <h4 className="flex items-center gap-2 text-sm font-bold text-white">
           <RefreshCw className="h-5 w-5" />
           IN PROGRESS
@@ -25,13 +25,13 @@ const ActiveBookingCard = () => {
         </span>
       </div>
 
-      <div className="p-6">
-        <div className="mb-8 text-black flex flex-col items-center justify-between gap-6 md:flex-row">
-          <div>
-            <h3 className="mb-2 text-left text-2xl font-bold">
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0 flex-1">
+            <h3 className="mb-2 text-left sm:text-2xl lg:text-3xl font-bold wrap-break-words">
               {activeBooking.serviceName}
             </h3>
-            <div className="flex flex-wrap gap-6 text-sm text-slate-600">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-6 text-sm text-slate-600">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-emerald-600" />
                 {activeBooking.bookingDate}
@@ -48,7 +48,7 @@ const ActiveBookingCard = () => {
 
         <BookingProgressTracker status={activeBooking.status} />
 
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
           <button
             type="button"
             className="flex-1 rounded-xl cursor-pointer bg-emerald-600 py-4 text-sm font-bold text-white transition-all hover:bg-emerald-700"

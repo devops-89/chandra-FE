@@ -8,7 +8,7 @@ export default function ProfileForm() {
         shadow-lg
       "
     >
-      <h2 className="mb-6 text-xl font-bold text-slate-900">
+      <h2 className="mb-6 text-xl font-bold text-slate-950">
         Personal Information
       </h2>
 
@@ -32,7 +32,7 @@ export default function ProfileForm() {
         />
 
         <button
-          className="rounded-xl bg-emerald-600 px-6 py-3 text-white transition-all duration-300 hover:bg-emerald-700"
+          className="rounded-xl bg-emerald-600 px-6 py-3 cursor-pointer text-white transition-all duration-300 hover:bg-emerald-700"
         >
           Save Changes
         </button>
