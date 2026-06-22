@@ -54,7 +54,7 @@ export default function DynamicServiceHero({
   };
 
   return (
-    <section className="relative bg-slate-50 rounded-2xl shadow-lg py-20">
+    <section className="relative bg-slate-50 rounded-2xl shadow-lg py-20 p-4">
       
       <motion.div
         className="
