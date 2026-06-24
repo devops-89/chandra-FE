@@ -7,9 +7,9 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { loginContent } from '@/constants/auth/loginContent';
+import { handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
 import { validateEmail } from '@/lib/validator/email.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
-import { handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
 import { loginService } from '@/services/auth.service';
