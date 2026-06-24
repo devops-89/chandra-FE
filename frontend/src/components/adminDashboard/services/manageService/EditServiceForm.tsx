@@ -7,6 +7,9 @@ import { useState } from 'react';
 import { useServiceManager } from '@/hooks/useServiceManager';
 import type { AdminService, EditServiceFormData } from '@/types/admin/service.types';
 
+import type { Specification } from '../addService/AddServiceForm';
+import SpecificationsStep from '../addService/SpecificationsStep';
+
 /* ─── Shared input class ─────────────────────────────────────────── */
 const inputCls = `
   w-full rounded-xl border border-slate-200 p-3
@@ -108,12 +111,16 @@ function ServiceEditFields({
     emergencyCharge: service.emergencyCharge ? String(service.emergencyCharge) : '',
   });
 
+  const [specifications, setSpecifications] = useState<Specification[]>(
+    service.specifications ?? []
+  );
+
   const set = (field: keyof EditServiceFormData, value: string | boolean | number) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(form);
+    onSave({ ...form, specifications });
   };
 
   return (
@@ -140,6 +147,20 @@ function ServiceEditFields({
           className={`${inputCls} resize-none`}
         />
       </Field>
+
+      {/* ── Specifications section ────────────────────────────────── */}
+      <div>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          Specifications
+        </p>
+        <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+          <SpecificationsStep
+            specifications={specifications}
+            onChange={setSpecifications}
+            errors={{}}
+          />
+        </div>
+      </div>
 
       {/* ── Pricing section ───────────────────────────────────────── */}
       <div>

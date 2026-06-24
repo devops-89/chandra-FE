@@ -1,6 +1,6 @@
 'use client';
 
-import { FieldError, type FormErrors } from './AddServiceForm';
+import { FieldError, type FormData,type FormErrors } from './AddServiceForm';
 
 /* ─── Shared input class ─────────────────────────────────────────── */
 const inputBase = `
@@ -13,7 +13,7 @@ const inputBase = `
 /* ─── Props ──────────────────────────────────────────────────────── */
 interface Props {
   data: {
-    baseFare:        string;
+    serviceBasePrice:        string;
     perHourRate:     string;
     perKmRate:       string;
     platformFee:     string;
@@ -21,7 +21,7 @@ interface Props {
     emergencyCharge: string;
   };
   errors:   FormErrors;
-  onChange: (field: string, value: string) => void;
+  onChange: (field: keyof FormData, value: FormData[keyof FormData]) => void;
 }
 
 /* ─── Reusable numeric field ─────────────────────────────────────── */
@@ -97,14 +97,14 @@ export default function PricingStep({ data, errors, onChange }: Props) {
         </h3>
         <div className="grid gap-4 sm:grid-cols-3">
           <PriceField
-            id="baseFare"
-            label="Base Fare"
+            id="serviceBasePrice"
+            label="Service Base Price"
             required
             prefix="₹"
             placeholder="0"
-            value={data.baseFare}
-            error={errors.baseFare}
-            onChange={(v) => onChange('baseFare', v)}
+            value={data.serviceBasePrice}
+            error={errors.serviceBasePrice}
+            onChange={(v) => onChange('serviceBasePrice', v)}
           />
           <PriceField
             id="perHourRate"
@@ -166,11 +166,11 @@ export default function PricingStep({ data, errors, onChange }: Props) {
       </div>
 
       {/* ── Live preview ─────────────────────────────────────────── */}
-      {data.baseFare && (
+      {data.serviceBasePrice && (
         <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-800 space-y-1">
           <p className="font-semibold text-emerald-900">Pricing Summary</p>
           <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2 mt-2 text-emerald-700">
-            <span>Base Fare: <strong>₹{data.baseFare}</strong></span>
+            <span>Service Base Price: <strong>₹{data.serviceBasePrice}</strong></span>
             {data.perHourRate && <span>Per Hour: <strong>₹{data.perHourRate}/hr</strong></span>}
             {data.perKmRate   && <span>Per KM: <strong>₹{data.perKmRate}/km</strong></span>}
             {data.platformFee && <span>Platform Fee: <strong>₹{data.platformFee}</strong></span>}

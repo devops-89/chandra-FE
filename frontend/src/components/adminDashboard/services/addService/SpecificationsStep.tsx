@@ -19,7 +19,7 @@ const FIELD_TYPES: { value: SpecFieldType; label: string }[] = [
   { value: 'number',   label: 'Number' },
   { value: 'select',   label: 'Select (dropdown)' },
   { value: 'textarea', label: 'Textarea' },
-  { value: 'file',     label: 'File Upload' },
+  { value: 'image',    label: 'Image Upload' },
 ];
 
 /* ─── Shared input styles ────────────────────────────────────────── */
@@ -35,11 +35,11 @@ const uid = () => Math.random().toString(36).slice(2, 9);
 
 /* ─── Empty spec ─────────────────────────────────────────────────── */
 const emptySpec = (): Specification => ({
-  id:       uid(),
-  label:    '',
-  type:     'text',
-  required: false,
-  options:  [],
+  id:         uid(),
+  name:       '',
+  type:       'text',
+  isRequired: false,
+  values:     [],
 });
 
 /* ─── Component ──────────────────────────────────────────────────── */
@@ -56,25 +56,25 @@ export default function SpecificationsStep({ specifications, errors, onChange }:
       specifications.map((s) => (s.id === id ? { ...s, ...patch } : s))
     );
 
-  /* options helpers (only for type=select) */
+  /* values helpers (only for type=select) */
   const addOption = (specId: string) => {
     const spec = specifications.find((s) => s.id === specId);
     if (!spec) return;
-    updateSpec(specId, { options: [...spec.options, ''] });
+    updateSpec(specId, { values: [...(spec.values ?? []), ''] });
   };
 
   const updateOption = (specId: string, idx: number, value: string) => {
     const spec = specifications.find((s) => s.id === specId);
     if (!spec) return;
-    const opts = [...spec.options];
-    opts[idx] = value;
-    updateSpec(specId, { options: opts });
+    const vals = [...(spec.values ?? [])];
+    vals[idx] = value;
+    updateSpec(specId, { values: vals });
   };
 
   const removeOption = (specId: string, idx: number) => {
     const spec = specifications.find((s) => s.id === specId);
     if (!spec) return;
-    updateSpec(specId, { options: spec.options.filter((_, i) => i !== idx) });
+    updateSpec(specId, { values: (spec.values ?? []).filter((_, i) => i !== idx) });
   };
 
   return (
@@ -121,21 +121,21 @@ export default function SpecificationsStep({ specifications, errors, onChange }:
               {/* Label */}
               <div>
                 <label
-                  htmlFor={`spec-label-${spec.id}`}
+                  htmlFor={`spec-name-${spec.id}`}
                   className="mb-1.5 block text-xs font-medium text-slate-600"
                 >
                   Question Label <span className="text-red-500">*</span>
                 </label>
                 <input
-                  id={`spec-label-${spec.id}`}
-                  value={spec.label}
+                  id={`spec-name-${spec.id}`}
+                  value={spec.name}
                   placeholder="e.g. Number of Solar Panels"
-                  onChange={(e) => updateSpec(spec.id, { label: e.target.value })}
+                  onChange={(e) => updateSpec(spec.id, { name: e.target.value })}
                   className={`${inputCls} ${
-                    errors[`spec_label_${i}`] ? 'border-red-400 focus:border-red-400' : ''
+                    errors[`spec_name_${i}`] ? 'border-red-400 focus:border-red-400' : ''
                   }`}
                 />
-                <FieldError message={errors[`spec_label_${i}`]} />
+                <FieldError message={errors[`spec_name_${i}`]} />
               </div>
 
               {/* Field type */}
@@ -152,8 +152,8 @@ export default function SpecificationsStep({ specifications, errors, onChange }:
                   title="Field type"
                   onChange={(e) =>
                     updateSpec(spec.id, {
-                      type:    e.target.value as SpecFieldType,
-                      options: [],
+                      type:   e.target.value as SpecFieldType,
+                      values: [],
                     })
                   }
                   className={`${inputCls} bg-white`}
@@ -172,15 +172,15 @@ export default function SpecificationsStep({ specifications, errors, onChange }:
               <button
                 type="button"
                 role="switch"
-                aria-checked={spec.required}
-                onClick={() => updateSpec(spec.id, { required: !spec.required })}
+                aria-checked={spec.isRequired}
+                onClick={() => updateSpec(spec.id, { isRequired: !spec.isRequired })}
                 className={`relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200 ${
-                  spec.required ? 'bg-emerald-600' : 'bg-slate-300'
+                  spec.isRequired ? 'bg-emerald-600' : 'bg-slate-300'
                 }`}
               >
                 <span
                   className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                    spec.required ? 'translate-x-4' : 'translate-x-0'
+                    spec.isRequired ? 'translate-x-4' : 'translate-x-0'
                   }`}
                 />
               </button>
@@ -198,7 +198,7 @@ export default function SpecificationsStep({ specifications, errors, onChange }:
                 </p>
 
                 <AnimatePresence initial={false}>
-                  {spec.options.map((opt, oi) => (
+                  {spec.values.map((opt, oi) => (
                     <motion.div
                       key={oi}
                       initial={{ opacity: 0, y: -4 }}
@@ -226,7 +226,7 @@ export default function SpecificationsStep({ specifications, errors, onChange }:
                   ))}
                 </AnimatePresence>
 
-                <FieldError message={errors[`spec_options_${i}`]} />
+                <FieldError message={errors[`spec_values_${i}`]} />
 
                 <button
                   type="button"

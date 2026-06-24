@@ -18,17 +18,35 @@ import { createService } from '@/redux/slices/servicesSlice';
 
 import BasicInfoStep from './BasicInfoStep';
 import PricingStep from './PricingStep';
+import SpecificationsStep from './SpecificationsStep';
 
 /* ─── Step Config ────────────────────────────────────────────────── */
 const STEPS = [
   { id: 0, label: 'Service Info', icon: Info },
-  { id: 1, label: 'Pricing',      icon: DollarSign },
+  { id: 1, label: 'Specifications', icon: ClipboardList },
+  { id: 2, label: 'Pricing', icon: DollarSign },
 ];
 
 const STEP_SUBTITLES = [
   'Service name, description, icon and active toggle are required.',
+  'Configure booking specifications for customers.',
   'Configure all fare components for this service.',
 ];
+
+export type SpecFieldType =
+  | 'text'
+  | 'number'
+  | 'textarea'
+  | 'select'
+  | 'image';
+
+export interface Specification {
+  id?: string;
+  name: string;
+  type: SpecFieldType;
+  isRequired: boolean;
+  values?: string[];
+}
 
 /* ─── Master form state ──────────────────────────────────────────── */
 export type FormData = {
@@ -37,9 +55,10 @@ export type FormData = {
   description: string;
   icon: File | null;
   isActive: boolean;
+  specifications: Specification[];
 
   // Step 2 — Pricing
-  baseFare: string;
+  serviceBasePrice: string;
   perHourRate: string;
   perKmRate: string;
   platformFee: string;
@@ -54,8 +73,8 @@ const INITIAL: FormData = {
   description: '',
   icon: null,
   isActive: true,
-
-  baseFare: '',
+  specifications: [],
+  serviceBasePrice: '',
   perHourRate: '',
   perKmRate: '',
   platformFee: '',
@@ -80,10 +99,27 @@ function validateStep(step: number, data: FormData): FormErrors {
   }
 
   if (step === 1) {
-    if (!data.baseFare)
-      errors.baseFare = 'Base fare is required.';
-    else if (isNaN(Number(data.baseFare)) || Number(data.baseFare) < 0)
-      errors.baseFare = 'Enter a valid amount.';
+    data.specifications.forEach((spec, index) => {
+      if (!spec.name?.trim()) {
+        errors[`spec_name_${index}`] =
+          'Specification name is required';
+      }
+
+      if (
+        spec.type === 'select' &&
+        (!spec.values || spec.values.length < 2)
+      ) {
+        errors[`spec_values_${index}`] =
+          'Select fields require at least 2 options';
+      }
+    });
+  }
+
+  if (step === 2) {
+    if (!data.serviceBasePrice)
+      errors.serviceBasePrice = 'Service base price is required.';
+    else if (isNaN(Number(data.serviceBasePrice)) || Number(data.serviceBasePrice) < 0)
+      errors.serviceBasePrice = 'Enter a valid amount.';
 
     const numericFields: Array<[keyof FormData, string]> = [
       ['perHourRate', 'Per hour rate'],
@@ -104,9 +140,9 @@ function validateStep(step: number, data: FormData): FormErrors {
 
 /* ─── Slide animation variants ──────────────────────────────────── */
 const variants = {
-  enter:  (d: number) => ({ x: d > 0 ?  40 : -40, opacity: 0 }),
+  enter: (d: number) => ({ x: d > 0 ? 40 : -40, opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit:   (d: number) => ({ x: d > 0 ? -40 :  40, opacity: 0 }),
+  exit: (d: number) => ({ x: d > 0 ? -40 : 40, opacity: 0 }),
 };
 
 /* ─── Inline field error ─────────────────────────────────────────── */
@@ -126,21 +162,21 @@ export function FieldError({ message }: { message?: string }) {
 
 /* ─── Main form ──────────────────────────────────────────────────── */
 export default function AddServiceForm() {
-  const router   = useRouter();
+  const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const [step, setStep]           = useState(0);
+  const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [data, setData]           = useState<FormData>(INITIAL);
-  const [errors, setErrors]       = useState<FormErrors>({});
-  const [touched, setTouched]     = useState(false);
+  const [data, setData] = useState<FormData>(INITIAL);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-  const [apiError, setApiError]   = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
 
   /* Update a single field */
-  const update = (field: string, value: string | boolean | File | null) => {
+  const update = (field: keyof FormData, value: FormData[keyof FormData]) => {
     setData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => { const e = { ...prev }; delete e[field]; return e; });
@@ -165,7 +201,7 @@ export default function AddServiceForm() {
   };
 
   const handleSubmit = async () => {
-    const submitErrors = validateStep(1, data);
+    const submitErrors = validateStep(2, data);
     if (Object.keys(submitErrors).length > 0) {
       setErrors(submitErrors);
       setTouched(true);
@@ -177,17 +213,17 @@ export default function AddServiceForm() {
 
     const result = await dispatch(
       createService({
-        name:        data.name,
+        name: data.name,
         description: data.description,
-        icon:        data.icon,
-        isActive:    data.isActive,
-
-        serviceBasePrice: Number(data.baseFare),
-        perHourRate:      data.perHourRate     ? Number(data.perHourRate)     : undefined,
-        perKmRate:        data.perKmRate       ? Number(data.perKmRate)       : undefined,
-        platformFee:      data.platformFee     ? Number(data.platformFee)     : undefined,
-        gst:              data.gst             ? Number(data.gst)             : undefined,
-        emergencyCharge:  data.emergencyCharge ? Number(data.emergencyCharge) : undefined,
+        icon: data.icon,
+        isActive: data.isActive,
+        specifications: data.specifications,
+        serviceBasePrice: Number(data.serviceBasePrice),
+        perHourRate: data.perHourRate ? Number(data.perHourRate) : undefined,
+        perKmRate: data.perKmRate ? Number(data.perKmRate) : undefined,
+        platformFee: data.platformFee ? Number(data.platformFee) : undefined,
+        gst: data.gst ? Number(data.gst) : undefined,
+        emergencyCharge: data.emergencyCharge ? Number(data.emergencyCharge) : undefined,
       })
     );
 
@@ -292,7 +328,7 @@ export default function AddServiceForm() {
         <div className="flex min-w-max items-center gap-0">
           {STEPS.map((s, i) => {
             const Icon = s.icon;
-            const done   = i < step;
+            const done = i < step;
             const active = i === step;
             return (
               <div key={s.id} className="flex items-center">
@@ -316,18 +352,16 @@ export default function AddServiceForm() {
                   >
                     {done ? <Check size={16} strokeWidth={2.5} /> : <Icon size={16} />}
                   </motion.div>
-                  <span className={`text-xs font-medium whitespace-nowrap ${
-                    active ? 'text-emerald-700' : done ? 'text-slate-600' : 'text-slate-400'
-                  }`}>
+                  <span className={`text-xs font-medium whitespace-nowrap ${active ? 'text-emerald-700' : done ? 'text-slate-600' : 'text-slate-400'
+                    }`}>
                     {s.label}
                   </span>
                 </button>
 
                 {i < STEPS.length - 1 && (
                   <div className="mx-1 mb-5 h-0.5 w-8 sm:w-12 rounded-full bg-slate-200 overflow-hidden">
-                    <div className={`h-full rounded-full transition-all duration-500 ${
-                      i < step ? 'w-full bg-emerald-600' : 'w-0'
-                    }`} />
+                    <div className={`h-full rounded-full transition-all duration-500 ${i < step ? 'w-full bg-emerald-600' : 'w-0'
+                      }`} />
                   </div>
                 )}
               </div>
@@ -410,23 +444,34 @@ export default function AddServiceForm() {
               {step === 0 && (
                 <BasicInfoStep
                   data={{
-                    name:        data.name,
+                    name: data.name,
                     description: data.description,
-                    icon:        data.icon,
-                    isActive:    data.isActive,
+                    icon: data.icon,
+                    isActive: data.isActive,
                   }}
                   errors={errors}
                   onChange={update}
                 />
               )}
+
               {step === 1 && (
+                <SpecificationsStep
+                  specifications={data.specifications}
+                  onChange={(specifications) =>
+                    update('specifications', specifications)
+                  }
+                  errors={errors}
+                />
+              )}
+
+              {step === 2 && (
                 <PricingStep
                   data={{
-                    baseFare:        data.baseFare,
-                    perHourRate:     data.perHourRate,
-                    perKmRate:       data.perKmRate,
-                    platformFee:     data.platformFee,
-                    gst:             data.gst,
+                    serviceBasePrice: data.serviceBasePrice,
+                    perHourRate: data.perHourRate,
+                    perKmRate: data.perKmRate,
+                    platformFee: data.platformFee,
+                    gst: data.gst,
                     emergencyCharge: data.emergencyCharge,
                   }}
                   errors={errors}
@@ -454,9 +499,8 @@ export default function AddServiceForm() {
             {STEPS.map((_, i) => (
               <div
                 key={i}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === step ? 'w-5 bg-emerald-600' : i < step ? 'w-1.5 bg-emerald-300' : 'w-1.5 bg-slate-200'
-                }`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${i === step ? 'w-5 bg-emerald-600' : i < step ? 'w-1.5 bg-emerald-300' : 'w-1.5 bg-slate-200'
+                  }`}
               />
             ))}
           </div>

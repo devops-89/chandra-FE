@@ -1,4 +1,4 @@
-import { api } from '@/api/axios';
+import { authApi, userServiceApi } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import type {
   GenerateOtpRequest,
@@ -13,35 +13,31 @@ import type {
 
 // ─── Login ────────────────────────────────────────────────────────────────────
 
-export const loginService = async (
-  payload: LoginRequest
-): Promise<LoginResponse> => {
-  const response = await api.post<LoginResponse>(ENDPOINTS.LOGIN, payload);
+export const loginService = async (payload: LoginRequest): Promise<LoginResponse> => {
+  const response = await authApi.post<LoginResponse>(ENDPOINTS.LOGIN, payload);
   return response.data;
 };
 
 // ─── Generate OTP ─────────────────────────────────────────────────────────────
 
 export const generateOtpService = async (
-  payload: GenerateOtpRequest
+  payload: GenerateOtpRequest,
 ): Promise<GenerateOtpResponse> => {
-  const response = await api.post<GenerateOtpResponse>(ENDPOINTS.GENERATE_OTP, payload);
+  const response = await authApi.post<GenerateOtpResponse>(ENDPOINTS.GENERATE_OTP, payload);
   return response.data;
 };
 
 // ─── Verify OTP ───────────────────────────────────────────────────────────────
 
-export const verifyOtpService = async (
-  payload: VerifyOtpRequest
-): Promise<VerifyOtpResponse> => {
-  const response = await api.post<VerifyOtpResponse>(ENDPOINTS.VERIFY_OTP, payload);
+export const verifyOtpService = async (payload: VerifyOtpRequest): Promise<VerifyOtpResponse> => {
+  const response = await authApi.post<VerifyOtpResponse>(ENDPOINTS.VERIFY_OTP, payload);
   return response.data;
 };
 
 // ─── Register Customer ────────────────────────────────────────────────────────
 
 export const registerCustomerService = async (
-  payload: RegisterCustomerRequest
+  payload: RegisterCustomerRequest,
 ): Promise<RegisterCustomerResponse> => {
   const formData = new FormData();
 
@@ -53,10 +49,10 @@ export const registerCustomerService = async (
   formData.append('password', payload.password);
   formData.append('customerAddress', JSON.stringify(payload.customerAddress));
 
-  const response = await api.post<RegisterCustomerResponse>(
+  const response = await userServiceApi.post<RegisterCustomerResponse>(
     ENDPOINTS.REGISTER_CUSTOMER,
     formData,
-    { headers: { 'Content-Type': 'multipart/form-data' } }
+    { headers: { 'Content-Type': 'multipart/form-data' } },
   );
 
   return response.data;

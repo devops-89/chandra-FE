@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import MobileMenu from '@/components/common/MobileMenu';
 import NavbarLinks from '@/components/common/NavbarLinks';
 import NavbarLogo from '@/components/common/NavbarLogo';
+import { getDashboardPathForRole } from '@/lib/authApi/redirectUtils';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logout } from '@/redux/slices/authSlice';
 
@@ -33,8 +34,7 @@ const PublicNavbar = () => {
     } catch {
       // ignore
     }
-    const dest = role === 'ADMIN' ? '/dashboard/admin' : '/dashboard/customer';
-    router.push(dest);
+    router.push(getDashboardPathForRole(role));
   };
 
   const handleLogout = () => {

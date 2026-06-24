@@ -7,9 +7,9 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { loginContent } from '@/constants/auth/loginContent';
+import { handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
 import { validateEmail } from '@/lib/validator/email.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
-import { handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
 import { loginService } from '@/services/auth.service';
@@ -69,7 +69,7 @@ export const LoginForm = () => {
       // Read the redirect target BEFORE dispatching credentials.
       // PublicRoute triggers on setCredentials and would race to /dashboard
       // if we called handlePostAuthRedirect() after dispatch.
-      const redirectTo = handlePostAuthRedirect();
+      const redirectTo = handlePostAuthRedirect(user.role);
 
       localStorage.setItem('accessToken', tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
@@ -80,7 +80,7 @@ export const LoginForm = () => {
           user,
           accessToken: tokens.accessToken,
           refreshToken: tokens.refreshToken,
-        })
+        }),
       );
 
       router.push(redirectTo);
@@ -95,7 +95,6 @@ export const LoginForm = () => {
   return (
     <main className="min-h-screen bg-[#fff8ed] px-4 py-6 sm:py-10 sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] sm:min-h-[calc(100vh-5rem)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 lg:flex-row">
-
         {/* ── Left panel — hidden on mobile ── */}
         <section className="hidden lg:flex flex-1 flex-col justify-between p-8 text-white sm:p-10 relative overflow-hidden">
           <div className="absolute inset-0">
@@ -133,14 +132,20 @@ export const LoginForm = () => {
         <section className="flex flex-1 items-center justify-center p-6 sm:p-10 min-h-[calc(100vh-3rem)] sm:min-h-0">
           <form
             className="grid w-full max-w-md gap-4"
-            onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
           >
             {/* Heading */}
             <div>
               <h2 className="text-2xl font-bold text-slate-950">Login</h2>
               <p className="mt-2 text-sm text-slate-600">
                 New to HiChandra?{' '}
-                <Link href="/signup" className="font-semibold text-emerald-700 hover:text-emerald-800">
+                <Link
+                  href="/signup"
+                  className="font-semibold text-emerald-700 hover:text-emerald-800"
+                >
                   Create an account
                 </Link>
               </p>
@@ -204,7 +209,6 @@ export const LoginForm = () => {
             </button>
           </form>
         </section>
-
       </div>
     </main>
   );

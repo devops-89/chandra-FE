@@ -75,7 +75,7 @@ export default function AddCategoryModal({
         exit={{ opacity: 0, scale: 0.96, y: 8 }}
         transition={{ duration: 0.18, ease: 'easeOut' }}
         className="fixed inset-0 z-50 flex items-center justify-center px-4"
-        // Don't close when clicking inside the dialog
+      // Don't close when clicking inside the dialog
       >
         <div
           className="w-full max-w-sm rounded-2xl bg-white shadow-xl"

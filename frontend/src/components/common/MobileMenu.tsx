@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import NavbarLinks from '@/components/common/NavbarLinks';
+import { getDashboardPathForRole } from '@/lib/authApi/redirectUtils';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logout } from '@/redux/slices/authSlice';
 
@@ -12,17 +13,24 @@ const MobileMenu = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
-  const isAuthenticated = useAppSelector(
-    (state) => state.auth.isAuthenticated
-  );
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
   const closeMenu = () => {
     setIsOpen(false);
   };
 
   const handleDashboard = () => {
+    let role: string | undefined;
+
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) role = JSON.parse(userStr)?.role;
+    } catch {
+      // ignore malformed JSON
+    }
+
     closeMenu();
-    router.push('/dashboard/customer');
+    router.push(getDashboardPathForRole(role));
   };
 
   const handleLogout = () => {

@@ -6,13 +6,23 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   allowedDevOrigins: [
-    '192.168.1.29'
+    '192.168.1.45'
   ],
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.s3.eu-north-1.amazonaws.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 's3.eu-north-1.amazonaws.com',
         pathname: '/**',
       },
     ],

@@ -1,4 +1,13 @@
-export const API_BASE_URL = 'http://13.53.114.78/api';
+export const API_BASE_URLS = {
+  auth: 'http://192.168.1.49:8000/api',
+  userService: 'http://192.168.1.49:8001/api',
+} as const;
+
+export type ApiServicePurpose = keyof typeof API_BASE_URLS;
+
+export const getApiBaseUrl = (purpose: ApiServicePurpose) => API_BASE_URLS[purpose];
+
+export const API_BASE_URL = getApiBaseUrl('auth');
 
 export const ENDPOINTS = {
   // Auth
@@ -10,8 +19,8 @@ export const ENDPOINTS = {
   REGISTER_CUSTOMER: '/users/register',
 
   // Services
-  GET_ALL_SERVICES:   '/users/service/all',
-  GET_SERVICE_BY_ID:  '/users/service',      // GET /users/service/:id
-  CREATE_SERVICE:     '/users/admin/service',
-  UPDATE_SERVICE:     '/users/admin/service',  // PATCH /users/admin/service/:id
+  GET_ALL_SERVICES: '/users/service/all',
+  GET_SERVICE_BY_ID: '/users/service', // GET /users/service/:id
+  CREATE_SERVICE: '/users/admin/service',
+  UPDATE_SERVICE: '/users/admin/service', // PATCH /users/admin/service/:id
 } as const;

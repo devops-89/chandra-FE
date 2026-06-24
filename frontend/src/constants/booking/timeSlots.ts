@@ -7,7 +7,8 @@ export const TIME_SLOTS: TimeSlots = {
 };
 
 export const BOOKING_STEPS = [
+  'Dynamic Form',
   'Select Address',
-  'Select Date & Time', 
-  'Book Service'
+  'Select Date & Time',
+  'Book Service',
 ];

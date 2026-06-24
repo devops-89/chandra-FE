@@ -3,7 +3,7 @@
 import { ImageIcon } from 'lucide-react';
 import { useRef } from 'react';
 
-import { FieldError, type FormErrors } from './AddServiceForm';
+import { FieldError, type FormData,type FormErrors } from './AddServiceForm';
 
 /* ─── Shared input class ─────────────────────────────────────────── */
 const inputBase = `
@@ -22,7 +22,7 @@ interface Props {
     isActive:    boolean;
   };
   errors:   FormErrors;
-  onChange: (field: string, value: string | boolean | File | null) => void;
+  onChange: (field: keyof FormData, value: FormData[keyof FormData]) => void;
 }
 
 /* ─── Component ──────────────────────────────────────────────────── */

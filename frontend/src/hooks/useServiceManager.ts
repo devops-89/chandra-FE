@@ -36,6 +36,7 @@ export function useServiceManager() {
           gst:              data.gst             ? parseFloat(data.gst)             : undefined,
           emergencyCharge:  data.emergencyCharge ? parseFloat(data.emergencyCharge) : undefined,
         },
+        specifications: data.specifications,
       })
     );
 
