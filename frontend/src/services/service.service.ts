@@ -144,3 +144,13 @@ export const updateServiceApiCall = async (payload: UpdateServiceRequest): Promi
     headers: { 'Content-Type': 'application/json' },
   });
 };
+
+// ─── Delete service ───────────────────────────────────────────────────────────
+
+export const deleteServiceApiCall = async (
+  id: number | string
+): Promise<void> => {
+  await api.delete(
+    ENDPOINTS.DELETE_SERVICE(id)
+  );
+};

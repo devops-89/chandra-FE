@@ -3,10 +3,8 @@
 import { useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import {
-  deleteServiceAction,
-  updateService,
-} from '@/redux/slices/servicesSlice';
+import { updateService } from '@/redux/slices/servicesSlice';
+import { deleteService } from '@/redux/slices/servicesSlice';
 import type { AdminService, EditServiceFormData } from '@/types/admin/service.types';
 
 export function useServiceManager() {
@@ -49,11 +47,19 @@ export function useServiceManager() {
   const openDelete  = (service: AdminService) => setDeleteTarget(service);
   const closeDelete = () => setDeleteTarget(null);
 
-  const confirmDelete = () => {
-    if (!deleteTarget) return;
-    dispatch(deleteServiceAction(deleteTarget.id));
+  const confirmDelete = async () => {
+  if (!deleteTarget) return;
+
+  try {
+    await dispatch(
+      deleteService(deleteTarget.id)
+    ).unwrap();
+
     closeDelete();
-  };
+  } catch (error) {
+    console.error('Failed to delete service:', error);
+  }
+};
 
   return {
     services,

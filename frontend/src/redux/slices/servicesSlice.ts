@@ -1,7 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { createServiceService, getAllServicesService, getServiceByIdService, updateServiceApiCall } from '@/services/service.service';
+import { createServiceService, deleteServiceApiCall,getAllServicesService, getServiceByIdService, updateServiceApiCall } from '@/services/service.service';
 import type { AdminService, CreateServiceRequest, UpdateServiceRequest } from '@/types/admin/service.types';
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -106,6 +106,28 @@ export const updateService = createAsyncThunk<
   }
 );
 
+export const deleteService = createAsyncThunk<
+  AdminService[],
+  number,
+  { rejectValue: string }
+>(
+  'services/delete',
+  async (serviceId, { rejectWithValue }) => {
+    try {
+      await deleteServiceApiCall(serviceId);
+
+      return await getAllServicesService();
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Failed to delete service.';
+
+      return rejectWithValue(message);
+    }
+  }
+);
+
 // ─── Slice ────────────────────────────────────────────────────────────────────
 
 const servicesSlice = createSlice({
@@ -122,11 +144,6 @@ const servicesSlice = createSlice({
     updateServiceAction(state, action: PayloadAction<AdminService>) {
       const idx = state.items.findIndex((s) => s.id === action.payload.id);
       if (idx !== -1) state.items[idx] = action.payload;
-    },
-
-    // Optimistic delete — used by DeleteServiceModal
-    deleteServiceAction(state, action: PayloadAction<number>) {
-      state.items = state.items.filter((s) => s.id !== action.payload);
     },
 
     // Clear error manually (e.g. on retry)
@@ -184,6 +201,21 @@ const servicesSlice = createSlice({
         state.error     = action.payload ?? 'Unknown error.';
       })
 
+      // ── deleteService ──────────────────────────────────────────
+      .addCase(deleteService.pending, (state) => {
+       state.isLoading = true;
+       state.error = null;
+      })
+      .addCase(deleteService.fulfilled, (state, action) => {
+       state.isLoading = false;
+       state.items = action.payload;
+      })
+      .addCase(deleteService.rejected, (state, action) => {
+       state.isLoading = false;
+       state.error =
+       action.payload ?? 'Unknown error.';
+      })
+
       // ── fetchServiceById ───────────────────────────────────────
       .addCase(fetchServiceById.pending, (state) => {
         state.isLoading       = true;
@@ -198,14 +230,14 @@ const servicesSlice = createSlice({
         state.isLoading       = false;
         state.error           = action.payload ?? 'Unknown error.';
         state.selectedService = null;
-      });
+      })
+      
   },
 });
 
 export const {
   addServiceAction,
   updateServiceAction,
-  deleteServiceAction,
   clearServicesError,
   clearSelectedService,
 } = servicesSlice.actions;
