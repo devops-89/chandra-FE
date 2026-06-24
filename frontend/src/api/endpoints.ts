@@ -23,4 +23,5 @@ export const ENDPOINTS = {
   GET_SERVICE_BY_ID: '/users/service', // GET /users/service/:id
   CREATE_SERVICE: '/users/admin/service',
   UPDATE_SERVICE: '/users/admin/service', // PATCH /users/admin/service/:id
+  DELETE_SERVICE: '/users/delete/service'
 } as const;

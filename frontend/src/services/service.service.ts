@@ -1,4 +1,4 @@
-import { userServiceApi } from '@/api/axios';
+import { api,userServiceApi } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import type {
   AdminService,
@@ -151,6 +151,6 @@ export const deleteServiceApiCall = async (
   id: number | string
 ): Promise<void> => {
   await api.delete(
-    ENDPOINTS.DELETE_SERVICE(id)
+    `${ENDPOINTS.DELETE_SERVICE}/${id}`
   );
 };
