@@ -48,7 +48,7 @@ export default function BenefitsSection() {
             </h2>
             <div className="mt-8">
               <Link
-                href="/technicianOnboarding"
+                href="/technician/onboarding/register"
                 className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold text-emerald-700 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-600"
               >
                 Register now

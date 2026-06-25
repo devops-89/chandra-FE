@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import type { DocumentUploadState, UploadedFile } from '@/types/technicianApplication/documentUpload.types';
 
 import DocumentUploadFooter from './DocumentUploadFooter';
@@ -39,13 +40,13 @@ export default function DocumentUploadPage() {
     Object.keys(state.uploadedDocuments).length >= 5;
 
   const handlePrevious = () => {
-    router.push('/technicianOnboarding/skill-tagging');
+    router.push('/technician/onboarding/skill-tagging');
   };
 
   const handleSubmit = () => {
-    // Save state to session storage for later use
     sessionStorage.setItem('documentUploadData', JSON.stringify(state));
-    router.push('/technicianOnboarding/service-area');
+    markStepComplete(2);
+    router.push('/technician/onboarding/service-area');
   };
 
   return (

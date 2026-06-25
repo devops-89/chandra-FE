@@ -3,7 +3,6 @@ import PendingVerificationFooter from '@/components/technicianOnboarding/pending
 import VerificationStatusContainer from '@/components/technicianOnboarding/verificationStatus/VerificationStatusContainer';
 
 export default function PendingVerificationPage() {
-  // Mock status - will be replaced with backend API call
   const applicationStatus = 'pending' as const;
 
   return (

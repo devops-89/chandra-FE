@@ -27,7 +27,7 @@ export default function CTASection() {
 
           <div className="mt-9">
             <Link
-              href="/technicianOnboarding"
+              href="/technician/onboarding/register"
               className="inline-flex h-13 items-center justify-center rounded-full bg-white px-9 text-base font-bold text-emerald-700 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-600"
             >
               Start Registration Now

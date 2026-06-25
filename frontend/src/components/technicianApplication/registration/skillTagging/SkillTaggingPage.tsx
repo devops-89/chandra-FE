@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import { AVAILABLE_SKILLS } from '@/constants/technicianApplication/skillTagging.constants';
 import type { SkillTaggingState } from '@/types/technicianApplication/skillTagging.types';
 
@@ -53,12 +54,9 @@ export default function SkillTaggingPage() {
   };
 
   const handleNext = () => {
-    // Save state to session storage or context for later use
-    sessionStorage.setItem(
-      'skillTaggingData',
-      JSON.stringify(state)
-    );
-    router.push("/technicianOnboarding/document-upload")
+    sessionStorage.setItem('skillTaggingData', JSON.stringify(state));
+    markStepComplete(1);
+    router.push("/technician/onboarding/document-upload");
   };
 
   return (

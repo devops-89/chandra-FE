@@ -12,7 +12,7 @@ export default function DocumentUploadFooter({
   return (
     <div className="flex gap-4 justify-between pt-8 border-t border-gray-200">
       <Link
-        href="/technicianOnboarding/skill-tagging"
+        href="/technician/onboarding/skill-tagging"
         className="px-8 py-3 border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 transition-colors"
         onClick={(e) => {
           e.preventDefault();

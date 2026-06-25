@@ -42,12 +42,12 @@ export default function ActionRequiredStatus({
 
   const handleEditApplication = () => {
     onEditApplication?.();
-    router.push('/technicianOnboarding/personal-info');
+    router.push('/technician/onboarding/register');
   };
 
   const handleResubmit = () => {
     onResubmit?.();
-    router.push('/technicianOnboarding/pending-verification');
+    router.push('/technician/onboarding/pending-verification');
   };
 
   return (

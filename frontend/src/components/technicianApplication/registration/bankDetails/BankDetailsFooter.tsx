@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
+import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
+
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -18,7 +20,7 @@ export default function BankDetailsFooter() {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const handlePreviousStep = () => {
-    router.push('/technicianOnboarding/service-area');
+    router.push('/technician/onboarding/service-area');
   };
 
   const handleSaveContinue = () => {
@@ -26,7 +28,8 @@ export default function BankDetailsFooter() {
     // Simulate save
     setTimeout(() => {
       setIsLoading(false);
-      router.push('/technicianOnboarding/review-submit');
+      markStepComplete(4);
+      router.push('/technician/onboarding/review-submit');
     }, 500);
   };
 

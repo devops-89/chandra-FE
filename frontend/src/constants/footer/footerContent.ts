@@ -37,7 +37,7 @@ export const footerContent = {
   professionals: [
     {
       label: 'Register as Technician',
-      href: '/technicianOnboarding',
+      href: '/technician/onboarding/register',
     },
   ],
 };

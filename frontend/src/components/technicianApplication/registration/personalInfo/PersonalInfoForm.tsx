@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
+import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
+
 import BasicInfoFields from './BasicInfoFields';
 import ContinueButton from './ContinueButton';
 import EmailAndPasswordFields from './EmailAndPasswordFields';
@@ -40,7 +42,7 @@ export default function PersonalInfoForm() {
     e.preventDefault();
     const isValid = handleSubmit();
     if (isValid) {
-      // Handle form submission
+      markStepComplete(0);
     }
   };
 

@@ -66,7 +66,7 @@ export default function TechnicianHero() {
             className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5"
           >
             <Link
-              href="/technicianOnboarding"
+              href="/technician/onboarding/register"
               className="inline-flex h-12 items-center justify-center rounded-full bg-linear-to-br from-emerald-600 to-emerald-700 px-8 text-base font-bold text-white shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-4"
             >
               Start Registration

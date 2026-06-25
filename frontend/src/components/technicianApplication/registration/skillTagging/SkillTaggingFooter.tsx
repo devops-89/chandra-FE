@@ -10,7 +10,7 @@ export default function SkillTaggingFooter({
   return (
     <div className="flex gap-4 pt-8">
       <Link
-        href="/technicianOnboarding/personal-info"
+        href="/technician/onboarding/register"
         className="rounded-lg border border-gray-300 px-6 py-2 font-medium text-gray-700 hover:bg-gray-50"
       >
         Back To Profile

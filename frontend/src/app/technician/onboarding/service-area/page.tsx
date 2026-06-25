@@ -4,18 +4,21 @@ import { useRouter } from 'next/navigation';
 
 import OnboardingLayout from '@/components/technicianApplication/layout/OnboardingLayout';
 import ServiceArea from '@/components/technicianApplication/registration/serviceArea/ServiceArea';
+import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
+import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import type { ServiceAreaState } from '@/types/technicianOnboarding/serviceArea.types';
 
 export default function ServiceAreaPage() {
   const router = useRouter();
+  useOnboardingGuard({ stepIndex: 3 });
 
   const handlePrevious = () => {
-    router.push('/technicianOnboarding/service-area');
+    router.push('/technician/onboarding/document-upload');
   };
 
-  // data is intentionally unused — navigation only; stored via sessionStorage inside ServiceArea
   const handleSubmit = (_data: ServiceAreaState) => {
-    router.push('/technicianOnboarding/success');
+    markStepComplete(3);
+    router.push('/technician/onboarding/bank-details');
   };
 
   return (

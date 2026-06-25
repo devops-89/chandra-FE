@@ -11,31 +11,33 @@ import ServiceCoverageCard from './components/ServiceCoverageCard';
 import SkillsSummaryCard from './components/SkillsSummaryCard';
 import VerificationSummaryCard from './components/VerificationSummaryCard';
 import { useReviewSubmit } from './hooks/useReviewSubmit';
+import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 
 export default function ReviewSubmit() {
   const router = useRouter();
   const { state, isSubmitting, handleSubmit } = useReviewSubmit();
 
   const handleEditProfile = () => {
-    router.push('/technicianOnboarding/personal-info');
+    router.push('/technician/onboarding/register');
   };
 
   const handleEditSkills = () => {
-    router.push('/technicianOnboarding/skill-tagging');
+    router.push('/technician/onboarding/skill-tagging');
   };
 
   const handleEditVerification = () => {
-    router.push('/technicianOnboarding/document-upload');
+    router.push('/technician/onboarding/document-upload');
   };
 
   const handleEditServiceArea = () => {
-    router.push('/technicianOnboarding/service-area');
+    router.push('/technician/onboarding/service-area');
   };
 
   const handleSubmitApplication = async () => {
     const result = await handleSubmit();
     if (result.success) {
-      router.push('/technicianOnboarding/pending-verification');
+      markStepComplete(5);
+      router.push('/technician/onboarding/pending-verification');
     }
   };
 
