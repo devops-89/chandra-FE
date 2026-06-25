@@ -1,12 +1,18 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+import activeJobsReducer from './slices/activeJobsSlice';
 import authReducer from './slices/authSlice';
+import nearbyJobsReducer from './slices/nearbyJobsSlice';
 import servicesReducer from './slices/servicesSlice';
+import supportReducer from './slices/supportSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     services: servicesReducer,
+    nearbyJobs: nearbyJobsReducer,
+    activeJobs: activeJobsReducer,
+    support: supportReducer,
   },
 });
 
