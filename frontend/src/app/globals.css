@@ -41,7 +41,7 @@ body {
 }
 
 html {
-  scroll-behavior: smooth;
+  data-scroll-behavior: smooth;
 }
 
 /* ─── Material Symbols — hide raw text during font swap ─────────────────────

@@ -10,7 +10,7 @@ export default function FooterProfessional() {
       <ul className="space-y-4">
         <li>
           <Link
-            href="/technicianOnboarding"
+            href="/technician"
             className="text-gray-600 hover:text-emerald-700"
           >
             Register as Technician

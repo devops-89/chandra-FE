@@ -1,0 +1,9 @@
+export { default as BenefitsSection } from './BenefitsSection';
+export { default as CategoriesSection } from './CategoriesSection';
+export { default as CTASection } from './CTASection';
+export { default as FAQSection } from './FAQSection';
+export { default as HowItWorksSection } from './HowItWorksSection';
+export { default as RequirementsSection } from './RequirementsSection';
+export { default as TechnicianHero } from './TechnicianHero';
+export { default as TestimonialsSection } from './TestimonialsSection';
+export { default as WhyJoinSection } from './WhyJoinSection';
