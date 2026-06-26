@@ -63,7 +63,7 @@ export interface LoginResponse {
 export interface GenerateOtpRequest {
   email: string;
   phone: string;
-  role: 'CUSTOMER';
+  role: 'CUSTOMER' | 'TECHNICIAN';
 }
 
 export interface GenerateOtpResponse {
@@ -124,6 +124,53 @@ export interface RegisterCustomerResponse {
   data: {
     message: string;
     user: User;
+  };
+}
+
+// ─── Register Technician ─────────────────────────────────────────────────────
+
+/** Sent as multipart/form-data to POST /users/register (TECHNICIAN role) */
+export interface RegisterTechnicianRequest {
+  email: string;
+  username: string;
+  phone: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+}
+
+export interface TechnicianProfile {
+  id: number;
+  userId: number;
+  status: 'INCOMPLETE' | 'PENDING' | 'APPROVED' | 'REJECTED';
+  serviceRadiusKm: number;
+  preferredAreas: string[];
+  pincodes: string[];
+  hasLadder: boolean;
+  hasACGauges: boolean;
+  hasSafetyEquipment: boolean;
+  hasVehicle: boolean;
+  accountHolderName: string;
+  accountNumber: string;
+  ifscCode: string;
+  bankName: string;
+}
+
+export interface RegisterTechnicianResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    message: string;
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+    };
+    user: User & {
+      status: string;
+      phone: string;
+      technicianProfile: TechnicianProfile;
+    };
   };
 }
 

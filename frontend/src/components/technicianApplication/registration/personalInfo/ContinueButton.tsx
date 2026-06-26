@@ -5,9 +5,10 @@ import { motion } from 'framer-motion';
 interface ContinueButtonProps {
   onClick: () => void;
   isDisabled?: boolean;
+  label?: string;
 }
 
-export default function ContinueButton({ onClick, isDisabled = false }: ContinueButtonProps) {
+export default function ContinueButton({ onClick, isDisabled = false, label = 'Create Account' }: ContinueButtonProps) {
   return (
     <motion.button
       type="submit"
@@ -18,7 +19,7 @@ export default function ContinueButton({ onClick, isDisabled = false }: Continue
       whileTap={!isDisabled ? { scale: 0.98 } : {}}
       transition={{ duration: 0.2 }}
     >
-      Create Account
+      {label}
       <span className="material-symbols-outlined text-base md:text-lg">arrow_outward</span>
     </motion.button>
   );

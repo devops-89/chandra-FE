@@ -16,7 +16,8 @@ export const ENDPOINTS = {
   VERIFY_OTP: '/auth/verify-otp',
 
   // Users
-  REGISTER_CUSTOMER: '/users/register',
+  REGISTER_CUSTOMER:    '/users/register',
+  REGISTER_TECHNICIAN:  '/users/register',    // same endpoint, role determined by payload
 
   // Services
   GET_ALL_SERVICES: '/users/service/all',

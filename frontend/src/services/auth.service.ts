@@ -7,6 +7,8 @@ import type {
   LoginResponse,
   RegisterCustomerRequest,
   RegisterCustomerResponse,
+  RegisterTechnicianRequest,
+  RegisterTechnicianResponse,
   VerifyOtpRequest,
   VerifyOtpResponse,
 } from '@/types/auth.types';
@@ -51,6 +53,31 @@ export const registerCustomerService = async (
 
   const response = await userServiceApi.post<RegisterCustomerResponse>(
     ENDPOINTS.REGISTER_CUSTOMER,
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } },
+  );
+
+  return response.data;
+};
+
+// ─── Register Technician ─────────────────────────────────────────────────────
+
+export const registerTechnicianService = async (
+  payload: RegisterTechnicianRequest,
+): Promise<RegisterTechnicianResponse> => {
+  const formData = new FormData();
+
+  formData.append('email',     payload.email);
+  formData.append('username',  payload.username);
+  formData.append('phone',     payload.phone);
+  formData.append('firstName', payload.firstName);
+  formData.append('lastName',  payload.lastName);
+  formData.append('password',  payload.password);
+  // Backend infers TECHNICIAN role from the absence of customerAddress
+  formData.append('technicianProfile', JSON.stringify({}));
+
+  const response = await userServiceApi.post<RegisterTechnicianResponse>(
+    ENDPOINTS.REGISTER_TECHNICIAN,
     formData,
     { headers: { 'Content-Type': 'multipart/form-data' } },
   );

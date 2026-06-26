@@ -1,21 +1,28 @@
 'use client';
 
 interface BasicInfoFieldsProps {
-  fullName: string;
-  phoneNumber: string;
-  email: string;
-  fullNameError?: string;
+  firstName:        string;
+  lastName:         string;
+  username:         string;
+  phoneNumber:      string;
+  email:            string;
+  firstNameError?:  string;
+  lastNameError?:   string;
+  usernameError?:   string;
   phoneNumberError?: string;
-  emailError?: string;
-  onFullNameChange: (value: string) => void;
-  onPhoneNumberChange: (value: string) => void;
-  onEmailChange: (value: string) => void;
-  onFullNameBlur: () => void;
-  onPhoneNumberBlur: () => void;
-  onEmailBlur: () => void;
+  emailError?:      string;
+  onFirstNameChange:  (v: string) => void;
+  onLastNameChange:   (v: string) => void;
+  onUsernameChange:   (v: string) => void;
+  onPhoneNumberChange:(v: string) => void;
+  onEmailChange:      (v: string) => void;
+  onFirstNameBlur:  () => void;
+  onLastNameBlur:   () => void;
+  onUsernameBlur:   () => void;
+  onPhoneNumberBlur:() => void;
+  onEmailBlur:      () => void;
 }
 
-/* ─── Shared input style ─────────────────────────────────────────── */
 const fieldCls = (hasError?: string) =>
   `w-full h-12 border rounded-lg md:rounded-xl px-4 text-sm md:text-base
    focus:outline-none focus:ring-2 focus:border-transparent transition
@@ -25,46 +32,60 @@ const fieldCls = (hasError?: string) =>
    }`;
 
 export default function BasicInfoFields({
-  fullName,
-  phoneNumber,
-  email,
-  fullNameError,
-  phoneNumberError,
-  emailError,
-  onFullNameChange,
-  onPhoneNumberChange,
-  onEmailChange,
-  onFullNameBlur,
-  onPhoneNumberBlur,
-  onEmailBlur,
+  firstName, lastName, username, phoneNumber, email,
+  firstNameError, lastNameError, usernameError, phoneNumberError, emailError,
+  onFirstNameChange, onLastNameChange, onUsernameChange, onPhoneNumberChange, onEmailChange,
+  onFirstNameBlur, onLastNameBlur, onUsernameBlur, onPhoneNumberBlur, onEmailBlur,
 }: BasicInfoFieldsProps) {
   return (
     <div className="space-y-4 md:space-y-6">
-      {/* Row 1 — Name + Phone */}
+
+      {/* Row 1 — First Name + Last Name */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-        {/* Full Name */}
         <div>
-          <label className="mb-2 block text-xs font-medium md:text-sm">
-            Full Name
-          </label>
+          <label className="mb-2 block text-xs font-medium md:text-sm">First Name</label>
           <input
             type="text"
-            placeholder="John Doe"
-            value={fullName}
-            onChange={(e) => onFullNameChange(e.target.value)}
-            onBlur={onFullNameBlur}
-            className={fieldCls(fullNameError)}
+            placeholder="Rohit"
+            value={firstName}
+            onChange={(e) => onFirstNameChange(e.target.value)}
+            onBlur={onFirstNameBlur}
+            className={fieldCls(firstNameError)}
           />
-          {fullNameError && (
-            <p className="mt-1 text-xs text-red-500">{fullNameError}</p>
-          )}
+          {firstNameError && <p className="mt-1 text-xs text-red-500">{firstNameError}</p>}
         </div>
 
-        {/* Phone Number */}
         <div>
-          <label className="mb-2 block text-xs font-medium md:text-sm">
-            Phone Number
-          </label>
+          <label className="mb-2 block text-xs font-medium md:text-sm">Last Name</label>
+          <input
+            type="text"
+            placeholder="Kumar"
+            value={lastName}
+            onChange={(e) => onLastNameChange(e.target.value)}
+            onBlur={onLastNameBlur}
+            className={fieldCls(lastNameError)}
+          />
+          {lastNameError && <p className="mt-1 text-xs text-red-500">{lastNameError}</p>}
+        </div>
+      </div>
+
+      {/* Row 2 — Username + Phone */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
+        <div>
+          <label className="mb-2 block text-xs font-medium md:text-sm">Username</label>
+          <input
+            type="text"
+            placeholder="rohit_kumar"
+            value={username}
+            onChange={(e) => onUsernameChange(e.target.value)}
+            onBlur={onUsernameBlur}
+            className={fieldCls(usernameError)}
+          />
+          {usernameError && <p className="mt-1 text-xs text-red-500">{usernameError}</p>}
+        </div>
+
+        <div>
+          <label className="mb-2 block text-xs font-medium md:text-sm">Phone Number</label>
           <input
             type="tel"
             placeholder="+91 9876543210"
@@ -73,28 +94,22 @@ export default function BasicInfoFields({
             onBlur={onPhoneNumberBlur}
             className={fieldCls(phoneNumberError)}
           />
-          {phoneNumberError && (
-            <p className="mt-1 text-xs text-red-500">{phoneNumberError}</p>
-          )}
+          {phoneNumberError && <p className="mt-1 text-xs text-red-500">{phoneNumberError}</p>}
         </div>
       </div>
 
-      {/* Row 2 — Email (full width) */}
+      {/* Row 3 — Email (full width) */}
       <div>
-        <label className="mb-2 block text-xs font-medium md:text-sm">
-          Email Address
-        </label>
+        <label className="mb-2 block text-xs font-medium md:text-sm">Email Address</label>
         <input
           type="email"
-          placeholder="john@example.com"
+          placeholder="rohit@example.com"
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
           onBlur={onEmailBlur}
           className={fieldCls(emailError)}
         />
-        {emailError && (
-          <p className="mt-1 text-xs text-red-500">{emailError}</p>
-        )}
+        {emailError && <p className="mt-1 text-xs text-red-500">{emailError}</p>}
       </div>
     </div>
   );

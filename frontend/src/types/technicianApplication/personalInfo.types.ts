@@ -1,12 +1,16 @@
 export interface PersonalInfoFormData {
-  fullName: string;
+  firstName: string;
+  lastName: string;
+  username: string;
   phoneNumber: string;
   email: string;
   password: string;
 }
 
 export interface ValidationErrors {
-  fullName?: string;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
   phoneNumber?: string;
   email?: string;
   password?: string;
