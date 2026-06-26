@@ -121,23 +121,18 @@ export interface GetAllServicesResponse {
 /** Sent as JSON to PATCH /users/admin/service/:id */
 export interface UpdateServiceRequest {
   id: number;
-  name?: string;
-  description?: string;
-  isActive?: boolean;
-  pricingRule?: {
-    serviceBasePrice?: number;
-    perHourRate?: number;
-    perKmRate?: number;
-    platformFee?: number;
-    gst?: number;
-    emergencyCharge?: number;
-  };
-  specifications?: {
-    name: string;
-    type: 'text' | 'number' | 'textarea' | 'select' | 'image';
-    isRequired: boolean;
-    values?: string[];
-  }[];
+
+  name: string;
+  description: string;
+  isActive: boolean;
+
+  serviceBasePrice: number;
+
+  perHourRate?: number;
+  perKmRate?: number;
+  platformFee?: number;
+  gst?: number;
+  emergencyCharge?: number;
 }
 
 export interface CreateServiceRequest {
