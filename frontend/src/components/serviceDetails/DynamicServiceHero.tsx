@@ -187,9 +187,10 @@ export default function DynamicServiceHero({
             height={500}
             unoptimized={service.image.startsWith('http://') || service.image.startsWith('https://')}
             className="
-              w-full
+              w-162.5
+              h-107.5
               rounded-4xl
-              object-cover
+              object-contain
               shadow-xl
               bg-white
             "
