@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     '192.168.1.45'
   ],
   images: {
+    minimumCacheTTL: 3600,
     remotePatterns: [
       {
         protocol: 'https',

@@ -1,6 +1,6 @@
 # HiChandra Frontend — Master Project Context
 
-> **Last updated:** June 25, 2026
+> **Last updated:** June 26, 2026
 > **Purpose:** Permanent handoff document. Paste this file into any new chat to restore full project context instantly.
 
 ---
@@ -40,6 +40,7 @@ The frontend is a **UI-complete** Next.js app. Auth API integration is live. Ser
 - Google profile images whitelisted for `next/image`
 - ESLint + Prettier configured; `eslint-plugin-simple-import-sort`, `eslint-plugin-unused-imports` active
 - `@typescript-eslint/no-unused-vars` configured with `argsIgnorePattern: '^_'`
+- `.env.local` — `NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK=false` (set to `true` for production)
 
 ---
 
@@ -50,43 +51,27 @@ frontend/
 ├── src/
 │   ├── api/                    # Axios instance + API endpoint constants
 │   ├── app/                    # Next.js App Router pages
+│   │   ├── technician/         # /technician landing + /technician/onboarding/* steps
+│   │   └── dashboard/technician/ # Technician dashboard (guarded)
 │   ├── components/             # All UI components (deeply nested by domain)
-│   ├── constants/              # All mock data (current "backend" for non-auth/non-services modules)
+│   │   └── technicianLanding/  # TechnicianHero, WhyJoinSection, HowItWorksSection, etc.
+│   ├── constants/              # All mock data
 │   ├── data/                   # Additional mock datasets
 │   ├── hooks/                  # Custom React hooks
-│   ├── lib/                    # Utilities (validation, pricing, auth redirects)
-│   ├── redux/                  # Redux Toolkit store, slices, RTK Query services
-│   │   ├── slices/             # authSlice, servicesSlice, bookingSlice, onboardingSlice,
-│   │   │                       #   nearbyJobsSlice, activeJobsSlice, supportSlice,
-│   │   │                       #   activitySlice, dashboardStatsSlice, loyaltySlice,
-│   │   │                       #   onboardingSlice, performanceSlice
-│   │   ├── selectors/          # nearbyJobsSelectors, activeJobsSelectors, supportSelectors
-│   │   ├── services/           # authApi, bookingApi, serviceApi, userApi (RTK Query — empty)
-│   │   ├── legacy/             # bookingStore (Zustand, active), customerDashboardStore, useSidebarStore
-│   │   ├── store.ts            # configureStore — all active reducers wired
-│   │   ├── hooks.ts            # useAppDispatch / useAppSelector typed hooks
-│   │   ├── Provider.tsx        # <Provider store={store}> wrapper
-│   │   └── ServiceContext.tsx  # Admin service CRUD React Context (in-memory)
-│   ├── services/               # REST service functions (Axios calls)
+│   │   └── useOnboardingGuard.ts  # Sequential onboarding lock
+│   ├── lib/                    # Utilities
+│   │   └── onboarding/onboardingProgress.ts  # Progress bitmask (localStorage)
+│   ├── redux/                  # Redux Toolkit store + slices
+│   ├── services/               # REST service functions
 │   ├── styles/                 # dashboard.css, mui-theme.ts
-│   ├── types/                  # TypeScript type definitions (per domain)
-│   └── dashboard/              # ⚠️ DEAD CODE — legacy abandoned folder, safe to delete
-├── public/
-│   └── images/
-│       └── services/           # Service images (solar, ac, electrical, plumbing, home-cleaning)
+│   └── types/                  # TypeScript type definitions
 ```
 
 ---
 
 ## 4. API Layer
 
-### `src/api/`
-| File | Purpose |
-|---|---|
-| `axios.ts` | Axios instance with base URL + Bearer token interceptor |
-| `endpoints.ts` | Central endpoint constants |
-
-### Endpoints
+### Endpoints (`src/api/endpoints.ts`)
 
 ```ts
 LOGIN:               POST /auth/login
@@ -105,7 +90,6 @@ UPDATE_SERVICE:      PATCH /users/admin/service/:id
 | `auth.service.ts` | ✅ Live | `loginService()`, `generateOtpService()`, `verifyOtpService()`, `registerCustomerService()` |
 | `service.service.ts` | ✅ Live | `getAllServicesService()`, `getServiceByIdService()`, `createServiceService()`, `updateServiceApiCall()` |
 | `booking.service.ts` | ❌ Empty | No implementation yet |
-| `customerDashboard/customerDashboard.service.ts` | 🔶 Mock | Returns from constants |
 
 
 ---
@@ -118,39 +102,34 @@ configureStore({
   reducer: {
     auth:       authReducer,
     services:   servicesReducer,
-    nearbyJobs: nearbyJobsReducer,   // ← added June 25
-    activeJobs: activeJobsReducer,   // ← added June 25
-    support:    supportReducer,      // ← added June 25
+    nearbyJobs: nearbyJobsReducer,
+    activeJobs: activeJobsReducer,
+    support:    supportReducer,
   }
 })
 ```
 
 ### Slices
-| Slice | File | Store Key | Status | Notes |
-|---|---|---|---|---|
-| `authSlice` | `redux/slices/authSlice.ts` | `auth` | ✅ Live | `setCredentials`, `logout` |
-| `servicesSlice` | `redux/slices/servicesSlice.ts` | `services` | ✅ Live | `fetchServices`, `fetchServiceById`, `createService`, `updateService`, `clearSelectedService` |
-| `nearbyJobsSlice` | `redux/slices/nearbyJobsSlice.ts` | `nearbyJobs` | ✅ Wired | Mock data; selectors in `redux/selectors/nearbyJobsSelectors.ts` |
-| `activeJobsSlice` | `redux/slices/activeJobsSlice.ts` | `activeJobs` | ✅ Wired | Mock data; selectors in `redux/selectors/activeJobsSelectors.ts` |
-| `supportSlice` | `redux/slices/supportSlice.ts` | `support` | ✅ Wired | Mock data; selectors in `redux/selectors/supportSelectors.ts` |
-| `bookingSlice` | `redux/slices/bookingSlice.ts` | — | 🔶 Scaffolded | Not wired to store or UI |
-| `onboardingSlice` | `redux/slices/onboardingSlice.ts` | — | 🔶 Scaffolded | Not wired to store or UI |
-| `activitySlice` | `redux/slices/activitySlice.ts` | — | 🔶 Scaffolded | Not wired to store or UI |
-| `dashboardStatsSlice` | `redux/slices/dashboardStatsSlice.ts` | — | 🔶 Scaffolded | Not wired to store or UI |
-| `loyaltySlice` | `redux/slices/loyaltySlice.ts` | — | 🔶 Scaffolded | Not wired to store or UI |
-| `performanceSlice` | `redux/slices/performanceSlice.ts` | — | 🔶 Scaffolded | Not wired to store or UI |
+| Slice | Store Key | Status | Notes |
+|---|---|---|---|
+| `authSlice` | `auth` | ✅ Live | `setCredentials`, `logout` |
+| `servicesSlice` | `services` | ✅ Live | `fetchServices`, `fetchServiceById`, `createService`, `updateService` |
+| `nearbyJobsSlice` | `nearbyJobs` | ✅ Wired | Mock data; `redux/selectors/nearbyJobsSelectors.ts` |
+| `activeJobsSlice` | `activeJobs` | ✅ Wired | Mock data; `redux/selectors/activeJobsSelectors.ts` |
+| `supportSlice` | `support` | ✅ Wired | Mock data; `redux/selectors/supportSelectors.ts` |
+| `bookingSlice` | — | 🔶 Scaffolded | Not wired |
+| `onboardingSlice` | — | 🔶 Scaffolded | Not wired |
+| `activitySlice` | — | 🔶 Scaffolded | Not wired |
+| `dashboardStatsSlice` | — | 🔶 Scaffolded | Not wired |
+| `loyaltySlice` | — | 🔶 Scaffolded | Not wired |
+| `performanceSlice` | — | 🔶 Scaffolded | Not wired |
 
 ### Legacy Zustand (`src/redux/legacy/`)
 | File | Status | Notes |
 |---|---|---|
-| `bookingStore.ts` | ✅ **Active** | Zustand store used by entire booking flow. Fields: `service`, `serviceId`, `serviceSlug`, `servicePrice`, `serviceSpecificData`, `bookingFormFields`, `name`, `phone`, `address`, `date`, `slot`, `instructions`. |
+| `bookingStore.ts` | ✅ **Active** | Fields: `service`, `serviceId`, `serviceSlug`, `servicePrice`, `serviceSpecificData`, `bookingFormFields`, `name`, `phone`, `address`, `date`, `slot`, `instructions` |
 | `customerDashboardStore.ts` | ❌ Empty | Never implemented |
 | `useSidebarStore.ts` | ❌ Empty | Never implemented |
-
-### React Context
-| File | Status | Notes |
-|---|---|---|
-| `redux/ServiceContext.tsx` | ✅ Complete | Admin service CRUD — in-memory only, no API |
 
 ---
 
@@ -158,341 +137,291 @@ configureStore({
 
 ### Public
 
-| Route | Component | Status |
+| Route | Status | Notes |
 |---|---|---|
-| `/` | `HeroSection`, `ServiceSection`, `ChooseSection`, `TestimonialSection` | ✅ Complete — `PublicRoute` guard |
-| `/login` | `LoginForm` | ✅ Complete — real API, `PublicRoute` guard, post-login redirect via `handlePostAuthRedirect()` |
-| `/signup` | `SignupForm` | ✅ Complete — real API (OTP flow), `PublicRoute` guard |
-| `/services` | `ServiceGrid` (backend) | ✅ Complete — fetches `GET /users/service/all` |
-| `/services/[slug]` | `DynamicServiceDetailPage` | ✅ Complete — slug URL, backend data |
+| `/` | ✅ Complete | `PublicRoute` guard |
+| `/login` | ✅ Complete | Real API, post-login redirect |
+| `/signup` | ✅ Complete | OTP flow |
+| `/services` | ✅ Complete | `GET /users/service/all` |
+| `/services/[slug]` | ✅ Complete | Backend data |
+| `/technician` | ✅ Complete | Landing page for technician recruitment |
 
 ### Booking Flow
 
 | Route | Status | Notes |
 |---|---|---|
-| `/booking?serviceId=N` | ✅ Complete | `BookingAuthGuard` + `UnifiedBookingPage`. Dynamic Form → Address → Date & Time → Book Service (4 steps). |
-| `/booking/summary` | ✅ Complete | Shows service name + price from Zustand store |
-| `/booking/confirmation` | ✅ Complete | Shows booking details from Zustand store |
+| `/booking?serviceId=N` | ✅ Complete | `BookingAuthGuard` + `UnifiedBookingPage`. 4 steps. |
+| `/booking/summary` | ✅ Complete | Zustand store |
+| `/booking/confirmation` | ✅ Complete | Zustand store |
 
 ### Customer Dashboard
 
 | Route | Status | Notes |
 |---|---|---|
-| `/dashboard/customer` | ✅ Complete | Stats, active booking, recent bookings |
-| `/dashboard/customer/services` | ✅ Complete | Backend service grid inside `DashboardLayout`. No navbar/footer. |
-| `/dashboard/customer/services/[slug]` | ✅ Complete | Reuses `DynamicServiceDetailPage` inside `DashboardLayout`. `bookingBasePath="/dashboard/customer/booking"` |
-| `/dashboard/customer/booking?serviceId=N` | ✅ Complete | `UnifiedBookingPage` inside `DashboardLayout`. `summaryPath="/dashboard/customer/booking/summary"` |
-| `/dashboard/customer/booking/summary` | ✅ Complete | Inside `DashboardLayout` |
-| `/dashboard/customer/booking/confirmation` | ✅ Complete | Inside `DashboardLayout` |
-| `/dashboard/customer/bookings` | ✅ Complete | Table with mock data |
+| `/dashboard/customer` | ✅ Complete | Stats, active booking |
+| `/dashboard/customer/services` | ✅ Complete | Backend service grid |
+| `/dashboard/customer/services/[slug]` | ✅ Complete | `DynamicServiceDetailPage` inside `DashboardLayout` |
+| `/dashboard/customer/booking?serviceId=N` | ✅ Complete | `UnifiedBookingPage` inside dashboard |
+| `/dashboard/customer/booking/summary` | ✅ Complete | Inside dashboard |
+| `/dashboard/customer/booking/confirmation` | ✅ Complete | Inside dashboard |
+| `/dashboard/customer/bookings` | ✅ Complete | Mock data |
 | `/dashboard/customer/bookings/[id]` | ❌ Skeleton | No detail content |
-| `/dashboard/customer/addresses` | ✅ Complete | Address list + add/edit |
-| `/dashboard/customer/invoices` | ✅ Complete | Invoice summary + table |
-| `/dashboard/customer/profile` | ✅ Complete | Profile form + change password |
-| `/dashboard/customer/support` | ✅ Complete | FAQ + raise ticket + contact card |
-
-**Sidebar Navigation:**
-- Dashboard → `/dashboard/customer`
-- Services → `/dashboard/customer/services`
-- My Bookings → `/dashboard/customer/bookings`
-- Addresses → `/dashboard/customer/addresses`
-- Support → `/dashboard/customer/support`
-- Profile → `/dashboard/customer/profile`
-- Invoices → `/dashboard/customer/invoices`
-
-Active state: Services link highlights on `/dashboard/customer/services*` AND `/dashboard/customer/booking*`.
+| `/dashboard/customer/addresses` | ✅ Complete | |
+| `/dashboard/customer/invoices` | ✅ Complete | |
+| `/dashboard/customer/profile` | ✅ Complete | |
+| `/dashboard/customer/support` | ✅ Complete | |
 
 ### Admin Dashboard
 
+| Route | Status |
+|---|---|
+| `/dashboard/admin` | ✅ Complete |
+| `/dashboard/admin/bookings` | ✅ Complete |
+| `/dashboard/admin/complaints` | ✅ Complete |
+| `/dashboard/admin/customers` | ✅ Complete |
+| `/dashboard/admin/technicians` | ✅ Complete |
+| `/dashboard/admin/services` | ✅ Complete |
+| `/dashboard/admin/services/add` | ✅ Complete |
+| `/dashboard/admin/finance` | ✅ Complete |
+| `/dashboard/admin/reviews` | ✅ Complete |
+
+### Technician Onboarding
+
+**Base route:** `/technician/onboarding/*` (old `/technicianOnboarding/*` removed — was all redirects)
+
+| Route | Step | Status | Notes |
+|---|---|---|---|
+| `/technician/onboarding/register` | 0 | ✅ Complete | Personal info + account creation |
+| `/technician/onboarding/skill-tagging` | 1 | ✅ Complete | Skills, level, brand expertise |
+| `/technician/onboarding/document-upload` | 2 | ✅ Complete | Selfie + 5 documents |
+| `/technician/onboarding/service-area` | 3 | ✅ Complete | Radius, areas, pincodes |
+| `/technician/onboarding/bank-details` | 4 | ✅ Complete | Account + IFSC + payout method |
+| `/technician/onboarding/review-submit` | 5 | ✅ Complete | Review all + final submit |
+| `/technician/onboarding/pending-verification` | — | ✅ Complete | Status page (hardcoded `'pending'`) |
+
+**Sidebar step labels:** Register → Skill Tagging → Document Upload → Service Area → Bank Details → Review & Submit
+
+### Technician Dashboard
+
 | Route | Status | Notes |
 |---|---|---|
-| `/dashboard/admin` | ✅ Complete | Stats, approval queue, revenue trend, live map |
-| `/dashboard/admin/bookings` | ✅ Complete | Table, filters, timeline drawer, row actions |
-| `/dashboard/admin/complaints` | ✅ Complete | Table + assign/resolve/refund modals |
-| `/dashboard/admin/customers` | ✅ Complete | Table + profile drawer with sub-tabs |
-| `/dashboard/admin/technicians` | ✅ Complete | Table + approval queue + profile drawer |
-| `/dashboard/admin/services` | ✅ Complete | Table + add/edit/delete modals |
-| `/dashboard/admin/services/add` | ✅ Complete | 2-step form (Service Info → Pricing) |
-| `/dashboard/admin/finance` | ✅ Complete | Overview, commissions, payouts, transactions |
-| `/dashboard/admin/reviews` | ✅ Complete | Table + detail drawer + stats |
-
-### Technician
-
-| Route | Status | Notes |
-|---|---|---|
-| `/technicianOnboarding` through `/review-submit` | ✅ Complete | All 7 onboarding steps |
-| `/technicianOnboarding/pending-verification` | 🔶 Partial | Status hardcoded to `'pending'` |
-| `/dashboard/technician` | ✅ Complete | Mock data — uses `nearbyJobs` + `activeJobs` Redux slices |
-| `/dashboard/technician/nearby-jobs` | ✅ Complete | Self-contained feature |
-| `/dashboard/technician/profile` | ❌ Skeleton | No save functionality |
+| `/dashboard/technician` | ✅ Complete | Mock data — `nearbyJobs` + `activeJobs` slices |
+| `/dashboard/technician/nearby-jobs` | ✅ Complete | |
+| `/dashboard/technician/profile` | ❌ Skeleton | No save |
 
 
 ---
 
-## 7. Booking Flow — Full Detail
+## 7. Onboarding Lock System
 
-### Booking Steps (4 steps)
+### Feature Flag
 ```
-Step 0 — Dynamic Form:   backend service specifications → BookingFormField[]
-Step 1 — Select Address: address confirmed by user click
-Step 2 — Date & Time:    date + slot both set
-Step 3 — Book Service:   name / phone / instructions → submit
+NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK=false   # dev (all steps freely accessible)
+NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK=true    # production (sequential enforcement)
 ```
 
-`BOOKING_STEPS = ['Dynamic Form', 'Select Address', 'Select Date & Time', 'Book Service']`
+### Implementation Files
 
-### Flow (Guest User — Dashboard Path)
+| File | Purpose |
+|---|---|
+| `lib/onboarding/onboardingProgress.ts` | localStorage bitmask — `markStepComplete(n)`, `isStepComplete(n)`, `firstIncompleteRoute()`, `isOnboardingComplete()`, `syncProgressFromProfile(profile)`, `clearOnboardingProgress()`, `isOnboardingLockEnabled()` |
+| `hooks/useOnboardingGuard.ts` | Mount-only hook. `stepIndex: N` → redirects to `firstIncompleteRoute()` if step N-1 incomplete. `stepIndex: -1` → dashboard guard (redirects if onboarding incomplete) |
+
+### How it works
+- Progress stored as a 6-bit bitmask in `localStorage` key `technician_onboarding_progress`
+- Bit 0 = Register done, bit 1 = Skills done, ..., bit 5 = Submitted
+- Each step's success navigation calls `markStepComplete(stepIndex)` before routing
+- On login with TECHNICIAN role: call `syncProgressFromProfile(profile)` to seed from backend
+- `useOnboardingGuard({ stepIndex: N })` placed at top of each locked page component
+- Dashboard layout (`app/dashboard/technician/layout.tsx`) uses `useOnboardingGuard({ stepIndex: -1 })`
+- When lock disabled: hook returns immediately — zero redirect overhead
+
+### Sidebar visual states (when lock enabled)
+- **Active step** — green background (`bg-green-100`)
+- **Completed step** — shows ✓ icon
+- **Locked step** — non-interactive div with 🔒, `cursor-not-allowed`
+
+---
+
+## 8. Technician Landing Page (`/technician`)
+
+Sections (components in `src/components/technicianLanding/`):
+- `TechnicianHero` → CTA links to `/technician/onboarding/register`
+- `WhyJoinSection` — 4 benefit cards
+- `HowItWorksSection` — 6-step grid
+- `BenefitsSection` → "Register now" links to `/technician/onboarding/register`
+- `CategoriesSection` — 4 service categories (Solar, AC, Plumbing, Electrical)
+- `RequirementsSection` → "Verify Now" links to `/technician/onboarding/register`
+- `TestimonialsSection` — 3 partner testimonials
+- `FAQSection` — accordion FAQ
+- `CTASection` → "Start Registration Now" links to `/technician/onboarding/register`
+
+All CTA links in footer (`footerContent.ts`) also point to `/technician/onboarding/register`.
+
+---
+
+## 9. Booking Flow — Full Detail
+
+### Booking Steps
 ```
-/services  →  /services/[slug]
-  → click "Sign In to Book"
-  → useBookingAuth: NOT authenticated → router.push('/login') [no redirect stored]
-  → Login succeeds → /dashboard/customer
-  → Services → service card → service detail → "Book Now"
-  → handleBookingClick: seeds bookingStore (service, serviceId, serviceSlug, servicePrice, bookingFormFields)
-  → router.push('/booking?serviceId=N')
-  → BookingAuthGuard passes → UnifiedBookingPage
-  → Dynamic Form → Address → Date & Time → Book Service → /booking/summary → /booking/confirmation
+BOOKING_STEPS = ['Dynamic Form', 'Select Address', 'Select Date & Time', 'Book Service']
 ```
 
-### Flow (Logged-in Customer via Dashboard)
-```
-/dashboard/customer/services
-  → service card → /dashboard/customer/services/[slug]
-  → DynamicServiceDetailPage (inside DashboardLayout, bookingBasePath="/dashboard/customer/booking")
-  → click "Book Now"
-  → handleBookingClick: seeds bookingStore
-  → router.push('/dashboard/customer/booking?serviceId=N')
-  → UnifiedBookingPage (inside DashboardLayout)
-  → summaryPath="/dashboard/customer/booking/summary"
-  → /dashboard/customer/booking/summary → /dashboard/customer/booking/confirmation → My Bookings
-```
-
-### Dynamic Form — Specifications Flow
-```
-Admin creates service with specifications[]
-  ↓
-GET /users/service/:id → ApiService.specifications[]
-  ↓
-normalizeService() → AdminService.specifications: ApiSpecification[]
-  ↓
-DynamicServiceDetailPage.handleBookingClick()
-  → maps specs to BookingFormField[]
-  → stores in bookingStore.bookingFormFields[]
-  ↓
-UnifiedBookingPage reads bookingStore.bookingFormFields
-  → if non-empty: use as dynamicFields
-  → if empty: DEFAULT_FIELDS (serviceDescription textarea + photos multi-file)
-  ↓
-DynamicBookingFields renders fields via DynamicFieldRenderer
-```
+Step 0 — Dynamic Form: backend service `specifications[]` → `BookingFormField[]`
+Step 1 — Address: user selects address
+Step 2 — Date & Time: date + slot
+Step 3 — Book Service: name / phone / instructions → submit
 
 ### Key Files
 | File | Role |
 |---|---|
-| `hooks/useBookingAuth.ts` | Auth check for CTAs. Guest → `/login` (no redirect stored). Auth → `onBookingClick()`. |
-| `components/serviceDetails/DynamicServiceDetailPage.tsx` | Maps `AdminService` → `Service`, seeds Zustand store including `bookingFormFields`, routes to booking |
-| `components/serviceDetails/DynamicServiceHero.tsx` | CTA — "Book Now" (auth) / "Sign In to Book" (guest) |
-| `components/serviceDetails/DynamicServiceCTA.tsx` | Bottom CTA — same pattern |
-| `components/booking/UnifiedBookingPage.tsx` | 4-step form. Reads `bookingFormFields` from store, falls back to DEFAULT_FIELDS |
-| `components/booking/DynamicBookingFields.tsx` | Renders `BookingFormField[]`, handles conditional visibility |
-| `components/booking/DynamicFieldRenderer.tsx` | Single field renderer — delegates to `FormField` / `FileField` |
-| `components/booking/BookingAuthGuard.tsx` | Stores `pathname+search` in sessionStorage, redirects to `/login` if unauthenticated |
-| `redux/legacy/bookingStore.ts` | Zustand: `service`, `serviceId`, `serviceSlug`, `servicePrice`, `serviceSpecificData`, `bookingFormFields`, `name`, `phone`, `address`, `date`, `slot`, `instructions` |
-| `lib/authApi/redirectUtils.ts` | `storeRedirectPath()`, `getAndClearRedirectPath()`, `handlePostAuthRedirect()` |
-| `components/auth/LoginForm.tsx` | Reads redirect BEFORE `dispatch(setCredentials(...))`, then `router.push(redirectTo)` |
-| `components/auth/PublicRoute.tsx` | Mount-only `useEffect` (empty deps). Never re-fires on fresh login. |
-
-### Auth Redirect Logic
-1. `redirectTo = handlePostAuthRedirect()` — reads + clears sessionStorage
-2. `dispatch(setCredentials(...))`
-3. `router.push(redirectTo)` — LoginForm owns navigation
-
-`BookingAuthGuard` stores full URL (`pathname + search`) before redirecting unauthenticated users.
+| `hooks/useBookingAuth.ts` | Guest → `/login`. Auth → `onBookingClick()`. |
+| `components/serviceDetails/DynamicServiceDetailPage.tsx` | Seeds Zustand store, routes to booking |
+| `components/booking/UnifiedBookingPage.tsx` | 4-step form, reads `bookingFormFields` from store |
+| `components/booking/DynamicBookingFields.tsx` | Renders `BookingFormField[]` |
+| `components/booking/BookingAuthGuard.tsx` | Stores `pathname+search`, redirects unauthenticated |
+| `redux/legacy/bookingStore.ts` | Zustand booking state |
+| `lib/authApi/redirectUtils.ts` | `storeRedirectPath`, `handlePostAuthRedirect` |
+| `components/auth/LoginForm.tsx` | Reads redirect BEFORE `dispatch`, then `router.push` |
+| `components/auth/PublicRoute.tsx` | Mount-only `useEffect` guard |
 
 ---
 
-## 8. Services Integration — Full Detail
-
-### Data Flow
-```
-Backend API
-  GET /users/service/all  →  servicesSlice.items[]  →  ServiceGrid
-  GET /users/service/:id  →  servicesSlice.selectedService  →  DynamicServiceDetailPage
-```
-
-### Dynamic Booking Form — Specification Mapping
-```typescript
-// ApiSpecification → BookingFormField
-{
-  spec.id         → field.name  (`spec_${spec.id}`, e.g. "spec_14")
-  spec.name       → field.label  ("Number of solar panels")
-  spec.type       → field.type   ('number', 'select', 'text', ...)
-  spec.isRequired → field.required
-  spec.values[]   → field.options[].value + .label  (for select type)
-  spec.placeholder → field.placeholder
-}
-```
-
-### AdminService → Service Mapping
-```typescript
-{
-  id          → id (String(service.id))
-  name        → title, slug (kebab-case), ctaTitle
-  description → description, overview, ctaDescription
-  image/iconUrl → image (fallback: '/images/service-placeholder.png')
-  isActive    → badge ('Available Now' / 'Unavailable')
-  price       → price (serviceBasePrice)
-  includes: ['Professional certified technicians', ...]
-  bookingForm: []
-  formConfig: { showPriceSummary: true, pricingEngine: 'fixed' }
-}
-```
-
-### Slug Generation
-```ts
-slug = service.name.toLowerCase().replace(/\s+/g, '-')
-```
-
----
-
-## 9. Components Map
+## 10. Components Map
 
 ```
 src/components/
-├── auth/                 LoginForm, SignupForm (OTP flow), OtpModal, PublicRoute
-├── common/               PublicNavbar, PublicFooter, NavbarLinks, NavbarLogo, MobileMenu, AvatarGroup
-├── heroSection/          HeroSection + 5 sub-components
-├── servicesSection/      ServiceSection, ServiceGrid (linkPrefix prop), ServiceCard (linkPrefix prop)
+├── auth/                 LoginForm, SignupForm (OTP), OtpModal, PublicRoute
+├── common/               PublicNavbar, PublicFooter, NavbarLinks, NavbarLogo, MobileMenu
+├── heroSection/          HeroSection + sub-components
+├── servicesSection/      ServiceSection, ServiceGrid (linkPrefix), ServiceCard (linkPrefix)
 ├── serviceDetails/       DynamicServiceDetailPage (reused public + dashboard),
 │                         DynamicServiceHero, DynamicServiceCTA, DynamicServiceOverview,
 │                         DynamicServiceFeatures, DynamicServicePricing
 ├── booking/              UnifiedBookingPage, BookingAuthGuard, BookingSummary,
 │                         BookingConfirmation, BookingStepper,
 │                         DynamicBookingFields, DynamicFieldRenderer,
-│                         AddressSelector, TimeSlotSelector, BookingDetailsForm,
-│                         ConfirmButton, ErrorMessage
+│                         AddressSelector, TimeSlotSelector, BookingDetailsForm
+├── technicianLanding/    TechnicianHero, WhyJoinSection, HowItWorksSection,
+│                         BenefitsSection, CategoriesSection, RequirementsSection,
+│                         TestimonialsSection, FAQSection, CTASection
 ├── customerDashboard/
 │   ├── layout/           DashboardLayout, DashboardHeader, DashboardSidebar
 │   └── ...               (overview, bookings, addresses, invoices, profile, support)
 ├── adminDashboard/       (layout, dashboard, bookings, complaints, customers,
 │                          finance, reviews, services, technicians)
-├── technicianDashboard/  (dashboard overview, nearby-jobs, active-jobs, earnings,
-│                          jobs, profile, support)
-└── technicianApplication/ (full onboarding flow — 7 steps)
+├── technicianDashboard/  (dashboard, nearby-jobs, active-jobs, earnings, jobs, profile)
+└── technicianApplication/ (full 6-step onboarding — layout, registration steps)
+    └── layout/           OnboardingLayout, OnboardingSidebar (lock-aware), OnboardingHeader
 ```
 
 ---
 
-## 10. Hooks (`src/hooks/`)
+## 11. Hooks (`src/hooks/`)
 
 | Hook | Purpose |
 |---|---|
-| `useBookingAuth` | Auth check for CTAs. Guest → `/login`. Auth → `onBookingClick()`. |
-| `useSignupForm` | Signup + OTP flow + auto-login + `router.push('/dashboard/customer')` |
+| `useBookingAuth` | Auth check for booking CTAs |
+| `useOnboardingGuard` | Sequential onboarding lock — mount-only, flag-gated |
+| `useSignupForm` | Signup + OTP flow |
 | `useFormValidation` | Generic form validation |
 | `useActiveBooking` | Customer dashboard active booking (mock) |
 | `useFavoriteTechnicians` | Customer dashboard favorites (mock) |
 | `useInvoices` | Customer invoices (mock) |
-| `useLatestReview` | Latest customer review (mock) |
-| `useRecentBookings` | Recent bookings list (mock) |
+| `useLatestReview` | Latest review (mock) |
+| `useRecentBookings` | Recent bookings (mock) |
 | `useCategoryManager` | Admin category CRUD |
 | `useServiceManager` | Admin service CRUD |
 
 ---
 
-## 11. Lib / Utilities (`src/lib/`)
+## 12. Lib / Utilities (`src/lib/`)
 
 | Path | Purpose |
 |---|---|
-| `lib/authApi/redirectUtils.ts` | `storeRedirectPath()`, `getAndClearRedirectPath()`, `handlePostAuthRedirect()` |
+| `lib/authApi/redirectUtils.ts` | `storeRedirectPath`, `getAndClearRedirectPath`, `handlePostAuthRedirect`, `getDashboardPathForRole` |
+| `lib/onboarding/onboardingProgress.ts` | Onboarding progress bitmask — `markStepComplete`, `isStepComplete`, `firstIncompleteRoute`, `isOnboardingComplete`, `syncProgressFromProfile`, `isOnboardingLockEnabled` |
 | `lib/booking/formatBookingData.ts` | Formats booking store data for display |
-| `lib/pricing/calculateACPrice.ts` | AC dynamic price calculation |
-| `lib/pricing/calculateSolarPrice.ts` | Solar price calculation |
+| `lib/pricing/calculateACPrice.ts` | AC dynamic pricing |
+| `lib/pricing/calculateSolarPrice.ts` | Solar pricing |
 | `lib/utils/addressUtils.ts` | Address selection helpers |
 | `lib/validation/bookingValidation.ts` | Booking form validation |
 | `lib/validation/fileValidation.ts` | File upload validation |
 | `lib/validator/` | email, password, phone, pincode, signup validators |
 
+
 ---
 
-## 12. Key Types (`src/types/`)
+## 13. Key Types (`src/types/`)
 
 | File | Key Types |
 |---|---|
-| `types/services.types.ts` | `Service`, `BookingFormField`, `BookingFormData`, `ServiceCardProps` (with `linkPrefix`) |
+| `types/services.types.ts` | `Service`, `BookingFormField`, `BookingFormData`, `ServiceCardProps` |
 | `types/auth.types.ts` | `User`, `LoginRequest/Response`, `SignupFormData`, OTP types, `CustomerAddress` |
-| `types/bookingTypes/bookingForm.types.ts` | `UnifiedBookingPageProps` (`service: string`, `serviceId?: number`), `TimeSlots`, `BookingStep`, `AddressOption` |
-| `types/admin/service.types.ts` | `AdminService`, `ApiService`, `ApiPricingRule`, `ApiSpecification`, `CreateServiceRequest`, `UpdateServiceRequest`, `GetAllServicesResponse` |
+| `types/bookingTypes/bookingForm.types.ts` | `UnifiedBookingPageProps`, `TimeSlots`, `BookingStep`, `AddressOption` |
+| `types/admin/service.types.ts` | `AdminService`, `ApiService`, `ApiPricingRule`, `ApiSpecification`, `CreateServiceRequest`, `UpdateServiceRequest` |
 | `types/admin.types.ts` | `DashboardStat`, `Technician`, `ActiveJob`, `AdminProfile` |
 | `types/technicianDashboard/nearbyJobs.types.ts` | `NearbyJob`, `NearbyJobsState` |
-| `types/invoicesTypes/invoice.types.ts` | `Invoice` |
-| `types/addressTypes/address.types.ts` | `Address` |
-| `types/technicianApplication/` | 8 files covering full onboarding |
-
+| `types/technicianApplication/` | 8 files: `personalInfo`, `skillTagging`, `toolInventory`, `documentUpload`, `bankDetails`, `reviewSubmit`, `onboarding`, `verification` |
+| `types/technicianOnboarding/serviceArea.types.ts` | `ServiceAreaState`, `AreaOption`, component prop types |
 
 ---
 
-## 13. Constants & Mock Data (`src/constants/`)
-
-Services listing + detail no longer use mock data. All other non-auth data is still mocked:
+## 14. Constants & Mock Data (`src/constants/`)
 
 | Folder | Contents |
 |---|---|
-| `constants/services/serviceData.ts` | Legacy 4-service mock — **no longer imported anywhere in active code** |
-| `constants/admin/` | 15 files: bookings, customers, technicians, complaints, reviews, finance, etc. |
+| `constants/services/serviceData.ts` | Legacy 4-service mock — **no longer imported** |
+| `constants/admin/` | 15 files: bookings, customers, technicians, complaints, reviews, finance |
 | `constants/customerDashboard/` | activeBooking, invoices, recentBookings, reviews, favourites, stats |
-| `constants/dashboard/` | addresses, bookings, faqs, invoices |
-| `constants/booking/` | savedAddresses, timeSlots |
-| `constants/technicianDashboard/` | nearby-jobs mock data (`MOCK_NEARBY_JOBS`), active job mock (`MOCK_ACTIVE_JOB`) |
-| `constants/technicianApplication/` | documentUpload, onboardingSteps, serviceAreaOptions, etc. |
-| `constants/auth/` | loginContent, signupContent |
-| `constants/hero/`, `chooseUs/`, `footer/`, `navigation/`, `testimonials/` | Static UI content |
+| `constants/booking/` | savedAddresses, timeSlots, BOOKING_STEPS |
+| `constants/technicianDashboard/` | `MOCK_NEARBY_JOBS`, `MOCK_ACTIVE_JOB` |
+| `constants/technicianApplication/` | documentUpload, **onboardingSteps** (labels), serviceAreaOptions, skillTagging |
+| `constants/footer/footerContent.ts` | Footer links — Register as Technician → `/technician/onboarding/register` |
+
+### `onboardingSteps` labels
+```ts
+["Register", "Skill Tagging", "Document Upload", "Service Area", "Bank Details", "Review & Submit"]
+```
 
 ---
 
-## 14. What's Complete vs Pending
+## 15. What's Complete vs Pending
 
-### ✅ Completed (June 25, 2026)
+### ✅ Completed (June 26, 2026)
 
-**Redux store — missing slices wired:**
-- `nearbyJobsSlice` registered as `nearbyJobs` — fixes technician dashboard 500 error
-- `activeJobsSlice` registered as `activeJobs` — fixes `state.activeJobs.currentJob` TypeError
-- `supportSlice` registered as `support` — fixes `state.support.tickets` TypeError
-- Root cause: all three slices had reducers and selectors defined but were never added to `configureStore`
+**Technician Landing Page (`/technician`):**
+- Full marketing page with 9 sections
+- All CTAs → `/technician/onboarding/register`
+- Footer "Register as Technician" → `/technician/onboarding/register`
 
-**Dynamic booking form — backend specifications:**
-- `types/admin/service.types.ts` — added `ApiSpecification` interface; added `specifications: ApiSpecification[]` to `AdminService`
-- `services/service.service.ts` — `specToBookingField()` mapper; `normalizeService()` passes `specifications` through
-- `redux/legacy/bookingStore.ts` — added `bookingFormFields: BookingFormField[]` field
-- `components/serviceDetails/DynamicServiceDetailPage.tsx` — `handleBookingClick` maps specs → `BookingFormField[]`, seeds store
-- `components/booking/UnifiedBookingPage.tsx` — reads `bookingFormFields` from store; falls back to `DEFAULT_FIELDS`; imports removed `servicesData`
-- `constants/booking/timeSlots.ts` — `BOOKING_STEPS` updated to 4 steps starting with `'Dynamic Form'`
-- `components/booking/DynamicBookingFields.tsx` — new component: renders `BookingFormField[]`, conditional visibility
-- `components/booking/DynamicFieldRenderer.tsx` — new component: single field renderer by type
+**Onboarding route migration (`/technicianOnboarding/*` → `/technician/onboarding/*`):**
+- All 7 step pages moved to new path
+- Old folder entirely removed (was all redirects)
+- All navigation, sidebar, back buttons, edit handlers updated
+- Sidebar step 0 label: "Personal Info" → "Register"
 
-**Dashboard booking flow (customer stays in dashboard):**
-- `app/dashboard/customer/services/[slug]/page.tsx` — passes `bookingBasePath="/dashboard/customer/booking"`
-- `app/dashboard/customer/booking/page.tsx` — `UnifiedBookingPage` inside `DashboardLayout`, `summaryPath="/dashboard/customer/booking/summary"`
-- Dashboard booking/summary and booking/confirmation pages inside `DashboardLayout`
+**Onboarding lock system:**
+- `lib/onboarding/onboardingProgress.ts` — localStorage bitmask progress
+- `hooks/useOnboardingGuard.ts` — mount-only sequential lock
+- `NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK` feature flag in `.env.local`
+- `markStepComplete(N)` wired into every step's success navigation
+- `useOnboardingGuard({ stepIndex: N })` on steps 1–5 pages
+- Dashboard layout protected with `useOnboardingGuard({ stepIndex: -1 })`
+- Sidebar shows locked (🔒) / completed (✓) states when lock enabled
 
-### ✅ Previously Completed (June 19, 2026)
-- Full public site (home, services listing, service detail)
-- Login + signup — real APIs, OTP flow
-- Auth guards (`PublicRoute`, `DashboardLayout`, `AdminDashboardLayout`)
-- Admin services: list (backend), create (2-step form, multipart + JSON)
-- All customer dashboard pages (mock data)
-- All admin dashboard pages (mock data)
-- Technician onboarding (all 7 steps, UI)
-- Booking flow UI (Dynamic Form → Address → Date & Time → summary → confirmation)
-- Dashboard Services pages + sidebar link update
-- `ServiceGrid` / `ServiceCard` `linkPrefix` prop
-- `BookingAuthGuard` sessionStorage redirect
-- `LoginForm` reads redirect BEFORE dispatching credentials
-- `PublicRoute` mount-only guard
+**Redux store fixes:**
+- `nearbyJobsSlice`, `activeJobsSlice`, `supportSlice` all registered (fixed technician dashboard 500s)
+
+**Dynamic booking form:**
+- `ApiSpecification` interface + `specifications[]` on `AdminService`
+- `specToBookingField()` in `service.service.ts`
+- `bookingFormFields` in Zustand bookingStore
+- `DynamicBookingFields` + `DynamicFieldRenderer` components
+- `UnifiedBookingPage` reads fields from store, falls back to default
 
 ### 🔶 In Progress / Partial
-- `/technicianOnboarding/pending-verification` — status hardcoded to `'pending'`
-- `/dashboard/admin/finance/edit` — stub save callbacks
+- `/technician/onboarding/pending-verification` — status hardcoded to `'pending'`
 - `ServiceContext` — in-memory CRUD, no API persistence
 - Admin service edit/delete not wired to API
 - RTK Query services (`authApi`, `bookingApi`, `serviceApi`, `userApi`) — empty files
@@ -501,48 +430,49 @@ Services listing + detail no longer use mock data. All other non-auth data is st
 - `/dashboard/customer/bookings/[id]` — no booking detail content
 - `/dashboard/technician/profile` — disabled inputs, no save
 - `src/services/booking.service.ts` — completely empty
-- Booking submission API integration (POST endpoint + `serviceSpecifications[]`)
+- Booking submission API integration (POST + `serviceSpecifications[]`)
 - All other non-auth API integration (bookings, profile, technicians)
 - Technician auth guard (`role === 'TECHNICIAN'`)
+- `syncProgressFromProfile()` — not yet called on TECHNICIAN login (no backend profile fetch)
 
 ### ⚠️ Dead Code (safe to delete)
 - `src/dashboard/` — abandoned earlier architecture
 - `redux/legacy/customerDashboardStore.ts` — empty
 - `redux/legacy/useSidebarStore.ts` — empty
-- `constants/services/serviceData.ts` — no longer imported anywhere
+- `constants/services/serviceData.ts` — no longer imported
 
 ---
 
-## 15. Next Development Priorities
+## 16. Next Development Priorities
 
-1. **Booking submission API** — POST booking endpoint; send `serviceSpecifications[]` (spec id + value) from `dynamicFormData`
-2. **Customer booking detail** — `/dashboard/customer/bookings/[id]`
-3. **Admin service edit/delete API** — `PATCH /users/admin/service/:id`, `DELETE /users/admin/service/:id`
-4. **Technician auth guard** — `role === 'TECHNICIAN'` guard on `/dashboard/technician/*`
-5. **Technician profile save** — enable edit + save
-6. **Pending verification** — wire to status API
-7. **RTK Query** — implement `bookingApi`, `userApi`
-8. **Clean up dead code** — `src/dashboard/`, `redux/legacy/` empty files, `serviceData.ts`
+1. **Booking submission API** — POST booking; send `serviceSpecifications[]` from `dynamicFormData`
+2. **Technician auth guard** — `role === 'TECHNICIAN'` check on `/dashboard/technician/*`
+3. **Technician profile API** — `GET /users/technician/profile` → call `syncProgressFromProfile()` on TECHNICIAN login
+4. **Pending verification** — wire real status from backend profile
+5. **Customer booking detail** — `/dashboard/customer/bookings/[id]`
+6. **Admin service edit/delete API** — `PATCH` + `DELETE /users/admin/service/:id`
+7. **Technician profile save** — enable edit + save on `/dashboard/technician/profile`
+8. **Clean up dead code** — `src/dashboard/`, empty Zustand files, `serviceData.ts`
 
 ---
 
-## 16. Development Notes
+## 17. Development Notes
 
-- **Redux store** — always register new slices in `src/redux/store.ts`. Forgetting causes runtime `TypeError: Cannot read properties of undefined` when any selector tries to access the slice key.
-- **Auth guards all run on mount only** — empty `useEffect` deps `[]`.
-- **Post-login redirect** uses `sessionStorage` via `lib/authApi/redirectUtils.ts`. `LoginForm` reads the stored path BEFORE dispatching credentials to avoid race with `PublicRoute`.
-- **`BookingAuthGuard`** stores `pathname + search` before redirecting unauthenticated users.
-- **`useBookingAuth` hook** — guest CTA → `/login` with no stored redirect → lands on `/dashboard/customer`.
-- **`bookingStore.ts` (Zustand)** — active booking store. Contains `bookingFormFields: BookingFormField[]` seeded by service detail page from backend `specifications[]`.
-- **Dynamic form fallback** — when `bookingFormFields` is empty, `UnifiedBookingPage` shows default fields: `serviceDescription` (textarea) + `photos` (multi-file).
-- **Booking submission payload** — `serviceSpecificData` in the store holds `{ [fieldName]: value }` where fieldName is `spec_${id}`. On API submission, map to `serviceSpecifications: [{ specificationId: id, value }]`.
-- **`DynamicServiceDetailPage`** — pure component, works inside both public layout and `DashboardLayout`. `bookingBasePath` prop controls where booking navigates (`/booking` vs `/dashboard/customer/booking`).
-- **`ServiceGrid` + `ServiceCard` `linkPrefix`** — default `/services`. Pass `/dashboard/customer/services` for dashboard.
+- **Redux store** — always register new slices in `src/redux/store.ts`. Missing registration → runtime `TypeError: Cannot read properties of undefined`.
+- **Auth guards all mount-only** — empty `useEffect` deps `[]` prevents interference with login navigation.
+- **`useOnboardingGuard`** — mount-only, same pattern. Flag-gated: when `NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK=false` the hook is a no-op.
+- **Onboarding progress** — stored as 6-bit localStorage bitmask. Bit N set = step N complete. On login: call `syncProgressFromProfile(profile)` to seed from backend.
+- **Post-login redirect** — `sessionStorage` via `lib/authApi/redirectUtils.ts`. `LoginForm` reads BEFORE `dispatch(setCredentials(...))`.
+- **`BookingAuthGuard`** stores full URL (`pathname + search`) before redirecting unauthenticated users.
+- **`bookingStore.ts` (Zustand)** — active booking state. `bookingFormFields[]` seeded from backend `specifications[]`.
+- **Dynamic form fallback** — empty `bookingFormFields` → show `serviceDescription` (textarea) + `photos` (multi-file).
+- **`DynamicServiceDetailPage`** — pure component. `bookingBasePath` prop: `/booking` (public) or `/dashboard/customer/booking` (dashboard).
+- **`ServiceGrid` + `ServiceCard` `linkPrefix`** — default `/services`. Dashboard uses `/dashboard/customer/services`.
 - **Slug generation** — `name.toLowerCase().replace(/\s+/g, '-')`. Consistent everywhere.
-- **Tailwind v4 syntax** — `@import "tailwindcss"` + `@theme inline { ... }`. No `tailwind.config.js`.
+- **Tailwind v4** — `@import "tailwindcss"` + `@theme inline { ... }`. No `tailwind.config.js`. Use `bg-linear-to-*` not `bg-gradient-to-*`.
 - **MUI + Tailwind** — MUI for tables/drawers/modals, Tailwind for layout.
-- **pnpm** — always use `pnpm`.
-- **ESLint rules** — unused params prefixed with `_`, escape HTML entities in JSX.
+- **pnpm** — always use `pnpm`, never npm or yarn.
+- **ESLint** — unused params prefixed `_`, escape HTML entities in JSX.
 
 ---
 
