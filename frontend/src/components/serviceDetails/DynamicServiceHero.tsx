@@ -186,9 +186,10 @@ export default function DynamicServiceHero({
             width={700}
             height={500}
             className="
-              w-full
+              w-162.5
+              h-107.5
               rounded-4xl
-              object-cover
+              object-contain
               shadow-xl
               bg-white
             "
