@@ -20,7 +20,12 @@ export function ServiceCard({
   return (
     <Link href={`${linkPrefix}/${service.slug}`} className="block h-full">
       <div className="flex hover:shadow-lg bg-white border border-[#E8E2D6] transition-all duration-300 h-full flex-col overflow-hidden justify-between rounded-2xl cursor-pointer">
-        <div className="text-black p-5">
+        <ServiceImage
+          src={service.image}
+          alt={service.title}
+          alignRight={alignRight}
+        />
+        <div className="flex flex-1 flex-col p-5 text-black">
           <h3 className="mb-1 text-2xl font-semibold">
             {service.title}
           </h3>
@@ -30,11 +35,7 @@ export function ServiceCard({
           </p>
         </div>
 
-        <ServiceImage
-          src={service.image}
-          alt={service.title}
-          alignRight={alignRight}
-        />
+        
       </div>
     </Link>
   );
