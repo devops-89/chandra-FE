@@ -14,6 +14,7 @@ export const ENDPOINTS = {
   LOGIN: '/auth/login',
   GENERATE_OTP: '/auth/generate-otp',
   VERIFY_OTP: '/auth/verify-otp',
+  GET_PROFILE: '/auth/profile',
 
   // Users
   REGISTER_CUSTOMER:    '/users/register',

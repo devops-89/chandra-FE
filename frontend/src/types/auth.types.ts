@@ -35,6 +35,7 @@ export interface User {
   firstName: string;
   lastName: string;
   role: string;
+  status?: string;
 }
 
 // ─── Login ────────────────────────────────────────────────────────────────────
@@ -171,6 +172,79 @@ export interface RegisterTechnicianResponse {
       phone: string;
       technicianProfile: TechnicianProfile;
     };
+  };
+}
+
+// ─── Technician Profile (GET /auth/profile) ──────────────────────────────────
+
+export interface ApiTechnicianSkillEntry {
+  id: number;
+  technicianProfileId: number;
+  skill: string;
+  skillLevel: string;
+  createdAt: string;
+}
+
+export interface ApiServiceArea {
+  id: number;
+  technicianProfileId: number;
+  pincode: string;
+  areaName: string;
+  createdAt: string;
+}
+
+export interface ApiBrandExpertise {
+  id: number;
+  technicianProfileId: number;
+  brandName: string;
+  createdAt: string;
+}
+
+export interface ApiTechnicianProfileData {
+  id: number;
+  userId: number;
+  status: 'INCOMPLETE' | 'PENDING' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
+  address: string | null;
+  yearsOfExperience: number | null;
+  languages: string[];
+  serviceRadiusKm: number;
+  preferredAreas: string[];
+  pincodes: string[];
+  aadharUrl: string | null;
+  panUrl: string | null;
+  policeCertUrl: string | null;
+  tradeLicenseUrl: string | null;
+  selfieUrl: string | null;
+  hasLadder: boolean;
+  hasACGauges: boolean;
+  hasSafetyEquipment: boolean;
+  hasVehicle: boolean;
+  accountHolderName: string | null;
+  accountNumber: string | null;
+  ifscCode: string | null;
+  bankName: string | null;
+  isVerified: boolean;
+  skills: ApiTechnicianSkillEntry[];
+  serviceAreas: ApiServiceArea[];
+  brandExpertise: ApiBrandExpertise[];
+}
+
+export interface GetProfileResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    email: string;
+    username: string;
+    phone: string;
+    firstName: string;
+    lastName: string;
+    profileImage: string | null;
+    role: string;
+    /** User-level status — 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' etc. */
+    status: string;
+    technicianProfileId: number | null;
+    technicianProfile: ApiTechnicianProfileData | null;
   };
 }
 

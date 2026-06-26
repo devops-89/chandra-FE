@@ -73,37 +73,64 @@ export function isOnboardingComplete(): boolean {
 
 /**
  * Seed progress from the backend technician profile on login/refresh.
- * Pass the profile status and which data sections are non-empty.
+ * Uses the exact fields returned by GET /auth/profile → data.technicianProfile.
  *
- * Called by LoginForm (TECHNICIAN role) immediately after credentials are set.
+ * Bitmask rules (per requirements):
+ *   Bit 0 — Register:        profile.id exists (account was created)
+ *   Bit 1 — Skill Tagging:   skills.length > 0
+ *   Bit 2 — Document Upload: ALL 5 document URLs are non-null
+ *                             (aadharUrl, panUrl, policeCertUrl, tradeLicenseUrl, selfieUrl)
+ *   Bit 3 — Service Area:    serviceAreas.length > 0
+ *   Bit 4 — Bank Details:    accountHolderName + accountNumber + ifscCode all present
+ *   Bit 5 — Review & Submit: profile.status === 'PENDING_APPROVAL'
+ *
+ * Always writes to localStorage — overwrites any stale bitmask from a previous session.
+ * This means localStorage clear never forces restart because every login re-syncs from backend.
  */
 export function syncProgressFromProfile(profile: {
-  id?: number;
-  skills?: { skills: string[] } | null;
-  documents?: unknown[] | null;
-  serviceArea?: { serviceRadiusKm: number } | null;
-  bankDetails?: { accountNumber: string } | null;
-  status?: string;
+  id?: number | null;
+  // Step 1
+  skills?: Array<unknown> | null;
+  // Step 2
+  aadharUrl?: string | null;
+  panUrl?: string | null;
+  policeCertUrl?: string | null;
+  tradeLicenseUrl?: string | null;
+  selfieUrl?: string | null;
+  // Step 3
+  serviceAreas?: Array<unknown> | null;
+  // Step 4
+  accountHolderName?: string | null;
+  accountNumber?: string | null;
+  ifscCode?: string | null;
+  // Step 5
+  status?: string | null;
 }): void {
   let mask = 0;
 
-  // Step 0 — registered (profile exists)
+  // Step 0 — registered
   if (profile.id) mask |= 1 << 0;
 
-  // Step 1 — skills saved
-  if (profile.skills?.skills?.length) mask |= 1 << 1;
+  // Step 1 — skills
+  if (Array.isArray(profile.skills) && profile.skills.length > 0) mask |= 1 << 1;
 
-  // Step 2 — documents uploaded
-  if (Array.isArray(profile.documents) && profile.documents.length > 0) mask |= 1 << 2;
+  // Step 2 — all 5 documents uploaded
+  if (
+    profile.aadharUrl &&
+    profile.panUrl &&
+    profile.policeCertUrl &&
+    profile.tradeLicenseUrl &&
+    profile.selfieUrl
+  ) mask |= 1 << 2;
 
-  // Step 3 — service area saved
-  if (profile.serviceArea?.serviceRadiusKm) mask |= 1 << 3;
+  // Step 3 — service areas
+  if (Array.isArray(profile.serviceAreas) && profile.serviceAreas.length > 0) mask |= 1 << 3;
 
-  // Step 4 — bank details saved
-  if (profile.bankDetails?.accountNumber) mask |= 1 << 4;
+  // Step 4 — bank details
+  if (profile.accountHolderName && profile.accountNumber && profile.ifscCode) mask |= 1 << 4;
 
-  // Step 5 — submitted (PENDING or APPROVED)
-  if (profile.status === 'PENDING' || profile.status === 'APPROVED') mask |= 1 << 5;
+  // Step 5 — submitted for review
+  if (profile.status === 'PENDING_APPROVAL') mask |= 1 << 5;
 
   writeMask(mask);
 }

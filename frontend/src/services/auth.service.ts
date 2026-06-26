@@ -3,6 +3,7 @@ import { ENDPOINTS } from '@/api/endpoints';
 import type {
   GenerateOtpRequest,
   GenerateOtpResponse,
+  GetProfileResponse,
   LoginRequest,
   LoginResponse,
   RegisterCustomerRequest,
@@ -82,5 +83,12 @@ export const registerTechnicianService = async (
     { headers: { 'Content-Type': 'multipart/form-data' } },
   );
 
+  return response.data;
+};
+
+// ─── Get Profile ──────────────────────────────────────────────────────────────
+
+export const getProfileService = async (): Promise<GetProfileResponse> => {
+  const response = await authApi.get<GetProfileResponse>(ENDPOINTS.GET_PROFILE);
   return response.data;
 };

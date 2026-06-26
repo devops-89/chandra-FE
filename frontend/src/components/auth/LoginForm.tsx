@@ -7,12 +7,12 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { loginContent } from '@/constants/auth/loginContent';
-import { handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
+import { getTechnicianRedirectPath, handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
 import { validateEmail } from '@/lib/validator/email.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
-import { loginService } from '@/services/auth.service';
+import { getProfileService, loginService } from '@/services/auth.service';
 
 const inputClassName =
   'h-11 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20';
@@ -66,11 +66,6 @@ export const LoginForm = () => {
 
       const { user, tokens } = response.data;
 
-      // Read the redirect target BEFORE dispatching credentials.
-      // PublicRoute triggers on setCredentials and would race to /dashboard
-      // if we called handlePostAuthRedirect() after dispatch.
-      const redirectTo = handlePostAuthRedirect(user.role);
-
       localStorage.setItem('accessToken', tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
@@ -82,6 +77,26 @@ export const LoginForm = () => {
           refreshToken: tokens.refreshToken,
         }),
       );
+
+      // For TECHNICIAN: fetch live profile to determine onboarding/redirect state.
+      // This ensures progress is always restored from backend even if localStorage was cleared.
+      let redirectTo: string;
+      if (user.role?.toUpperCase() === 'TECHNICIAN') {
+        try {
+          const profileRes = await getProfileService();
+          redirectTo = getTechnicianRedirectPath({
+            userStatus:         profileRes.data.status,
+            technicianProfile:  profileRes.data.technicianProfile,
+          });
+        } catch {
+          // Profile fetch failed — fall back to generic redirect (guard will re-check on mount)
+          redirectTo = handlePostAuthRedirect(user.role);
+        }
+      } else {
+        // Read the redirect target BEFORE dispatching credentials.
+        // PublicRoute triggers on setCredentials and would race to /dashboard.
+        redirectTo = handlePostAuthRedirect(user.role);
+      }
 
       router.push(redirectTo);
     } catch (error: unknown) {
