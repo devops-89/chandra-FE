@@ -22,7 +22,6 @@ const ServicesTable = () => {
               <tr className="bg-emerald-600 text-white text-left">
                 <th className="p-4">Image</th>
                 <th className="p-4">Service</th>
-                <th className="p-4">Category</th>
                 <th className="p-4">Price</th>
                 <th className="p-4">Status</th>
                 <th className="p-4">Bookings</th>

@@ -20,25 +20,37 @@ export function useServiceManager() {
   const saveEdit = (data: EditServiceFormData) => {
     if (!editTarget) return;
 
-    dispatch(
-      updateService({
-        id:          editTarget.id,
-        name:        data.name,
-        description: data.description,
-        isActive:    data.isActive,
-        pricingRule: {
-          serviceBasePrice: parseFloat(data.serviceBasePrice) || 0,
-          perHourRate:      data.perHourRate     ? parseFloat(data.perHourRate)     : undefined,
-          perKmRate:        data.perKmRate       ? parseFloat(data.perKmRate)       : undefined,
-          platformFee:      data.platformFee     ? parseFloat(data.platformFee)     : undefined,
-          gst:              data.gst             ? parseFloat(data.gst)             : undefined,
-          emergencyCharge:  data.emergencyCharge ? parseFloat(data.emergencyCharge) : undefined,
-        },
-        specifications: data.specifications,
-      })
-    );
+    try {
+      dispatch(
+    updateService({
+    id: editTarget.id,
+    name: data.name,
+    description: data.description,
+    isActive: data.isActive,
 
-    closeEdit();
+    serviceBasePrice: parseFloat(data.serviceBasePrice) || 0,
+    perHourRate: data.perHourRate
+      ? parseFloat(data.perHourRate)
+      : undefined,
+    perKmRate: data.perKmRate
+      ? parseFloat(data.perKmRate)
+      : undefined,
+    platformFee: data.platformFee
+      ? parseFloat(data.platformFee)
+      : undefined,
+    gst: data.gst
+      ? parseFloat(data.gst)
+      : undefined,
+    emergencyCharge: data.emergencyCharge
+      ? parseFloat(data.emergencyCharge)
+      : undefined,
+  })
+).unwrap();
+
+  closeEdit();
+  } catch (error) {
+    console.error(error);
+  }
   };
 
   // ── Delete ───────────────────────────────────────────────────────

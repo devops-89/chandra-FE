@@ -31,8 +31,6 @@ const ServiceRow = ({ service, onEdit, onDelete }: Props) => {
 
       <td className="p-4 font-medium text-slate-800">{service.name}</td>
 
-      <td className="p-4 text-slate-600">—</td>
-
       <td className="p-4 text-slate-600">₹{service.price}</td>
 
       <td className="p-4">
