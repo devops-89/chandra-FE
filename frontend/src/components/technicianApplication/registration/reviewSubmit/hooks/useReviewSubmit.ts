@@ -25,6 +25,12 @@ function buildInitialState(): ReviewSubmitState {
       location: '',
       selfieUrl: '',
     },
+    bankDetails: {
+      accountHolderName: '',
+      accountNumber: '',
+      ifscCode: '',
+      payoutMethod: 'bank-transfer',
+    },
     services: [],
     yearsOfExperience: null,
     languages: [],
@@ -149,6 +155,23 @@ export const useReviewSubmit = () => {
                 radius: a.radius ?? 0,
                 areas: a.preferredAreas ?? [],
                 mapImageUrl: '',
+              },
+            };
+          }
+        } catch { /* ignore */ }
+
+        // ── Step 4: Bank Details ──────────────────────────────────────────────
+        try {
+          const raw = sessionStorage.getItem('bankDetailsData');
+          if (raw) {
+            const b = JSON.parse(raw);
+            next = {
+              ...next,
+              bankDetails: {
+                accountHolderName: b.accountHolderName ?? '',
+                accountNumber: b.accountNumber ?? '',
+                ifscCode: b.ifscCode ?? '',
+                payoutMethod: b.payoutMethod === 'upi' ? 'upi' : 'bank-transfer',
               },
             };
           }

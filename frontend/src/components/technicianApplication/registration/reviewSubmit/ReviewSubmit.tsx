@@ -1,13 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
+import { getAllServicesService } from '@/services/service.service';
+import type { AdminService } from '@/types/admin/service.types';
 
 import { containerVariants } from './animations/reviewAnimations';
 import LaunchSection from './components/LaunchSection';
-import ProfileSummaryCard from './components/ProfileSummaryCard';
+import BankDetailsSummaryCard from './components/ProfileSummaryCard';
 import ReviewSubmitHeader from './components/ReviewSubmitHeader';
 import ServiceCoverageCard from './components/ServiceCoverageCard';
 import SkillsSummaryCard from './components/SkillsSummaryCard';
@@ -18,8 +21,23 @@ export default function ReviewSubmit() {
   const router = useRouter();
   const { state, isSubmitting, submitError, handleSubmit } = useReviewSubmit();
 
-  const handleEditProfile = () => {
-    router.push('/technician/onboarding/register');
+  // ── Fetch services and build id->name map for display ──────────────────────
+  const [serviceNameMap, setServiceNameMap] = useState<Map<number, string>>(new Map());
+
+  useEffect(() => {
+    let active = true;
+    getAllServicesService()
+      .then((data: AdminService[]) => {
+        if (active) {
+          setServiceNameMap(new Map(data.map((s) => [s.id, s.name])));
+        }
+      })
+      .catch(() => { /* silently fall back to Service #ID labels */ });
+    return () => { active = false; };
+  }, []);
+
+  const handleEditBankDetails = () => {
+    router.push('/technician/onboarding/bank-details');
   };
 
   const handleEditSkills = () => {
@@ -63,11 +81,11 @@ export default function ReviewSubmit() {
         initial="hidden"
         animate="visible"
       >
-        {/* Profile Summary Card */}
+        {/* Bank Details Summary Card */}
         <motion.div className="md:col-span-7">
-          <ProfileSummaryCard
-            profile={state.profile}
-            onEdit={handleEditProfile}
+          <BankDetailsSummaryCard
+            bankDetails={state.bankDetails}
+            onEdit={handleEditBankDetails}
           />
         </motion.div>
 
@@ -75,6 +93,7 @@ export default function ReviewSubmit() {
         <motion.div className="md:col-span-5">
           <SkillsSummaryCard
             services={state.services}
+            serviceNameMap={serviceNameMap}
             yearsOfExperience={state.yearsOfExperience}
             languages={state.languages}
             brandExpertise={state.brandExpertise}

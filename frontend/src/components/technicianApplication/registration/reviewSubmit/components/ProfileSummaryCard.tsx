@@ -1,19 +1,25 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 
-import type { ProfileSummaryCardProps } from '@/types/technicianApplication/reviewSubmit.types';
+import type { BankDetailsSummaryCardProps } from '@/types/technicianApplication/reviewSubmit.types';
 
 import { cardHoverVariants } from '../animations/reviewAnimations';
 
-export default function ProfileSummaryCard({
-  profile,
+/** Masks all but the last 4 digits of an account number. */
+function maskAccountNumber(num: string): string {
+  if (num.length <= 4) return num;
+  return '•'.repeat(num.length - 4) + num.slice(-4);
+}
+
+export default function BankDetailsSummaryCard({
+  bankDetails,
   onEdit,
-}: ProfileSummaryCardProps) {
-  if (!profile) {
-    return null;
-  }
+}: BankDetailsSummaryCardProps) {
+  if (!bankDetails) return null;
+
+  const { accountHolderName, accountNumber, ifscCode, payoutMethod } = bankDetails;
+  const hasData = accountHolderName || accountNumber || ifscCode;
 
   return (
     <motion.div
@@ -22,8 +28,9 @@ export default function ProfileSummaryCard({
       initial="initial"
       whileHover="hover"
     >
+      {/* Header */}
       <div className="flex justify-between items-start mb-6">
-        <h3 className="text-2xl font-bold text-emerald-deep">Profile Summary</h3>
+        <h3 className="text-2xl font-bold text-emerald-deep">Bank Details</h3>
         {onEdit && (
           <button
             type="button"
@@ -36,36 +43,59 @@ export default function ProfileSummaryCard({
         )}
       </div>
 
-      <div className="flex gap-6 items-center">
-        <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary-fixed shrink-0 bg-slate-100 flex items-center justify-center">
-          {profile
-            .selfieUrl
-            ? (
-              <Image
-                alt={profile.name}
-                width={96}
-                height={96}
-                src={profile.selfieUrl}
-                className="w-full h-full object-cover"
-                priority
-              />
-            ) : (
-              <span className="material-symbols-outlined text-4xl text-slate-400">person</span>
-            )}
-        </div>
-
-        <div className="space-y-1">
-          <p className="text-2xl font-bold">{profile.name}</p>
-          <p className="text-charcoal-light">
-            {profile
-              .title} • {profile.experience} Years Exp.
-          </p>
-          <div className="flex items-center gap-2 text-charcoal-light">
-            <span className="material-symbols-outlined text-sm">location_on</span>
-            <span>{profile.location}</span>
+      {hasData ? (
+        <div className="space-y-5">
+          {/* Payout Method Badge */}
+          <div>
+            <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-2">
+              Payout Method
+            </p>
+            <span className="inline-flex items-center gap-1.5 bg-tertiary-fixed text-emerald-deep px-3 py-1 rounded-full text-sm font-semibold border border-outline-variant">
+              <span className="material-symbols-outlined text-sm">
+                {payoutMethod === 'upi' ? 'smartphone' : 'account_balance'}
+              </span>
+              {payoutMethod === 'upi' ? 'UPI' : 'Bank Transfer'}
+            </span>
           </div>
+
+          {/* Account Holder */}
+          {accountHolderName && (
+            <div>
+              <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-1">
+                Account Holder
+              </p>
+              <p className="text-base font-semibold text-on-surface">{accountHolderName}</p>
+            </div>
+          )}
+
+          {/* Account Number */}
+          {accountNumber && (
+            <div>
+              <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-1">
+                Account Number
+              </p>
+              <p className="text-base font-mono font-medium text-on-surface tracking-widest">
+                {maskAccountNumber(accountNumber)}
+              </p>
+            </div>
+          )}
+
+          {/* IFSC Code */}
+          {ifscCode && (
+            <div>
+              <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-1">
+                IFSC Code
+              </p>
+              <p className="text-base font-mono font-medium text-on-surface uppercase">{ifscCode}</p>
+            </div>
+          )}
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-8 text-charcoal-light gap-2">
+          <span className="material-symbols-outlined text-4xl">account_balance</span>
+          <p className="text-sm">No bank details saved yet.</p>
+        </div>
+      )}
     </motion.div>
   );
 }

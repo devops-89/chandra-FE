@@ -6,8 +6,14 @@ export interface ReviewSubmitState {
     location: string;
     selfieUrl: string;
   };
+  bankDetails: {
+    accountHolderName: string;
+    accountNumber: string;
+    ifscCode: string;
+    payoutMethod: 'bank-transfer' | 'upi';
+  };
   // Skills & Equipments step data
-  services: { serviceId: number; serviceName?: string }[];
+  services: { serviceId: number }[];
   yearsOfExperience: number | null;
   languages: string[];
   brandExpertise: { brandName: string }[];
@@ -43,8 +49,14 @@ export interface ProfileSummaryCardProps {
   onEdit?: () => void;
 }
 
+export interface BankDetailsSummaryCardProps {
+  bankDetails: ReviewSubmitState['bankDetails'];
+  onEdit?: () => void;
+}
+
 export interface SkillsSummaryCardProps {
-  services: { serviceId: number; serviceName?: string }[];
+  services: { serviceId: number }[];
+  serviceNameMap: Map<number, string>;
   yearsOfExperience: number | null;
   languages: string[];
   brandExpertise: { brandName: string }[];

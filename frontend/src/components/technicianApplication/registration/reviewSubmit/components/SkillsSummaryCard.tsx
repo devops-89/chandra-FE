@@ -8,6 +8,7 @@ import { cardHoverVariants, skillTagVariants, staggerContainerVariants } from '.
 
 export default function SkillsSummaryCard({
   services,
+  serviceNameMap,
   yearsOfExperience,
   languages,
   brandExpertise,
@@ -18,10 +19,10 @@ export default function SkillsSummaryCard({
   onEdit,
 }: SkillsSummaryCardProps) {
   const equipmentList = [
-    { label: 'Ladder',           has: hasLadder },
-    { label: 'AC Gauges',        has: hasACGauges },
+    { label: 'Ladder', has: hasLadder },
+    { label: 'AC Gauges', has: hasACGauges },
     { label: 'Safety Equipment', has: hasSafetyEquipment },
-    { label: 'Vehicle',          has: hasVehicle },
+    { label: 'Vehicle', has: hasVehicle },
   ];
 
   return (
@@ -64,7 +65,7 @@ export default function SkillsSummaryCard({
                   className="bg-tertiary-fixed text-emerald-deep px-3 py-1 rounded-full text-sm font-semibold border border-outline-variant"
                   variants={skillTagVariants}
                 >
-                  {s.serviceName ?? `Service #${s.serviceId}`}
+                  {serviceNameMap.get(s.serviceId) ?? `Service #${s.serviceId}`}
                 </motion.span>
               ))}
             </motion.div>
@@ -130,9 +131,8 @@ export default function SkillsSummaryCard({
             {equipmentList.map(({ label, has }) => (
               <div key={label} className="flex items-center gap-2 text-sm">
                 <span
-                  className={`material-symbols-outlined text-base ${
-                    has ? 'text-emerald-600' : 'text-gray-300'
-                  }`}
+                  className={`material-symbols-outlined text-base ${has ? 'text-emerald-600' : 'text-gray-300'
+                    }`}
                 >
                   {has ? 'check_circle' : 'cancel'}
                 </span>

@@ -1,7 +1,7 @@
 'use client';
 
 import type { LucideIcon } from 'lucide-react';
-import { Car, Hammer, Search,Shield, Wrench } from 'lucide-react';
+import { Car, Hammer, Search, Shield, Wrench } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -271,8 +271,8 @@ export default function SkillTaggingPage() {
                   type="button"
                   onClick={() => toggleService(svc.id)}
                   className={`group relative w-full text-left rounded-2xl bg-white p-6 shadow-sm transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between min-h-[140px] ${isSelected
-                      ? 'border-2 border-emerald-700 bg-emerald-50'
-                      : 'border border-gray-100'
+                    ? 'border-2 border-emerald-700 bg-emerald-50'
+                    : 'border border-gray-100'
                     }`}
                 >
                   {/* Selected badge */}
@@ -354,8 +354,8 @@ export default function SkillTaggingPage() {
               <label
                 key={lang}
                 className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all duration-200 ${checked
-                    ? 'border-emerald-700 bg-emerald-50 text-emerald-800'
-                    : 'border-gray-200 bg-white text-gray-700 hover:border-emerald-300'
+                  ? 'border-emerald-700 bg-emerald-50 text-emerald-800'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-emerald-300'
                   }`}
               >
                 <input
@@ -397,8 +397,8 @@ export default function SkillTaggingPage() {
               <label
                 key={key}
                 className={`flex items-center gap-4 rounded-2xl border p-5 cursor-pointer transition-all duration-200 ${checked
-                    ? 'border-emerald-700 bg-emerald-50'
-                    : 'border-gray-200 bg-white hover:border-emerald-300'
+                  ? 'border-emerald-700 bg-emerald-50'
+                  : 'border-gray-200 bg-white hover:border-emerald-300'
                   }`}
               >
                 <input
