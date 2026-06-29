@@ -37,6 +37,8 @@ export interface VerificationItem {
   id: string;
   name: string;
   status: 'verified' | 'pending' | 'failed';
+  /** Blob URL of the uploaded file — valid only for the current browser session. */
+  previewUrl?: string;
 }
 
 export interface ReviewSubmitHeaderProps {

@@ -131,11 +131,11 @@ export const useReviewSubmit = () => {
               },
               verificationStatus: {
                 documents: [
-                  { id: 'selfie', name: 'Selfie Verification', status: hasSelfie ? 'verified' : 'pending' },
-                  { id: 'aadhaar', name: 'Aadhaar Card', status: hasAadhar ? 'verified' : 'pending' },
-                  { id: 'pan', name: 'PAN Card', status: hasPan ? 'verified' : 'pending' },
-                  { id: 'police', name: 'Police Clearance', status: hasPolice ? 'verified' : 'pending' },
-                  { id: 'trade', name: 'Trade License', status: hasTrade ? 'verified' : 'pending' },
+                  { id: 'selfie',   name: 'Selfie Verification', status: hasSelfie ? 'verified' : 'pending', previewUrl: hasSelfie ? d.selfieUrl   : undefined },
+                  { id: 'aadhaar',  name: 'Aadhaar Card',        status: hasAadhar ? 'verified' : 'pending', previewUrl: hasAadhar ? d.aadharUrl   : undefined },
+                  { id: 'pan',      name: 'PAN Card',            status: hasPan    ? 'verified' : 'pending', previewUrl: hasPan    ? d.panUrl       : undefined },
+                  { id: 'police',   name: 'Police Clearance',    status: hasPolice ? 'verified' : 'pending', previewUrl: hasPolice ? d.policeCertUrl: undefined },
+                  { id: 'trade',    name: 'Trade License',       status: hasTrade  ? 'verified' : 'pending', previewUrl: hasTrade  ? d.tradeLicenseUrl: undefined },
                 ],
                 completedCount,
                 totalCount: 5,
