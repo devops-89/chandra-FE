@@ -1,14 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
-import { useAppDispatch } from '@/redux/hooks';
-import { setCredentials } from '@/redux/slices/authSlice';
 import {
   generateOtpService,
-  registerTechnicianService,
   verifyOtpService,
 } from '@/services/auth.service';
 import type { PersonalInfoFormData, ValidationErrors } from '@/types/technicianApplication/personalInfo.types';
@@ -64,7 +61,6 @@ function validateAll(data: PersonalInfoFormData): ValidationErrors {
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function usePersonalInfoForm() {
-  const dispatch = useAppDispatch();
   const router   = useRouter();
 
   // ── Form state ───────────────────────────────────────────────────────────
@@ -87,6 +83,25 @@ export function usePersonalInfoForm() {
   // ── Registration state ───────────────────────────────────────────────────
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError,     setApiError]     = useState('');
+
+  // ── Restore from sessionStorage on mount ───────────────────────────────────
+  useEffect(() => {
+    const saved = sessionStorage.getItem('registerData');
+    if (!saved) return;
+    try {
+      const parsed = JSON.parse(saved);
+      const savedVerified = sessionStorage.getItem('registerOtpVerified') === 'true';
+      const timer = window.setTimeout(() => {
+        setFormData(parsed);
+        if (savedVerified) {
+          setOtpVerified(true);
+        }
+      }, 0);
+      return () => window.clearTimeout(timer);
+    } catch {
+      // ignore malformed data
+    }
+  }, []);
 
   // ── Field change / blur ──────────────────────────────────────────────────
   const handleChange = useCallback(
@@ -180,43 +195,18 @@ export function usePersonalInfoForm() {
     setApiError('');
     setIsSubmitting(true);
     try {
-      const response = await registerTechnicianService({
-        email:     formData.email.trim(),
-        username:  formData.username.trim(),
-        phone:     formData.phoneNumber.trim(),
-        firstName: formData.firstName.trim(),
-        lastName:  formData.lastName.trim(),
-        password:  formData.password,
-      });
-
-      const { user, tokens } = response.data;
-
-      localStorage.setItem('accessToken',  tokens.accessToken);
-      localStorage.setItem('refreshToken', tokens.refreshToken);
-      localStorage.setItem('user', JSON.stringify(user));
-
-      dispatch(setCredentials({
-        user: {
-          id:        user.id,
-          email:     user.email,
-          username:  user.username,
-          firstName: user.firstName,
-          lastName:  user.lastName,
-          role:      user.role,
-        },
-        accessToken:  tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-      }));
+      // Save data client-side in sessionStorage
+      sessionStorage.setItem('registerData', JSON.stringify(formData));
+      sessionStorage.setItem('registerOtpVerified', 'true');
 
       markStepComplete(0);
-      router.push('/technician/onboarding/skill-tagging');
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } }; message?: string };
-      setApiError(error?.response?.data?.message ?? error?.message ?? 'Registration failed. Please try again.');
+      router.push('/technician/onboarding/skills-equipment');
+    } catch (_err: unknown) {
+      setApiError('Registration preparation failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
-  }, [formData, otpVerified, validateForm, dispatch, router]);
+  }, [formData, otpVerified, validateForm, router]);
 
   return {
     // form

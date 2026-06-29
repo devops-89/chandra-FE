@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback,useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import type { ServiceAreaState } from '@/types/technicianOnboarding/serviceArea.types';
 
@@ -12,6 +12,18 @@ const initialState: ServiceAreaState = {
 
 export const useServiceArea = () => {
   const [state, setState] = useState<ServiceAreaState>(initialState);
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem('serviceAreaData');
+    if (!saved) return;
+    try {
+      const parsed = JSON.parse(saved);
+      const timer = window.setTimeout(() => setState(parsed), 0);
+      return () => window.clearTimeout(timer);
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const setRadius = useCallback((radius: number) => {
     setState((prev) => ({

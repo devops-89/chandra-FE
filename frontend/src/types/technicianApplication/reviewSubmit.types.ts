@@ -1,13 +1,20 @@
 export interface ReviewSubmitState {
-  profileData: {
+  profile: {
     name: string;
     title: string;
     experience: number;
     location: string;
-    avatarUrl: string;
+    selfieUrl: string;
   };
-  skills: string[];
-  certificationLevel: string;
+  // Skills & Equipments step data
+  services: { serviceId: number; serviceName?: string }[];
+  yearsOfExperience: number | null;
+  languages: string[];
+  brandExpertise: { brandName: string }[];
+  hasLadder: boolean;
+  hasACGauges: boolean;
+  hasSafetyEquipment: boolean;
+  hasVehicle: boolean;
   verificationStatus: {
     documents: VerificationItem[];
     completedCount: number;
@@ -32,19 +39,19 @@ export interface ReviewSubmitHeaderProps {
 }
 
 export interface ProfileSummaryCardProps {
-  profile: {
-    name: string;
-    title: string;
-    experience: number;
-    location: string;
-    avatarUrl: string;
-  };
+  profile: ReviewSubmitState['profile'];
   onEdit?: () => void;
 }
 
 export interface SkillsSummaryCardProps {
-  skills: string[];
-  certificationLevel: string;
+  services: { serviceId: number; serviceName?: string }[];
+  yearsOfExperience: number | null;
+  languages: string[];
+  brandExpertise: { brandName: string }[];
+  hasLadder: boolean;
+  hasACGauges: boolean;
+  hasSafetyEquipment: boolean;
+  hasVehicle: boolean;
   onEdit?: () => void;
 }
 

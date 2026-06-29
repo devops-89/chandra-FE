@@ -1,6 +1,6 @@
 export const API_BASE_URLS = {
-  auth: 'http://192.168.1.37:8000/api',
-  userService: 'http://192.168.1.37:8001/api',
+  auth: 'http://192.168.1.26:8000/api',
+  userService: 'http://192.168.1.26:8001/api',
 } as const;
 
 export type ApiServicePurpose = keyof typeof API_BASE_URLS;
@@ -17,8 +17,8 @@ export const ENDPOINTS = {
   GET_PROFILE: '/auth/profile',
 
   // Users
-  REGISTER_CUSTOMER:    '/users/register',
-  REGISTER_TECHNICIAN:  '/users/register',    // same endpoint, role determined by payload
+  REGISTER_CUSTOMER: '/users/register',
+  REGISTER_TECHNICIAN: '/users/register',    // same endpoint, role determined by payload
 
   // Services
   GET_ALL_SERVICES: '/users/service/all',

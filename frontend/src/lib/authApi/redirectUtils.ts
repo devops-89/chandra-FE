@@ -76,12 +76,12 @@ export function handlePostAuthRedirect(role?: string | null): string {
 // ─── Technician-specific redirect ────────────────────────────────────────────
 // Imported lazily to avoid circular deps — called only from LoginForm for TECHNICIAN role.
 
-import type { ApiTechnicianProfileData } from '@/types/auth.types';
 import {
   firstIncompleteRoute,
   isOnboardingComplete,
   syncProgressFromProfile,
 } from '@/lib/onboarding/onboardingProgress';
+import type { ApiTechnicianProfileData } from '@/types/auth.types';
 
 /**
  * Determines where to redirect a TECHNICIAN after login based on live profile data.
@@ -109,18 +109,20 @@ export function getTechnicianRedirectPath(params: {
   // Always sync bitmask from backend — overwrites any stale localStorage state.
   // This is the key to surviving localStorage.clear() — every login re-syncs.
   syncProgressFromProfile({
-    id:              technicianProfile.id,
-    skills:          technicianProfile.skills,
-    aadharUrl:       technicianProfile.aadharUrl,
-    panUrl:          technicianProfile.panUrl,
-    policeCertUrl:   technicianProfile.policeCertUrl,
-    tradeLicenseUrl: technicianProfile.tradeLicenseUrl,
-    selfieUrl:       technicianProfile.selfieUrl,
-    serviceAreas:    technicianProfile.serviceAreas,
+    id:                technicianProfile.id,
+    services:          technicianProfile.services,
+    yearsOfExperience: technicianProfile.yearsOfExperience,
+    languages:         technicianProfile.languages,
+    aadharUrl:         technicianProfile.aadharUrl,
+    panUrl:            technicianProfile.panUrl,
+    policeCertUrl:     technicianProfile.policeCertUrl,
+    tradeLicenseUrl:   technicianProfile.tradeLicenseUrl,
+    selfieUrl:         technicianProfile.selfieUrl,
+    serviceAreas:      technicianProfile.serviceAreas,
     accountHolderName: technicianProfile.accountHolderName,
-    accountNumber:   technicianProfile.accountNumber,
-    ifscCode:        technicianProfile.ifscCode,
-    status:          technicianProfile.status,
+    accountNumber:     technicianProfile.accountNumber,
+    ifscCode:          technicianProfile.ifscCode,
+    status:            technicianProfile.status,
   });
 
   // 2. Submitted for admin review

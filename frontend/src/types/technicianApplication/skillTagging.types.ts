@@ -1,41 +1,47 @@
 import type { LucideIcon } from 'lucide-react';
 
-export interface Skill {
-  id: string;
+// ─── Service card (fetched from backend) ─────────────────────────────────────
+
+export interface ServiceOption {
+  id: number;
   name: string;
+  description: string;
+  image?: string;
   icon?: string | LucideIcon;
-  description?: string;
 }
 
-export interface SkillLevel {
-  level: 'novice' | 'intermediate' | 'expert';
-  label: string;
-}
-
-export interface SkillTaggingState {
-  selectedSkills: string[];
-  skillLevel: SkillLevel['level'] | null;
-  brandExpertise: string[];
-}
-
-export interface SkillCardProps {
-  skill: Skill;
+export interface ServiceCardProps {
+  service: ServiceOption;
   isSelected: boolean;
-  onSelect: (skillId: string) => void;
+  onSelect: (serviceId: number) => void;
 }
 
-export interface SkillLevelSelectorProps {
-  selected: SkillLevel['level'] | null;
-  onSelect: (level: SkillLevel['level']) => void;
+// ─── Brand expertise ─────────────────────────────────────────────────────────
+
+export interface BrandExpertiseEntry {
+  brandName: string;
 }
 
 export interface BrandExpertiseInputProps {
-  tags: string[];
-  onAddTag: (tag: string) => void;
-  onRemoveTag: (tag: string) => void;
+  tags: BrandExpertiseEntry[];
+  onAddTag: (tag: BrandExpertiseEntry) => void;
+  onRemoveTag: (brandName: string) => void;
 }
 
 export interface BrandTagProps {
   name: string;
   onRemove: () => void;
+}
+
+// ─── Main form state ──────────────────────────────────────────────────────────
+
+export interface SkillsEquipmentState {
+  yearsOfExperience: number | '';
+  languages: string[];
+  services: { serviceId: number }[];
+  brandExpertise: BrandExpertiseEntry[];
+  hasLadder: boolean;
+  hasACGauges: boolean;
+  hasSafetyEquipment: boolean;
+  hasVehicle: boolean;
 }

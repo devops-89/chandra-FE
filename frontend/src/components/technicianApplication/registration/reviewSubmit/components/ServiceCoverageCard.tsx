@@ -32,18 +32,25 @@ export default function ServiceCoverageCard({
         </div>
       </div>
 
-      <div className="h-48 rounded-lg overflow-hidden relative">
-        <Image
-          alt="Coverage Map"
-          width={600}
-          height={192}
-          src={mapImageUrl}
-          className="w-full h-full object-cover"
-          priority
-        />
+      <div className="h-48 rounded-lg overflow-hidden relative bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200">
+        {mapImageUrl ? (
+          <Image
+            alt="Coverage Map"
+            width={600}
+            height={192}
+            src={mapImageUrl}
+            className="w-full h-full object-cover"
+            priority
+          />
+        ) : (
+          <div className="flex flex-col items-center gap-2">
+            <span className="material-symbols-outlined text-4xl">map</span>
+            <span className="text-xs font-semibold">Service Map Coverage</span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent flex items-end p-4">
           <p className="text-white text-sm font-bold">
-            Serving: {areas.join(', ')}
+            Serving: {areas ? areas.join(', ') : ''}
           </p>
         </div>
       </div>

@@ -20,19 +20,19 @@ export interface DocumentUploadState {
 
 export interface SelfieVerificationCardProps {
   image: UploadedFile | null;
-  onCapture: (file: UploadedFile) => void;
+  onCapture: (file: UploadedFile, rawFile: File) => void;
 }
 
 export interface DocumentUploadCardProps {
   document: Document;
   isUploaded: boolean;
-  onUpload: (file: UploadedFile) => void;
+  onUpload: (file: UploadedFile, rawFile: File) => void;
 }
 
 export interface UploadDropzoneProps {
   documentName: string;
   acceptedFormats: string[];
-  onUpload: (file: UploadedFile) => void;
+  onUpload: (file: UploadedFile, rawFile: File) => void;
   isUploaded?: boolean;
   fileName?: string;
 }

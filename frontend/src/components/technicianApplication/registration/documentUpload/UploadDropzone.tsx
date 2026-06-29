@@ -22,7 +22,7 @@ export default function UploadDropzone({
         fileName: file.name,
         fileUrl: URL.createObjectURL(file),
         uploadedAt: new Date().toISOString(),
-      });
+      }, file);
     }
   };
 
@@ -53,7 +53,7 @@ export default function UploadDropzone({
             fileName: file.name,
             fileUrl: URL.createObjectURL(file),
             uploadedAt: new Date().toISOString(),
-          });
+          }, file);
         }
       }}
       onClick={() => inputRef.current?.click()}

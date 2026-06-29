@@ -29,13 +29,6 @@ export const DOCUMENTS: Document[] = [
     icon: 'business',
     acceptedFormats: ['pdf', 'jpg', 'png'],
   },
-  {
-    id: 'cancelled-cheque',
-    name: 'Cancelled Cheque',
-    description: 'Upload a cancelled cheque for bank verification',
-    icon: 'receipt',
-    acceptedFormats: ['pdf', 'jpg', 'png'],
-  },
 ];
 
 export const SELFIE_UPLOAD_TEXT = {

@@ -11,6 +11,10 @@ export default function ProfileSummaryCard({
   profile,
   onEdit,
 }: ProfileSummaryCardProps) {
+  if (!profile) {
+    return null;
+  }
+
   return (
     <motion.div
       className="md:col-span-7 h-full bg-surface-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-low"
@@ -33,21 +37,28 @@ export default function ProfileSummaryCard({
       </div>
 
       <div className="flex gap-6 items-center">
-        <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary-fixed shrink-0">
-          <Image
-            alt={profile.name}
-            width={96}
-            height={96}
-            src={profile.avatarUrl}
-            className="w-full h-full object-cover"
-            priority
-          />
+        <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary-fixed shrink-0 bg-slate-100 flex items-center justify-center">
+          {profile
+            .selfieUrl
+            ? (
+              <Image
+                alt={profile.name}
+                width={96}
+                height={96}
+                src={profile.selfieUrl}
+                className="w-full h-full object-cover"
+                priority
+              />
+            ) : (
+              <span className="material-symbols-outlined text-4xl text-slate-400">person</span>
+            )}
         </div>
 
         <div className="space-y-1">
           <p className="text-2xl font-bold">{profile.name}</p>
           <p className="text-charcoal-light">
-            {profile.title} • {profile.experience} Years Exp.
+            {profile
+              .title} • {profile.experience} Years Exp.
           </p>
           <div className="flex items-center gap-2 text-charcoal-light">
             <span className="material-symbols-outlined text-sm">location_on</span>

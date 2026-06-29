@@ -60,7 +60,9 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
           if (p) {
             syncProgressFromProfile({
               id:                p.id,
-              skills:            p.skills,
+              services:          p.services,
+              yearsOfExperience: p.yearsOfExperience,
+              languages:         p.languages,
               aadharUrl:         p.aadharUrl,
               panUrl:            p.panUrl,
               policeCertUrl:     p.policeCertUrl,

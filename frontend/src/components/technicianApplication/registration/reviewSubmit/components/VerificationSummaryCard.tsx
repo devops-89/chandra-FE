@@ -10,7 +10,8 @@ export default function VerificationSummaryCard({
   verificationItems,
   completedCount,
   totalCount,
-}: Omit<VerificationSummaryCardProps, 'onEdit'>) {
+  onEdit,
+}: VerificationSummaryCardProps) {
   const isAllVerified = completedCount === totalCount;
 
   return (
@@ -66,6 +67,17 @@ export default function VerificationSummaryCard({
           </motion.li>
         ))}
       </motion.ul>
+
+      {onEdit && (
+        <button
+          type="button"
+          onClick={onEdit}
+          className="mt-6 text-primary font-semibold flex items-center gap-1 hover:underline cursor-pointer transition-colors text-sm"
+        >
+          <span className="material-symbols-outlined text-sm">edit</span>
+          Edit Verification
+        </button>
+      )}
     </motion.div>
   );
 }

@@ -65,6 +65,29 @@ export const registerCustomerService = async (
 
 export const registerTechnicianService = async (
   payload: RegisterTechnicianRequest,
+  technicianProfile: {
+    yearsOfExperience: number;
+    languages: string[];
+    services: { serviceId: number; serviceName?: string }[];
+    brandExpertise: { brandName: string }[];
+    hasLadder: boolean;
+    hasACGauges: boolean;
+    hasSafetyEquipment: boolean;
+    hasVehicle: boolean;
+    serviceRadiusKm: number;
+    preferredAreas: string[];
+    pincodes: string[];
+    accountHolderName: string;
+    accountNumber: string;
+    ifscCode: string;
+  },
+  files: {
+    aadharUrl?: File | null;
+    panUrl?: File | null;
+    policeCertUrl?: File | null;
+    tradeLicenseUrl?: File | null;
+    selfieUrl?: File | null;
+  }
 ): Promise<RegisterTechnicianResponse> => {
   const formData = new FormData();
 
@@ -74,8 +97,13 @@ export const registerTechnicianService = async (
   formData.append('firstName', payload.firstName);
   formData.append('lastName',  payload.lastName);
   formData.append('password',  payload.password);
-  // Backend infers TECHNICIAN role from the absence of customerAddress
-  formData.append('technicianProfile', JSON.stringify({}));
+  formData.append('technicianProfile', JSON.stringify(technicianProfile));
+
+  if (files.selfieUrl) formData.append('selfieUrl', files.selfieUrl);
+  if (files.aadharUrl) formData.append('aadharUrl', files.aadharUrl);
+  if (files.panUrl) formData.append('panUrl', files.panUrl);
+  if (files.policeCertUrl) formData.append('policeCertUrl', files.policeCertUrl);
+  if (files.tradeLicenseUrl) formData.append('tradeLicenseUrl', files.tradeLicenseUrl);
 
   const response = await userServiceApi.post<RegisterTechnicianResponse>(
     ENDPOINTS.REGISTER_TECHNICIAN,

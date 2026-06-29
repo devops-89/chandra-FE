@@ -1,6 +1,6 @@
 export const onboardingSteps = [
   "Personal Info",
-  "Skill Tagging",
+  "Skills & Equipments",
   "Document Upload",
   "Service Area",
   "Bank Details",

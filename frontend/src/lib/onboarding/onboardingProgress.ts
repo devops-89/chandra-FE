@@ -3,7 +3,7 @@
  *
  * Steps (0-indexed):
  *   0 — Register        (account created)
- *   1 — Skill Tagging
+ *   1 — Skills & Equipments
  *   2 — Document Upload
  *   3 — Service Area
  *   4 — Bank Details
@@ -18,7 +18,7 @@ const STORAGE_KEY = 'technician_onboarding_progress';
 
 const STEP_ROUTES = [
   '/technician/onboarding/register',
-  '/technician/onboarding/skill-tagging',
+  '/technician/onboarding/skills-equipment',
   '/technician/onboarding/document-upload',
   '/technician/onboarding/service-area',
   '/technician/onboarding/bank-details',
@@ -77,7 +77,7 @@ export function isOnboardingComplete(): boolean {
  *
  * Bitmask rules (per requirements):
  *   Bit 0 — Register:        profile.id exists (account was created)
- *   Bit 1 — Skill Tagging:   skills.length > 0
+ *   Bit 1 — Skills & Equipments: services.length > 0 AND yearsOfExperience exists AND languages.length > 0
  *   Bit 2 — Document Upload: ALL 5 document URLs are non-null
  *                             (aadharUrl, panUrl, policeCertUrl, tradeLicenseUrl, selfieUrl)
  *   Bit 3 — Service Area:    serviceAreas.length > 0
@@ -90,7 +90,9 @@ export function isOnboardingComplete(): boolean {
 export function syncProgressFromProfile(profile: {
   id?: number | null;
   // Step 1
-  skills?: Array<unknown> | null;
+  services?: Array<unknown> | null;
+  yearsOfExperience?: number | null;
+  languages?: Array<unknown> | null;
   // Step 2
   aadharUrl?: string | null;
   panUrl?: string | null;
@@ -111,8 +113,12 @@ export function syncProgressFromProfile(profile: {
   // Step 0 — registered
   if (profile.id) mask |= 1 << 0;
 
-  // Step 1 — skills
-  if (Array.isArray(profile.skills) && profile.skills.length > 0) mask |= 1 << 1;
+  // Step 1 — Skills & Equipments
+  if (
+    Array.isArray(profile.services) && profile.services.length > 0 &&
+    profile.yearsOfExperience != null &&
+    Array.isArray(profile.languages) && profile.languages.length > 0
+  ) mask |= 1 << 1;
 
   // Step 2 — all 5 documents uploaded
   if (

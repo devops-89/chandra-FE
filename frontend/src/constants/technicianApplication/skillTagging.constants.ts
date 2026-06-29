@@ -1,45 +1,4 @@
-import { Pipette, Wrench, Zap } from 'lucide-react';
-
-import type { Skill, SkillLevel } from '@/types/technicianApplication/skillTagging.types';
-
-export const AVAILABLE_SKILLS: Skill[] = [
-  {
-    id: 'solar-cleaning',
-    name: 'Solar Cleaning',
-    description: 'Maintenance and deep cleaning of residential/commercial solar panels.',
-    icon: "☀️",
-  },
-  {
-    id: 'ac-repair',
-    name: 'AC Repair',
-    description: 'Maintenance and repair of air conditioning systems.',
-    icon: Wrench,
-  },
-  {
-    id: 'plumbing',
-    name: 'Plumbing',
-    description: 'Plumbing installation and repair services.',
-    icon: Pipette,
-  },
-  {
-    id: 'electrical',
-    name: 'Electrical',
-    description: 'Electrical installation and repair services.',
-    icon: Zap,
-  },
-];
-
-export const SKILL_LEVELS: SkillLevel[] = [
-  {
-    level: 'novice',
-    label: 'Novice',
-  },
-  {
-    level: 'intermediate',
-    label: 'Intermediate',
-  },
-  {
-    level: 'expert',
-    label: 'Expert',
-  },
-];
+// skillTagging.constants.ts is no longer used.
+// AVAILABLE_SKILLS and SKILL_LEVELS have been removed — services are now fetched
+// dynamically from the backend via getAllServicesService(), and Skill Level was removed.
+export {};

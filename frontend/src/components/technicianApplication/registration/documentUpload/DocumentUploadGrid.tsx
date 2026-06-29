@@ -7,7 +7,7 @@ import DocumentUploadCard from './DocumentUploadCard';
 
 interface DocumentUploadGridProps {
   uploadedDocuments: Record<string, UploadedFile>;
-  onUpload: (file: UploadedFile) => void;
+  onUpload: (file: UploadedFile, rawFile: File) => void;
 }
 
 export default function DocumentUploadGrid({

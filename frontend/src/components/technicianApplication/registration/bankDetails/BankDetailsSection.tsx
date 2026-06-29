@@ -1,15 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 
 import AccountInformationCard from './AccountInformationCard';
-import AutoDetectedBankInfo from './AutoDetectedBankInfo';
 import BankDetailsFooter from './BankDetailsFooter';
 import BankDetailsHeader from './BankDetailsHeader';
 import PayoutMethodCard from './PayoutMethodCard';
 import SecurityBanner from './SecurityBanner';
-import VerificationDocumentsCard from './VerificationDocumentsCard';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -32,6 +33,9 @@ const itemVariants = {
 };
 
 export default function BankDetailsSection() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     accountHolderName: '',
     ifscCode: '',
@@ -43,23 +47,48 @@ export default function BankDetailsSection() {
     'bank-transfer'
   );
 
-  const [uploadedFiles, setUploadedFiles] = useState({
-    cancelledCheque: undefined as File | undefined,
-    bankPassbook: undefined as File | undefined,
-  });
-
-  const handleFileUpload = (documentId: string, file: File) => {
-    if (documentId === 'cancelled-cheque') {
-      setUploadedFiles((prev) => ({
-        ...prev,
-        cancelledCheque: file,
-      }));
-    } else if (documentId === 'bank-passbook') {
-      setUploadedFiles((prev) => ({
-        ...prev,
-        bankPassbook: file,
-      }));
+  // ── Restore from sessionStorage on mount ───────────────────────────────────
+  useEffect(() => {
+    const saved = sessionStorage.getItem('bankDetailsData');
+    if (!saved) {
+      return;
     }
+
+    try {
+      const parsed = JSON.parse(saved);
+      const timer = window.setTimeout(() => {
+        setFormData({
+          accountHolderName: parsed.accountHolderName || '',
+          ifscCode: parsed.ifscCode || '',
+          accountNumber: parsed.accountNumber || '',
+          confirmAccountNumber: parsed.accountNumber || '',
+        });
+
+        if (parsed.payoutMethod === 'bank-transfer' || parsed.payoutMethod === 'upi') {
+          setSelectedPayoutMethod(parsed.payoutMethod);
+        }
+      }, 0);
+
+      return () => window.clearTimeout(timer);
+    } catch {
+      console.error(Error('Failed to parse bank details from sessionStorage'));
+    }
+  }, []);
+
+  const handleSaveContinue = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      const payload = {
+        accountHolderName: formData.accountHolderName,
+        accountNumber: formData.accountNumber,
+        ifscCode: formData.ifscCode,
+        payoutMethod: selectedPayoutMethod,
+      };
+      sessionStorage.setItem('bankDetailsData', JSON.stringify(payload));
+      markStepComplete(4);
+      router.push('/technician/onboarding/review-submit');
+    }, 500);
   };
 
   return (
@@ -95,20 +124,9 @@ export default function BankDetailsSection() {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <AutoDetectedBankInfo />
-      </motion.div>
-
-      <motion.div variants={itemVariants}>
         <PayoutMethodCard
           selectedMethod={selectedPayoutMethod}
           onMethodChange={setSelectedPayoutMethod}
-        />
-      </motion.div>
-
-      <motion.div variants={itemVariants}>
-        <VerificationDocumentsCard
-          uploadedFiles={uploadedFiles}
-          onFileUpload={handleFileUpload}
         />
       </motion.div>
 
@@ -118,7 +136,7 @@ export default function BankDetailsSection() {
 
       {/* Navigation Footer */}
       <motion.div variants={itemVariants}>
-        <BankDetailsFooter />
+        <BankDetailsFooter onSubmit={handleSaveContinue} isLoading={isLoading} />
       </motion.div>
 
       {/* Spacer for visual separation */}

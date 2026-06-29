@@ -27,7 +27,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         type="button"
         className="flex w-full items-center justify-between gap-4 py-5 text-left text-sm font-semibold text-slate-900 transition-colors hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
         onClick={() => setOpen((v) => !v)}
-        // eslint-disable-next-line jsx-a11y/aria-proptypes
+         
         aria-expanded={open}
       >
         <span>{q}</span>

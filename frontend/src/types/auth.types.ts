@@ -177,12 +177,21 @@ export interface RegisterTechnicianResponse {
 
 // ─── Technician Profile (GET /auth/profile) ──────────────────────────────────
 
+/** Legacy — no longer written by new flows; kept for backward compatibility. */
 export interface ApiTechnicianSkillEntry {
   id: number;
   technicianProfileId: number;
   skill: string;
   skillLevel: string;
   createdAt: string;
+}
+
+export interface ApiTechnicianServiceEntry {
+  id: number;
+  technicianProfileId: number;
+  serviceId: number;
+  serviceName?: string;
+  createdAt?: string;
 }
 
 export interface ApiServiceArea {
@@ -224,7 +233,10 @@ export interface ApiTechnicianProfileData {
   ifscCode: string | null;
   bankName: string | null;
   isVerified: boolean;
+  /** Legacy — no longer populated by new flows. */
   skills: ApiTechnicianSkillEntry[];
+  /** Services selected by the technician in the Skills & Equipments step. */
+  services: ApiTechnicianServiceEntry[];
   serviceAreas: ApiServiceArea[];
   brandExpertise: ApiBrandExpertise[];
 }

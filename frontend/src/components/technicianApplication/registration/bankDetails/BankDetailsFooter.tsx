@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
-import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -15,22 +14,16 @@ const itemVariants = {
   },
 };
 
-export default function BankDetailsFooter() {
+interface BankDetailsFooterProps {
+  onSubmit: () => void;
+  isLoading: boolean;
+}
+
+export default function BankDetailsFooter({ onSubmit, isLoading }: BankDetailsFooterProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = React.useState(false);
 
   const handlePreviousStep = () => {
     router.push('/technician/onboarding/service-area');
-  };
-
-  const handleSaveContinue = () => {
-    setIsLoading(true);
-    // Simulate save
-    setTimeout(() => {
-      setIsLoading(false);
-      markStepComplete(4);
-      router.push('/technician/onboarding/review-submit');
-    }, 500);
   };
 
   return (
@@ -59,7 +52,7 @@ export default function BankDetailsFooter() {
 
       <motion.button
         type="button"
-        onClick={handleSaveContinue}
+        onClick={onSubmit}
         disabled={isLoading}
         className="bg-primary hover:bg-emerald-deep disabled:opacity-50 disabled:cursor-not-allowed text-on-primary cursor-pointer rounded-lg md:rounded-xl px-6 md:px-8 py-3 font-medium flex items-center gap-2 transition-all shadow-md hover:shadow-lg text-sm md:text-base"
         whileHover={!isLoading ? { y: -2 } : {}}

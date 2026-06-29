@@ -11,7 +11,7 @@ type Props = {
 
 const stepRoutes = [
   '/technician/onboarding/register',
-  '/technician/onboarding/skill-tagging',
+  '/technician/onboarding/skills-equipment',
   '/technician/onboarding/document-upload',
   '/technician/onboarding/service-area',
   '/technician/onboarding/bank-details',
