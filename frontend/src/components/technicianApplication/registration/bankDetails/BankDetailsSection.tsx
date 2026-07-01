@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 
@@ -46,11 +46,13 @@ export default function BankDetailsSection() {
   const [selectedPayoutMethod, setSelectedPayoutMethod] = useState<'bank-transfer' | 'upi'>(
     'bank-transfer'
   );
+  const hasRestoredDraft = useRef(false);
 
   // ── Restore from sessionStorage on mount ───────────────────────────────────
   useEffect(() => {
     const saved = sessionStorage.getItem('bankDetailsData');
     if (!saved) {
+      hasRestoredDraft.current = true;
       return;
     }
 
@@ -67,13 +69,30 @@ export default function BankDetailsSection() {
         if (parsed.payoutMethod === 'bank-transfer' || parsed.payoutMethod === 'upi') {
           setSelectedPayoutMethod(parsed.payoutMethod);
         }
+        hasRestoredDraft.current = true;
       }, 0);
 
       return () => window.clearTimeout(timer);
     } catch {
+      hasRestoredDraft.current = true;
       console.error(Error('Failed to parse bank details from sessionStorage'));
     }
   }, []);
+
+  useEffect(() => {
+    if (!hasRestoredDraft.current) return;
+
+    const hasAnyBankValue = Object.values(formData).some((value) => value.trim() !== '');
+    if (!hasAnyBankValue && selectedPayoutMethod === 'bank-transfer') return;
+
+    sessionStorage.setItem('bankDetailsData', JSON.stringify({
+      accountHolderName: formData.accountHolderName,
+      accountNumber: formData.accountNumber,
+      ifscCode: formData.ifscCode,
+      bankName: '',
+      payoutMethod: selectedPayoutMethod,
+    }));
+  }, [formData, selectedPayoutMethod]);
 
   const handleSaveContinue = () => {
     setIsLoading(true);
@@ -83,6 +102,7 @@ export default function BankDetailsSection() {
         accountHolderName: formData.accountHolderName,
         accountNumber: formData.accountNumber,
         ifscCode: formData.ifscCode,
+        bankName: '',
         payoutMethod: selectedPayoutMethod,
       };
       sessionStorage.setItem('bankDetailsData', JSON.stringify(payload));

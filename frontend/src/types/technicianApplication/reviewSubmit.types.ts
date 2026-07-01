@@ -29,7 +29,12 @@ export interface ReviewSubmitState {
   serviceArea: {
     radius: number;
     areas: string[];
-    mapImageUrl: string;
+    latitude?: number;
+    longitude?: number;
+    fullAddress?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
   };
 }
 
@@ -79,8 +84,9 @@ export interface VerificationSummaryCardProps {
 export interface ServiceCoverageCardProps {
   radius: number;
   areas: string[];
-  mapImageUrl: string;
-  onEdit?: () => void;
+  latitude?: number;
+  longitude?: number;
+  fullAddress?: string;
 }
 
 export interface LaunchSectionProps {

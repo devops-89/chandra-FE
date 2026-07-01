@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import { getAllServicesService } from '@/services/service.service';
@@ -16,6 +16,36 @@ import ServiceCoverageCard from './components/ServiceCoverageCard';
 import SkillsSummaryCard from './components/SkillsSummaryCard';
 import VerificationSummaryCard from './components/VerificationSummaryCard';
 import { useReviewSubmit } from './hooks/useReviewSubmit';
+
+const SESSION_KEYS = [
+  'registerData',
+  'skillsEquipmentData',
+  'documentUploadData',
+  'serviceAreaData',
+  'bankDetailsData',
+] as const;
+
+function revokeDocumentPreviewUrls() {
+  const raw = sessionStorage.getItem('documentUploadData');
+  if (!raw) return;
+
+  try {
+    const data = JSON.parse(raw) as Record<string, unknown>;
+    Object.values(data).forEach((value) => {
+      if (typeof value === 'string' && value.startsWith('blob:')) {
+        URL.revokeObjectURL(value);
+      }
+    });
+  } catch {
+    // ignore malformed preview metadata
+  }
+}
+
+function clearOnboardingSessionStorage() {
+  revokeDocumentPreviewUrls();
+  SESSION_KEYS.forEach((key) => sessionStorage.removeItem(key));
+  sessionStorage.removeItem('registerOtpVerified');
+}
 
 export default function ReviewSubmit() {
   const router = useRouter();
@@ -48,23 +78,10 @@ export default function ReviewSubmit() {
     router.push('/technician/onboarding/document-upload');
   };
 
-  const handleEditServiceArea = () => {
-    router.push('/technician/onboarding/service-area');
-  };
-
-  const SESSION_KEYS = [
-    'registerData',
-    'skillsEquipmentData',
-    'documentUploadData',
-    'serviceAreaData',
-    'bankDetailsData',
-  ];
-
   const handleSubmitApplication = async () => {
     const result = await handleSubmit();
     if (result.success) {
-      // Clear all onboarding session data now that registration is complete
-      SESSION_KEYS.forEach((k) => sessionStorage.removeItem(k));
+      clearOnboardingSessionStorage();
       markStepComplete(5);
       router.push('/technician/onboarding/pending-verification');
     }
@@ -120,8 +137,9 @@ export default function ReviewSubmit() {
           <ServiceCoverageCard
             radius={state.serviceArea.radius}
             areas={state.serviceArea.areas}
-            mapImageUrl={state.serviceArea.mapImageUrl}
-            onEdit={handleEditServiceArea}
+            latitude={state.serviceArea.latitude}
+            longitude={state.serviceArea.longitude}
+            fullAddress={state.serviceArea.fullAddress}
           />
         </motion.div>
       </motion.div>

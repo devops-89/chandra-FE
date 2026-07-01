@@ -19,6 +19,8 @@ import DocumentUploadGrid from './DocumentUploadGrid';
 import SelfieVerificationCard from './SelfieVerificationCard';
 import UploadHelpCard from './UploadHelpCard';
 
+const REUPLOAD_DOCUMENTS_MESSAGE = 'Please re-upload all documents before submitting.';
+
 export default function DocumentUploadPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -30,47 +32,74 @@ export default function DocumentUploadPage() {
     selfieImage: null,
     uploadedDocuments: {},
   });
+  const [fileRecoveryMessage, setFileRecoveryMessage] = useState<string | null>(null);
 
-  const isInitialized = useRef(false);
-
-  // ── Restore from sessionStorage on mount conditionally ─────────────────────
+  // ── Restore from sessionStorage on mount ───────────────────────────────────
   useEffect(() => {
-    if (isInitialized.current) return;
-    isInitialized.current = true;
-
     const saved = sessionStorage.getItem('documentUploadData');
     if (!saved) return;
 
     try {
       const parsed = JSON.parse(saved);
-      const timer = window.setTimeout(() => {
-        setState({
-          selfieImage: (parsed.selfieUrl && selfieFile)
-            ? { documentId: 'selfie', fileName: selfieFile.name, fileUrl: parsed.selfieUrl, uploadedAt: '' }
-            : null,
-          uploadedDocuments: {
-            'aadhaar-card': (parsed.aadharUrl && aadharFile)
-              ? { documentId: 'aadhaar-card', fileName: aadharFile.name, fileUrl: parsed.aadharUrl, uploadedAt: '' }
-              : undefined,
-            'pan-card': (parsed.panUrl && panFile)
-              ? { documentId: 'pan-card', fileName: panFile.name, fileUrl: parsed.panUrl, uploadedAt: '' }
-              : undefined,
-            'police-verification': (parsed.policeCertUrl && policeCertFile)
-              ? { documentId: 'police-verification', fileName: policeCertFile.name, fileUrl: parsed.policeCertUrl, uploadedAt: '' }
-              : undefined,
-            'trade-license': (parsed.tradeLicenseUrl && tradeLicenseFile)
-              ? { documentId: 'trade-license', fileName: tradeLicenseFile.name, fileUrl: parsed.tradeLicenseUrl, uploadedAt: '' }
-              : undefined,
-          } as Record<string, UploadedFile>,
-        });
-      }, 0);
-      return () => window.clearTimeout(timer);
+      const hasSavedDocumentData = Boolean(
+        parsed.selfieUrl
+        || parsed.aadharUrl
+        || parsed.panUrl
+        || parsed.policeCertUrl
+        || parsed.tradeLicenseUrl,
+      );
+      const hasAllReduxFiles = Boolean(
+        selfieFile
+        && aadharFile
+        && panFile
+        && policeCertFile
+        && tradeLicenseFile,
+      );
+
+      if (hasSavedDocumentData && !hasAllReduxFiles) {
+        setFileRecoveryMessage(REUPLOAD_DOCUMENTS_MESSAGE);
+      }
+
+      setState({
+        selfieImage: (parsed.selfieUrl && selfieFile)
+          ? { documentId: 'selfie', fileName: selfieFile.name, fileUrl: parsed.selfieUrl, uploadedAt: '' }
+          : null,
+        uploadedDocuments: {
+          'aadhaar-card': (parsed.aadharUrl && aadharFile)
+            ? { documentId: 'aadhaar-card', fileName: aadharFile.name, fileUrl: parsed.aadharUrl, uploadedAt: '' }
+            : undefined,
+          'pan-card': (parsed.panUrl && panFile)
+            ? { documentId: 'pan-card', fileName: panFile.name, fileUrl: parsed.panUrl, uploadedAt: '' }
+            : undefined,
+          'police-verification': (parsed.policeCertUrl && policeCertFile)
+            ? { documentId: 'police-verification', fileName: policeCertFile.name, fileUrl: parsed.policeCertUrl, uploadedAt: '' }
+            : undefined,
+          'trade-license': (parsed.tradeLicenseUrl && tradeLicenseFile)
+            ? { documentId: 'trade-license', fileName: tradeLicenseFile.name, fileUrl: parsed.tradeLicenseUrl, uploadedAt: '' }
+            : undefined,
+        } as Record<string, UploadedFile>,
+      });
     } catch {
       // ignore malformed data
+    }
+  }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  // ── Watch Redux files to clear recovery message ─────────────────────────────
+  useEffect(() => {
+    const hasAllReduxFiles = Boolean(
+      selfieFile
+      && aadharFile
+      && panFile
+      && policeCertFile
+      && tradeLicenseFile,
+    );
+    if (hasAllReduxFiles) {
+      setFileRecoveryMessage(null);
     }
   }, [selfieFile, aadharFile, panFile, policeCertFile, tradeLicenseFile]);
 
   const handleSelfieCapture = (file: UploadedFile, rawFile: File) => {
+    setFileRecoveryMessage(null);
     dispatch(setSelfieFile(rawFile));
     setState((prev) => ({
       ...prev,
@@ -79,6 +108,7 @@ export default function DocumentUploadPage() {
   };
 
   const handleDocumentUpload = (file: UploadedFile, rawFile: File) => {
+    setFileRecoveryMessage(null);
     if (file.documentId === 'aadhaar-card') {
       dispatch(setAadharFile(rawFile));
     } else if (file.documentId === 'pan-card') {
@@ -139,6 +169,12 @@ export default function DocumentUploadPage() {
           Please upload your identity and verification documents to proceed
         </p>
       </div>
+
+      {fileRecoveryMessage && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+          {fileRecoveryMessage}
+        </div>
+      )}
 
       <SelfieVerificationCard
         image={state.selfieImage}

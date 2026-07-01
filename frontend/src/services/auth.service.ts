@@ -75,11 +75,17 @@ export const registerTechnicianService = async (
     hasSafetyEquipment: boolean;
     hasVehicle: boolean;
     serviceRadiusKm: number;
-    preferredAreas: string[];
-    pincodes: string[];
     accountHolderName: string;
     accountNumber: string;
     ifscCode: string;
+    bankName: string;
+    // Flat location fields (optional — only present when geolocation was captured)
+    address?: string;
+    latitude?: number;
+    longitude?: number;
+    city?: string;
+    state?: string;
+    pincode?: string;
   },
   files: {
     aadharUrl?: File | null;

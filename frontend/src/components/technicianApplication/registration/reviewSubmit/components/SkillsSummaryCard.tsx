@@ -37,6 +37,7 @@ export default function SkillsSummaryCard({
         <h3 className="text-2xl font-bold text-emerald-deep">Skills &amp; Equipments</h3>
         {onEdit && (
           <button
+            type="button"
             onClick={onEdit}
             className="text-primary font-semibold flex items-center gap-1 hover:underline cursor-pointer transition-colors"
           >

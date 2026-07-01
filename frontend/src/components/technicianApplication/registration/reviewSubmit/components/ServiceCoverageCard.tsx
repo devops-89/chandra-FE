@@ -1,8 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 
+import ServiceCoverageMap from '@/components/technicianApplication/serviceArea/ServiceCoverageMap';
+import { getAreaKm } from '@/data/technicianOnboarding/serviceAreaData';
 import type { ServiceCoverageCardProps } from '@/types/technicianApplication/reviewSubmit.types';
 
 import { cardHoverVariants, pulseVariants } from '../animations/reviewAnimations';
@@ -10,9 +11,15 @@ import { cardHoverVariants, pulseVariants } from '../animations/reviewAnimations
 export default function ServiceCoverageCard({
   radius,
   areas,
-  mapImageUrl,
-  onEdit,
+  latitude,
+  longitude,
+  fullAddress,
 }: ServiceCoverageCardProps) {
+  const radiusKm = getAreaKm(radius);
+  const hasLocation =
+    typeof latitude === 'number'
+    && typeof longitude === 'number';
+
   return (
     <motion.div
       className="md:col-span-7 bg-surface-white rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-low overflow-hidden"
@@ -28,43 +35,40 @@ export default function ServiceCoverageCard({
             variants={pulseVariants}
             animate="pulse"
           />
-          <span className="text-sm font-semibold">{radius}km Radius Active</span>
+          <span className="text-sm font-semibold">{radiusKm}km Radius Active</span>
         </div>
       </div>
 
-      <div className="h-48 rounded-lg overflow-hidden relative bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200">
-        {mapImageUrl ? (
-          <Image
-            alt="Coverage Map"
-            width={600}
-            height={192}
-            src={mapImageUrl}
-            className="w-full h-full object-cover"
-            priority
+      <div className="h-52 overflow-hidden rounded-lg border border-slate-200">
+        {hasLocation ? (
+          <ServiceCoverageMap
+            latitude={latitude}
+            longitude={longitude}
+            radiusKm={radiusKm}
           />
         ) : (
-          <div className="flex flex-col items-center gap-2">
-            <span className="material-symbols-outlined text-4xl">map</span>
-            <span className="text-xs font-semibold">Service Map Coverage</span>
+          <div className="flex h-full items-center justify-center bg-slate-100 px-4 text-center text-sm font-semibold text-slate-500">
+            Please select your service location to preview coverage.
           </div>
         )}
-        <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent flex items-end p-4">
-          <p className="text-white text-sm font-bold">
-            Serving: {areas ? areas.join(', ') : ''}
-          </p>
-        </div>
       </div>
 
-      {onEdit && (
-        <button
-          type="button"
-          onClick={onEdit}
-          className="mt-4 text-primary font-semibold flex items-center gap-1 hover:underline transition-colors text-sm"
-        >
-          <span className="material-symbols-outlined text-sm">edit</span>
-          Edit Coverage
-        </button>
+      {fullAddress && (
+        <div className="mt-4 flex items-start gap-2 rounded-lg border border-slate-100 bg-slate-50 p-3">
+          <span className="material-symbols-outlined mt-0.5 text-sm text-gray-500">location_on</span>
+          <div className="text-xs font-medium leading-relaxed text-gray-600">
+            <span className="block font-semibold text-gray-700">Service Center Address:</span>
+            {fullAddress}
+          </div>
+        </div>
       )}
+
+      <div className="mb-1 mt-4 text-xs font-semibold uppercase tracking-wider text-charcoal-light">
+        Serving Areas
+      </div>
+      <p className="text-sm font-medium text-on-surface">
+        {areas.length > 0 ? areas.join(', ') : 'No preferred areas selected'}
+      </p>
     </motion.div>
   );
 }

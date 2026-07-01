@@ -2,6 +2,12 @@ export interface ServiceAreaState {
   radius: number; // 0-5 representing km values
   preferredAreas: string[];
   pincodes: string[];
+  latitude?: number;
+  longitude?: number;
+  fullAddress?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
 }
 
 export interface AreaOption {

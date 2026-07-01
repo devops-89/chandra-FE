@@ -44,12 +44,12 @@ const FIELD_VALIDATORS: Record<
   keyof PersonalInfoFormData,
   (v: string) => string | undefined
 > = {
-  firstName:   validateFirstName,
-  lastName:    validateLastName,
-  username:    validateUsername,
+  firstName: validateFirstName,
+  lastName: validateLastName,
+  username: validateUsername,
   phoneNumber: validatePhone,
-  email:       validateEmail,
-  password:    validatePassword,
+  email: validateEmail,
+  password: validatePassword,
 };
 
 function validateAll(data: PersonalInfoFormData): ValidationErrors {
@@ -58,60 +58,82 @@ function validateAll(data: PersonalInfoFormData): ValidationErrors {
   ) as ValidationErrors;
 }
 
+function toSavedFormData(value: Partial<PersonalInfoFormData>): PersonalInfoFormData {
+  return {
+    firstName: typeof value.firstName === 'string' ? value.firstName : '',
+    lastName: typeof value.lastName === 'string' ? value.lastName : '',
+    username: typeof value.username === 'string' ? value.username : '',
+    phoneNumber: typeof value.phoneNumber === 'string' ? value.phoneNumber : '',
+    email: typeof value.email === 'string' ? value.email : '',
+    password: typeof value.password === 'string' ? value.password : '',
+  };
+}
+
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function usePersonalInfoForm() {
-  const router   = useRouter();
+  const router = useRouter();
 
   // ── Form state ───────────────────────────────────────────────────────────
   const [formData, setFormData] = useState<PersonalInfoFormData>({
     firstName: '', lastName: '', username: '', phoneNumber: '', email: '', password: '',
   });
-  const [errors,  setErrors]  = useState<ValidationErrors>({});
+  const [errors, setErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState<Record<keyof PersonalInfoFormData, boolean>>({
     firstName: false, lastName: false, username: false, phoneNumber: false, email: false, password: false,
   });
 
   // ── OTP state ────────────────────────────────────────────────────────────
-  const [otpSent,     setOtpSent]     = useState(false);   // show OTP input after Send OTP
+  const [otpSent, setOtpSent] = useState(false);   // show OTP input after Send OTP
   const [otpVerified, setOtpVerified] = useState(false);   // enable Create Account
-  const [otp,         setOtp]         = useState('');
-  const [otpError,    setOtpError]    = useState('');
-  const [sendingOtp,  setSendingOtp]  = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [phoneAlreadyInUse, setPhoneAlreadyInUse] = useState(false); // 409 from generate-otp
+  const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
 
   // ── Registration state ───────────────────────────────────────────────────
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [apiError,     setApiError]     = useState('');
+  const [apiError, setApiError] = useState('');
 
   // ── Restore from sessionStorage on mount ───────────────────────────────────
   useEffect(() => {
     const saved = sessionStorage.getItem('registerData');
     if (!saved) return;
     try {
-      const parsed = JSON.parse(saved);
-      const savedVerified = sessionStorage.getItem('registerOtpVerified') === 'true';
+      const parsed = JSON.parse(saved) as Partial<PersonalInfoFormData> & { otpVerified?: boolean };
+      const savedVerified = parsed.otpVerified === true || sessionStorage.getItem('registerOtpVerified') === 'true';
+      const savedFormData = toSavedFormData(parsed);
       const timer = window.setTimeout(() => {
-        setFormData(parsed);
+        setFormData(savedFormData);
         if (savedVerified) {
           setOtpVerified(true);
         }
       }, 0);
+      sessionStorage.removeItem('registerOtpVerified');
       return () => window.clearTimeout(timer);
     } catch {
       // ignore malformed data
     }
   }, []);
 
+  useEffect(() => {
+    const hasAnyValue = Object.values(formData).some((value) => value.trim() !== '');
+    if (!hasAnyValue) return;
+
+    sessionStorage.setItem('registerData', JSON.stringify({ ...formData, otpVerified }));
+  }, [formData, otpVerified]);
+
   // ── Field change / blur ──────────────────────────────────────────────────
   const handleChange = useCallback(
     (field: keyof PersonalInfoFormData, value: string) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
       if (apiError) setApiError('');
-      // Reset OTP state when phone or email changes after OTP was sent
+      // Reset OTP state when contact details change after OTP was sent.
       if ((field === 'phoneNumber' || field === 'email') && otpSent) {
         setOtpSent(false);
         setOtpVerified(false);
+        setPhoneAlreadyInUse(false);
         setOtp('');
         setOtpError('');
       }
@@ -137,9 +159,9 @@ export function usePersonalInfoForm() {
     return !Object.values(errs).some(Boolean);
   }, [formData]);
 
-  // ── Step 1: Send OTP ─────────────────────────────────────────────────────
+  // ── Step 1: Send mobile OTP ──────────────────────────────────────────────
   const handleSendOtp = useCallback(async (): Promise<void> => {
-    // Validate only phone + email before sending OTP
+    // The existing OTP API accepts both values, but the technician code is sent to mobile.
     const phoneErr = validatePhone(formData.phoneNumber);
     const emailErr = validateEmail(formData.email);
     setTouched((p) => ({ ...p, phoneNumber: true, email: true }));
@@ -147,25 +169,32 @@ export function usePersonalInfoForm() {
     if (phoneErr || emailErr) return;
 
     setOtpError('');
+    setPhoneAlreadyInUse(false);
     setSendingOtp(true);
     try {
       await generateOtpService({
         email: formData.email.trim(),
         phone: formData.phoneNumber.trim(),
-        role:  'TECHNICIAN',
+        role: 'TECHNICIAN',
       });
       setOtpSent(true);
       setOtpVerified(false);
       setOtp('');
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } }; message?: string };
-      setOtpError(error?.response?.data?.message ?? error?.message ?? 'Failed to send OTP');
+      const error = err as { response?: { data?: { message?: string }; statusCode?: number }; message?: string };
+      const statusCode = error?.response?.data?.statusCode;
+      if (statusCode === 409) {
+        setPhoneAlreadyInUse(true);
+        setOtpError('This mobile number is already registered.');
+      } else {
+        setOtpError(error?.response?.data?.message ?? error?.message ?? 'Failed to send OTP to mobile number');
+      }
     } finally {
       setSendingOtp(false);
     }
   }, [formData.email, formData.phoneNumber]);
 
-  // ── Step 2: Verify OTP ───────────────────────────────────────────────────
+  // ── Step 2: Verify mobile OTP ────────────────────────────────────────────
   const handleVerifyOtp = useCallback(async (): Promise<void> => {
     if (!otp.trim()) { setOtpError('Enter the OTP'); return; }
     setOtpError('');
@@ -174,13 +203,13 @@ export function usePersonalInfoForm() {
       await verifyOtpService({
         email: formData.email.trim(),
         phone: formData.phoneNumber.trim(),
-        otp:   otp.trim(),
+        otp: otp.trim(),
       });
       setOtpVerified(true);
       setOtpError('');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } }; message?: string };
-      setOtpError(error?.response?.data?.message ?? error?.message ?? 'Invalid OTP');
+      setOtpError(error?.response?.data?.message ?? error?.message ?? 'Invalid mobile OTP');
       setOtpVerified(false);
     } finally {
       setVerifyingOtp(false);
@@ -190,14 +219,14 @@ export function usePersonalInfoForm() {
   // ── Step 3: Register ─────────────────────────────────────────────────────
   const handleRegister = useCallback(async (): Promise<void> => {
     if (!validateForm()) return;
-    if (!otpVerified) { setApiError('Please verify your phone/email with OTP first'); return; }
+    if (!otpVerified) { setApiError('Please verify your mobile number with OTP first'); return; }
 
     setApiError('');
     setIsSubmitting(true);
     try {
       // Save data client-side in sessionStorage
-      sessionStorage.setItem('registerData', JSON.stringify(formData));
-      sessionStorage.setItem('registerOtpVerified', 'true');
+      sessionStorage.setItem('registerData', JSON.stringify({ ...formData, otpVerified: true }));
+      sessionStorage.removeItem('registerOtpVerified');
 
       markStepComplete(0);
       router.push('/technician/onboarding/skills-equipment');
@@ -213,7 +242,7 @@ export function usePersonalInfoForm() {
     formData, errors, touched,
     handleChange, handleBlur,
     // otp
-    otpSent, otpVerified, otp, otpError,
+    otpSent, otpVerified, otp, otpError, phoneAlreadyInUse,
     sendingOtp, verifyingOtp,
     setOtp,
     handleSendOtp, handleVerifyOtp,

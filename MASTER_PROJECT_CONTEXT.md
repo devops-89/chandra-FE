@@ -1,6 +1,6 @@
 # HiChandra Frontend — Master Project Context
 
-> **Last updated:** June 29, 2026
+> **Last updated:** July 1, 2026
 > **Purpose:** Permanent handoff document. Paste this file into any new chat to restore full project context instantly.
 
 ---
@@ -37,11 +37,12 @@ The frontend is a **UI-complete** Next.js app. Auth API integration is live. Ser
 
 **Config notes:**
 - `next.config.ts` → `reactCompiler: true`, `turbopack` enabled, `allowedDevOrigins: ['192.168.1.45']`
-- Google profile images whitelisted for `next/image`
+- S3 images use `unoptimized={true}` on `<Image>` to bypass Next.js server-side proxy timeout
 - ESLint + Prettier configured; `eslint-plugin-simple-import-sort`, `eslint-plugin-unused-imports` active
 - `@typescript-eslint/no-unused-vars` configured with `argsIgnorePattern: '^_'`
-- `.env.local` — `NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK=false` (set to `true` for production)
-- API base URLs are split in `src/api/endpoints.ts`: auth service on `http://192.168.1.26:8000/api`, user service on `http://192.168.1.26:8001/api`
+- `.env.local` — `NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK=true` (set to `false` for dev)
+- API base URLs split: auth service `http://192.168.1.37:8000/api`, user service `http://192.168.1.37:8001/api`
+
 
 ---
 
@@ -59,8 +60,9 @@ frontend/
 │   ├── constants/              # All mock data
 │   ├── data/                   # Additional mock datasets
 │   ├── hooks/                  # Custom React hooks
-│   │   └── useOnboardingGuard.ts  # Sequential onboarding lock
+│   │   └── useOnboardingGuard.ts  # Sequential onboarding lock + backend profile re-sync
 │   ├── lib/                    # Utilities
+│   │   ├── authApi/redirectUtils.ts          # Post-auth redirects + getTechnicianRedirectPath
 │   │   └── onboarding/onboardingProgress.ts  # Progress bitmask (localStorage)
 │   ├── redux/                  # Redux Toolkit store + slices
 │   ├── services/               # REST service functions
@@ -75,12 +77,15 @@ frontend/
 ### Endpoints (`src/api/endpoints.ts`)
 
 ```ts
+// Auth service (port 8000)
 LOGIN:               POST /auth/login
 GENERATE_OTP:        POST /auth/generate-otp
 VERIFY_OTP:          POST /auth/verify-otp
 GET_PROFILE:         GET  /auth/profile
+
+// User service (port 8001)
 REGISTER_CUSTOMER:   POST /users/register
-REGISTER_TECHNICIAN: POST /users/register
+REGISTER_TECHNICIAN: POST /users/register   (same endpoint, no customerAddress = TECHNICIAN)
 GET_ALL_SERVICES:    GET  /users/service/all
 GET_SERVICE_BY_ID:   GET  /users/service/:id
 CREATE_SERVICE:      POST /users/admin/service
@@ -91,10 +96,9 @@ DELETE_SERVICE:      DELETE /users/delete/service/:id
 ### `src/services/` — REST Service Functions
 | File | Status | Notes |
 |---|---|---|
-| `auth.service.ts` | ✅ Live | `loginService()`, `generateOtpService()`, `verifyOtpService()`, `registerCustomerService()`, `registerTechnicianService()`, `getProfileService()` |
-| `service.service.ts` | ✅ Live | `getAllServicesService()`, `getServiceByIdService()`, `createServiceService()`, `updateServiceApiCall()`, `deleteServiceApiCall()` |
+| `auth.service.ts` | ✅ Live | `loginService`, `generateOtpService`, `verifyOtpService`, `registerCustomerService`, `registerTechnicianService`, `getProfileService` |
+| `service.service.ts` | ✅ Live | `getAllServicesService`, `getServiceByIdService`, `createServiceService`, `updateServiceApiCall`, `deleteServiceApiCall` |
 | `booking.service.ts` | ❌ Empty | No implementation yet |
-
 
 ---
 
@@ -109,25 +113,20 @@ configureStore({
     nearbyJobs: nearbyJobsReducer,
     activeJobs: activeJobsReducer,
     support:    supportReducer,
-    onboarding: onboardingReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false, // onboarding stores File objects until final submit
-    }),
+  }
 })
 ```
 
 ### Slices
 | Slice | Store Key | Status | Notes |
 |---|---|---|---|
-| `authSlice` | `auth` | ✅ Live | `setCredentials`, `logout` |
+| `authSlice` | `auth` | ✅ Live | `setCredentials`, `logout`. `User` type includes optional `status?: string` |
 | `servicesSlice` | `services` | ✅ Live | `fetchServices`, `fetchServiceById`, `createService`, `updateService` |
-| `nearbyJobsSlice` | `nearbyJobs` | ✅ Wired | Mock data; `redux/selectors/nearbyJobsSelectors.ts` |
-| `activeJobsSlice` | `activeJobs` | ✅ Wired | Mock data; `redux/selectors/activeJobsSelectors.ts` |
-| `supportSlice` | `support` | ✅ Wired | Mock data; `redux/selectors/supportSelectors.ts` |
-| `onboardingSlice` | `onboarding` | ✅ Live | Holds raw document/selfie `File` objects for technician onboarding until final submit; cleared after successful registration |
+| `nearbyJobsSlice` | `nearbyJobs` | ✅ Wired | Mock data |
+| `activeJobsSlice` | `activeJobs` | ✅ Wired | Mock data |
+| `supportSlice` | `support` | ✅ Wired | Mock data |
 | `bookingSlice` | — | 🔶 Scaffolded | Not wired |
+| `onboardingSlice` | — | 🔶 Scaffolded | Not wired |
 | `activitySlice` | — | 🔶 Scaffolded | Not wired |
 | `dashboardStatsSlice` | — | 🔶 Scaffolded | Not wired |
 | `loyaltySlice` | — | 🔶 Scaffolded | Not wired |
@@ -149,10 +148,10 @@ configureStore({
 | Route | Status | Notes |
 |---|---|---|
 | `/` | ✅ Complete | `PublicRoute` guard |
-| `/login` | ✅ Complete | Real API, post-login redirect |
+| `/login` | ✅ Complete | Real API, post-login redirect. TECHNICIAN → `getTechnicianRedirectPath()` |
 | `/signup` | ✅ Complete | OTP flow |
 | `/services` | ✅ Complete | `GET /users/service/all` |
-| `/services/[slug]` | ✅ Complete | Backend data |
+| `/services/[slug]` | ✅ Complete | Backend data, S3 images unoptimized |
 | `/technician` | ✅ Complete | Landing page for technician recruitment |
 
 ### Booking Flow
@@ -196,33 +195,69 @@ configureStore({
 
 ### Technician Onboarding
 
-**Base route:** `/technician/onboarding/*` (old `/technicianOnboarding/*` removed — was all redirects)
+**Base route:** `/technician/onboarding/*`
 
 | Route | Step | Status | Notes |
 |---|---|---|---|
-| `/technician/onboarding/register` | 0 | ✅ Complete | Personal info + account creation |
-| `/technician/onboarding/skills-equipment` | 1 | ✅ Complete | Backend service selection, experience, languages, brand expertise, equipment |
-| `/technician/onboarding/skill-tagging` | — | ✅ Redirect | Compatibility redirect to `/technician/onboarding/skills-equipment` |
+| `/technician/onboarding/register` | 0 | ✅ Complete | Personal info + OTP flow + account creation |
+| `/technician/onboarding/skill-tagging` | 1 | ✅ Complete | Skills, level, brand expertise |
 | `/technician/onboarding/document-upload` | 2 | ✅ Complete | Selfie + 5 documents |
 | `/technician/onboarding/service-area` | 3 | ✅ Complete | Radius, areas, pincodes |
 | `/technician/onboarding/bank-details` | 4 | ✅ Complete | Account + IFSC + payout method |
-| `/technician/onboarding/review-submit` | 5 | ✅ Complete | Review all + multipart technician registration submit |
+| `/technician/onboarding/review-submit` | 5 | ✅ Complete | Review all + final submit |
 | `/technician/onboarding/pending-verification` | — | ✅ Complete | Status page (hardcoded `'pending'`) |
 
-**Sidebar step labels:** Personal Info → Skills & Equipments → Document Upload → Service Area → Bank Details → Review & Submit
+**Sidebar step labels:** Register → Skill Tagging → Document Upload → Service Area → Bank Details → Review & Submit
 
 ### Technician Dashboard
 
 | Route | Status | Notes |
 |---|---|---|
-| `/dashboard/technician` | ✅ Complete | Mock data — `nearbyJobs` + `activeJobs` slices |
+| `/dashboard/technician` | ✅ Complete | Mock data — guarded by `useOnboardingGuard({ stepIndex: -1 })` |
 | `/dashboard/technician/nearby-jobs` | ✅ Complete | |
 | `/dashboard/technician/profile` | ❌ Skeleton | No save |
 
 
 ---
 
-## 7. Onboarding Lock System
+## 7. Technician Auth + Onboarding Flow
+
+### Step 1 — Register (`/technician/onboarding/register`)
+
+**OTP Flow:**
+1. User fills firstName, lastName, username, phone, email, password
+2. "Send OTP" → `POST /auth/generate-otp` `{ email, phone, role: "TECHNICIAN" }`
+3. OTP input appears (AnimatePresence slide-in)
+4. "Verify OTP" → `POST /auth/verify-otp` `{ email, phone, otp }`
+5. `otpVerified = true` → "Create Account" button enables
+6. "Create Account" → `POST /users/register` multipart/form-data
+7. Tokens + user stored → `setCredentials` dispatched → `markStepComplete(0)` → navigate to skill-tagging
+
+**Form fields removed:** `MobileVerificationCard`, `EmailVerificationCard` (not in API)
+**Form fields split:** `fullName` → `firstName` + `lastName` + `username`
+**Old validation file deleted:** `src/utils/validation/personalInfoValidation.ts`
+
+### Login Redirect (TECHNICIAN)
+
+After TECHNICIAN login, `LoginForm`:
+1. Stores tokens → dispatches `setCredentials`
+2. Calls `GET /auth/profile` (always, on every login)
+3. Calls `getTechnicianRedirectPath({ userStatus, technicianProfile })`
+
+**Redirect rules:**
+| Condition | Destination |
+|---|---|
+| `technicianProfile === null` | `/technician/onboarding/register` |
+| `profile.status === 'PENDING_APPROVAL'` | `/technician/onboarding/pending-verification` |
+| `profile.isVerified` OR (`userStatus === 'ACTIVE'` AND onboarding complete) | `/dashboard/technician` |
+| `profile.status === 'INCOMPLETE'` | `firstIncompleteRoute()` |
+| Fallback | `/dashboard/technician` |
+
+`syncProgressFromProfile()` is ALWAYS called (not just on INCOMPLETE) — this overwrites any stale localStorage bitmask.
+
+---
+
+## 8. Onboarding Lock System
 
 ### Feature Flag
 ```
@@ -234,51 +269,49 @@ NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK=true    # production (sequential enforcement)
 
 | File | Purpose |
 |---|---|
-| `lib/onboarding/onboardingProgress.ts` | localStorage bitmask — `markStepComplete(n)`, `isStepComplete(n)`, `firstIncompleteRoute()`, `isOnboardingComplete()`, `syncProgressFromProfile(profile)`, `clearOnboardingProgress()`, `isOnboardingLockEnabled()` |
-| `hooks/useOnboardingGuard.ts` | Mount-only hook. Re-syncs `GET /auth/profile` when bitmask is missing/stale, then redirects to `firstIncompleteRoute()` if needed. `stepIndex: -1` → dashboard guard |
+| `lib/onboarding/onboardingProgress.ts` | 6-bit localStorage bitmask. `markStepComplete(n)`, `isStepComplete(n)`, `firstIncompleteRoute()`, `isOnboardingComplete()`, `syncProgressFromProfile(profile)`, `clearOnboardingProgress()`, `isOnboardingLockEnabled()` |
+| `hooks/useOnboardingGuard.ts` | Mount-only hook. Detects missing/stale bitmask (null or 0 with token present), fetches `GET /auth/profile`, re-syncs bitmask, then redirects to `firstIncompleteRoute()` if needed. `stepIndex: -1` = dashboard guard |
 
-### How it works
-- Progress stored as a 6-bit bitmask in `localStorage` key `technician_onboarding_progress`
-- Bit 0 = Register done, bit 1 = Skills done, ..., bit 5 = Submitted
-- Each step's success navigation calls `markStepComplete(stepIndex)` before routing
-- On login with TECHNICIAN role: `LoginForm` calls `GET /auth/profile`, `getTechnicianRedirectPath()`, and `syncProgressFromProfile(profile)` to seed from backend
-- `useOnboardingGuard` also fetches `GET /auth/profile` when the bitmask is missing or `0`, so `localStorage.clear()` does not force completed technicians to restart
-- `useOnboardingGuard({ stepIndex: N })` placed at top of each locked page component
-- Dashboard layout (`app/dashboard/technician/layout.tsx`) uses `useOnboardingGuard({ stepIndex: -1 })`
-- When lock disabled: hook returns immediately — zero redirect overhead
+### Bitmask rules (from `syncProgressFromProfile`)
+```
+Bit 0 — Register:        profile.id exists
+Bit 1 — Skill Tagging:   profile.skills.length > 0
+Bit 2 — Document Upload: ALL 5 URLs non-null (aadharUrl, panUrl, policeCertUrl, tradeLicenseUrl, selfieUrl)
+Bit 3 — Service Area:    profile.serviceAreas.length > 0
+Bit 4 — Bank Details:    accountHolderName + accountNumber + ifscCode all present
+Bit 5 — Submitted:       profile.status === 'PENDING_APPROVAL'
+```
 
-### Sidebar visual states (when lock enabled)
-- **Active step** — green background (`bg-green-100`)
+### localStorage recovery (key use-case)
+When a technician clears localStorage (Application tab → Clear):
+1. Page mounts → `useOnboardingGuard` runs
+2. `needsSync()` = bitmask key is `null` OR bitmask is `0` AND `accessToken` exists → `true`
+3. `GET /auth/profile` fetched → `syncProgressFromProfile()` rebuilds bitmask from backend
+4. Guard redirects to `firstIncompleteRoute()` — technician resumes exactly where they left off
+
+### Sidebar visual states (lock enabled)
+- **Active step** — green background
 - **Completed step** — shows ✓ icon
-- **Locked step** — non-interactive div with 🔒, `cursor-not-allowed`
+- **Locked step** — non-interactive div with 🔒
 
 ---
 
-## 8. Technician Landing Page (`/technician`)
+## 9. Technician Landing Page (`/technician`)
 
-Sections (components in `src/components/technicianLanding/`):
-- `TechnicianHero` → CTA links to `/technician/onboarding/register`
-- `WhyJoinSection` — 4 benefit cards
-- `HowItWorksSection` — 6-step grid
-- `BenefitsSection` → "Register now" links to `/technician/onboarding/register`
-- `CategoriesSection` — 4 service categories (Solar, AC, Plumbing, Electrical)
-- `RequirementsSection` → "Verify Now" links to `/technician/onboarding/register`
-- `TestimonialsSection` — 3 partner testimonials
-- `FAQSection` — accordion FAQ
-- `CTASection` → "Start Registration Now" links to `/technician/onboarding/register`
+Sections: `TechnicianHero`, `WhyJoinSection`, `HowItWorksSection`, `BenefitsSection`, `CategoriesSection`, `RequirementsSection`, `TestimonialsSection`, `FAQSection`, `CTASection`
 
-All CTA links in footer (`footerContent.ts`) also point to `/technician/onboarding/register`.
+All CTAs + footer "Register as Technician" → `/technician/onboarding/register`
 
 ---
 
-## 9. Booking Flow — Full Detail
+## 10. Booking Flow
 
 ### Booking Steps
 ```
 BOOKING_STEPS = ['Dynamic Form', 'Select Address', 'Select Date & Time', 'Book Service']
 ```
 
-Step 0 — Dynamic Form: backend service `specifications[]` → `BookingFormField[]`
+Step 0 — Dynamic Form: `specifications[]` → `BookingFormField[]` (fallback: description + photos)
 Step 1 — Address: user selects address
 Step 2 — Date & Time: date + slot
 Step 3 — Book Service: name / phone / instructions → submit
@@ -289,16 +322,14 @@ Step 3 — Book Service: name / phone / instructions → submit
 | `hooks/useBookingAuth.ts` | Guest → `/login`. Auth → `onBookingClick()`. |
 | `components/serviceDetails/DynamicServiceDetailPage.tsx` | Seeds Zustand store, routes to booking |
 | `components/booking/UnifiedBookingPage.tsx` | 4-step form, reads `bookingFormFields` from store |
-| `components/booking/DynamicBookingFields.tsx` | Renders `BookingFormField[]` |
 | `components/booking/BookingAuthGuard.tsx` | Stores `pathname+search`, redirects unauthenticated |
 | `redux/legacy/bookingStore.ts` | Zustand booking state |
-| `lib/authApi/redirectUtils.ts` | `storeRedirectPath`, `handlePostAuthRedirect` |
-| `components/auth/LoginForm.tsx` | Reads redirect BEFORE `dispatch`, then `router.push` |
-| `components/auth/PublicRoute.tsx` | Mount-only `useEffect` guard |
+| `lib/authApi/redirectUtils.ts` | `handlePostAuthRedirect`, `getTechnicianRedirectPath` |
+| `components/auth/LoginForm.tsx` | TECHNICIAN: fetches profile → `getTechnicianRedirectPath`. Others: `handlePostAuthRedirect`. |
 
 ---
 
-## 10. Components Map
+## 11. Components Map
 
 ```
 src/components/
@@ -306,9 +337,8 @@ src/components/
 ├── common/               PublicNavbar, PublicFooter, NavbarLinks, NavbarLogo, MobileMenu
 ├── heroSection/          HeroSection + sub-components
 ├── servicesSection/      ServiceSection, ServiceGrid (linkPrefix), ServiceCard (linkPrefix)
-├── serviceDetails/       DynamicServiceDetailPage (reused public + dashboard),
-│                         DynamicServiceHero, DynamicServiceCTA, DynamicServiceOverview,
-│                         DynamicServiceFeatures, DynamicServicePricing
+├── serviceDetails/       DynamicServiceDetailPage, DynamicServiceHero, DynamicServiceCTA,
+│                         DynamicServiceOverview, DynamicServiceFeatures, DynamicServicePricing
 ├── booking/              UnifiedBookingPage, BookingAuthGuard, BookingSummary,
 │                         BookingConfirmation, BookingStepper,
 │                         DynamicBookingFields, DynamicFieldRenderer,
@@ -322,18 +352,33 @@ src/components/
 ├── adminDashboard/       (layout, dashboard, bookings, complaints, customers,
 │                          finance, reviews, services, technicians)
 ├── technicianDashboard/  (dashboard, nearby-jobs, active-jobs, earnings, jobs, profile)
-└── technicianApplication/ (full 6-step onboarding — layout, registration steps)
-    └── layout/           OnboardingLayout, OnboardingSidebar (lock-aware), OnboardingHeader
+└── technicianApplication/ (6-step onboarding)
+    ├── layout/           OnboardingLayout, OnboardingSidebar (lock-aware), OnboardingHeader
+    └── registration/
+        ├── personalInfo/   PersonalInfoForm, BasicInfoFields, EmailAndPasswordFields,
+        │                   ContinueButton, TermsAndPrivacy, hooks/usePersonalInfoForm
+        ├── skillTagging/   SkillTaggingPage, SkillGrid, SkillLevelSelector,
+        │                   BrandExpertiseInput, SkillTaggingFooter
+        ├── documentUpload/ DocumentUploadPage, DocumentUploadGrid, SelfieVerificationCard,
+        │                   DocumentUploadFooter, UploadHelpCard
+        ├── serviceArea/    ServiceArea, AreaSelector, PreferredAreasInput, PincodeMapping,
+        │                   CoverageSummary, ServiceAreaFooter, hooks/useServiceArea
+        ├── bankDetails/    BankDetailsSection, AccountInformationCard, BankDetailsFooter,
+        │                   AutoDetectedBankInfo, PayoutMethodCard, SecurityBanner,
+        │                   VerificationDocumentsCard
+        └── reviewSubmit/   ReviewSubmit, ProfileSummaryCard, SkillsSummaryCard,
+                            VerificationSummaryCard, ServiceCoverageCard, LaunchSection,
+                            hooks/useReviewSubmit
 ```
 
 ---
 
-## 11. Hooks (`src/hooks/`)
+## 12. Hooks (`src/hooks/`)
 
 | Hook | Purpose |
 |---|---|
 | `useBookingAuth` | Auth check for booking CTAs |
-| `useOnboardingGuard` | Sequential onboarding lock — mount-only, flag-gated |
+| `useOnboardingGuard` | Sequential onboarding lock — mount-only, flag-gated, backend re-sync |
 | `useSignupForm` | Signup + OTP flow |
 | `useFormValidation` | Generic form validation |
 | `useActiveBooking` | Customer dashboard active booking (mock) |
@@ -346,13 +391,13 @@ src/components/
 
 ---
 
-## 12. Lib / Utilities (`src/lib/`)
+## 13. Lib / Utilities (`src/lib/`)
 
 | Path | Purpose |
 |---|---|
-| `lib/authApi/redirectUtils.ts` | `storeRedirectPath`, `getAndClearRedirectPath`, `handlePostAuthRedirect`, `getDashboardPathForRole` |
-| `lib/onboarding/onboardingProgress.ts` | Onboarding progress bitmask — `markStepComplete`, `isStepComplete`, `firstIncompleteRoute`, `isOnboardingComplete`, `syncProgressFromProfile`, `isOnboardingLockEnabled` |
-| `lib/booking/formatBookingData.ts` | Formats booking store data for display |
+| `lib/authApi/redirectUtils.ts` | `storeRedirectPath`, `getAndClearRedirectPath`, `handlePostAuthRedirect`, `getDashboardPathForRole`, `getTechnicianRedirectPath` |
+| `lib/onboarding/onboardingProgress.ts` | 6-bit bitmask — `markStepComplete`, `isStepComplete`, `firstIncompleteRoute`, `isOnboardingComplete`, `syncProgressFromProfile`, `isOnboardingLockEnabled` |
+| `lib/booking/formatBookingData.ts` | Formats booking store data |
 | `lib/pricing/calculateACPrice.ts` | AC dynamic pricing |
 | `lib/pricing/calculateSolarPrice.ts` | Solar pricing |
 | `lib/utils/addressUtils.ts` | Address selection helpers |
@@ -360,25 +405,25 @@ src/components/
 | `lib/validation/fileValidation.ts` | File upload validation |
 | `lib/validator/` | email, password, phone, pincode, signup validators |
 
-
 ---
 
-## 13. Key Types (`src/types/`)
+## 14. Key Types (`src/types/`)
 
 | File | Key Types |
 |---|---|
+| `types/auth.types.ts` | `User` (includes `status?: string`), `LoginRequest/Response`, `RegisterTechnicianRequest/Response`, `GenerateOtpRequest` (role: CUSTOMER\|TECHNICIAN), `GetProfileResponse`, `ApiTechnicianProfileData`, `ApiTechnicianSkillEntry`, `ApiServiceArea` |
 | `types/services.types.ts` | `Service`, `BookingFormField`, `BookingFormData`, `ServiceCardProps` |
-| `types/auth.types.ts` | `User`, `LoginRequest/Response`, `SignupFormData`, OTP types, `CustomerAddress` |
 | `types/bookingTypes/bookingForm.types.ts` | `UnifiedBookingPageProps`, `TimeSlots`, `BookingStep`, `AddressOption` |
 | `types/admin/service.types.ts` | `AdminService`, `ApiService`, `ApiPricingRule`, `ApiSpecification`, `CreateServiceRequest`, `UpdateServiceRequest` |
 | `types/admin.types.ts` | `DashboardStat`, `Technician`, `ActiveJob`, `AdminProfile` |
 | `types/technicianDashboard/nearbyJobs.types.ts` | `NearbyJob`, `NearbyJobsState` |
-| `types/technicianApplication/` | 8 files: `personalInfo`, `skillTagging`, `toolInventory`, `documentUpload`, `bankDetails`, `reviewSubmit`, `onboarding`, `verification` |
+| `types/technicianApplication/personalInfo.types.ts` | `PersonalInfoFormData` (firstName, lastName, username, phoneNumber, email, password), `ValidationErrors` |
+| `types/technicianApplication/` | 7 more files covering skillTagging, toolInventory, documentUpload, bankDetails, reviewSubmit, onboarding, verification |
 | `types/technicianOnboarding/serviceArea.types.ts` | `ServiceAreaState`, `AreaOption`, component prop types |
 
 ---
 
-## 14. Constants & Mock Data (`src/constants/`)
+## 15. Constants & Mock Data (`src/constants/`)
 
 | Folder | Contents |
 |---|---|
@@ -387,116 +432,84 @@ src/components/
 | `constants/customerDashboard/` | activeBooking, invoices, recentBookings, reviews, favourites, stats |
 | `constants/booking/` | savedAddresses, timeSlots, BOOKING_STEPS |
 | `constants/technicianDashboard/` | `MOCK_NEARBY_JOBS`, `MOCK_ACTIVE_JOB` |
-| `constants/technicianApplication/` | documentUpload, **onboardingSteps** (labels), serviceAreaOptions; `skillTagging.constants.ts` is intentionally empty/unused |
+| `constants/technicianApplication/onboardingSteps.ts` | `["Register", "Skill Tagging", "Document Upload", "Service Area", "Bank Details", "Review & Submit"]` |
 | `constants/footer/footerContent.ts` | Footer links — Register as Technician → `/technician/onboarding/register` |
-
-### `onboardingSteps` labels
-```ts
-["Personal Info", "Skills & Equipments", "Document Upload", "Service Area", "Bank Details", "Review & Submit"]
-```
 
 ---
 
-## 15. What's Complete vs Pending
+## 16. What's Complete vs Pending
 
-### ✅ Completed / Recently Updated (through June 29, 2026)
+### ✅ Completed (July 1, 2026)
 
-**Technician Landing Page (`/technician`):**
-- Full marketing page with 9 sections
-- All CTAs → `/technician/onboarding/register`
-- Footer "Register as Technician" → `/technician/onboarding/register`
+**Technician Register — OTP flow:**
+- `GenerateOtpRequest.role` widened to `'CUSTOMER' | 'TECHNICIAN'`
+- `User` type extended with `status?: string`
+- `RegisterTechnicianRequest/Response`, `GetProfileResponse`, `ApiTechnicianProfileData` types added
+- `getProfileService()` added to `auth.service.ts`
+- `GET_PROFILE: '/auth/profile'` endpoint added
+- Step 1 form: `fullName` split into `firstName` + `lastName` + `username`; OTP verification (Send OTP → Enter OTP → Verify → Create Account); `MobileVerificationCard` and `EmailVerificationCard` removed; old `personalInfoValidation.ts` deleted
+- `usePersonalInfoForm` hook: `handleSendOtp`, `handleVerifyOtp`, `handleRegister`; `otpSent`, `otpVerified` state; Create Account disabled until OTP verified
 
-**Onboarding route migration (`/technicianOnboarding/*` → `/technician/onboarding/*`):**
-- All 7 step pages moved to new path
-- Old folder entirely removed (was all redirects)
-- Canonical step 1 route is `/technician/onboarding/skills-equipment`
-- `/technician/onboarding/skill-tagging` remains only as a compatibility redirect
-- All navigation, sidebar, back buttons, and edit handlers updated to canonical routes
-- Sidebar labels: "Personal Info", "Skills & Equipments", "Document Upload", "Service Area", "Bank Details", "Review & Submit"
+**Technician login redirect:**
+- `getTechnicianRedirectPath()` in `redirectUtils.ts` — routes by profile status
+- `syncProgressFromProfile()` always called on TECHNICIAN login to overwrite stale bitmask
+- `LoginForm` fetches `GET /auth/profile` for TECHNICIAN after login; non-TECHNICIAN path unchanged
 
-**Onboarding lock system:**
-- `lib/onboarding/onboardingProgress.ts` — localStorage bitmask progress
-- `hooks/useOnboardingGuard.ts` — mount-only sequential lock with backend profile re-sync when local bitmask is missing/stale
-- `NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK` feature flag in `.env.local`
-- `markStepComplete(N)` wired into every step's success navigation
-- `useOnboardingGuard({ stepIndex: N })` on steps 1–5 pages
-- Dashboard layout protected with `useOnboardingGuard({ stepIndex: -1 })`
-- Sidebar shows locked (🔒) / completed (✓) states when lock enabled
-- `LoginForm` calls `GET /auth/profile` for TECHNICIAN users and routes through `getTechnicianRedirectPath()`
-- `syncProgressFromProfile()` is now called from technician login and from the guard when progress needs restoration
+**localStorage recovery:**
+- `useOnboardingGuard` detects `bitmask === null OR (bitmask === 0 AND token exists)`
+- Fetches `GET /auth/profile` → `syncProgressFromProfile()` → re-evaluates guard
+- Technicians never forced to restart completed steps after storage clear
 
-**Redux store fixes:**
-- `nearbyJobsSlice`, `activeJobsSlice`, `supportSlice` all registered (fixed technician dashboard 500s)
-- `onboardingSlice` registered to hold raw document/selfie `File` objects until final technician registration submit
-
-**Dynamic booking form:**
-- `ApiSpecification` interface + `specifications[]` on `AdminService`
-- `specToBookingField()` in `service.service.ts`
-- `bookingFormFields` in Zustand bookingStore
-- `DynamicBookingFields` + `DynamicFieldRenderer` components
-- `UnifiedBookingPage` reads fields from store, falls back to default
-
-**Admin service edit/delete integration:**
-- Wired edit and delete functionality to API using `updateService` and `deleteService` thunks in `servicesSlice` and `useServiceManager` hook.
-
-**Technician onboarding backend integration:**
-- Skills & Equipments step fetches services from `getAllServicesService()`; legacy skill-level constants/components are no longer used
-- Document Upload stores preview URLs in `sessionStorage` and raw file objects in Redux `onboardingSlice`
-- Review Submit seeds UI from `registerData`, `skillsEquipmentData`, `documentUploadData`, `serviceAreaData`, and `bankDetailsData`
-- Final submit builds `technicianProfile` JSON and sends one multipart `POST /users/register` via `registerTechnicianService()`
-- On successful technician registration, tokens/user are persisted, auth state is updated, onboarding files/session keys are cleared, step 5 is marked complete, and user is routed to pending verification
-- `ProfileSummaryCard` receives `state.profile` from `useReviewSubmit()`; there is no `state.profileData`
+**Image loading fix:**
+- `ServiceImage.tsx` + `DynamicServiceHero.tsx`: `unoptimized={isExternalUrl}` bypasses 7s server-side S3 fetch timeout
+- `next.config.ts`: `minimumCacheTTL: 3600` added
 
 ### 🔶 In Progress / Partial
 - `/technician/onboarding/pending-verification` — status hardcoded to `'pending'`
-- RTK Query services (`authApi`, `bookingApi`, `serviceApi`, `userApi`) — empty files
+- RTK Query services — empty files
 
 ### ❌ Pending / Skeleton
 - `/dashboard/customer/bookings/[id]` — no booking detail content
 - `/dashboard/technician/profile` — disabled inputs, no save
 - `src/services/booking.service.ts` — completely empty
 - Booking submission API integration (POST + `serviceSpecifications[]`)
-- Remaining non-auth API integration beyond services/auth/technician registration (bookings, editable profiles, technician management)
-- Technician auth guard (`role === 'TECHNICIAN'`)
+- Technician auth guard (`role === 'TECHNICIAN'` on dashboard routes)
+- Remaining non-auth API integration
 
 ### ⚠️ Dead Code (safe to delete)
 - `src/dashboard/` — abandoned earlier architecture
 - `redux/legacy/customerDashboardStore.ts` — empty
 - `redux/legacy/useSidebarStore.ts` — empty
 - `constants/services/serviceData.ts` — no longer imported
-- `redux/ServiceContext.tsx` — unused, replaced by Redux `servicesSlice` and hooks
+- `src/utils/validation/personalInfoValidation.ts` — deleted (replaced by inline validators in hook)
 
 ---
 
-## 16. Next Development Priorities
+## 17. Next Development Priorities
 
 1. **Booking submission API** — POST booking; send `serviceSpecifications[]` from `dynamicFormData`
 2. **Technician auth guard** — `role === 'TECHNICIAN'` check on `/dashboard/technician/*`
 3. **Pending verification** — wire real backend status/details into the status page
-4. **Technician profile save/status API** — enable edit + save on `/dashboard/technician/profile`
+4. **Technician profile save** — enable edit + save on `/dashboard/technician/profile`
 5. **Customer booking detail** — `/dashboard/customer/bookings/[id]`
-6. **Clean up dead code** — `src/dashboard/`, empty Zustand files, `serviceData.ts`, `ServiceContext.tsx`
+6. **Clean up dead code** — `src/dashboard/`, empty Zustand files, `serviceData.ts`
 
 ---
 
-## 17. Development Notes
+## 18. Development Notes
 
-- **Redux store** — always register new slices in `src/redux/store.ts`. Missing registration → runtime `TypeError: Cannot read properties of undefined`.
-- **`onboardingSlice` stores `File` objects** — `serializableCheck` is disabled in the store. Session storage keeps preview/blob URLs only; raw file objects are required for final submit and are lost on full reload.
-- **Auth guards all mount-only** — empty `useEffect` deps `[]` prevents interference with login navigation.
-- **`useOnboardingGuard`** — mount-only, same pattern. Flag-gated: when `NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK=false` the hook is a no-op. When lock is enabled and bitmask is missing/0, it fetches `GET /auth/profile` and re-syncs progress.
-- **Onboarding progress** — stored as 6-bit localStorage bitmask. Bit N set = step N complete. Technician login calls `GET /auth/profile` and `syncProgressFromProfile(profile)` to seed from backend.
-- **Post-login redirect** — `sessionStorage` via `lib/authApi/redirectUtils.ts`. `LoginForm` reads BEFORE `dispatch(setCredentials(...))`.
-- **Technician login redirect** — TECHNICIAN users use `getTechnicianRedirectPath()` after `GET /auth/profile`: no profile → register, `PENDING_APPROVAL` → pending verification, incomplete → first incomplete onboarding route, verified/active complete → dashboard.
-- **Skills step route** — canonical route is `/technician/onboarding/skills-equipment`; `/technician/onboarding/skill-tagging` is only a compatibility redirect.
-- **Review Submit state** — `useReviewSubmit()` exposes `state.profile`, `state.services`, `state.yearsOfExperience`, equipment booleans, `verificationStatus`, and `serviceArea`. Do not use `state.profileData`.
-- **`BookingAuthGuard`** stores full URL (`pathname + search`) before redirecting unauthenticated users.
+- **Redux store** — always register new slices in `src/redux/store.ts`. Missing → runtime TypeError.
+- **Auth guards mount-only** — empty `useEffect` deps `[]` prevents racing with login navigation.
+- **`useOnboardingGuard`** — flag-gated; when lock enabled and bitmask is missing/0+token exists, fetches profile and re-syncs before guarding. `stepIndex: -1` = dashboard mode.
+- **Onboarding bitmask** — 6-bit localStorage. Bit N = step N complete. `syncProgressFromProfile()` called on login AND by guard when stale. localStorage.clear() never forces restart.
+- **TECHNICIAN login** — always calls `GET /auth/profile` → `getTechnicianRedirectPath()`. Non-TECHNICIAN uses `handlePostAuthRedirect()` only.
+- **`User.status`** — now optional in the type. Login response may or may not include it; `GET /auth/profile` response always has it.
+- **OTP flow (register)** — Send OTP → Verify OTP → then Create Account enabled. Changing email or phone after OTP sent resets OTP state.
+- **S3 images** — use `unoptimized={src.startsWith('http')}` on `<Image>` for all backend-served images to avoid Next.js proxy timeout.
+- **Post-login redirect** — `sessionStorage` via `redirectUtils.ts`. `LoginForm` reads BEFORE `dispatch(setCredentials(...))`.
 - **`bookingStore.ts` (Zustand)** — active booking state. `bookingFormFields[]` seeded from backend `specifications[]`.
-- **Dynamic form fallback** — empty `bookingFormFields` → show `serviceDescription` (textarea) + `photos` (multi-file).
-- **`DynamicServiceDetailPage`** — pure component. `bookingBasePath` prop: `/booking` (public) or `/dashboard/customer/booking` (dashboard).
-- **`ServiceGrid` + `ServiceCard` `linkPrefix`** — default `/services`. Dashboard uses `/dashboard/customer/services`.
 - **Slug generation** — `name.toLowerCase().replace(/\s+/g, '-')`. Consistent everywhere.
-- **Tailwind v4** — `@import "tailwindcss"` + `@theme inline { ... }`. No `tailwind.config.js`. Use `bg-linear-to-*` not `bg-gradient-to-*`.
+- **Tailwind v4** — `bg-linear-to-*` not `bg-gradient-to-*`. No `tailwind.config.js`.
 - **MUI + Tailwind** — MUI for tables/drawers/modals, Tailwind for layout.
 - **pnpm** — always use `pnpm`, never npm or yarn.
 - **ESLint** — unused params prefixed `_`, escape HTML entities in JSX.

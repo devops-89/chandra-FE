@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# developer tools / test utilities
+/test
+
 # debug
 npm-debug.log*
 yarn-debug.log*

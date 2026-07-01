@@ -2,6 +2,7 @@
 
 import { AnimatePresence,motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 import BasicInfoFields from './BasicInfoFields';
@@ -24,7 +25,7 @@ export default function PersonalInfoForm() {
   const {
     formData, errors, touched,
     handleChange, handleBlur,
-    otpSent, otpVerified, otp, otpError,
+    otpSent, otpVerified, otp, otpError, phoneAlreadyInUse,
     sendingOtp, verifyingOtp,
     setOtp,
     handleSendOtp, handleVerifyOtp,
@@ -110,20 +111,35 @@ export default function PersonalInfoForm() {
               className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-5 py-2.5 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {sendingOtp && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-              {otpSent && !otpVerified ? 'Resend OTP' : 'Send OTP'}
+              {otpSent && !otpVerified ? 'Resend Mobile OTP' : 'Send Mobile OTP'}
             </button>
 
             {otpVerified && (
               <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600">
                 <CheckCircle2 className="h-4 w-4" />
-                Verified
+                Mobile verified
               </span>
             )}
           </div>
 
           {/* OTP error (from send or verify) */}
           {otpError && !otpVerified && (
-            <p className="text-xs font-medium text-red-600">{otpError}</p>
+            phoneAlreadyInUse ? (
+              <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+                <p className="text-sm font-medium text-amber-800">
+                  {otpError}{' '}
+                  <Link
+                    href="/login"
+                    className="font-semibold underline underline-offset-2 hover:text-amber-900"
+                  >
+                    Log in instead
+                  </Link>
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs font-medium text-red-600">{otpError}</p>
+            )
           )}
 
           {/* OTP input — shown only after successful send */}
@@ -140,13 +156,13 @@ export default function PersonalInfoForm() {
                 <div className="flex items-end gap-3">
                   <div className="flex-1">
                     <label className="mb-2 block text-xs font-medium md:text-sm">
-                      Enter OTP
+                      Enter Mobile OTP
                     </label>
                     <input
                       type="text"
                       inputMode="numeric"
                       maxLength={6}
-                      placeholder="6-digit OTP"
+                      placeholder="6-digit mobile OTP"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                       className="w-full h-12 border border-slate-300 rounded-lg md:rounded-xl px-4 text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"

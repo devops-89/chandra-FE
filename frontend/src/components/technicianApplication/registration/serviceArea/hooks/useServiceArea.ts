@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { ServiceAreaState } from '@/types/technicianOnboarding/serviceArea.types';
 
@@ -12,18 +12,31 @@ const initialState: ServiceAreaState = {
 
 export const useServiceArea = () => {
   const [state, setState] = useState<ServiceAreaState>(initialState);
+  const hasRestoredDraft = useRef(false);
 
   useEffect(() => {
     const saved = sessionStorage.getItem('serviceAreaData');
-    if (!saved) return;
+    if (!saved) {
+      hasRestoredDraft.current = true;
+      return;
+    }
     try {
       const parsed = JSON.parse(saved);
-      const timer = window.setTimeout(() => setState(parsed), 0);
+      const timer = window.setTimeout(() => {
+        setState({ ...initialState, ...parsed });
+        hasRestoredDraft.current = true;
+      }, 0);
       return () => window.clearTimeout(timer);
     } catch {
+      hasRestoredDraft.current = true;
       // ignore
     }
   }, []);
+
+  useEffect(() => {
+    if (!hasRestoredDraft.current) return;
+    sessionStorage.setItem('serviceAreaData', JSON.stringify(state));
+  }, [state]);
 
   const setRadius = useCallback((radius: number) => {
     setState((prev) => ({
@@ -64,6 +77,19 @@ export const useServiceArea = () => {
     }));
   }, []);
 
+  const setServiceLocation = useCallback(
+    (location: Pick<
+      ServiceAreaState,
+      'latitude' | 'longitude' | 'fullAddress' | 'city' | 'state' | 'pincode'
+    >) => {
+      setState((prev) => ({
+        ...prev,
+        ...location,
+      }));
+    },
+    [],
+  );
+
   return {
     state,
     setRadius,
@@ -71,5 +97,6 @@ export const useServiceArea = () => {
     removeArea,
     addPincode,
     removePincode,
+    setServiceLocation,
   };
 };

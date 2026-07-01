@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
+import { getAreaKm } from '@/data/technicianOnboarding/serviceAreaData';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
 import { clearOnboardingFiles } from '@/redux/slices/onboardingSlice';
@@ -15,6 +16,51 @@ const DOCUMENT_NAMES = [
   { id: 'police', name: 'Police Clearance' },
   { id: 'trade', name: 'Trade License' },
 ] as const;
+
+const REUPLOAD_DOCUMENTS_MESSAGE = 'Please re-upload all documents before submitting.';
+
+const toOptionalNumber = (value: unknown): number | undefined => {
+  const numberValue = typeof value === 'string' ? Number(value) : value;
+  return typeof numberValue === 'number' && Number.isFinite(numberValue)
+    ? numberValue
+    : undefined;
+};
+
+const buildServiceLocation = (value: Record<string, unknown>) => {
+  const latitude = toOptionalNumber(value.latitude);
+  const longitude = toOptionalNumber(value.longitude);
+
+  if (latitude === undefined || longitude === undefined) {
+    return undefined;
+  }
+
+  return {
+    latitude,
+    longitude,
+    fullAddress: typeof value.fullAddress === 'string' ? value.fullAddress : '',
+    city: typeof value.city === 'string' ? value.city : '',
+    state: typeof value.state === 'string' ? value.state : '',
+    pincode: typeof value.pincode === 'string' ? value.pincode : '',
+  };
+};
+
+const hasDocumentUploadData = (value: Record<string, unknown>) => {
+  return Boolean(
+    value.selfieUrl
+    && value.aadharUrl
+    && value.panUrl
+    && value.policeCertUrl
+    && value.tradeLicenseUrl,
+  );
+};
+
+const hasAllRequiredFiles = (
+  selfieFile: File | null,
+  aadharFile: File | null,
+  panFile: File | null,
+  policeCertFile: File | null,
+  tradeLicenseFile: File | null,
+) => Boolean(selfieFile && aadharFile && panFile && policeCertFile && tradeLicenseFile);
 
 function buildInitialState(): ReviewSubmitState {
   return {
@@ -47,7 +93,6 @@ function buildInitialState(): ReviewSubmitState {
     serviceArea: {
       radius: 0,
       areas: [],
-      mapImageUrl: '',
     },
   };
 }
@@ -65,6 +110,22 @@ export const useReviewSubmit = () => {
   // ── Seed UI state from all sessionStorage keys on mount ──────────────────
   useEffect(() => {
     const timer = setTimeout(() => {
+      try {
+        const documentRaw = sessionStorage.getItem('documentUploadData');
+        const documentData = documentRaw ? JSON.parse(documentRaw) : {};
+        const hasSavedDocumentData = hasDocumentUploadData(documentData);
+        if (
+          hasSavedDocumentData
+          && !hasAllRequiredFiles(selfieFile, aadharFile, panFile, policeCertFile, tradeLicenseFile)
+        ) {
+          setSubmitError(REUPLOAD_DOCUMENTS_MESSAGE);
+        } else {
+          setSubmitError(null);
+        }
+      } catch {
+        // ignore malformed document metadata
+      }
+
       setState((prev) => {
         let next = { ...prev };
 
@@ -115,11 +176,11 @@ export const useReviewSubmit = () => {
           const raw = sessionStorage.getItem('documentUploadData');
           if (raw) {
             const d = JSON.parse(raw);
-            const hasSelfie = !!(d.selfieUrl && selfieFile);
-            const hasAadhar = !!(d.aadharUrl && aadharFile);
-            const hasPan = !!(d.panUrl && panFile);
-            const hasPolice = !!(d.policeCertUrl && policeCertFile);
-            const hasTrade = !!(d.tradeLicenseUrl && tradeLicenseFile);
+            const hasSelfie = !!d.selfieUrl;
+            const hasAadhar = !!d.aadharUrl;
+            const hasPan = !!d.panUrl;
+            const hasPolice = !!d.policeCertUrl;
+            const hasTrade = !!d.tradeLicenseUrl;
 
             const completedCount = [hasSelfie, hasAadhar, hasPan, hasPolice, hasTrade].filter(Boolean).length;
 
@@ -131,11 +192,11 @@ export const useReviewSubmit = () => {
               },
               verificationStatus: {
                 documents: [
-                  { id: 'selfie',   name: 'Selfie Verification', status: hasSelfie ? 'verified' : 'pending', previewUrl: hasSelfie ? d.selfieUrl   : undefined },
-                  { id: 'aadhaar',  name: 'Aadhaar Card',        status: hasAadhar ? 'verified' : 'pending', previewUrl: hasAadhar ? d.aadharUrl   : undefined },
-                  { id: 'pan',      name: 'PAN Card',            status: hasPan    ? 'verified' : 'pending', previewUrl: hasPan    ? d.panUrl       : undefined },
-                  { id: 'police',   name: 'Police Clearance',    status: hasPolice ? 'verified' : 'pending', previewUrl: hasPolice ? d.policeCertUrl: undefined },
-                  { id: 'trade',    name: 'Trade License',       status: hasTrade  ? 'verified' : 'pending', previewUrl: hasTrade  ? d.tradeLicenseUrl: undefined },
+                  { id: 'selfie', name: 'Selfie Verification', status: hasSelfie ? 'verified' : 'pending', previewUrl: hasSelfie ? d.selfieUrl : undefined },
+                  { id: 'aadhaar', name: 'Aadhaar Card', status: hasAadhar ? 'verified' : 'pending', previewUrl: hasAadhar ? d.aadharUrl : undefined },
+                  { id: 'pan', name: 'PAN Card', status: hasPan ? 'verified' : 'pending', previewUrl: hasPan ? d.panUrl : undefined },
+                  { id: 'police', name: 'Police Clearance', status: hasPolice ? 'verified' : 'pending', previewUrl: hasPolice ? d.policeCertUrl : undefined },
+                  { id: 'trade', name: 'Trade License', status: hasTrade ? 'verified' : 'pending', previewUrl: hasTrade ? d.tradeLicenseUrl : undefined },
                 ],
                 completedCount,
                 totalCount: 5,
@@ -149,12 +210,13 @@ export const useReviewSubmit = () => {
           const raw = sessionStorage.getItem('serviceAreaData');
           if (raw) {
             const a = JSON.parse(raw);
+            const location = buildServiceLocation(a);
             next = {
               ...next,
               serviceArea: {
                 radius: a.radius ?? 0,
                 areas: a.preferredAreas ?? [],
-                mapImageUrl: '',
+                ...(location ?? {}),
               },
             };
           }
@@ -191,7 +253,9 @@ export const useReviewSubmit = () => {
     try {
       // ── Read personal info ────────────────────────────────────────────────
       const registerRaw = sessionStorage.getItem('registerData');
-      if (!registerRaw) throw new Error('Files are missing. Please go back to re-upload your files.');
+      if (!registerRaw) {
+        throw new Error('Personal information is missing. Please complete the Personal Info step again.');
+      }
       const registerData = JSON.parse(registerRaw);
 
       // ── Read skills & equipments ──────────────────────────────────────────
@@ -201,34 +265,49 @@ export const useReviewSubmit = () => {
       // ── Read service area ─────────────────────────────────────────────────
       const serviceAreaRaw = sessionStorage.getItem('serviceAreaData');
       const serviceAreaData = serviceAreaRaw ? JSON.parse(serviceAreaRaw) : {};
+      const serviceLocation = buildServiceLocation(serviceAreaData);
+      const serviceRadiusKm = typeof serviceAreaData.serviceRadiusKm === 'number'
+        ? serviceAreaData.serviceRadiusKm
+        : getAreaKm(Number(serviceAreaData.radius ?? 0));
+
+      // ── Read document upload metadata ─────────────────────────────────────
+      const documentRaw = sessionStorage.getItem('documentUploadData');
+      const documentData = documentRaw ? JSON.parse(documentRaw) : {};
+      if (!hasDocumentUploadData(documentData)) {
+        throw new Error('Document upload data is missing. Please complete the Document Upload step again.');
+      }
+      if (!hasAllRequiredFiles(selfieFile, aadharFile, panFile, policeCertFile, tradeLicenseFile)) {
+        throw new Error(REUPLOAD_DOCUMENTS_MESSAGE);
+      }
 
       // ── Read bank details ─────────────────────────────────────────────────
       const bankRaw = sessionStorage.getItem('bankDetailsData');
       const bankData = bankRaw ? JSON.parse(bankRaw) : {};
 
-      // ── Guard: all File objects must still be in Redux ────────────────────
-      if (!selfieFile || !aadharFile || !panFile || !policeCertFile || !tradeLicenseFile) {
-        throw new Error(
-          'Document files are missing. Please go back to the Document Upload step and re-upload your files.'
-        );
-      }
-
       // ── Build technicianProfile JSON ──────────────────────────────────────
       const technicianProfile = {
-        yearsOfExperience: skillsData.yearsOfExperience ?? 0,
-        languages: skillsData.languages ?? [],
-        services: skillsData.services ?? [],
-        brandExpertise: skillsData.brandExpertise ?? [],
-        hasLadder: skillsData.hasLadder ?? false,
-        hasACGauges: skillsData.hasACGauges ?? false,
-        hasSafetyEquipment: skillsData.hasSafetyEquipment ?? false,
-        hasVehicle: skillsData.hasVehicle ?? false,
-        serviceRadiusKm: serviceAreaData.radius ?? 0,
-        preferredAreas: serviceAreaData.preferredAreas ?? [],
-        pincodes: serviceAreaData.pincodes ?? [],
-        accountHolderName: bankData.accountHolderName ?? '',
-        accountNumber: bankData.accountNumber ?? '',
-        ifscCode: bankData.ifscCode ?? '',
+        yearsOfExperience:  (skillsData.yearsOfExperience  as number)  ?? 0,
+        languages:          (skillsData.languages           as string[]) ?? [],
+        services:           (skillsData.services            as { serviceId: number }[]) ?? [],
+        brandExpertise:     (skillsData.brandExpertise      as { brandName: string }[]) ?? [],
+        hasLadder:          (skillsData.hasLadder           as boolean) ?? false,
+        hasACGauges:        (skillsData.hasACGauges         as boolean) ?? false,
+        hasSafetyEquipment: (skillsData.hasSafetyEquipment as boolean) ?? false,
+        hasVehicle:         (skillsData.hasVehicle          as boolean) ?? false,
+        serviceRadiusKm,
+        accountHolderName:  (bankData.accountHolderName     as string)  ?? '',
+        accountNumber:      (bankData.accountNumber          as string)  ?? '',
+        ifscCode:           (bankData.ifscCode               as string)  ?? '',
+        bankName:           (bankData.bankName               as string)  ?? '',
+        // Flatten location fields (only included when geolocation was captured)
+        ...(serviceLocation && {
+          address:   serviceLocation.fullAddress,
+          latitude:  serviceLocation.latitude,
+          longitude: serviceLocation.longitude,
+          city:      serviceLocation.city,
+          state:     serviceLocation.state,
+          pincode:   serviceLocation.pincode,
+        }),
       };
 
       // ── Single multipart POST ─────────────────────────────────────────────

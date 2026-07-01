@@ -8,7 +8,6 @@ import { useState } from 'react';
 
 import { loginContent } from '@/constants/auth/loginContent';
 import { getTechnicianRedirectPath, handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
-import { validateEmail } from '@/lib/validator/email.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
@@ -44,7 +43,15 @@ export const LoginForm = () => {
   const handleSubmit = async () => {
     const nextErrors: LoginErrors = {};
 
-    const emailError = validateEmail(form.email);
+    // Accept a 10-digit mobile number OR a value containing '@' (email)
+    const identifier = form.email.trim();
+    const isPhone = /^\d{10}$/.test(identifier);
+    const isEmail = identifier.includes('@');
+    const emailError = !identifier
+      ? 'Email or mobile number is required'
+      : !isPhone && !isEmail
+      ? 'Enter a valid email or 10-digit mobile number'
+      : undefined;
     const passwordError = validatePassword(form.password);
 
     if (emailError) nextErrors.email = emailError;
@@ -59,10 +66,11 @@ export const LoginForm = () => {
       setApiError('');
       setIsLoading(true);
 
-      const response = await loginService({
-        email: form.email,
-        password: form.password,
-      });
+      const response = await loginService(
+        isPhone
+          ? { phone: identifier, password: form.password }
+          : { email: identifier, password: form.password },
+      );
 
       const { user, tokens } = response.data;
 
@@ -174,13 +182,13 @@ export const LoginForm = () => {
               </div>
             )}
 
-            {/* Email */}
+            {/* Email or Mobile Number */}
             <label className="grid gap-1.5">
-              <span className="text-sm font-medium text-slate-700">Email</span>
+              <span className="text-sm font-medium text-slate-700">Email or Mobile Number</span>
               <input
                 className={inputClassName}
                 name="email"
-                type="email"
+                type="text"
                 value={form.email}
                 onChange={(e) => handleChange('email', e.target.value)}
               />

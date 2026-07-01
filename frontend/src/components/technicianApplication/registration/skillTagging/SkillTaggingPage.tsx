@@ -3,7 +3,7 @@
 import type { LucideIcon } from 'lucide-react';
 import { Car, Hammer, Search, Shield, Wrench } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import { getAllServicesService } from '@/services/service.service';
@@ -64,6 +64,7 @@ export default function SkillTaggingPage() {
 
   // ── Form state ─────────────────────────────────────────────────────────────
   const [state, setState] = useState<SkillsEquipmentState>(INITIAL_STATE);
+  const hasRestoredDraft = useRef(false);
 
   // ── Services from API ──────────────────────────────────────────────────────
   const [services, setServices] = useState<AdminService[]>([]);
@@ -89,6 +90,7 @@ export default function SkillTaggingPage() {
 
   useEffect(() => {
     let active = true;
+    let restoreTimer: ReturnType<typeof window.setTimeout> | undefined;
 
     const fetchServices = async () => {
       try {
@@ -114,20 +116,32 @@ export default function SkillTaggingPage() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved) as Partial<SkillsEquipmentState>;
-        setTimeout(() => {
+        restoreTimer = window.setTimeout(() => {
           if (active) {
             setState((prev) => ({ ...prev, ...parsed }));
+            hasRestoredDraft.current = true;
           }
         }, 0);
       } catch {
+        hasRestoredDraft.current = true;
         // ignore malformed data
       }
+    } else {
+      hasRestoredDraft.current = true;
     }
 
     return () => {
       active = false;
+      if (restoreTimer) {
+        window.clearTimeout(restoreTimer);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (!hasRestoredDraft.current) return;
+    sessionStorage.setItem('skillsEquipmentData', JSON.stringify(state));
+  }, [state]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
