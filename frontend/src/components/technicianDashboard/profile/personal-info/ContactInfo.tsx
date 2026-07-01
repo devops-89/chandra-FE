@@ -6,7 +6,12 @@ import {
   Phone,
 } from '@mui/icons-material';
 
+import { useAppSelector } from '@/redux/hooks';
+
 export default function ContactInfo() {
+  const technician = useAppSelector(
+    (state) => state.technicianProfile.profile
+  );
   return (
     <div className="space-y-5">
       <div className="flex gap-4">
@@ -18,7 +23,9 @@ export default function ContactInfo() {
           </p>
 
           <p className="font-semibold text-slate-900">
-            Vikram Singh
+            {technician
+            ? `${technician.firstName} ${technician.lastName}`
+            : 'Loading...'}
           </p>
         </div>
       </div>
@@ -32,7 +39,7 @@ export default function ContactInfo() {
           </p>
 
           <p className="font-semibold text-slate-900">
-            +91 98765 43210
+            {technician?.phone ?? 'Loading...'}
           </p>
         </div>
       </div>
@@ -46,7 +53,7 @@ export default function ContactInfo() {
           </p>
 
           <p className="font-semibold text-slate-900">
-            vikram@example.com
+            {technician?.email ?? 'Loading...'}
           </p>
         </div>
       </div>

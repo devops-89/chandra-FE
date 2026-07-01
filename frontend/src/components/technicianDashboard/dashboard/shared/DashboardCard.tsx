@@ -5,14 +5,17 @@ import type { ReactNode } from 'react';
 interface DashboardCardProps {
   children: ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
 export default function DashboardCard({
   children,
   className = '',
+  onClick,
 }: DashboardCardProps) {
   return (
     <div
+      onClick={onClick}
       className={`
         bg-white
         rounded-xl

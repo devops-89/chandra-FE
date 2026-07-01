@@ -2,7 +2,14 @@
 
 import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
 
+import { useAppSelector } from '@/redux/hooks';
+
 export default function ExperienceSection() {
+  const technician = useAppSelector(
+  (state) => state.technicianProfile.profile
+);
+
+const profile = technician?.technicianProfile;
   return (
     <div className="flex gap-4">
       <WorkHistoryIcon className="text-emerald-500" />
@@ -13,11 +20,15 @@ export default function ExperienceSection() {
         </p>
 
         <p className="font-semibold text-slate-900">
-          5 Years
+          {profile
+          ? `${profile.yearsOfExperience} Years`
+          : 'Loading...'}
         </p>
 
         <p className="text-slate-500 mt-1">
-          Residential & Commercial Services
+          {profile
+          ? `${profile.status.replaceAll('_', ' ')} • ${profile.jobStatus}`
+          : ''}
         </p>
       </div>
     </div>

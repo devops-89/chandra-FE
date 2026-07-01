@@ -2,9 +2,14 @@
 
 import Image from 'next/image';
 
+import { useAppSelector } from '@/redux/hooks';
+
 import VerificationBadge from './VerificationBadge';
 
 export default function ProfileHero() {
+  const technician = useAppSelector(
+    (state) => state.technicianProfile.profile
+  );
   return (
     <div
       className="
@@ -28,7 +33,10 @@ export default function ProfileHero() {
           "
         >
           <Image
-            src="/images/technician-avatar.png"
+            src={
+              technician?.profileImage ??
+              '/images/technician-avatar.png'
+            }
             alt="Technician"
             width={120}
             height={120}
@@ -39,18 +47,31 @@ export default function ProfileHero() {
         <div className="flex-1 text-center md:text-left">
           <div className="flex flex-col md:flex-row md:items-center gap-3">
             <h2 className="text-3xl font-bold text-slate-900">
-              Vikram
+              {technician
+              ? `${technician.firstName} ${technician.lastName}`
+              : 'Loading...'}
             </h2>
 
             <VerificationBadge />
           </div>
 
           <p className="mt-2 text-slate-500">
-            AC Technician • Electrical Services
+            {technician?.role === 'TECHNICIAN'
+            ? 'Technician'
+            : technician?.role}
           </p>
 
           <p className="mt-1 text-slate-400">
-            Joined March 2025
+            Joined{' '}
+            {technician
+            ? new Date(technician.createdAt).toLocaleDateString(
+              'en-IN',
+              {
+                month: 'long',
+                year: 'numeric',
+              }
+            )
+            : ''}
           </p>
         </div>
 

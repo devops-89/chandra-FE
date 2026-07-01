@@ -1,8 +1,14 @@
 'use client';
-
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
+import { useAppSelector } from '@/redux/hooks';
+
 export default function BankDetailsCard() {
+  const technician = useAppSelector(
+    (state) => state.technicianProfile.profile
+  );
+
+  const profile = technician?.technicianProfile;
   return (
     <div
       className="
@@ -30,7 +36,9 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            Vikram
+            {profile
+            ? `${profile.accountHolderName}`
+            : 'Loading...'}
           </p>
         </div>
 
@@ -40,7 +48,9 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            XXXX XXXX 4587
+            {profile
+            ? `${profile.accountNumber}`
+            : 'Loading...'}
           </p>
         </div>
 
@@ -50,7 +60,20 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            HDFC0001234
+            {profile
+            ? `${profile.ifscCode}`
+            : 'Loading...'}
+          </p>
+        </div>
+        <div>
+          <p className="text-sm text-slate-500">
+            Bank Name
+          </p>
+
+          <p className="font-semibold">
+            {profile
+            ? `${profile.bankName}`
+            : 'Loading...'}
           </p>
         </div>
       </div>

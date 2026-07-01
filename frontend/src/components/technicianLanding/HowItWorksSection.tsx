@@ -45,7 +45,7 @@ export default function HowItWorksSection() {
               whileHover={{ y: -3, transition: { duration: 0.2 } }}
             >
               {/* Step number */}
-              <span className="shrink-0 text-3xl font-black text-emerald-100 select-none">
+              <span className="shrink-0 text-3xl font-black text-emerald-600 select-none">
                 {step.number}
               </span>
               <div>

@@ -1,17 +1,18 @@
 'use client';
 
-import CreditCardIcon from '@mui/icons-material/CreditCard';
+import BadgeIcon from '@mui/icons-material/Badge';
 import VerifiedIcon from '@mui/icons-material/Verified';
 
 import { useAppSelector } from '@/redux/hooks';
 
-export default function PanCard() {
+export default function TradeLicenseCard() {
   const technician = useAppSelector(
     (state) => state.technicianProfile.profile
   );
 
-  const panUrl =
-    technician?.technicianProfile.panUrl;
+  const tradeLicenseUrl =
+    technician?.technicianProfile.tradeLicenseUrl;
+
   return (
     <div
       className="
@@ -19,26 +20,28 @@ export default function PanCard() {
         items-center
         justify-between
         p-4
-        rounded-2xla
+        rounded-2xl
         border
         border-slate-200
       "
     >
       <div className="flex items-center gap-4">
-        <CreditCardIcon className="text-emerald-500" />
+        <BadgeIcon className="text-emerald-500" />
 
         <div>
           <p className="font-semibold">
-            PAN Card
+            Trade License
           </p>
 
           <p className="text-sm text-slate-500">
-            {panUrl ? 'Document Uploaded' : 'Not Uploaded'}
+            {tradeLicenseUrl
+              ? 'Document Uploaded'
+              : 'Not Uploaded'}
           </p>
         </div>
       </div>
 
-      {panUrl && (
+      {tradeLicenseUrl && (
         <VerifiedIcon className="text-emerald-500" />
       )}
     </div>
