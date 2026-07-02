@@ -1,6 +1,6 @@
 export const API_BASE_URLS = {
-  auth: 'http://10.248.126.88:8000/api',
-  userService: 'http://10.248.126.88:8001/api',
+  auth: 'http://192.168.1.39:8000/api',
+  userService: 'http://192.168.1.39:8001/api',
 } as const;
 
 export type ApiServicePurpose = keyof typeof API_BASE_URLS;

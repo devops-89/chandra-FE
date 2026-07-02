@@ -21,7 +21,7 @@ import { getProfileService } from '@/services/auth.service';
  * When NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK === 'false' (dev): no redirects.
  *
  * Progress restoration:
- *   On every mount, if the user has a valid accessToken, we fetch GET /auth/profile
+ *   On every mount, if a logged-in user record is present, we fetch GET /auth/profile
  *   and call syncProgressFromProfile() to rebuild the bitmask from backend data.
  *   This handles:
  *     1. First visit after login (bitmask never seeded)
@@ -34,7 +34,7 @@ const STORAGE_KEY = 'technician_onboarding_progress';
 
 function needsSync(): boolean {
   if (typeof window === 'undefined') return false;
-  if (!localStorage.getItem('accessToken')) return false;   // not logged in
+  if (!localStorage.getItem('user')) return false;   // not logged in
   const raw = localStorage.getItem(STORAGE_KEY);
   if (raw === null) return true;                             // key wiped
   if (parseInt(raw, 10) === 0) return true;                 // mask is 0 — may be stale

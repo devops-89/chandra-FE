@@ -332,9 +332,7 @@ export const useReviewSubmit = () => {
 
       const { user, tokens } = response.data;
 
-      // ── Persist tokens & update Redux auth state ──────────────────────────
-      localStorage.setItem('accessToken', tokens.accessToken);
-      localStorage.setItem('refreshToken', tokens.refreshToken);
+      // ── Persist only the user profile & update Redux auth state ───────────
       localStorage.setItem('user', JSON.stringify(user));
 
       dispatch(setCredentials({

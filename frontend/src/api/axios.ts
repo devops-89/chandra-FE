@@ -1,10 +1,11 @@
 import axios, { type AxiosInstance } from 'axios';
 
 import { type ApiServicePurpose, getApiBaseUrl } from './endpoints';
+import { store } from '@/redux/store';
 
 const attachInterceptors = (client: AxiosInstance) => {
   client.interceptors.request.use((config) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    const token = store.getState().auth.accessToken;
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

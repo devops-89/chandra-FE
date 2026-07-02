@@ -21,8 +21,7 @@ const PublicNavbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    const id = setTimeout(() => setIsAuthenticated(reduxAuthenticated || !!token), 0);
+    const id = setTimeout(() => setIsAuthenticated(reduxAuthenticated), 0);
     return () => clearTimeout(id);
   }, [reduxAuthenticated]);
 

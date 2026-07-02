@@ -6,30 +6,24 @@ import { useEffect, useState } from 'react';
 import DashboardHeader from '@/components/customerDashboard/layout/DashboardHeader';
 import DashboardSidebar from '@/components/customerDashboard/layout/DashboardSidebar';
 import { getDashboardPathForRole } from '@/lib/authApi/redirectUtils';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { setCredentials } from '@/redux/slices/authSlice';
+import { useAppSelector } from '@/redux/hooks';
 import type { DashboardLayoutProps } from '@/types/dashboardTypes/dashboard.types';
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const { isAuthenticated, user: reduxUser } = useAppSelector((state) => state.auth);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
     const userStr = localStorage.getItem('user');
 
-    if (!token) {
-      // Only redirect to /login if we're not already navigating away
-      // (e.g. after logout the sidebar already calls router.push('/'))
+    if (!isAuthenticated && !userStr) {
       router.replace('/login');
       return;
     }
 
-    if (!isAuthenticated && userStr) {
+    if (userStr) {
       try {
         const user = JSON.parse(userStr);
         const roleDashboardPath = getDashboardPathForRole(user?.role);
@@ -38,17 +32,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           router.replace(roleDashboardPath);
           return;
         }
-
-        dispatch(
-          setCredentials({
-            user,
-            accessToken: token,
-            refreshToken: refreshToken || '',
-          }),
-        );
       } catch {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
         router.replace('/login');
         return;

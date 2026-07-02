@@ -23,21 +23,20 @@ export default function PublicRoute({ children }: PublicRouteProps) {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    const isAuthenticated = reduxAuthenticated || !!token;
+    let role = reduxRole;
 
-    if (isAuthenticated) {
-      let role = reduxRole;
-
-      if (!role) {
-        try {
-          const userStr = localStorage.getItem('user');
-          if (userStr) role = JSON.parse(userStr)?.role;
-        } catch {
-          // ignore malformed JSON
-        }
+    if (!role) {
+      try {
+        const userStr = localStorage.getItem('user');
+        if (userStr) role = JSON.parse(userStr)?.role;
+      } catch {
+        // ignore malformed JSON
       }
+    }
 
+    // If Redux has not hydrated yet but a persisted user exists, treat the
+    // session as authenticated and send them to their dashboard immediately.
+    if (reduxAuthenticated || role) {
       router.replace(handlePostAuthRedirect(role));
       return;
     }

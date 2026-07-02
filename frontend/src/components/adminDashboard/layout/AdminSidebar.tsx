@@ -23,8 +23,6 @@ const SidebarContent = ({
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     dispatch(logout());
     router.push('/');
@@ -94,7 +92,9 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
             <p className="text-sm text-slate-500">Admin Portal</p>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close menu"
             className=" rounded-full p-2 text-emerald-700 hover:bg-emerald-100 transition-colors "
           >
             <X size={24} />

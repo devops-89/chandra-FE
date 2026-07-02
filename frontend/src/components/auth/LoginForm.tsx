@@ -74,8 +74,7 @@ export const LoginForm = () => {
 
       const { user, tokens } = response.data;
 
-      localStorage.setItem('accessToken', tokens.accessToken);
-      localStorage.setItem('refreshToken', tokens.refreshToken);
+      // Persist only the user profile. Tokens stay out of localStorage.
       localStorage.setItem('user', JSON.stringify(user));
 
       dispatch(
