@@ -2,7 +2,9 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { createAddressService } from '@/services/customer.service';
 import { getCustomerProfileService } from '@/services/customer.service';
-import type {Address, CreateAddressRequest} from '@/types/address.types';
+import { updateAddressService } from '@/services/customer.service';
+import { deleteAddressService } from '@/services/customer.service';
+import type {Address, CreateAddressRequest, UpdateAddressRequest,} from '@/types/address.types';
 import type { CustomerProfile } from '@/types/customer/profile.types';
 
 interface CustomerProfileState {
@@ -65,6 +67,52 @@ export const fetchCustomerProfile = createAsyncThunk<
   }
 );
 
+export const updateAddress = createAsyncThunk<
+  Address,
+  UpdateAddressRequest,
+  { rejectValue: string }
+>(
+  'customerProfile/updateAddress',
+
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await updateAddressService(payload);
+    } catch (err) {
+      return rejectWithValue(
+        err instanceof Error
+          ? err.message
+          : 'Failed to update address'
+      );
+    }
+  }
+);
+
+export const deleteAddress = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>(
+  'customerProfile/deleteAddress',
+
+  async (id, { rejectWithValue }) => {
+
+    try {
+
+      return await deleteAddressService(id);
+
+    } catch (err) {
+
+      return rejectWithValue(
+        err instanceof Error
+          ? err.message
+          : 'Failed to delete address'
+      );
+
+    }
+
+  }
+);
+
 const customerProfileSlice = createSlice({
   name: 'customerProfile',
   initialState,
@@ -77,41 +125,90 @@ const customerProfileSlice = createSlice({
   },
 
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchCustomerProfile.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-
-      .addCase(fetchCustomerProfile.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.profile = action.payload;
-      })
-
-      .addCase(fetchCustomerProfile.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload ?? 'Unknown error';
-      })
-
-      .addCase(createAddress.pending, (state) => {
+  builder
+    // ─── Fetch Customer Profile ───────────────────────────────
+    .addCase(fetchCustomerProfile.pending, (state) => {
       state.isLoading = true;
       state.error = null;
-     })
+    })
 
-     .addCase(createAddress.fulfilled, (state, action) => {
-     state.isLoading = false;
+    .addCase(fetchCustomerProfile.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.profile = action.payload;
+    })
 
-    if (state.profile) {
-     state.profile.addresses.push(action.payload);
-    }
+    .addCase(fetchCustomerProfile.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload ?? 'Unknown error';
+    })
+
+    // ─── Create Address ───────────────────────────────────────
+    .addCase(createAddress.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    })
+
+    .addCase(createAddress.fulfilled, (state, action) => {
+      state.isLoading = false;
+
+      if (state.profile) {
+        state.profile.addresses.push(action.payload);
+      }
     })
 
     .addCase(createAddress.rejected, (state, action) => {
-     state.isLoading = false;
-     state.error = action.payload ?? 'Unknown error';
+      state.isLoading = false;
+      state.error = action.payload ?? 'Unknown error';
     })
-    },
+
+    // ─── Update Address ───────────────────────────────────────
+    .addCase(updateAddress.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    })
+
+    .addCase(updateAddress.fulfilled, (state, action) => {
+      state.isLoading = false;
+
+      if (state.profile) {
+        const index = state.profile.addresses.findIndex(
+          (address) => address.id === action.payload.id
+        );
+
+        if (index !== -1) {
+          state.profile.addresses[index] = action.payload;
+        }
+      }
+    })
+
+    .addCase(updateAddress.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload ?? 'Unknown error';
+    })
+
+    // ─── Delete Address ───────────────────────────────────────
+    .addCase(deleteAddress.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    })
+
+    .addCase(deleteAddress.fulfilled, (state, action) => {
+      state.isLoading = false;
+
+      if (state.profile) {
+        state.profile.addresses =
+          state.profile.addresses.filter(
+            (address) => address.id !== action.payload
+          );
+      }
+    })
+
+    .addCase(deleteAddress.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload ?? 'Unknown error';
     });
+  },
+});
 
 export const {
   clearCustomerProfile,

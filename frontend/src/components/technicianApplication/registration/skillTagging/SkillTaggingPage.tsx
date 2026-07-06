@@ -270,7 +270,7 @@ export default function SkillTaggingPage() {
                   key={svc.id}
                   type="button"
                   onClick={() => toggleService(svc.id)}
-                  className={`group relative w-full text-left rounded-2xl bg-white p-6 shadow-sm transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between min-h-[140px] ${isSelected
+                  className={`group relative w-full text-left rounded-2xl bg-white p-6 shadow-sm transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between min-h-35 ${isSelected
                     ? 'border-2 border-emerald-700 bg-emerald-50'
                     : 'border border-gray-100'
                     }`}
@@ -293,7 +293,7 @@ export default function SkillTaggingPage() {
                     <h3 className={`text-lg font-semibold mb-2 pr-8 ${isSelected ? 'text-emerald-800' : 'text-gray-900'}`}>
                       {svc.name}
                     </h3>
-                    <div className="min-h-[48px]">
+                    <div className="min-h-12">
                       <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">
                         {svc.description || ''}
                       </p>

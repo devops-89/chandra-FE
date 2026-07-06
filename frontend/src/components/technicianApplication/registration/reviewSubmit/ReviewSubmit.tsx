@@ -1,11 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import { getAllServicesService } from '@/services/service.service';
 import type { AdminService } from '@/types/admin/service.types';
+
 import { containerVariants } from './animations/reviewAnimations';
 import LaunchSection from './components/LaunchSection';
 import BankDetailsSummaryCard from './components/ProfileSummaryCard';

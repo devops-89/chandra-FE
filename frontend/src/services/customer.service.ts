@@ -4,11 +4,13 @@ import type {
   Address,
   CreateAddressRequest,
   CreateAddressResponse,
+  UpdateAddressRequest,
 } from '@/types/address.types';
 import type {
   CustomerProfile,
   CustomerProfileResponse,
 } from '@/types/customer/profile.types';
+
 
 export const getCustomerProfileService = async (): Promise<CustomerProfile> => {
   const response =
@@ -32,4 +34,29 @@ export const createAddressService = async (
     );
 
   return response.data.data.data;
+};
+
+export const updateAddressService = async (
+  payload: UpdateAddressRequest
+): Promise<Address> => {
+  const { id, ...body } = payload;
+
+  const response =
+    await api.patch<CreateAddressResponse>(
+      `${ENDPOINTS.UPDATE_ADDRESS}/${id}`,
+      body
+    );
+
+  return response.data.data.data;
+};
+
+export const deleteAddressService = async (
+  id: number
+): Promise<number> => {
+
+  await api.delete(
+    `${ENDPOINTS.DELETE_ADDRESS}/${id}`
+  );
+
+  return id;
 };

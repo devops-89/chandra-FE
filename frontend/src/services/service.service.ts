@@ -21,11 +21,16 @@ function normalizeService(raw: ApiService): AdminService {
   const p = raw.pricingRule;
   const toNum = (v?: string | number) => (v != null ? parseFloat(String(v)) : 0);
 
+  const getSafeImage = (url: string | null | undefined) => {
+    if (!url || url === 'null' || url === 'undefined') return '';
+    return url;
+  };
+
   return {
     id: raw.id,
     name: raw.name,
     description: raw.description ?? '',
-    image: raw.iconDownloadUrl ?? raw.iconUrl ?? '',
+    image: getSafeImage(raw.iconDownloadUrl) || getSafeImage(raw.iconUrl) || '',
     isActive: raw.isActive ?? false,
     price: toNum(p?.serviceBasePrice),
     perHourRate: toNum(p?.perHourRate),

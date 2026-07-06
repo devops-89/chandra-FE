@@ -126,7 +126,7 @@ export default function Profile() {
         {/* Left — Identity card + nav */}
         <aside className="lg:col-span-4 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
           {/* Identity card */}
-          <div className="p-6 bg-gradient-to-br from-emerald-600 to-teal-700 text-white">
+          <div className="p-6 bg-linear-to-br from-emerald-600 to-teal-700 text-white">
             <div className="flex flex-col items-center text-center gap-3">
               <div className="h-20 w-20 rounded-2xl bg-white/20 backdrop-blur-sm text-white flex items-center justify-center text-2xl font-bold ring-4 ring-white/30">
                 {initials}
@@ -158,7 +158,7 @@ export default function Profile() {
         </aside>
 
         {/* Right — Dynamic content */}
-        <main className="lg:col-span-8 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden min-h-[500px]">
+        <main className="lg:col-span-8 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden min-h-125">
           <ContentPanel activeTab={activeTab} />
         </main>
       </div>

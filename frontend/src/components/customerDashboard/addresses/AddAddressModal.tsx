@@ -4,7 +4,7 @@ import { Loader2,X } from 'lucide-react';
 import { useState } from 'react';
 
 import { useAppDispatch } from '@/redux/hooks';
-import { createAddress } from '@/redux/slices/customerProfileSlice';
+import { createAddress, fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
 
 interface AddAddressModalProps {
   isOpen: boolean;
@@ -105,6 +105,9 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
         isDefault,
       })
     ).unwrap();
+
+    // Re-fetch the profile so the list always reflects the latest backend state
+    dispatch(fetchCustomerProfile());
 
     setSuccess(true);
 

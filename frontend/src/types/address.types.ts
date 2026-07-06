@@ -36,3 +36,17 @@ export interface CreateAddressResponse {
     data: Address;
   };
 }
+
+export interface UpdateAddressRequest {
+  id: number;
+
+  latitude: number;
+  longitude: number;
+
+  fullAddress: string;
+  city: string;
+  state: string;
+  pincode: string;
+
+  label: string;
+}
