@@ -44,11 +44,15 @@ export const registerCustomerService = async (
 ): Promise<RegisterCustomerResponse> => {
   const formData = new FormData();
 
-  formData.append('email', payload.email);
-  formData.append('username', payload.username);
   formData.append('phone', payload.phone);
+  if (payload.email) {
+    formData.append('email', payload.email);
+  }
+  formData.append('username', payload.username);
   formData.append('firstName', payload.firstName);
-  formData.append('lastName', payload.lastName);
+  if (payload.lastName) {
+    formData.append('lastName', payload.lastName);
+  }
   formData.append('password', payload.password);
   formData.append('customerAddress', JSON.stringify(payload.customerAddress));
 
@@ -97,11 +101,15 @@ export const registerTechnicianService = async (
 ): Promise<RegisterTechnicianResponse> => {
   const formData = new FormData();
 
-  formData.append('email',     payload.email);
+  if (payload.email) {
+    formData.append('email', payload.email);
+  }
   formData.append('username',  payload.username);
   formData.append('phone',     payload.phone);
   formData.append('firstName', payload.firstName);
-  formData.append('lastName',  payload.lastName);
+  if (payload.lastName) {
+    formData.append('lastName', payload.lastName);
+  }
   formData.append('password',  payload.password);
   formData.append('technicianProfile', JSON.stringify(technicianProfile));
 

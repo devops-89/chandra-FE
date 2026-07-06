@@ -10,6 +10,7 @@ import {
   isStepComplete,
   syncProgressFromProfile,
 } from '@/lib/onboarding/onboardingProgress';
+import { getTechnicianRedirectPath } from '@/lib/authApi/redirectUtils';
 import { getProfileService } from '@/services/auth.service';
 
 /**
@@ -32,6 +33,11 @@ import { getProfileService } from '@/services/auth.service';
 
 const STORAGE_KEY = 'technician_onboarding_progress';
 
+function hasAuthContext(): boolean {
+  if (typeof window === 'undefined') return false;
+  return !!localStorage.getItem('user');
+}
+
 function needsSync(): boolean {
   if (typeof window === 'undefined') return false;
   if (!localStorage.getItem('user')) return false;   // not logged in
@@ -49,14 +55,41 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
     if (didRun.current) return;
     didRun.current = true;
 
-    if (!isOnboardingLockEnabled()) return; // dev mode — no lock
-
     const run = async () => {
+      if ((stepIndex === 0 || stepIndex === -1) && hasAuthContext()) {
+        try {
+          const res = await getProfileService();
+          console.log('[DEBUG useOnboardingGuard] getProfileService raw response:', res);
+          console.log('[DEBUG useOnboardingGuard] getProfileService res.data:', res?.data);
+          const technicianProfile = res.data?.technicianProfile;
+          console.log('[DEBUG useOnboardingGuard] technicianProfile:', technicianProfile);
+
+          if (technicianProfile) {
+            const redirectPath = getTechnicianRedirectPath({
+              userStatus: res.data.status,
+              technicianProfile,
+            });
+            console.log('[DEBUG useOnboardingGuard] Redirecting to:', redirectPath);
+            router.replace(redirectPath);
+            return;
+          } else {
+            console.log('[DEBUG useOnboardingGuard] technicianProfile is empty/null, skipping early redirect.');
+          }
+        } catch (e) {
+          console.error('[DEBUG useOnboardingGuard] Profile fetch error:', e);
+          // Profile fetch failed — fall through to the existing guard logic.
+        }
+      }
+
+      if (!isOnboardingLockEnabled()) return; // dev mode — no lock
+
       // ── Sync bitmask from backend when it may be stale or missing ─────────
       if (needsSync()) {
         try {
           const res = await getProfileService();
-          const p   = res.data.technicianProfile;
+          console.log('[DEBUG useOnboardingGuard] needsSync getProfileService raw response:', res);
+          const p   = res.data?.technicianProfile;
+          console.log('[DEBUG useOnboardingGuard] needsSync technicianProfile:', p);
           if (p) {
             syncProgressFromProfile({
               id:                p.id,

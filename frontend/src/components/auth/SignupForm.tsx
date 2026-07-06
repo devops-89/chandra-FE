@@ -125,9 +125,9 @@ export const SignupForm = () => {
                 </label>
               </div>
 
-              {/* Phone */}
+              {/* Mobile Number */}
               <label className="grid gap-1.5">
-                <span className="text-sm font-medium text-slate-700">Phone</span>
+                <span className="text-sm font-medium text-slate-700">Mobile Number</span>
                 <input
                   className={inputClassName}
                   name="phone"
@@ -141,7 +141,7 @@ export const SignupForm = () => {
 
               {/* Email */}
               <label className="grid gap-1.5">
-                <span className="text-sm font-medium text-slate-700">Email</span>
+                <span className="text-sm font-medium text-slate-700">Email (optional)</span>
                 <input
                   className={inputClassName}
                   name="email"
@@ -218,8 +218,7 @@ export const SignupForm = () => {
       {/* OTP verification modal — mounted outside main so it overlays everything */}
       {showOtpModal && (
         <OtpModal
-          email={form.email}
-          phone={form.phone}
+          identifier={form.phone}
           isVerifying={isVerifying}
           apiError={otpApiError}
           onVerify={handleVerifyOtp}

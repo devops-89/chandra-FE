@@ -17,7 +17,7 @@ function validateFirstName(v: string): string | undefined {
   if (v.trim().length < 2) return 'Minimum 2 characters';
 }
 function validateLastName(v: string): string | undefined {
-  if (!v.trim()) return 'Last name is required';
+  if (!v.trim()) return undefined;
   if (v.trim().length < 2) return 'Minimum 2 characters';
 }
 function validateUsername(v: string): string | undefined {
@@ -30,7 +30,7 @@ function validatePhone(v: string): string | undefined {
   if (!/^\+?[0-9]{10,15}$/.test(v.replace(/\s/g, ''))) return 'Enter a valid phone number';
 }
 function validateEmail(v: string): string | undefined {
-  if (!v.trim()) return 'Email is required';
+  if (!v.trim()) return undefined;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Enter a valid email address';
 }
 function validatePassword(v: string): string | undefined {
@@ -130,7 +130,7 @@ export function usePersonalInfoForm() {
       setFormData((prev) => ({ ...prev, [field]: value }));
       if (apiError) setApiError('');
       // Reset OTP state when contact details change after OTP was sent.
-      if ((field === 'phoneNumber' || field === 'email') && otpSent) {
+      if (field === 'phoneNumber' && otpSent) {
         setOtpSent(false);
         setOtpVerified(false);
         setPhoneAlreadyInUse(false);
@@ -161,7 +161,6 @@ export function usePersonalInfoForm() {
 
   // ── Step 1: Send mobile OTP ──────────────────────────────────────────────
   const handleSendOtp = useCallback(async (): Promise<void> => {
-    // The existing OTP API accepts both values, but the technician code is sent to mobile.
     const phoneErr = validatePhone(formData.phoneNumber);
     const emailErr = validateEmail(formData.email);
     setTouched((p) => ({ ...p, phoneNumber: true, email: true }));
@@ -173,7 +172,6 @@ export function usePersonalInfoForm() {
     setSendingOtp(true);
     try {
       await generateOtpService({
-        email: formData.email.trim(),
         phone: formData.phoneNumber.trim(),
         role: 'TECHNICIAN',
       });
@@ -201,7 +199,6 @@ export function usePersonalInfoForm() {
     setVerifyingOtp(true);
     try {
       await verifyOtpService({
-        email: formData.email.trim(),
         phone: formData.phoneNumber.trim(),
         otp: otp.trim(),
       });
@@ -214,7 +211,7 @@ export function usePersonalInfoForm() {
     } finally {
       setVerifyingOtp(false);
     }
-  }, [otp, formData.email, formData.phoneNumber]);
+  }, [otp, formData.phoneNumber]);
 
   // ── Step 3: Register ─────────────────────────────────────────────────────
   const handleRegister = useCallback(async (): Promise<void> => {

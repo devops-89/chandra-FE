@@ -18,9 +18,7 @@ export const validateSignup = (
     errors.firstName = 'First name must contain letters only';
   }
 
-  if (!values.lastName.trim()) {
-    errors.lastName = 'Last name is required';
-  } else if (!/^[A-Za-z\s'-]+$/.test(values.lastName.trim())) {
+  if (values.lastName.trim() && !/^[A-Za-z\s'-]+$/.test(values.lastName.trim())) {
     errors.lastName = 'Last name must contain letters only';
   }
 
@@ -32,12 +30,14 @@ export const validateSignup = (
     errors.phone = phoneError;
   }
 
-  const emailError = validateEmail(
-    values.email,
-  );
+  const email = values.email.trim();
 
-  if (emailError) {
-    errors.email = emailError;
+  if (email) {
+    const emailError = validateEmail(email);
+
+    if (emailError) {
+      errors.email = emailError;
+    }
   }
 
   const passwordError =

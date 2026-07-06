@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   allowedDevOrigins: [
-    '192.168.1.6'
+    '192.168.1.33'
   ],
   images: {
     minimumCacheTTL: 3600,

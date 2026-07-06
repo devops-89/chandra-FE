@@ -87,7 +87,6 @@ export const useSignupForm = () => {
       setIsSendingOtp(true);
 
       await generateOtpService({
-        email: form.email.trim(),
         phone: form.phone.trim(),
         role: 'CUSTOMER',
       });
@@ -110,7 +109,6 @@ export const useSignupForm = () => {
 
       // 2a. Verify OTP
       await verifyOtpService({
-        email: form.email.trim(),
         phone: form.phone.trim(),
         otp,
       });
@@ -119,18 +117,18 @@ export const useSignupForm = () => {
       const username = `${form.firstName.trim().toLowerCase()}_${form.lastName.trim().toLowerCase()}`;
 
       await registerCustomerService({
-        email: form.email.trim(),
-        username,
         phone: form.phone.trim(),
+        email: form.email.trim() || undefined,
+        username,
         firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
+        lastName: form.lastName.trim() || undefined,
         password: form.password,
         customerAddress: DEFAULT_ADDRESS,
       });
 
       // 2c. Auto-login with the registered credentials
       const loginResponse = await loginService({
-        email: form.email.trim(),
+        identifier: form.phone.trim(),
         password: form.password,
       });
 
@@ -160,7 +158,6 @@ export const useSignupForm = () => {
       setIsResending(true);
 
       await generateOtpService({
-        email: form.email.trim(),
         phone: form.phone.trim(),
         role: 'CUSTOMER',
       });

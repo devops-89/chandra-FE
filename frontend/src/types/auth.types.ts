@@ -30,19 +30,19 @@ export type SignupFieldsProps = {
 
 export interface User {
   id: number;
-  email: string;
+  email: string | null;
   username: string;
   firstName: string;
-  lastName: string;
+  lastName: string | null;
   role: string;
   status?: string;
+  technicianProfile?: ApiTechnicianProfileData | null;
 }
 
 // ─── Login ────────────────────────────────────────────────────────────────────
 
 export interface LoginRequest {
-  email?: string;
-  phone?: string;
+  identifier: string;
   password: string;
 }
 
@@ -63,7 +63,6 @@ export interface LoginResponse {
 // ─── Generate OTP ─────────────────────────────────────────────────────────────
 
 export interface GenerateOtpRequest {
-  email: string;
   phone: string;
   role: 'CUSTOMER' | 'TECHNICIAN';
 }
@@ -80,7 +79,6 @@ export interface GenerateOtpResponse {
 // ─── Verify OTP ───────────────────────────────────────────────────────────────
 
 export interface VerifyOtpRequest {
-  email: string;
   phone: string;
   otp: string;
 }
@@ -110,11 +108,11 @@ export interface CustomerAddress {
 
 /** Sent as multipart/form-data */
 export interface RegisterCustomerRequest {
-  email: string;
-  username: string;
   phone: string;
+  email?: string;
+  username: string;
   firstName: string;
-  lastName: string;
+  lastName?: string;
   password: string;
   customerAddress: CustomerAddress;
 }
@@ -133,18 +131,18 @@ export interface RegisterCustomerResponse {
 
 /** Sent as multipart/form-data to POST /users/register (TECHNICIAN role) */
 export interface RegisterTechnicianRequest {
-  email: string;
+  email?: string;
   username: string;
   phone: string;
   firstName: string;
-  lastName: string;
+  lastName?: string;
   password: string;
 }
 
 export interface TechnicianProfile {
   id: number;
   userId: number;
-  status: 'INCOMPLETE' | 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
   serviceRadiusKm: number;
   preferredAreas: string[];
   pincodes: string[];
@@ -213,7 +211,7 @@ export interface ApiBrandExpertise {
 export interface ApiTechnicianProfileData {
   id: number;
   userId: number;
-  status: 'INCOMPLETE' | 'PENDING' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
+  status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
   address: string | null;
   yearsOfExperience: number | null;
   languages: string[];

@@ -83,6 +83,10 @@ import {
 } from '@/lib/onboarding/onboardingProgress';
 import type { ApiTechnicianProfileData } from '@/types/auth.types';
 
+function normalizeStatus(status?: string | null): string {
+  return status?.trim().toUpperCase() ?? '';
+}
+
 /**
  * Determines where to redirect a TECHNICIAN after login based on live profile data.
  * Called with the response from GET /auth/profile.
@@ -100,9 +104,20 @@ export function getTechnicianRedirectPath(params: {
   technicianProfile: ApiTechnicianProfileData | null;
 }): string {
   const { userStatus, technicianProfile } = params;
+  const normalizedUserStatus = normalizeStatus(userStatus);
+  const normalizedProfileStatus = normalizeStatus(technicianProfile?.status);
+
+  console.log('[DEBUG redirectUtils] getTechnicianRedirectPath inputs:', {
+    rawUserStatus: userStatus,
+    normalizedUserStatus,
+    rawTechnicianProfile: technicianProfile,
+    normalizedProfileStatus,
+    isVerified: technicianProfile?.isVerified ?? null,
+  });
 
   // 1. No profile created yet
   if (!technicianProfile) {
+    console.log('[DEBUG redirectUtils] Condition met: no technicianProfile. Redirecting to /technician/onboarding/register');
     return '/technician/onboarding/register';
   }
 
@@ -126,20 +141,31 @@ export function getTechnicianRedirectPath(params: {
   });
 
   // 2. Submitted for admin review
-  if (technicianProfile.status === 'PENDING_APPROVAL') {
+  if (normalizedProfileStatus === 'PENDING_APPROVAL') {
+    console.log('[DEBUG redirectUtils] Condition 2 met: PENDING_APPROVAL status. Redirecting to /technician/onboarding/pending-verification');
     return '/technician/onboarding/pending-verification';
   }
 
   // 3. Verified technician or active user with complete onboarding
-  if (technicianProfile.isVerified || (userStatus?.toUpperCase() === 'ACTIVE' && isOnboardingComplete())) {
+  const onboardingCompleteState = isOnboardingComplete();
+  console.log('[DEBUG redirectUtils] Condition 3 check:', {
+    isVerified: technicianProfile.isVerified,
+    normalizedUserStatus,
+    onboardingCompleteState,
+  });
+  if (technicianProfile.isVerified || (normalizedUserStatus === 'ACTIVE' && onboardingCompleteState)) {
+    console.log('[DEBUG redirectUtils] Condition 3 met. Redirecting to /dashboard/technician');
     return '/dashboard/technician';
   }
 
   // 4. Incomplete onboarding — go to first gap (bitmask already synced above)
-  if (technicianProfile.status === 'INCOMPLETE') {
-    return firstIncompleteRoute();
+  if (normalizedProfileStatus === 'PENDING_APPROVAL') {
+    const incompleteRoute = firstIncompleteRoute();
+    console.log('[DEBUG redirectUtils] Condition 4 met (note: status PENDING_APPROVAL checked again). Redirecting to firstIncompleteRoute:', incompleteRoute);
+    return incompleteRoute;
   }
 
   // 5. Fallback
+  console.log('[DEBUG redirectUtils] Condition 5 Fallback met. Redirecting to /dashboard/technician');
   return '/dashboard/technician';
 }

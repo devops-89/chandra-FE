@@ -8,6 +8,7 @@ import { useState } from 'react';
 
 import { loginContent } from '@/constants/auth/loginContent';
 import { getTechnicianRedirectPath, handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
+import { validateIdentifier } from '@/lib/validator/identifier.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
@@ -19,7 +20,7 @@ const inputClassName =
 const errorClassName = 'text-xs font-medium text-red-600';
 
 type LoginFormData = {
-  email: string;
+  identifier: string;
   password: string;
 };
 
@@ -27,7 +28,7 @@ type LoginErrors = Partial<LoginFormData>;
 
 export const LoginForm = () => {
   const router = useRouter();
-  const [form, setForm] = useState<LoginFormData>({ email: '', password: '' });
+  const [form, setForm] = useState<LoginFormData>({ identifier: '', password: '' });
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string>('');
@@ -43,18 +44,11 @@ export const LoginForm = () => {
   const handleSubmit = async () => {
     const nextErrors: LoginErrors = {};
 
-    // Accept a 10-digit mobile number OR a value containing '@' (email)
-    const identifier = form.email.trim();
-    const isPhone = /^\d{10}$/.test(identifier);
-    const isEmail = identifier.includes('@');
-    const emailError = !identifier
-      ? 'Email or mobile number is required'
-      : !isPhone && !isEmail
-      ? 'Enter a valid email or 10-digit mobile number'
-      : undefined;
+    const identifier = form.identifier.trim();
+    const identifierError = validateIdentifier(identifier);
     const passwordError = validatePassword(form.password);
 
-    if (emailError) nextErrors.email = emailError;
+    if (identifierError) nextErrors.identifier = identifierError;
     if (passwordError) nextErrors.password = passwordError;
 
     if (Object.keys(nextErrors).length > 0) {
@@ -66,13 +60,17 @@ export const LoginForm = () => {
       setApiError('');
       setIsLoading(true);
 
-      const response = await loginService(
-        isPhone
-          ? { phone: identifier, password: form.password }
-          : { email: identifier, password: form.password },
-      );
+      const response = await loginService({
+        identifier,
+        password: form.password,
+      });
+
+      console.log('[DEBUG LoginForm] loginService raw response:', response);
+      console.log('[DEBUG LoginForm] loginService response.data:', response?.data);
 
       const { user, tokens } = response.data;
+      console.log('[DEBUG LoginForm] user object:', user);
+      console.log('[DEBUG LoginForm] user.technicianProfile:', user?.technicianProfile);
 
       // Persist only the user profile. Tokens stay out of localStorage.
       localStorage.setItem('user', JSON.stringify(user));
@@ -86,19 +84,16 @@ export const LoginForm = () => {
       );
 
       // For TECHNICIAN: fetch live profile to determine onboarding/redirect state.
-      // This ensures progress is always restored from backend even if localStorage was cleared.
+      // Use the technician profile returned by login so the redirect matches the actual response.
       let redirectTo: string;
       if (user.role?.toUpperCase() === 'TECHNICIAN') {
-        try {
-          const profileRes = await getProfileService();
-          redirectTo = getTechnicianRedirectPath({
-            userStatus:         profileRes.data.status,
-            technicianProfile:  profileRes.data.technicianProfile,
-          });
-        } catch {
-          // Profile fetch failed — fall back to generic redirect (guard will re-check on mount)
-          redirectTo = handlePostAuthRedirect(user.role);
-        }
+        const profileRes = await getProfileService();
+        console.log('[DEBUG LoginForm] getProfileService raw response:', profileRes);
+        console.log('[DEBUG LoginForm] getProfileService profileRes.data:', profileRes?.data);
+        redirectTo = getTechnicianRedirectPath({
+          userStatus: profileRes.data.status,
+          technicianProfile: profileRes.data.technicianProfile,
+        });
       } else {
         // Read the redirect target BEFORE dispatching credentials.
         // PublicRoute triggers on setCredentials and would race to /dashboard.
@@ -186,12 +181,12 @@ export const LoginForm = () => {
               <span className="text-sm font-medium text-slate-700">Email or Mobile Number</span>
               <input
                 className={inputClassName}
-                name="email"
+                name="identifier"
                 type="text"
-                value={form.email}
-                onChange={(e) => handleChange('email', e.target.value)}
+                value={form.identifier}
+                onChange={(e) => handleChange('identifier', e.target.value)}
               />
-              {errors.email && <span className={errorClassName}>{errors.email}</span>}
+              {errors.identifier && <span className={errorClassName}>{errors.identifier}</span>}
             </label>
 
             {/* Password */}

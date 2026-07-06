@@ -7,9 +7,7 @@ const OTP_LENGTH = 6;
 
 interface OtpModalProps {
   /** Email shown in the "we sent a code to …" subtitle */
-  email: string;
-  /** Phone shown alongside email */
-  phone: string;
+  identifier: string;
   /** True while the parent is calling verifyOtp + registerCustomer + login */
   isVerifying: boolean;
   /** Server-side error from the verify / register step */
@@ -25,8 +23,7 @@ interface OtpModalProps {
 }
 
 export default function OtpModal({
-  email,
-  phone,
+  identifier,
   isVerifying,
   apiError,
   onVerify,
@@ -133,8 +130,7 @@ export default function OtpModal({
           <p className="mt-2 text-sm text-slate-500">
             We sent a {OTP_LENGTH}-digit code to
           </p>
-          <p className="mt-0.5 text-sm font-semibold text-slate-700 break-all">{email}</p>
-          <p className="text-xs text-slate-500">{phone}</p>
+          <p className="mt-0.5 text-sm font-semibold text-slate-700 break-all">{identifier}</p>
         </div>
 
         {/* API error */}
