@@ -28,13 +28,14 @@ export type SpecFormValue = string | number | File | null | undefined;
 
 export interface DynamicFormProps {
   specifications: {
+    id: number;
     name: string;
     type: 'text' | 'number' | 'textarea' | 'select' | 'image';
     isRequired: boolean;
     values?: string[];
   }[];
-  formData: Record<string, SpecFormValue>;
-  onChange: (name: string, value: SpecFormValue) => void;
+  formData: Record<number, SpecFormValue>;
+  onChange: (specificationId: number, value: SpecFormValue) => void;
   errors: Record<string, string>;
 }
 
@@ -44,12 +45,12 @@ export default function DynamicForm({
   onChange,
   errors,
 }: DynamicFormProps) {
-  const handleImageChange = (name: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (specificationId: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files[0]) {
       const file = files[0];
       if (file.type.startsWith('image/')) {
-        onChange(name, file);
+        onChange(specificationId, file);
       } else {
 
         window.alert('Please upload an image file (e.g. JPG, PNG)');
@@ -57,8 +58,8 @@ export default function DynamicForm({
     }
   };
 
-  const handleImageRemove = (name: string) => {
-    onChange(name, null);
+  const handleImageRemove = (specificationId: number) => {
+    onChange(specificationId, null);
   };
 
   if (!specifications || specifications.length === 0) {
@@ -77,12 +78,12 @@ export default function DynamicForm({
 
       <div className="mt-6 space-y-6 max-w-xl mx-auto">
         {specifications.map((spec) => {
-          const value = formData[spec.name];
+          const value = formData[spec.id];
           const hasError = !!errors[spec.name];
           const fieldId = `spec-${spec.name.replace(/\s+/g, '-').toLowerCase()}`;
 
           return (
-            <div key={spec.name} className="flex flex-col">
+            <div key={spec.id} className="flex flex-col">
               <label htmlFor={fieldId} className="mb-2 text-sm font-medium text-slate-700 flex items-center justify-between">
                 <span>
                   {spec.name} {spec.isRequired && <span className="text-red-500">*</span>}
@@ -93,7 +94,7 @@ export default function DynamicForm({
                 <select
                   id={fieldId}
                   value={value as string || ''}
-                  onChange={(e) => onChange(spec.name, e.target.value)}
+                  onChange={(e) => onChange(spec.id, e.target.value)}
                   className={`w-full rounded-xl border-2 p-4 text-slate-950 outline-none bg-white transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 ${hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-slate-300'
                     }`}
                 >
@@ -111,7 +112,7 @@ export default function DynamicForm({
                   id={fieldId}
                   rows={4}
                   value={value as string || ''}
-                  onChange={(e) => onChange(spec.name, e.target.value)}
+                  onChange={(e) => onChange(spec.id, e.target.value)}
                   placeholder={`Enter details...`}
                   className={`w-full rounded-xl border-2 p-4 text-slate-950 outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 ${hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-slate-300'
                     }`}
@@ -125,7 +126,7 @@ export default function DynamicForm({
                   value={value !== undefined && value !== null ? String(value) : ''}
                   onChange={(e) => {
                     const val = e.target.value;
-                    onChange(spec.name, val === '' ? '' : Number(val));
+                    onChange(spec.id, val === '' ? '' : Number(val));
                   }}
                   placeholder={`Enter number...`}
                   className={`w-full rounded-xl border-2 p-4 text-slate-950 outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 ${hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-slate-300'
@@ -138,7 +139,7 @@ export default function DynamicForm({
                   id={fieldId}
                   type="text"
                   value={value as string || ''}
-                  onChange={(e) => onChange(spec.name, e.target.value)}
+                  onChange={(e) => onChange(spec.id, e.target.value)}
                   placeholder={`Enter text...`}
                   className={`w-full rounded-xl border-2 p-4 text-slate-950 outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 ${hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-slate-300'
                     }`}
@@ -161,19 +162,19 @@ export default function DynamicForm({
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => handleImageChange(spec.name, e)}
+                        onChange={(e) => handleImageChange(spec.id, e)}
                       />
                     </label>
                   ) : (
                     <div className="flex items-start gap-4">
                       <ImagePreview file={value as File} />
                       <div className="flex flex-col space-y-2 mt-3">
-                        <span className="text-sm font-medium text-slate-800 break-all max-w-[200px]">
+                        <span className="text-sm font-medium text-slate-800 break-all max-w-50">
                           {(value as File).name}
                         </span>
                         <button
                           type="button"
-                          onClick={() => handleImageRemove(spec.name)}
+                          onClick={() => handleImageRemove(spec.id)}
                           className="w-fit rounded-lg bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer"
                         >
                           Remove Image

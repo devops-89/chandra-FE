@@ -12,12 +12,13 @@ import DynamicForm from '@/components/booking/DynamicForm';
 import ErrorMessage from '@/components/booking/ErrorMessage';
 import TimeSlotSelector from '@/components/booking/TimeSlotSelector';
 import { BOOKING_STEPS } from '@/constants/booking/timeSlots';
-import { getAddressFromSelection, getAddressSelectionFromSaved } from '@/lib/utils/addressUtils';
-import { validateAddress, validateBookingForm, validateDateTime } from '@/lib/validation/bookingValidation';
+import { validateBookingForm, validateDateTime } from '@/lib/validation/bookingValidation';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
+import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
 import { fetchServiceById } from '@/redux/slices/servicesSlice';
 import type { UnifiedBookingPageProps } from '@/types/bookingTypes/bookingForm.types';
+import type { Address } from '@/types/customer/profile.types';
 import type { BookingFormData } from '@/types/services.types';
 
 // ─── Step indices ─────────────────────────────────────────────────────────────
@@ -32,33 +33,36 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
 
   // ── Booking store ─────────────────────────────────────────────────────────
   const {
-    service:      savedService,
-    serviceId:    savedServiceId,
-    serviceSlug:  savedServiceSlug,
+    service: savedService,
+    serviceId: savedServiceId,
+    serviceSlug: savedServiceSlug,
     servicePrice: savedServicePrice,
-    serviceSpecificData,
-    name:         savedName,
-    phone:        savedPhone,
-    address:      savedAddress,
-    date:         savedDate,
-    slot:         savedSlot,
+    serviceSpecificData: savedServiceSpecificData,
+    customerAddressId: savedCustomerAddressId,
+    customerAddress: savedCustomerAddress,
+    name: savedName,
+    phone: savedPhone,
+    date: savedDate,
+    slot: savedSlot,
     setBooking,
   } = useBookingStore();
 
   const currentService      = savedService    || service;
   const currentServiceId    = savedServiceId  ?? serviceId ?? null;
-  const currentServicePrice = savedServicePrice || 0;
-
   // ── Redux: service specs ──────────────────────────────────────────────────
   // Reuse already loaded service if available; fetch only when missing.
   const { items: allServices, selectedService } = useAppSelector((s) => s.services);
+  const profile = useAppSelector((s) => s.customerProfile.profile);
 
   const serviceFromItems = currentServiceId
     ? allServices.find((s) => s.id === currentServiceId) ?? null
     : null;
 
-  const resolvedService = selectedService ?? serviceFromItems;
+  const resolvedService = selectedService?.id === currentServiceId
+    ? selectedService
+    : serviceFromItems;
   const specifications  = resolvedService?.specifications ?? [];
+  const currentServicePrice = savedServicePrice || resolvedService?.price || 0;
 
   useEffect(() => {
     if (!currentServiceId) return;
@@ -69,32 +73,42 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentServiceId]);
 
+  // ── Fetch customer profile (needed for address list in step 1) ────────────
+  useEffect(() => {
+    if (!profile) {
+      dispatch(fetchCustomerProfile());
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // ── Step state ────────────────────────────────────────────────────────────
   const [currentStep, setCurrentStep] = useState(STEP_DYNAMIC_FORM);
 
   // ── Step 0: Dynamic form data ─────────────────────────────────────────────
-  const [specFormData, setSpecFormData] = useState<Record<string, SpecFormValue>>(serviceSpecificData as Record<string, SpecFormValue>);
+  const [specFormData, setSpecFormData] = useState<Record<number, SpecFormValue>>(
+    savedServiceSpecificData as Record<number, SpecFormValue>
+  );
   const [specErrors, setSpecErrors] = useState<Record<string, string>>({});
 
-  const handleSpecChange = (name: string, value: SpecFormValue) => {
-    setSpecFormData((prev) => ({ ...prev, [name]: value }));
+  const handleSpecChange = (specificationId: number, value: SpecFormValue) => {
+    setSpecFormData((prev) => ({ ...prev, [specificationId]: value }));
     // Clear error on change
     setSpecErrors((prev) => {
-      if (!prev[name]) return prev;
+      const key = specificationId.toString();
+
+      if (!prev[key]) return prev;
+
       const next = { ...prev };
-      delete next[name];
+
+      delete next[key];
+
       return next;
     });
   };
 
   // ── Step 1: Address ───────────────────────────────────────────────────────
-  const { selectedAddress: initialAddress, newAddress: initialNewAddress } =
-    savedAddress
-      ? getAddressSelectionFromSaved(savedAddress)
-      : { selectedAddress: 'home' as const, newAddress: '' };
-
-  const [selectedAddress, setSelectedAddress] = useState<'home' | 'office' | 'new'>(initialAddress);
-  const [newAddress, setNewAddress] = useState(initialNewAddress);
+  const [selectedAddressId, setSelectedAddressId] =
+  useState<number | null>(savedCustomerAddressId);
 
   // ── Step 2: Date & time ───────────────────────────────────────────────────
   const [date, setDate] = useState(savedDate || '');
@@ -113,7 +127,9 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
     const newErrors: Record<string, string> = {};
 
     for (const spec of specifications) {
-      const value = specFormData[spec.name];
+      const value = specFormData[spec.id];
+
+      if (spec.type === 'image') continue;
 
       if (!spec.isRequired) continue;
 
@@ -141,11 +157,6 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
       if ((spec.type === 'text' || spec.type === 'textarea') && typeof value === 'string' && !value.trim()) {
         newErrors[spec.name] = `${spec.name} is required`;
       }
-
-      // Validate image: must be a File
-      if (spec.type === 'image' && !(value instanceof File)) {
-        newErrors[spec.name] = `Please upload an image for ${spec.name}`;
-      }
     }
 
     setSpecErrors(newErrors);
@@ -153,6 +164,29 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   };
 
   // ── Navigation handlers ───────────────────────────────────────────────────
+  const buildAddressSnapshot = (address: Address) => ({
+    id: address.id,
+    fullAddress: address.fullAddress,
+    city: address.city,
+    state: address.state,
+    pincode: address.pincode,
+    label: address.label,
+  });
+
+  const handleAddressSelect = (addressId: number) => {
+    const selectedAddress = profile?.addresses.find(
+      (address) => address.id === addressId
+    );
+
+    setSelectedAddressId(addressId);
+    setBooking({
+      customerAddressId: addressId,
+      customerAddress: selectedAddress
+        ? buildAddressSnapshot(selectedAddress)
+        : savedCustomerAddress,
+    });
+  };
+
   const handleNext = () => {
     setError('');
 
@@ -168,8 +202,29 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
     }
 
     if (currentStep === STEP_ADDRESS) {
-      const result = validateAddress(selectedAddress, newAddress);
-      if (!result.isValid) { setError(result.error ?? 'Please complete the address step.'); return; }
+      if (!selectedAddressId) {
+        setError('Please select an address.');
+        return;
+      }
+      const addressBelongsToCustomer =
+        profile?.addresses.some(
+          (address) => address.id === selectedAddressId
+        ) || savedCustomerAddress?.id === selectedAddressId;
+
+      if (!addressBelongsToCustomer) {
+        setError('Please select a valid address for this customer.');
+        return;
+      }
+      const selectedAddress = profile?.addresses.find(
+        (address) => address.id === selectedAddressId
+      );
+
+      setBooking({
+        customerAddressId: selectedAddressId,
+        customerAddress: selectedAddress
+          ? buildAddressSnapshot(selectedAddress)
+          : savedCustomerAddress,
+      });
       setCurrentStep(STEP_DATETIME);
       return;
     }
@@ -189,14 +244,45 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   const handleConfirm = () => {
     setError('');
 
-    const validation = validateBookingForm(name, phone, selectedAddress, newAddress, date, slot);
+    const validation = validateBookingForm(
+      name,
+      phone,
+      date,
+      slot
+    );
     if (!validation.isValid) {
       setError(validation.error || 'Please check all fields');
       return;
     }
+    const addressBelongsToCustomer =
+      profile?.addresses.some(
+        (address) => address.id === selectedAddressId
+      ) || savedCustomerAddress?.id === selectedAddressId;
 
-    const addressToSave = getAddressFromSelection(selectedAddress, newAddress);
+    if (!selectedAddressId || !addressBelongsToCustomer) {
+      setError('Please select a valid address for this customer.');
+      return;
+    }
 
+    const serviceSpecifications = specifications
+      .filter((spec) => spec.type !== 'image')
+      .flatMap((spec) => {
+        const value = specFormData[spec.id];
+
+        if (
+          value === null ||
+          value === undefined ||
+          value instanceof File ||
+          value === ''
+        ) {
+          return [];
+        }
+
+        return [{
+          specificationId: spec.id,
+          value: value as string | number,
+        }];
+      });
     setBooking({
       service:             currentService,
       serviceId:           currentServiceId,
@@ -205,18 +291,20 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
       serviceSpecificData: specFormData as BookingFormData,
       name:                name.trim(),
       phone:               phone.trim(),
-      address:             addressToSave,
+      customerAddressId:   selectedAddressId,
+      customerAddress:     savedCustomerAddress,
+      serviceSpecifications,
       date,
       slot,
       instructions:        instructions.trim(),
     });
 
     router.push(summaryPath);
+    
   };
 
   const isLastStep = currentStep === STEP_DETAILS;
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <section className="bg-white py-4 md:py-2">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -242,10 +330,8 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
             {/* ── Step 1: Address ────────────────────────────────────── */}
             {currentStep === STEP_ADDRESS && (
               <AddressSelector
-                selectedAddress={selectedAddress}
-                newAddress={newAddress}
-                onAddressSelect={setSelectedAddress}
-                onNewAddressChange={setNewAddress}
+                selectedAddressId={selectedAddressId}
+                onAddressSelect={handleAddressSelect}
               />
             )}
 
@@ -319,3 +405,5 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
     </section>
   );
 }
+
+

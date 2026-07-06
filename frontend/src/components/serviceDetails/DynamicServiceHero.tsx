@@ -135,6 +135,22 @@ export default function DynamicServiceHero({
               ₹{service.price}
             </p>
           </motion.div>
+          <motion.div
+            className="my-8 flex justify-center md:hidden"
+            variants={imageVariants}
+          >
+        <Image
+          src={service.image}
+          alt={service.title}
+          width={700}
+          height={500}
+          unoptimized={
+            service.image.startsWith('http://') ||
+            service.image.startsWith('https://')
+          }
+          className="w-full max-w-sm h-auto rounded-4xl object-contain shadow-xl bg-white"
+        />
+        </motion.div>
 
           <motion.div className="mt-8" variants={contentVariants}>
             <button
@@ -179,7 +195,7 @@ export default function DynamicServiceHero({
           </motion.div>
         </motion.div>
 
-        <motion.div className="flex-1" variants={imageVariants}>
+        <motion.div className="hidden md:flex md:flex-1 md:justify-center" variants={imageVariants}>
           <Image
             src={service.image}
             alt={service.title}

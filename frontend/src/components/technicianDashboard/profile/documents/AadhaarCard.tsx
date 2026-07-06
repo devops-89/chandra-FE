@@ -3,7 +3,15 @@
 import BadgeIcon from '@mui/icons-material/Badge';
 import VerifiedIcon from '@mui/icons-material/Verified';
 
+import { useAppSelector } from '@/redux/hooks';
+
 export default function AadhaarCard() {
+  const technician = useAppSelector(
+    (state) => state.technicianProfile.profile
+  );
+
+  const aadharUrl = technician?.technicianProfile.aadharUrl;
+
   return (
     <div
       className="
@@ -25,12 +33,14 @@ export default function AadhaarCard() {
           </p>
 
           <p className="text-sm text-slate-500">
-            XXXX XXXX 4587
+            {aadharUrl ? 'Document Uploaded' : 'Not Uploaded'}
           </p>
         </div>
       </div>
 
-      <VerifiedIcon className="text-emerald-500" />
+      {aadharUrl && (
+        <VerifiedIcon className="text-emerald-500" />
+      )}
     </div>
   );
 }

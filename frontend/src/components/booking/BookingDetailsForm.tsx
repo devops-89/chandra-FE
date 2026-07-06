@@ -31,9 +31,9 @@ export default function BookingDetailsForm({
         <div className="border border-slate-200 pt-8 rounded-xl p-6">
           <h2 className="text-xl font-semibold text-slate-900 text-center">Book Service</h2>
 
-          <p className="mt-2 text-sm text-slate-500 text-center">
+          <div className="mt-2 text-sm text-slate-500 text-center">
             {service && (
-              <>
+              <p className="text-sm text-slate-500 text-center">
                 Selected Service:{' '}
                 <span className="font-semibold text-emerald-600">{service}</span>
                 {servicePrice > 0 && (
@@ -41,7 +41,7 @@ export default function BookingDetailsForm({
                     {' '}- <span className="font-semibold text-emerald-600">₹{servicePrice}</span>
                   </>
                 )}
-              </>
+              </p>
             )}
 
             {serviceSpecificData && Object.keys(serviceSpecificData).length > 0 && (
@@ -59,7 +59,7 @@ export default function BookingDetailsForm({
                 </div>
               </div>
             )}
-          </p>
+          </div>
 
           <div className="mt-6 space-y-4">
             <div>

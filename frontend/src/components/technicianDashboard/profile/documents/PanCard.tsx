@@ -3,7 +3,15 @@
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import VerifiedIcon from '@mui/icons-material/Verified';
 
+import { useAppSelector } from '@/redux/hooks';
+
 export default function PanCard() {
+  const technician = useAppSelector(
+    (state) => state.technicianProfile.profile
+  );
+
+  const panUrl =
+    technician?.technicianProfile.panUrl;
   return (
     <div
       className="
@@ -11,7 +19,7 @@ export default function PanCard() {
         items-center
         justify-between
         p-4
-        rounded-2xl
+        rounded-2xla
         border
         border-slate-200
       "
@@ -25,12 +33,14 @@ export default function PanCard() {
           </p>
 
           <p className="text-sm text-slate-500">
-            ABCDE1234F
+            {panUrl ? 'Document Uploaded' : 'Not Uploaded'}
           </p>
         </div>
       </div>
 
-      <VerifiedIcon className="text-emerald-500" />
+      {panUrl && (
+        <VerifiedIcon className="text-emerald-500" />
+      )}
     </div>
   );
 }

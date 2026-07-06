@@ -9,7 +9,7 @@ type TechnicianCardProps = {
 
 const TechnicianCard = ({ technician }: TechnicianCardProps) => {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-slate-200 p-6 ambient-shadow">
+    <div className="flex items-center justify-between rounded-xl border border-slate-200 p-8 ambient-shadow">
       <div className="flex items-center gap-4">
         <Image
           alt={technician.name}

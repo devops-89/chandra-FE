@@ -1,8 +1,8 @@
 'use client';
 
 import AadhaarCard from './AadhaarCard';
-import DrivingLicenseCard from './DrivingLicenseCard';
 import PanCard from './PanCard';
+import DrivingLicenseCard from './TradeLicenseCard';
 
 export default function DocumentsCard() {
   return (

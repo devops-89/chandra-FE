@@ -26,5 +26,26 @@ export const ENDPOINTS = {
   GET_SERVICE_BY_ID: '/users/service', // GET /users/service/:id
   CREATE_SERVICE: '/users/admin/service',
   UPDATE_SERVICE: '/users/update/service', // PATCH /users/admin/service/:id
-  DELETE_SERVICE: '/users/delete/service'
+
+  DELETE_SERVICE: '/users/delete/service',
+
+  //Profile
+  UPDATE_PROFILE: "/users/profile",
+  CHANGE_PASSWORD: "/users/change-password",
+  PROFILE: '/auth/profile',
+
+  //Address
+  CREATE_ADDRESS: '/users/customer/address',
+  UPDATE_ADDRESS: '/users/customer/address',
+  DELETE_ADDRESS: '/users/customer/address', // DELETE /users/customer/address/:id
+
+  //Bookings
+
+  CREATE_BOOKING: '/bookings',
+
+  //Complaints
+
+  CREATE_COMPLAINT: '/bookings/complaint',
+  UPDATE_COMPLAINT: '/bookings/complaint',
+
 } as const;

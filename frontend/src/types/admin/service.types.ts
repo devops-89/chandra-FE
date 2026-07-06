@@ -15,6 +15,7 @@ export interface AdminService {
   status: ServiceStatus;
   bookings: number;
   specifications?: {
+    id: number;
     name: string;
     type: 'text' | 'number' | 'textarea' | 'select' | 'image';
     isRequired: boolean;
@@ -95,6 +96,7 @@ export interface ApiService {
   createdAt?: string;
   updatedAt?: string;
   specifications?: {
+    id: number;
     name: string;
     type: 'text' | 'number' | 'textarea' | 'select' | 'image';
     isRequired: boolean;

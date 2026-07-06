@@ -165,7 +165,7 @@ export default function PersonalInfoForm() {
                       placeholder="6-digit mobile OTP"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                      className="w-full h-12 border border-slate-300 rounded-lg md:rounded-xl px-4 text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                      className="w-full h-12 border border-slate-300 rounded-lg md:rounded-xl px-4 text-sm tracking-widest focus:outline-emerald-500 focus:border-transparent transition"
                     />
                   </div>
                   <button

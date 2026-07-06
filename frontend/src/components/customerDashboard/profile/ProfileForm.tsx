@@ -1,4 +1,12 @@
+'use client';
+
+import { useAppSelector } from '@/redux/hooks';
+
 export default function ProfileForm() {
+const profile = useAppSelector(
+  (state) => state.customerProfile.profile
+);
+
   return (
     <div
       className="
@@ -14,19 +22,25 @@ export default function ProfileForm() {
 
       <div className="grid gap-5">
         <input
-          defaultValue="Chandra Kumar"
-          placeholder="Full Name"
+          defaultValue={profile?.firstName ?? ''}
+          placeholder="First Name"
           className="rounded-xl border border-emerald-600 outline-emerald-600 p-4 text-slate-700"
         />
 
         <input
-          defaultValue="chandra@email.com"
+          defaultValue={profile?.lastName ?? ''}
+          placeholder="Last Name"
+          className="rounded-xl border border-emerald-600 outline-emerald-600 p-4 text-slate-700"
+        />
+
+        <input
+          defaultValue={profile?.email ?? ''}
           placeholder="Email"
           className="rounded-xl border border-emerald-600 outline-emerald-600 p-4 text-slate-700"
         />
 
         <input
-          defaultValue="+91 9876543210"
+          defaultValue={profile?.phone ?? ''}
           placeholder="Phone"
           className="rounded-xl border border-emerald-600 outline-emerald-600 p-4 text-slate-700"
         />

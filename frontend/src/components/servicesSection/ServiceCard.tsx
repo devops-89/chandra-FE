@@ -30,7 +30,7 @@ export function ServiceCard({
             {service.title}
           </h3>
 
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground line-clamp-2">
             {service.description}
           </p>
         </div>
