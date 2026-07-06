@@ -23,7 +23,6 @@ const SidebarContent = ({
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
     dispatch(logout());
     router.push('/');
   };

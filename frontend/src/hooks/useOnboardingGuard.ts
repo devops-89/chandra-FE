@@ -59,24 +59,17 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
       if ((stepIndex === 0 || stepIndex === -1) && hasAuthContext()) {
         try {
           const res = await getProfileService();
-          console.log('[DEBUG useOnboardingGuard] getProfileService raw response:', res);
-          console.log('[DEBUG useOnboardingGuard] getProfileService res.data:', res?.data);
           const technicianProfile = res.data?.technicianProfile;
-          console.log('[DEBUG useOnboardingGuard] technicianProfile:', technicianProfile);
 
           if (technicianProfile) {
             const redirectPath = getTechnicianRedirectPath({
               userStatus: res.data.status,
               technicianProfile,
             });
-            console.log('[DEBUG useOnboardingGuard] Redirecting to:', redirectPath);
             router.replace(redirectPath);
             return;
-          } else {
-            console.log('[DEBUG useOnboardingGuard] technicianProfile is empty/null, skipping early redirect.');
           }
-        } catch (e) {
-          console.error('[DEBUG useOnboardingGuard] Profile fetch error:', e);
+        } catch {
           // Profile fetch failed — fall through to the existing guard logic.
         }
       }
@@ -87,9 +80,7 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
       if (needsSync()) {
         try {
           const res = await getProfileService();
-          console.log('[DEBUG useOnboardingGuard] needsSync getProfileService raw response:', res);
           const p   = res.data?.technicianProfile;
-          console.log('[DEBUG useOnboardingGuard] needsSync technicianProfile:', p);
           if (p) {
             syncProgressFromProfile({
               id:                p.id,

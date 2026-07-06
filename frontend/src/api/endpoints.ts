@@ -13,6 +13,7 @@ export const API_BASE_URL = getApiBaseUrl('auth');
 export const ENDPOINTS = {
   // Auth
   LOGIN: '/auth/login',
+  REFRESH_TOKEN: '/auth/refresh-token',
   GENERATE_OTP: '/auth/generate-otp',
   VERIFY_OTP: '/auth/verify-otp',
   GET_PROFILE: '/auth/profile',

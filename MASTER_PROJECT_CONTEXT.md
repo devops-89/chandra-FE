@@ -279,8 +279,8 @@ Login:
 - Writes `localStorage.user` only.
 - Dispatches `setCredentials({ user, accessToken, refreshToken })`.
 - Non-technicians redirect with `handlePostAuthRedirect(user.role)`.
-- Technicians redirect using `getTechnicianRedirectPath()` with the `user.technicianProfile` embedded in the login response.
-- Login currently does not call `GET /auth/profile`; it relies on the login response for technician profile data.
+- Technicians redirect using `getTechnicianRedirectPath()` with the live profile data fetched from `getProfileService()` (`GET /auth/profile`).
+- Added diagnostic console logs in `LoginForm.tsx`, `redirectUtils.ts`, `useOnboardingGuard.ts`, and `layout.tsx` to troubleshoot the response shapes and redirect branches.
 
 ---
 
@@ -523,8 +523,9 @@ Technician onboarding:
 
 Auth and routing:
 
-- No Redux auth bootstrap/refresh flow is currently implemented in `Provider.tsx`.
-- Login does not persist tokens to localStorage, but refresh loses Redux tokens.
+- No Redux auth bootstrap/refresh flow is currently implemented.
+- Login does not persist access/refresh tokens to `localStorage` (only `user` is stored). Page layouts/guards check `localStorage.user` for authentication, but API requests read tokens from Redux store memory.
+- A page refresh or Next.js HMR (Hot Module Replacement) re-initializes the Redux store (making tokens `null`), which causes subsequent API calls to fail with a `401 Unauthorized ("No auth token")` response because the Authorization header is omitted.
 - `ENDPOINTS` does not currently include logout or refresh-token routes.
 - `PublicRoute` consumes stored redirect paths on public-route visits.
 - Technician approval routing is not strict enough for rejected profiles or ACTIVE-but-unapproved profiles.

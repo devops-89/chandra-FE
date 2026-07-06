@@ -65,15 +65,12 @@ export const LoginForm = () => {
         password: form.password,
       });
 
-      console.log('[DEBUG LoginForm] loginService raw response:', response);
-      console.log('[DEBUG LoginForm] loginService response.data:', response?.data);
-
       const { user, tokens } = response.data;
-      console.log('[DEBUG LoginForm] user object:', user);
-      console.log('[DEBUG LoginForm] user.technicianProfile:', user?.technicianProfile);
 
-      // Persist only the user profile. Tokens stay out of localStorage.
-      localStorage.setItem('user', JSON.stringify(user));
+      // Persist user and both tokens so they survive page refresh / HMR.
+      localStorage.setItem('user',         JSON.stringify(user));
+      localStorage.setItem('accessToken',  tokens.accessToken);
+      localStorage.setItem('refreshToken', tokens.refreshToken);
 
       dispatch(
         setCredentials({
@@ -84,19 +81,14 @@ export const LoginForm = () => {
       );
 
       // For TECHNICIAN: fetch live profile to determine onboarding/redirect state.
-      // Use the technician profile returned by login so the redirect matches the actual response.
       let redirectTo: string;
       if (user.role?.toUpperCase() === 'TECHNICIAN') {
         const profileRes = await getProfileService();
-        console.log('[DEBUG LoginForm] getProfileService raw response:', profileRes);
-        console.log('[DEBUG LoginForm] getProfileService profileRes.data:', profileRes?.data);
         redirectTo = getTechnicianRedirectPath({
           userStatus: profileRes.data.status,
           technicianProfile: profileRes.data.technicianProfile,
         });
       } else {
-        // Read the redirect target BEFORE dispatching credentials.
-        // PublicRoute triggers on setCredentials and would race to /dashboard.
         redirectTo = handlePostAuthRedirect(user.role);
       }
 

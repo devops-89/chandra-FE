@@ -45,7 +45,6 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
     dispatch(logout());
     router.push('/');
   };

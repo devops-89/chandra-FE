@@ -134,8 +134,10 @@ export const useSignupForm = () => {
 
       const { user, tokens } = loginResponse.data;
 
-      // Persist only the user profile. Tokens stay out of localStorage.
-      localStorage.setItem('user', JSON.stringify(user));
+      // Persist user and both tokens so they survive page refresh / HMR.
+      localStorage.setItem('user',         JSON.stringify(user));
+      localStorage.setItem('accessToken',  tokens.accessToken);
+      localStorage.setItem('refreshToken', tokens.refreshToken);
 
       // Update Redux state
       dispatch(setCredentials({ user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken }));
