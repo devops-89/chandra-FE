@@ -71,7 +71,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
               text-slate-900
             "
           >
-            Welcome back, {firstName}!
+            Dashboard
           </h1>
 
           <p className="text-sm sm:text-sm text-slate-500 hidden sm:block">

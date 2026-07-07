@@ -29,7 +29,7 @@ export default function AddressList() {
   // Map backend Address model to the fields expected by AddressCard component
   const addresses = backendAddresses.map((addr) => ({
     id: addr.id.toString(),
-    label: addr.label,
+    label: addr.label && addr.label.trim() ? addr.label : (addr.isDefault ? 'Default Address' : `${addr.city}, ${addr.state}`),
     address: addr.fullAddress,
     isDefault: addr.isDefault,
   }));

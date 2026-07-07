@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import TechnicianDashboardLayout from '@/components/technicianDashboard/layout/TechnicianDashboardLayout';
-import { getTechnicianRedirectPath } from '@/lib/authApi/redirectUtils';
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
+import { getTechnicianRedirectPath } from '@/lib/authApi/redirectUtils';
 import { getProfileService } from '@/services/auth.service';
 
 export default function Layout({ children }: { children: React.ReactNode }) {

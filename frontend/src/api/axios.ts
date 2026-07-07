@@ -1,8 +1,9 @@
 import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
 
-import { type ApiServicePurpose, API_BASE_URLS, getApiBaseUrl } from './endpoints';
-import { store } from '@/redux/store';
 import { logout, updateTokens } from '@/redux/slices/authSlice';
+import { getReduxStore } from '@/redux/storeAccessor';
+
+import { API_BASE_URLS, type ApiServicePurpose, getApiBaseUrl } from './endpoints';
 
 // ── Refresh-queue state ───────────────────────────────────────────────────────
 // Ensures only one refresh call is in-flight at any time.
@@ -30,7 +31,8 @@ function processQueue(error: unknown, token: string | null) {
 
 // ── Force logout helper (called when refresh fails) ───────────────────────────
 function forceLogout() {
-  store.dispatch(logout());
+  const reduxStore = getReduxStore();
+  reduxStore?.dispatch(logout());
   if (typeof window !== 'undefined') {
     window.location.href = '/login';
   }
@@ -42,9 +44,10 @@ function forceLogout() {
 
 function attachRequestInterceptor(client: AxiosInstance) {
   client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    const reduxStore = getReduxStore();
     const token =
       (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null) ??
-      store.getState().auth.accessToken;
+      reduxStore?.getState().auth.accessToken;
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -101,9 +104,10 @@ function attachResponseInterceptor(client: AxiosInstance) {
       originalRequest._retry = true;
       isRefreshing = true;
 
+      const reduxStore = getReduxStore();
       const storedRefreshToken =
         (typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null) ??
-        store.getState().auth.refreshToken;
+        reduxStore?.getState().auth.refreshToken;
 
       if (!storedRefreshToken) {
         isRefreshing = false;
@@ -124,7 +128,7 @@ function attachResponseInterceptor(client: AxiosInstance) {
           refreshResponse.data?.data ?? refreshResponse.data;
 
         // Persist new tokens.
-        store.dispatch(updateTokens({ accessToken: newAccessToken, refreshToken: newRefreshToken }));
+        getReduxStore()?.dispatch(updateTokens({ accessToken: newAccessToken, refreshToken: newRefreshToken }));
 
         // Drain the queue with the fresh token.
         processQueue(null, newAccessToken);

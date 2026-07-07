@@ -6,13 +6,13 @@ import AddAddressButton from '@/components/customerDashboard/addresses/AddAddres
 import AddressList from '@/components/customerDashboard/addresses/AddressList';
 import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
 import { useAppDispatch } from '@/redux/hooks';
-import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
+import { fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
 
 export default function AddressesPage() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchCustomerProfile());
+    dispatch(fetchCustomerAddresses());
   }, [dispatch]);
 
   return (

@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { createAddressService } from '@/services/customer.service';
 import { getCustomerProfileService } from '@/services/customer.service';
+import { getCustomerAddressesService } from '@/services/customer.service';
 import { updateAddressService } from '@/services/customer.service';
 import { deleteAddressService } from '@/services/customer.service';
 import type {Address, CreateAddressRequest, UpdateAddressRequest,} from '@/types/address.types';
@@ -61,6 +62,59 @@ export const fetchCustomerProfile = createAsyncThunk<
         err instanceof Error
           ? err.message
           : 'Failed to fetch customer profile';
+
+      return rejectWithValue(message);
+    }
+  }
+);
+
+// ─── Fetch Customer Addresses ───────────────────────────────────────
+
+export const fetchCustomerAddresses = createAsyncThunk<
+  { profile: CustomerProfile | null; addresses: Address[] },
+  void,
+  { rejectValue: string }
+>(
+  'customerProfile/fetchAddresses',
+  async (_, { rejectWithValue }) => {
+    try {
+      const addresses = await getCustomerAddressesService();
+      
+      let profile: CustomerProfile | null = null;
+      try {
+        profile = await getCustomerProfileService();
+      } catch {
+        // Profile fetch is optional for addresses
+      }
+
+      // Convert CustomerAddress to Address type for profile
+      const convertedAddresses: Address[] = addresses.map((addr) => ({
+        id: addr.id,
+        userId: 0, // Not provided by this endpoint
+        latitude: addr.latitude,
+        longitude: addr.longitude,
+        fullAddress: addr.fullAddress,
+        city: addr.city,
+        state: addr.state,
+        pincode: addr.pincode,
+        label: '', // Not provided by this endpoint
+        isDefault: addr.isDefault,
+        isActive: true,
+        createdAt: addr.createdAt,
+        updatedAt: addr.updatedAt,
+      }));
+
+      // If profile exists, merge addresses into it
+      if (profile) {
+        profile.addresses = convertedAddresses;
+      }
+
+      return { profile, addresses: convertedAddresses };
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Failed to fetch addresses';
 
       return rejectWithValue(message);
     }
@@ -138,6 +192,45 @@ const customerProfileSlice = createSlice({
     })
 
     .addCase(fetchCustomerProfile.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload ?? 'Unknown error';
+    })
+
+    // ─── Fetch Customer Addresses ─────────────────────────────
+    .addCase(fetchCustomerAddresses.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    })
+
+    .addCase(fetchCustomerAddresses.fulfilled, (state, action) => {
+      state.isLoading = false;
+      // Always prefer the profile from the thunk if it exists
+      if (action.payload.profile) {
+        state.profile = action.payload.profile;
+      } else {
+        // Otherwise, merge addresses into existing profile or create a stub
+        if (!state.profile) {
+          state.profile = {
+            id: 0,
+            firstName: '',
+            lastName: '',
+            email: '',
+            username: '',
+            phone: '',
+            emergencyContact: null,
+            profileImage: null,
+            role: 'customer',
+            status: 'active',
+            createdAt: new Date().toISOString(),
+            lastLoginAt: new Date().toISOString(),
+            addresses: [],
+          };
+        }
+        state.profile.addresses = action.payload.addresses;
+      }
+    })
+
+    .addCase(fetchCustomerAddresses.rejected, (state, action) => {
       state.isLoading = false;
       state.error = action.payload ?? 'Unknown error';
     })

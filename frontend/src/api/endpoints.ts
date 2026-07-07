@@ -1,6 +1,6 @@
 export const API_BASE_URLS = {
-  auth: 'http://192.168.1.33:8000/api',
-  userService: 'http://192.168.1.33:8001/api',
+  auth: 'http://192.168.1.6:8000/api',
+  userService: 'http://192.168.1.6:8001/api',
 } as const;
 
 export type ApiServicePurpose = keyof typeof API_BASE_URLS;
@@ -27,7 +27,6 @@ export const ENDPOINTS = {
   GET_SERVICE_BY_ID: '/users/service', // GET /users/service/:id
   CREATE_SERVICE: '/users/admin/service',
   UPDATE_SERVICE: '/users/update/service', // PATCH /users/admin/service/:id
-
   DELETE_SERVICE: '/users/delete/service',
 
   //Profile
@@ -36,16 +35,16 @@ export const ENDPOINTS = {
   PROFILE: '/auth/profile',
 
   //Address
+  GET_CUSTOMER_ADDRESSES: '/users/customer/addresses',
   CREATE_ADDRESS: '/users/customer/address',
   UPDATE_ADDRESS: '/users/customer/address',
   DELETE_ADDRESS: '/users/customer/address', // DELETE /users/customer/address/:id
 
   //Bookings
-
+  GET_CUSTOMER_BOOKINGS: '/bookings/all',
   CREATE_BOOKING: '/bookings',
 
   //Complaints
-
   CREATE_COMPLAINT: '/bookings/complaint',
   UPDATE_COMPLAINT: '/bookings/complaint',
 

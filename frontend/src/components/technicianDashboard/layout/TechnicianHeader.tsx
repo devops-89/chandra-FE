@@ -56,7 +56,7 @@ export default function TechnicianHeader({
         {/* Welcome Message */}
         <div className="hidden sm:block">
           <h2 className="text-lg md:text-xl font-bold text-primary">
-            Welcome back, {userName}!
+            Technician Dashboard
           </h2>
           <p className="text-xs md:text-sm text-charcoal-light">{currentDate}</p>
         </div>

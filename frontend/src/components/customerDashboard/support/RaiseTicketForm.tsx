@@ -115,6 +115,8 @@ export default function RaiseTicketForm() {
             w-full
             rounded-xl
             border
+            border-emerald-600
+            outline-emerald-600
             p-4
           "
         />
@@ -128,6 +130,8 @@ export default function RaiseTicketForm() {
             w-full
             rounded-xl
             border
+            border-emerald-600
+            outline-emerald-600
             p-4
           "
         />
@@ -140,6 +144,8 @@ export default function RaiseTicketForm() {
             w-full
             rounded-xl
             border
+            border-emerald-600
+            outline-emerald-600
             p-4
           "
         />
@@ -153,6 +159,8 @@ export default function RaiseTicketForm() {
             w-full
             rounded-xl
             border
+            border-emerald-600
+            outline-emerald-600
             p-4
           "
         />
@@ -198,6 +206,7 @@ export default function RaiseTicketForm() {
             bg-emerald-600
             px-6
             py-3
+            ml-4
             cursor-pointer
             text-white
             hover:bg-emerald-700
