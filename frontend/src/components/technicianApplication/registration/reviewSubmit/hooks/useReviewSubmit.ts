@@ -332,21 +332,21 @@ export const useReviewSubmit = () => {
 
       const { user, tokens } = response.data;
 
-      // ── Persist user and both tokens so they survive page refresh / HMR ───
+      // ── Persist tokens + user — survives page refresh and tab close ─────
       localStorage.setItem('user',         JSON.stringify(user));
       localStorage.setItem('accessToken',  tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
 
       dispatch(setCredentials({
         user: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
+          id:        user.id,
+          email:     user.email,
+          username:  user.username,
           firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
+          lastName:  user.lastName,
+          role:      user.role,
         },
-        accessToken: tokens.accessToken,
+        accessToken:  tokens.accessToken,
         refreshToken: tokens.refreshToken,
       }));
 

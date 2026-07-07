@@ -20,6 +20,7 @@ import type { SignupErrors, SignupFormData } from '@/types/auth.types';
 const INITIAL_FORM: SignupFormData = {
   firstName: '',
   lastName: '',
+  username: '',
   phone: '',
   email: '',
   password: '',
@@ -113,13 +114,11 @@ export const useSignupForm = () => {
         otp,
       });
 
-      // 2b. Register customer
-      const username = `${form.firstName.trim().toLowerCase()}_${form.lastName.trim().toLowerCase()}`;
-
+      // 2b. Register customer — use the username entered by the user
       await registerCustomerService({
         phone: form.phone.trim(),
         email: form.email.trim() || undefined,
-        username,
+        username: form.username.trim(),
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim() || undefined,
         password: form.password,
@@ -134,7 +133,7 @@ export const useSignupForm = () => {
 
       const { user, tokens } = loginResponse.data;
 
-      // Persist user and both tokens so they survive page refresh / HMR.
+      // Persist tokens + user — survives page refresh and tab close
       localStorage.setItem('user',         JSON.stringify(user));
       localStorage.setItem('accessToken',  tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);

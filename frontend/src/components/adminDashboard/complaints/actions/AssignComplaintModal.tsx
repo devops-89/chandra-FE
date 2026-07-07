@@ -29,7 +29,7 @@ const AssignComplaintModal = ({
             <option>Aman Verma</option>
             <option>Priya Singh</option>
           </select>
-
+    
           <textarea
             rows={4}
             placeholder="Internal Notes"

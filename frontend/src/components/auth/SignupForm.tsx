@@ -125,6 +125,21 @@ export const SignupForm = () => {
                 </label>
               </div>
 
+              {/* Username */}
+              <label className="grid gap-1.5">
+                <span className="text-sm font-medium text-slate-700">Username</span>
+                <input
+                  className={inputClassName}
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  placeholder="e.g. john_doe"
+                  value={form.username}
+                  onChange={(e) => handleChange('username', e.target.value)}
+                />
+                {errors.username && <span className={errorClassName}>{errors.username}</span>}
+              </label>
+
               {/* Mobile Number */}
               <label className="grid gap-1.5">
                 <span className="text-sm font-medium text-slate-700">Mobile Number</span>

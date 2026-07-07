@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
+import { getTechnicianRedirectPath } from '@/lib/authApi/redirectUtils';
 import {
   firstIncompleteRoute,
   isOnboardingComplete,
@@ -10,7 +11,6 @@ import {
   isStepComplete,
   syncProgressFromProfile,
 } from '@/lib/onboarding/onboardingProgress';
-import { getTechnicianRedirectPath } from '@/lib/authApi/redirectUtils';
 import { getProfileService } from '@/services/auth.service';
 
 /**

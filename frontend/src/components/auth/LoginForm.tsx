@@ -67,7 +67,7 @@ export const LoginForm = () => {
 
       const { user, tokens } = response.data;
 
-      // Persist user and both tokens so they survive page refresh / HMR.
+      // Persist tokens + user — survives page refresh and tab close
       localStorage.setItem('user',         JSON.stringify(user));
       localStorage.setItem('accessToken',  tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
@@ -75,7 +75,7 @@ export const LoginForm = () => {
       dispatch(
         setCredentials({
           user,
-          accessToken: tokens.accessToken,
+          accessToken:  tokens.accessToken,
           refreshToken: tokens.refreshToken,
         }),
       );

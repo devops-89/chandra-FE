@@ -3,6 +3,7 @@
 export interface SignupFormData {
   firstName: string;
   lastName: string;
+  username: string;
   phone: string;
   email: string;
   password: string;
@@ -13,6 +14,7 @@ export interface SignupFormData {
 export interface SignupErrors {
   firstName?: string;
   lastName?: string;
+  username?: string;
   phone?: string;
   email?: string;
   password?: string;

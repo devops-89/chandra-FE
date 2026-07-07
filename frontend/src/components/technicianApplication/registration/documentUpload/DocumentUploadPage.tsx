@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
@@ -82,7 +82,7 @@ export default function DocumentUploadPage() {
     } catch {
       // ignore malformed data
     }
-  }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);  
 
   // ── Watch Redux files to clear recovery message ─────────────────────────────
   useEffect(() => {
