@@ -3,7 +3,7 @@ import { ENDPOINTS } from '@/api/endpoints';
 import type {
   Address,
   CreateAddressRequest,
-  CreateAddressResponse,
+  CreateAddressResponse, CustomerAddress, GetCustomerAddressesResponse,
   UpdateAddressRequest,
 } from '@/types/address.types';
 import type {
@@ -31,6 +31,15 @@ export const createAddressService = async (
     await api.post<CreateAddressResponse>(
       ENDPOINTS.CREATE_ADDRESS,
       payload
+    );
+
+  return response.data.data.data;
+};
+
+export const getCustomerAddressesService = async (): Promise<CustomerAddress[]> => {
+  const response =
+    await api.get<GetCustomerAddressesResponse>(
+      ENDPOINTS.GET_CUSTOMER_ADDRESSES
     );
 
   return response.data.data.data;

@@ -1,11 +1,11 @@
 import Link from 'next/link';
 
-import type { Booking } from '@/types/bookingTypes/booking.types';
+import type { CustomerBooking } from '@/types/customerBooking.types';
 
 import StatusBadge from './StatusBadge';
 
 interface Props {
-  booking: Booking;
+  booking: CustomerBooking;
 }
 
 export default function BookingRow({
@@ -14,19 +14,19 @@ export default function BookingRow({
   return (
     <tr className="border-b">
       <td className="px-4 py-4 text-slate-700">
-        {booking.id}
+        #{booking.bookingId}
       </td>
 
       <td className="px-4 py-4 text-slate-700">
-        {booking.serviceName}
+        {booking.service?.name ?? 'N/A'}
       </td>
 
       <td className="px-4 py-4 text-slate-700">
-        {booking.bookingDate}
+        {new Date(booking.scheduledAt).toLocaleDateString()}
       </td>
 
       <td className="px-4 py-4 text-slate-700">
-        ₹{booking.amount}
+        ₹{booking.totalAmount ?? '0.00'}
       </td>
 
       <td className="px-4 py-4">
@@ -37,7 +37,7 @@ export default function BookingRow({
 
       <td className="px-4 py-4">
         <Link
-          href={`/dashboard/customer/bookings/${booking.id}`}
+          href={`/dashboard/customer/bookings/${booking.bookingId}`}
           className="
             text-emerald-700
             hover:underline
