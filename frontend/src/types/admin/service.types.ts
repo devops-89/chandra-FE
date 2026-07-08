@@ -140,6 +140,7 @@ export interface UpdateServiceRequest {
     name: string;
     type: 'text' | 'number' | 'select' | 'image';
     isRequired: boolean;
+    isActive: boolean;
     values?: string[];
   }[];
 }

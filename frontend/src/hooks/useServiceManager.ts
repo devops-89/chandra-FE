@@ -48,7 +48,8 @@ export function useServiceManager() {
       name,
       type: type as 'text' | 'number' | 'select' | 'image',
       isRequired,
-      values,
+      isActive: true,
+      values: values ?? [],
     })),
   })
 ).unwrap();
