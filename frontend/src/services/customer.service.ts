@@ -20,7 +20,7 @@ export const getCustomerProfileService = async (): Promise<CustomerProfile> => {
 
   const outer = response.data.data;
 
-  return outer.data;
+  return outer;
 };
 
 export const createAddressService = async (

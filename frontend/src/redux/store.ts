@@ -11,7 +11,6 @@ import onboardingReducer from './slices/onboardingSlice';
 import servicesReducer from './slices/servicesSlice';
 import supportReducer from './slices/supportSlice';
 import technicianProfileReducer from './slices/technicianProfileSlice'
-import { setReduxStore } from './storeAccessor';
 
 export const store = configureStore({
   reducer: {
@@ -32,8 +31,6 @@ export const store = configureStore({
       serializableCheck: false,
     }),
 });
-
-setReduxStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 

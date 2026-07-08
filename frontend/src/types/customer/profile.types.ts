@@ -34,9 +34,5 @@ export interface CustomerProfileResponse {
   success: boolean;
   statusCode: number;
   message: string;
-  data: {
-    success: boolean;
-    message: string;
-    data: CustomerProfile;
-  };
+  data: CustomerProfile;
 }
