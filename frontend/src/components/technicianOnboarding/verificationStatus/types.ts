@@ -32,8 +32,6 @@ export interface StatusActionButtonsProps {
 }
 
 export interface PendingStatusProps {
-  applicationId?: string;
-  submittedDate?: string;
   onRefresh?: () => void;
   onBackToHome?: () => void;
 }

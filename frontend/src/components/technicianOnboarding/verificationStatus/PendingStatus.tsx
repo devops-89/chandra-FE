@@ -30,16 +30,44 @@ const itemVariants = {
 };
 
 export default function PendingStatus({
-  applicationId = 'APP-2024-001',
-  submittedDate = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }),
   onRefresh,
   onBackToHome,
 }: PendingStatusProps) {
   const router = useRouter();
+
+  // Read username and registration date from localStorage.user
+  let username: string | null = null;
+  let resolvedDate = new Date().toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  });
+
+  try {
+    const raw = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    if (raw) {
+      const stored = JSON.parse(raw) as {
+        username?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        technicianProfile?: { updatedAt?: string };
+      };
+      if (stored.username) username = stored.username;
+
+      // Use the date when the technician profile was last updated (application submitted)
+      // Fall back to user.updatedAt, then user.createdAt
+      const appliedAt =
+        stored.technicianProfile?.updatedAt ??
+        stored.updatedAt ??
+        stored.createdAt;
+
+      if (appliedAt) {
+        resolvedDate = new Date(appliedAt).toLocaleDateString('en-US', {
+          year: 'numeric', month: 'long', day: 'numeric',
+        });
+      }
+    }
+  } catch {
+    // Malformed localStorage — use defaults
+  }
 
   const handleRefresh = () => {
     onRefresh?.();
@@ -48,7 +76,7 @@ export default function PendingStatus({
 
   const handleBackToHome = () => {
     onBackToHome?.();
-    router.push('/');
+    router.push('/technician');
   };
 
   return (
@@ -88,10 +116,10 @@ export default function PendingStatus({
             >
               <div className="flex items-center justify-between pb-4 border-b border-outline-variant">
                 <span className="text-sm md:text-base text-secondary font-medium">
-                  Application ID
+                  Applicant
                 </span>
                 <span className="text-sm md:text-base font-bold text-on-surface">
-                  {applicationId}
+                  {username ?? '—'}
                 </span>
               </div>
 
@@ -100,7 +128,7 @@ export default function PendingStatus({
                   Submitted On
                 </span>
                 <span className="text-sm md:text-base font-bold text-on-surface">
-                  {submittedDate}
+                  {resolvedDate}
                 </span>
               </div>
 
