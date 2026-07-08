@@ -58,11 +58,17 @@ const authSlice = createSlice({
       }
     },
 
-    /** Called after a silent token refresh. */
-    updateAccessToken: (state, action: PayloadAction<string>) => {
-      state.accessToken = action.payload;
+    /** Called after Refresh Token Rotation — updates BOTH tokens in Redux + localStorage. */
+    updateTokens: (
+      state,
+      action: PayloadAction<{ accessToken: string; refreshToken: string }>,
+    ) => {
+      state.accessToken  = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+
       if (typeof window !== 'undefined') {
-        localStorage.setItem('accessToken', action.payload);
+        localStorage.setItem('accessToken',  action.payload.accessToken);
+        localStorage.setItem('refreshToken', action.payload.refreshToken);
       }
     },
 
@@ -90,6 +96,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, updateAccessToken, logout, updateUser } = authSlice.actions;
+export const { setCredentials, updateTokens, logout, updateUser } = authSlice.actions;
 
 export default authSlice.reducer;

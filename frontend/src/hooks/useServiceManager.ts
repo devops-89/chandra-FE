@@ -44,6 +44,12 @@ export function useServiceManager() {
     emergencyCharge: data.emergencyCharge
       ? parseFloat(data.emergencyCharge)
       : undefined,
+    specifications: data.specifications?.map(({ name, type, isRequired, values }) => ({
+      name,
+      type: type as 'text' | 'number' | 'select' | 'image',
+      isRequired,
+      values,
+    })),
   })
 ).unwrap();
 

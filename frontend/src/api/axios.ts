@@ -1,9 +1,9 @@
 import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
 
-import { logout, updateAccessToken } from '@/redux/slices/authSlice';
+import { logout, updateTokens } from '@/redux/slices/authSlice';
 import { store } from '@/redux/store';
 
-import { API_BASE_URLS, type ApiServicePurpose, getApiBaseUrl } from './endpoints';
+import { API_BASE_URLS, ENDPOINTS, type ApiServicePurpose, getApiBaseUrl } from './endpoints';
 
 // ── Refresh-queue state ───────────────────────────────────────────────────────
 
@@ -58,7 +58,7 @@ function attachResponseInterceptor(client: AxiosInstance) {
         !error.response
         || error.response.status !== 401
         || originalRequest._retry
-        || originalRequest.url?.includes('/auth/refresh')
+        || originalRequest.url?.includes('/auth/refresh-token')
       ) {
         return Promise.reject(error);
       }
@@ -82,30 +82,61 @@ function attachResponseInterceptor(client: AxiosInstance) {
       if (!storedRefreshToken) {
         isRefreshing = false;
         processQueue(new Error('No refresh token'), null);
-        forceLogout();
+        // Only logout if there genuinely is no refresh token stored
+        // (user was never authenticated, not a transient failure)
+        const hasUser = typeof window !== 'undefined' && !!localStorage.getItem('user');
+        if (!hasUser) forceLogout();
         return Promise.reject(error);
       }
 
       try {
         const res = await axios.post(
-          `${API_BASE_URLS.auth}/auth/refresh`,
+          `${API_BASE_URLS.auth}${ENDPOINTS.REFRESH_TOKEN}`,
           { refreshToken: storedRefreshToken },
           { headers: { 'Content-Type': 'application/json' } },
         );
 
-        const newToken: string =
+        // ── Extract both tokens from the response ─────────────────────────────
+        // Backend uses Refresh Token Rotation: both accessToken AND refreshToken
+        // are rotated on every refresh. The old refreshToken is immediately invalid.
+        const newAccessToken: string | undefined =
           res.data?.data?.tokens?.accessToken
           ?? res.data?.data?.accessToken
           ?? res.data?.accessToken;
 
-        store.dispatch(updateAccessToken(newToken));
-        processQueue(null, newToken);
+        const newRefreshToken: string | undefined =
+          res.data?.data?.tokens?.refreshToken
+          ?? res.data?.data?.refreshToken
+          ?? res.data?.refreshToken;
 
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        // ── Validate both tokens exist before updating state ──────────────────
+        // If either is missing the response is malformed — reject without
+        // touching auth state so the user is not inadvertently logged out.
+        if (!newAccessToken || !newRefreshToken) {
+          const missingMsg = `Refresh response missing tokens. accessToken=${!!newAccessToken} refreshToken=${!!newRefreshToken}`;
+          console.error('[Auth]', missingMsg);
+          processQueue(new Error(missingMsg), null);
+          return Promise.reject(new Error(missingMsg));
+        }
+
+        // ── Persist rotated tokens (both Redux + localStorage) ────────────────
+        store.dispatch(updateTokens({ accessToken: newAccessToken, refreshToken: newRefreshToken }));
+        processQueue(null, newAccessToken);
+
+        // ── Retry the original request with the new access token ──────────────
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return client(originalRequest);
-      } catch (refreshError) {
+      } catch (refreshError: unknown) {
         processQueue(refreshError, null);
-        forceLogout();
+
+        // Force logout ONLY when the refresh endpoint explicitly rejects the token.
+        // 401 = token expired/invalid. 403 = token blacklisted/revoked.
+        // Do NOT logout on: network failure, timeout, 500, validation error, backend unavailable.
+        const refreshStatus = (refreshError as { response?: { status?: number } })?.response?.status;
+        if (refreshStatus === 401 || refreshStatus === 403) {
+          forceLogout();
+        }
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

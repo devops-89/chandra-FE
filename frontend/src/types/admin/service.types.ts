@@ -135,6 +135,13 @@ export interface UpdateServiceRequest {
   platformFee?: number;
   gst?: number;
   emergencyCharge?: number;
+
+  specifications?: {
+    name: string;
+    type: 'text' | 'number' | 'select' | 'image';
+    isRequired: boolean;
+    values?: string[];
+  }[];
 }
 
 export interface CreateServiceRequest {
