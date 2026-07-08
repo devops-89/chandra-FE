@@ -15,7 +15,7 @@ import { BOOKING_STEPS } from '@/constants/booking/timeSlots';
 import { validateBookingForm, validateDateTime } from '@/lib/validation/bookingValidation';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
-import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
+import {  fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
 import { fetchServiceById } from '@/redux/slices/servicesSlice';
 import type { UnifiedBookingPageProps } from '@/types/bookingTypes/bookingForm.types';
 import type { Address } from '@/types/customer/profile.types';
@@ -75,11 +75,8 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
 
   // ── Fetch customer profile (needed for address list in step 1) ────────────
   useEffect(() => {
-    if (!profile) {
-      dispatch(fetchCustomerProfile());
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  dispatch(fetchCustomerAddresses());
+  }, [dispatch]);
 
   // ── Step state ────────────────────────────────────────────────────────────
   const [currentStep, setCurrentStep] = useState(STEP_DYNAMIC_FORM);

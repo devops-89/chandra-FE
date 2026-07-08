@@ -3,7 +3,7 @@ import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axio
 import { logout, updateTokens } from '@/redux/slices/authSlice';
 import { store } from '@/redux/store';
 
-import { API_BASE_URLS, ENDPOINTS, type ApiServicePurpose, getApiBaseUrl } from './endpoints';
+import { API_BASE_URLS, type ApiServicePurpose, ENDPOINTS, getApiBaseUrl } from './endpoints';
 
 // ── Refresh-queue state ───────────────────────────────────────────────────────
 
@@ -104,10 +104,12 @@ function attachResponseInterceptor(client: AxiosInstance) {
           ?? res.data?.data?.accessToken
           ?? res.data?.accessToken;
 
+
         const newRefreshToken: string | undefined =
           res.data?.data?.tokens?.refreshToken
           ?? res.data?.data?.refreshToken
           ?? res.data?.refreshToken;
+
 
         // ── Validate both tokens exist before updating state ──────────────────
         // If either is missing the response is malformed — reject without

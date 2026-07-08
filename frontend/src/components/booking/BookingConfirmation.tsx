@@ -17,7 +17,7 @@ export function BookingConfirmationContent() {
   const bookingId = createTemporaryBookingId(service, date, slot);
 
   React.useEffect(() => {
-    const timer = setTimeout(() => clearBooking(), 10000);
+    const timer = setTimeout(() => clearBooking(), 20000);
     return () => clearTimeout(timer);
   }, [clearBooking]);
 
