@@ -112,8 +112,12 @@ function ServiceEditFields({
   });
 
   const [specifications, setSpecifications] = useState<Specification[]>(
-    service.specifications ?? []
-  );
+  (service.specifications ?? []).map((spec) => ({
+    ...spec,
+    id: String(spec.id),      // remove this line if Specification.id is number
+    values: spec.values ?? [], // always provide an array
+  }))
+);
 
   const set = (field: keyof EditServiceFormData, value: string | boolean | number) =>
     setForm((prev) => ({ ...prev, [field]: value }));

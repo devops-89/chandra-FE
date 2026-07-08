@@ -105,7 +105,7 @@ export function BookingSummaryContent({
       serviceId,
       customerAddressId,
       isEmergency: false,
-      scheduledAt,
+      scheduledAtIst: scheduledAt,
       serviceSpecifications: sanitizedSpecifications,
     };
 

@@ -19,7 +19,7 @@ function ImagePreview({ file }: { file: File }) {
 
   return (
     <div className="relative mt-3 h-36 w-36 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-      <Image src={preview} alt="Upload preview" className="h-full w-full object-cover" />
+      <Image src={preview} alt="Upload preview" width={200} height={200} className="h-full w-full object-cover" />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useRef,useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
+import { fetchCustomerProfile, updateCustomerProfile } from '@/redux/slices/customerProfileSlice';
 
 export default function ProfileForm() {
   const dispatch = useAppDispatch();
@@ -16,6 +16,7 @@ export default function ProfileForm() {
     lastName: '',
     email: '',
     phone: '',
+    emergencyContact: '',
   });
 
   const hasFetched = useRef(false);
@@ -24,7 +25,6 @@ export default function ProfileForm() {
   useEffect(() => {
     if (!hasFetched.current && !profile) {
       hasFetched.current = true;
-      console.log('Fetching customer profile...');
       dispatch(fetchCustomerProfile());
     }
   }, [dispatch, profile]);
@@ -32,12 +32,12 @@ export default function ProfileForm() {
   // Update form when profile data loads
   useEffect(() => {
     if (profile) {
-      console.log('Profile loaded:', profile);
       setFormData({
         firstName: profile.firstName ?? '',
         lastName: profile.lastName ?? '',
         email: profile.email ?? '',
         phone: profile.phone ?? '',
+        emergencyContact: profile.emergencyContact ?? '',
       });
     }
   }, [profile]);
@@ -91,6 +91,28 @@ export default function ProfileForm() {
     );
   }
 
+  const handleSubmit = async () => {
+  try {
+    await dispatch(
+      updateCustomerProfile({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        emergencyContact:
+          formData.emergencyContact || null,
+      })
+    ).unwrap();
+
+    alert('Profile updated successfully.');
+  } catch (err) {
+    alert(
+      typeof err === 'string'
+        ? err
+        : 'Failed to update profile.'
+    );
+  }
+};
+
   return (
     <div
       className="
@@ -131,16 +153,33 @@ export default function ProfileForm() {
 
         <input
           name="phone"
+          readOnly
           value={formData.phone}
           onChange={handleChange}
           placeholder="Phone"
-          className="rounded-xl border border-emerald-600 outline-emerald-600 p-4 text-slate-700"
+          className="rounded-xl border border-slate-300 bg-slate-100 p-4 text-slate-700 cursor-not-allowed"
         />
 
+        <input
+          name="emergencyContact"
+          value={formData.emergencyContact}
+          onChange={handleChange}
+          placeholder="Emergency Contact"
+          className="rounded-xl border border-emerald-600 outline-emerald-600 p-4 text-slate-700"
+        />
+        {error && (
+        <div className="rounded-xl bg-red-50 p-3 text-sm text-red-600">
+    {     error}
+        </div>
+        )}
+
         <button
-          className="rounded-xl bg-emerald-600 px-6 py-3 cursor-pointer text-white transition-all duration-300 hover:bg-emerald-700"
+          type="button"
+          onClick={handleSubmit}
+          disabled={isLoading}
+          className="rounded-xl bg-emerald-600 px-6 py-3 cursor-pointer text-white transition-all duration-300 hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Save Changes
+        {isLoading ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
     </div>

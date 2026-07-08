@@ -25,7 +25,7 @@ export interface CustomerBooking {
   service: BookingService | null;
   address: BookingAddress;
 
-  scheduledAt: string;
+  scheduledAtIst: string;
   totalAmount: string | null;
 
   isEmergency: boolean;
@@ -38,6 +38,11 @@ export interface CustomerBooking {
 
   technicianRating: number | null;
   technicianReview: string | null;
+
+  cancelledBy?: number;
+  cancelledByRole?: string;
+  cancellationReason?: string;
+  updatedAt?: string;
 }
 
 export interface BookingPagination {
@@ -60,4 +65,29 @@ export interface CustomerBookingsResponse {
 
     pagination: BookingPagination;
   };
+}
+
+export interface CancelBookingRequest {
+  bookingId: number;
+  cancellationReason: string;
+}
+
+export interface CancelBookingResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+
+  data: {
+    message: string;
+    data: CancelledBooking;
+  };
+}
+
+export interface CancelledBooking {
+  bookingId: number;
+  status: string;
+  cancelledBy: number;
+  cancelledByRole: string;
+  cancellationReason: string;
+  updatedAt: string;
 }

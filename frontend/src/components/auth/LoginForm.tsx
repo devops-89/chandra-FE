@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -39,6 +39,12 @@ export const LoginForm = () => {
     setErrors((prev) => ({ ...prev, [name]: undefined }));
     // clear server error as soon as user starts editing
     if (apiError) setApiError('');
+  };
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
   };
 
   const handleSubmit = async () => {
@@ -184,13 +190,22 @@ export const LoginForm = () => {
             {/* Password */}
             <label className="grid gap-1.5">
               <span className="text-sm font-medium text-slate-700">Password</span>
-              <input
-                className={inputClassName}
-                name="password"
-                type="password"
-                value={form.password}
-                onChange={(e) => handleChange('password', e.target.value)}
-              />
+              <div className="relative">
+                <input
+                  className={`${inputClassName} w-full pr-10`}
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={form.password}
+                  onChange={(e) => handleChange('password', e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={handleTogglePassword}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               {errors.password && <span className={errorClassName}>{errors.password}</span>}
             </label>
 

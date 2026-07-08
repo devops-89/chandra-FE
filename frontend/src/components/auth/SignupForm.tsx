@@ -1,8 +1,9 @@
 'use client';
 
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 import { signupContent } from '@/constants/auth/signupContent';
 import { useSignupForm } from '@/hooks/useSignupForm';
@@ -15,6 +16,9 @@ const inputClassName =
 const errorClassName = 'text-xs font-medium text-red-600';
 
 export const SignupForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const {
     form,
     errors,
@@ -106,7 +110,7 @@ export const SignupForm = () => {
                     type="text"
                     autoComplete="given-name"
                     value={form.firstName}
-                    onChange={(e) => handleChange('firstName', e.target.value)}
+                    onChange={(e) => handleChange('firstName', e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
                   />
                   {errors.firstName && <span className={errorClassName}>{errors.firstName}</span>}
                 </label>
@@ -119,7 +123,7 @@ export const SignupForm = () => {
                     type="text"
                     autoComplete="family-name"
                     value={form.lastName}
-                    onChange={(e) => handleChange('lastName', e.target.value)}
+                    onChange={(e) => handleChange('lastName', e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
                   />
                   {errors.lastName && <span className={errorClassName}>{errors.lastName}</span>}
                 </label>
@@ -149,7 +153,10 @@ export const SignupForm = () => {
                   type="tel"
                   autoComplete="tel"
                   value={form.phone}
-                  onChange={(e) => handleChange('phone', e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, ''); // Only digits
+                    handleChange('phone', value.slice(0, 10));       // Max 10 digits
+                  }}
                 />
                 {errors.phone && <span className={errorClassName}>{errors.phone}</span>}
               </label>
@@ -171,28 +178,46 @@ export const SignupForm = () => {
               {/* Password */}
               <label className="grid gap-1.5">
                 <span className="text-sm font-medium text-slate-700">Password</span>
-                <input
-                  className={inputClassName}
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  value={form.password}
-                  onChange={(e) => handleChange('password', e.target.value)}
-                />
+                <div className="relative">
+                  <input
+                    className={`${inputClassName} w-full pr-10`}
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    value={form.password}
+                    onChange={(e) => handleChange('password', e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 {errors.password && <span className={errorClassName}>{errors.password}</span>}
               </label>
 
               {/* Confirm password */}
               <label className="grid gap-1.5">
                 <span className="text-sm font-medium text-slate-700">Confirm password</span>
-                <input
-                  className={inputClassName}
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  value={form.confirmPassword}
-                  onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                />
+                <div className="relative">
+                  <input
+                    className={`${inputClassName} w-full pr-10`}
+                    name="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    value={form.confirmPassword}
+                    onChange={(e) => handleChange('confirmPassword', e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 {errors.confirmPassword && (
                   <span className={errorClassName}>{errors.confirmPassword}</span>
                 )}

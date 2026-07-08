@@ -1,24 +1,40 @@
 import { Bell, Menu } from 'lucide-react';
+import { useEffect } from 'react';
 
-import { useAppSelector } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
+
 
 interface DashboardHeaderProps {
   onMenuClick: () => void;
 }
 
 export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
-  const reduxUser = useAppSelector((data) => data.auth.user);
 
-  const user = reduxUser ?? (() => {
-    if(typeof window === 'undefined') return null;
+  const dispatch = useAppDispatch();
+  const authUser = useAppSelector((state) => state.auth.user);
 
-    try {
-      const raw = localStorage.getItem('user');
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
+  const customerProfile = useAppSelector((state) => state.customerProfile.profile);
+
+  useEffect(() => {
+  if (!customerProfile) {
+    dispatch(fetchCustomerProfile());
     }
-  })()
+  }, [customerProfile, dispatch]);
+
+  const user =
+    customerProfile ??
+    authUser ??
+    (() => {
+      if (typeof window === 'undefined') return null;
+
+      try {
+        const raw = localStorage.getItem('user');
+        return raw ? JSON.parse(raw) : null;
+        } catch {
+        return null;
+      }
+    })();
 
   const firstName = user?.firstName ?? 'User';
   const lastName = user?.lastName ?? '';
