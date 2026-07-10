@@ -90,6 +90,27 @@ export const LoginForm = () => {
       let redirectTo: string;
       if (user.role?.toUpperCase() === 'TECHNICIAN') {
         const profileRes = await getProfileService();
+
+        // Store technicianProfile so PendingStatus can show the real submission date and status
+        const technicianProfile = profileRes.data.technicianProfile;
+        if (technicianProfile) {
+          try {
+            const stored = JSON.parse(localStorage.getItem('user') ?? '{}');
+            if (profileRes.data.createdAt) {
+              stored.createdAt = profileRes.data.createdAt;
+            }
+            stored.technicianProfile = {
+              ...stored.technicianProfile,
+              createdAt: technicianProfile.createdAt,
+              status: technicianProfile.status,
+              updatedAt: technicianProfile.updatedAt,
+            };
+            localStorage.setItem('user', JSON.stringify(stored));
+          } catch {
+            // ignore
+          }
+        }
+
         redirectTo = getTechnicianRedirectPath({
           userStatus: profileRes.data.status,
           technicianProfile: profileRes.data.technicianProfile,

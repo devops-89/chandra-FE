@@ -2,6 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+import { formatSubmissionDate } from '@/lib/utils/dateUtils';
+import { getProfileService } from '@/services/auth.service';
 
 import StatusActionButtons from './common/StatusActionButtons';
 import StatusBadge from './common/StatusBadge';
@@ -34,12 +38,23 @@ export default function PendingStatus({
   onBackToHome,
 }: PendingStatusProps) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    requestAnimationFrame(() => {
+      if (active) {
+        setMounted(true);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Read username and registration date from localStorage.user
   let username: string | null = null;
-  let resolvedDate = new Date().toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric',
-  });
+  let resolvedDate = '--';
 
   try {
     const raw = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
@@ -48,28 +63,34 @@ export default function PendingStatus({
         username?: string;
         createdAt?: string;
         updatedAt?: string;
-        technicianProfile?: { updatedAt?: string };
+        technicianProfile?: {
+          createdAt?: string;
+          status?: string;
+          updatedAt?: string;
+        };
       };
       if (stored.username) username = stored.username;
 
-      // Use the date when the technician profile was last updated (application submitted)
-      // Fall back to user.updatedAt, then user.createdAt
+      // Use the actual application submission date from data.technicianProfile.createdAt
+      // Fall back to user.createdAt
       const appliedAt =
-        stored.technicianProfile?.updatedAt ??
-        stored.updatedAt ??
+        stored.technicianProfile?.createdAt ??
         stored.createdAt;
 
       if (appliedAt) {
-        resolvedDate = new Date(appliedAt).toLocaleDateString('en-US', {
-          year: 'numeric', month: 'long', day: 'numeric',
-        });
+        resolvedDate = formatSubmissionDate(appliedAt);
       }
     }
   } catch {
     // Malformed localStorage — use defaults
   }
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
+    try {
+      await getProfileService();
+    } catch (err) {
+      console.error('Failed to refresh status:', err);
+    }
     onRefresh?.();
     window.location.reload();
   };
@@ -119,7 +140,7 @@ export default function PendingStatus({
                   Applicant
                 </span>
                 <span className="text-sm md:text-base font-bold text-on-surface">
-                  {username ?? '—'}
+                  {mounted ? (username ?? '—') : '—'}
                 </span>
               </div>
 
@@ -128,7 +149,7 @@ export default function PendingStatus({
                   Submitted On
                 </span>
                 <span className="text-sm md:text-base font-bold text-on-surface">
-                  {resolvedDate}
+                  {mounted ? resolvedDate : '--'}
                 </span>
               </div>
 

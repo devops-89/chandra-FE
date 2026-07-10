@@ -132,5 +132,25 @@ export const registerTechnicianService = async (
 
 export const getProfileService = async (): Promise<GetProfileResponse> => {
   const response = await authApi.get<GetProfileResponse>(ENDPOINTS.GET_PROFILE);
-  return response.data;
+  const resData = response.data;
+  if (typeof window !== 'undefined' && resData.data) {
+    try {
+      const stored = JSON.parse(localStorage.getItem('user') ?? '{}');
+      if (resData.data.createdAt) {
+        stored.createdAt = resData.data.createdAt;
+      }
+      if (resData.data.technicianProfile) {
+        stored.technicianProfile = {
+          ...stored.technicianProfile,
+          createdAt: resData.data.technicianProfile.createdAt,
+          status: resData.data.technicianProfile.status,
+          updatedAt: resData.data.technicianProfile.updatedAt,
+        };
+      }
+      localStorage.setItem('user', JSON.stringify(stored));
+    } catch {
+      // ignore
+    }
+  }
+  return resData;
 };

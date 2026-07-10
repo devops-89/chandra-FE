@@ -240,6 +240,9 @@ export interface ApiTechnicianProfileData {
   services: ApiTechnicianServiceEntry[];
   serviceAreas: ApiServiceArea[];
   brandExpertise: ApiBrandExpertise[];
+  /** Timestamp when the technician profile was created — represents application submission date. */
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface GetProfileResponse {
@@ -256,6 +259,7 @@ export interface GetProfileResponse {
     role: string;
     /** User-level status — 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' etc. */
     status: string;
+    createdAt?: string;
     technicianProfileId: number | null;
     technicianProfile: ApiTechnicianProfileData | null;
   };
