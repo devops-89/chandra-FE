@@ -94,8 +94,26 @@ export const LoginForm = () => {
 
       router.push(redirectTo);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
-      setApiError(err?.response?.data?.message ?? 'Invalid credentials');
+      const err = error as { response?: { data?: { message?: string }; status?: number }; request?: unknown; message?: string };
+
+      if (err?.response) {
+        // Server responded — use backend message or status-based fallback
+        const status = err.response.status;
+        const backendMsg = err.response.data?.message;
+        if (backendMsg) {
+          setApiError(backendMsg);
+        } else if (status === 401 || status === 403) {
+          setApiError('Invalid credentials');
+        } else {
+          setApiError('Server error. Please try again.');
+        }
+      } else if (err?.request !== undefined) {
+        // Request was made but no response received — CORS, network down, backend unreachable
+        setApiError('Unable to reach the server. Please check your connection or try again later.');
+      } else {
+        // Something else went wrong (e.g. request setup error)
+        setApiError('Something went wrong. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
