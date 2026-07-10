@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 
 import type { CustomerBooking } from '@/types/customerBooking.types';
@@ -22,7 +23,7 @@ export default function BookingRow({
       </td>
 
       <td className="px-4 py-4 text-slate-700">
-        {new Date(booking.scheduledAt).toLocaleDateString()}
+        {new Date(booking.scheduledAtIst).toLocaleDateString()}
       </td>
 
       <td className="px-4 py-4 text-slate-700">

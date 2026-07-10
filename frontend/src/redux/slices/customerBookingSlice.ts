@@ -1,7 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getCustomerBookingsService } from '@/services/customerBooking.service';
-import type { CustomerBooking, } from '@/types/customerBooking.types';
+import { cancelBookingService } from '@/services/booking.service';
+import { getCustomerBookingsService,  } from '@/services/customerBooking.service';
+import type {
+  CancelBookingRequest,
+  CancelledBooking,
+  CustomerBooking,
+} from '@/types/customerBooking.types';
 
 interface CustomerBookingsState {
   bookings: CustomerBooking[];
@@ -30,6 +35,26 @@ export const fetchCustomerBookings = createAsyncThunk<
         err instanceof Error
           ? err.message
           : 'Failed to fetch customer bookings'
+      );
+    }
+  }
+);
+
+export const cancelBooking = createAsyncThunk<
+  CancelledBooking,
+  CancelBookingRequest,
+  { rejectValue: string }
+>(
+  'customerBookings/cancel',
+
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await cancelBookingService(payload);
+    } catch (err) {
+      return rejectWithValue(
+        err instanceof Error
+          ? err.message
+          : 'Failed to cancel booking'
       );
     }
   }
@@ -64,9 +89,35 @@ const customerBookingsSlice = createSlice({
         state.isLoading = false;
         state.error =
           action.payload ?? 'Unknown error';
-      });
-  },
-});
+      })
+
+      .addCase(cancelBooking.pending, (state) => {
+      state.isLoading = true;
+    })
+
+      .addCase(cancelBooking.fulfilled, (state, action) => {
+      state.isLoading = false;
+
+      const booking = state.bookings.find(
+        (b) => b.bookingId === action.payload.bookingId
+      );
+
+      if (booking) {
+        booking.status = action.payload.status;
+        booking.cancelledBy = action.payload.cancelledBy;
+        booking.cancelledByRole = action.payload.cancelledByRole;
+        booking.cancellationReason =
+        action.payload.cancellationReason;
+        booking.updatedAt = action.payload.updatedAt;
+      }
+    })
+
+      .addCase(cancelBooking.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload ?? 'Unknown error';
+      })
+    },
+  });
 
 export const {
   clearCustomerBookings,

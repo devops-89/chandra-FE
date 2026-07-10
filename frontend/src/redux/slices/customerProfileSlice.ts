@@ -3,10 +3,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { createAddressService } from '@/services/customer.service';
 import { getCustomerProfileService } from '@/services/customer.service';
 import { getCustomerAddressesService } from '@/services/customer.service';
-import { updateAddressService } from '@/services/customer.service';
+import { updateAddressService, updateCustomerProfileService } from '@/services/customer.service';
 import { deleteAddressService } from '@/services/customer.service';
 import type {Address, CreateAddressRequest, UpdateAddressRequest,} from '@/types/address.types';
-import type { CustomerProfile } from '@/types/customer/profile.types';
+import type { CustomerProfile, UpdateCustomerProfileRequest } from '@/types/customer/profile.types';
 
 interface CustomerProfileState {
   profile: CustomerProfile | null;
@@ -64,6 +64,27 @@ export const fetchCustomerProfile = createAsyncThunk<
           : 'Failed to fetch customer profile';
 
       return rejectWithValue(message);
+    }
+  }
+);
+
+// ─── Update Customer Profile ─────────────────────────────────────
+export const updateCustomerProfile = createAsyncThunk<
+  CustomerProfile,
+  UpdateCustomerProfileRequest,
+  { rejectValue: string }
+>(
+  'customerProfile/update',
+
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await updateCustomerProfileService(payload);
+    } catch (err) {
+      return rejectWithValue(
+        err instanceof Error
+          ? err.message
+          : 'Failed to update profile'
+      );
     }
   }
 );
@@ -195,6 +216,22 @@ const customerProfileSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload ?? 'Unknown error';
     })
+
+    // ─── Update Customer Profile ──────────────────────────────
+    .addCase(updateCustomerProfile.pending, (state) => {
+    state.isLoading = true;
+    state.error = null;
+  })
+
+    .addCase(updateCustomerProfile.fulfilled, (state, action) => {
+    state.isLoading = false;
+    state.profile = action.payload;
+  })
+
+    .addCase(updateCustomerProfile.rejected, (state, action) => {
+    state.isLoading = false;
+    state.error = action.payload ?? 'Unknown error';
+  })
 
     // ─── Fetch Customer Addresses ─────────────────────────────
     .addCase(fetchCustomerAddresses.pending, (state) => {

@@ -106,11 +106,9 @@ export default function RaiseTicketForm() {
       </h2>
 
       <div className="space-y-4">
-        <input
-          type="number"
+        <select
           value={bookingId}
           onChange={(e) => setBookingId(e.target.value)}
-          placeholder="Booking ID"
           className="
             w-full
             rounded-xl
@@ -119,22 +117,9 @@ export default function RaiseTicketForm() {
             outline-emerald-600
             p-4
           "
-        />
-
-        <input
-          type="number"
-          value={serviceId}
-          onChange={(e) => setServiceId(e.target.value)}
-          placeholder="Service ID"
-          className="
-            w-full
-            rounded-xl
-            border
-            border-emerald-600
-            outline-emerald-600
-            p-4
-          "
-        />
+        >
+          <option value="">Select Booking</option>
+        </select>
 
         <input
           value={title}
@@ -201,20 +186,6 @@ export default function RaiseTicketForm() {
               ? 'Update Ticket'
               : 'Submit Ticket'}
         </button>
-        <button 
-        className='rounded-xl
-            bg-emerald-600
-            px-6
-            py-3
-            ml-4
-            cursor-pointer
-            text-white
-            hover:bg-emerald-700
-            disabled:cursor-not-allowed
-            disabled:opacity-60'
-        onClick={() => loadComplaint(complaintId)}>
-          Edit
-      </button>
       </div>
     </div>
   );

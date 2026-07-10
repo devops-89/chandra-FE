@@ -9,6 +9,8 @@ import type {
 import type {
   CustomerProfile,
   CustomerProfileResponse,
+  UpdateCustomerProfileRequest,
+  UpdateCustomerProfileResponse,
 } from '@/types/customer/profile.types';
 
 
@@ -21,6 +23,19 @@ export const getCustomerProfileService = async (): Promise<CustomerProfile> => {
   const outer = response.data.data;
 
   return outer;
+};
+
+export const updateCustomerProfileService = async (
+  payload: UpdateCustomerProfileRequest
+): Promise<CustomerProfile> => {
+
+  const response =
+    await api.patch<UpdateCustomerProfileResponse>(
+      ENDPOINTS.UPDATE_PROFILE,
+      payload
+    );
+
+  return response.data.data.data;
 };
 
 export const createAddressService = async (

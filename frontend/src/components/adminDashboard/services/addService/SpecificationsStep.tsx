@@ -48,22 +48,22 @@ export default function SpecificationsStep({ specifications, errors, onChange }:
   /* helpers that produce a new array */
   const addSpec = () => onChange([...specifications, emptySpec()]);
 
-  const removeSpec = (id: string) =>
+  const removeSpec = (id: string | number) =>
     onChange(specifications.filter((s) => s.id !== id));
 
-  const updateSpec = (id: string, patch: Partial<Specification>) =>
+  const updateSpec = (id: string | number, patch: Partial<Specification>) =>
     onChange(
       specifications.map((s) => (s.id === id ? { ...s, ...patch } : s))
     );
 
   /* values helpers (only for type=select) */
-  const addOption = (specId: string) => {
+  const addOption = (specId: string | number) => {
     const spec = specifications.find((s) => s.id === specId);
     if (!spec) return;
     updateSpec(specId, { values: [...(spec.values ?? []), ''] });
   };
 
-  const updateOption = (specId: string, idx: number, value: string) => {
+  const updateOption = (specId: string | number, idx: number, value: string) => {
     const spec = specifications.find((s) => s.id === specId);
     if (!spec) return;
     const vals = [...(spec.values ?? [])];
@@ -71,7 +71,7 @@ export default function SpecificationsStep({ specifications, errors, onChange }:
     updateSpec(specId, { values: vals });
   };
 
-  const removeOption = (specId: string, idx: number) => {
+  const removeOption = (specId: string | number, idx: number) => {
     const spec = specifications.find((s) => s.id === specId);
     if (!spec) return;
     updateSpec(specId, { values: (spec.values ?? []).filter((_, i) => i !== idx) });

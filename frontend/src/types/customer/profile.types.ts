@@ -36,3 +36,22 @@ export interface CustomerProfileResponse {
   message: string;
   data: CustomerProfile;
 }
+
+export interface UpdateCustomerProfileRequest {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  emergencyContact?: string | null;
+}
+
+export interface UpdateCustomerProfileResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+
+  data: {
+    success: boolean;
+    message: string;
+    data: CustomerProfile;
+  };
+}

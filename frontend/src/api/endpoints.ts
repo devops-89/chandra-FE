@@ -43,6 +43,7 @@ export const ENDPOINTS = {
   //Bookings
   GET_CUSTOMER_BOOKINGS: '/bookings/all',
   CREATE_BOOKING: '/bookings',
+  CANCEL_BOOKING: '/bookings/cancel',
 
   //Complaints
   CREATE_COMPLAINT: '/bookings/complaint',

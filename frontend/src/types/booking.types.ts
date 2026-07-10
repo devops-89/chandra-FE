@@ -11,7 +11,7 @@ export interface CreateBookingRequest {
   serviceId: number;
   customerAddressId: number;
   isEmergency: boolean;
-  scheduledAt: string;
+  scheduledAtIst: string;
   serviceSpecifications: ServiceSpecification[];
 }
 
@@ -21,7 +21,7 @@ export interface Booking {
   customerAddressId: number;
   technicianId: number | null;
   status: string;
-  scheduledAt: string;
+  scheduledAtIst: string;
   isEmergency: boolean;
   createdAt: string;
 }

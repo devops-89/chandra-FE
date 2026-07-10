@@ -41,11 +41,11 @@ export type SpecFieldType =
   | 'image';
 
 export interface Specification {
-  id?: string;
+  id: string | number;
   name: string;
   type: SpecFieldType;
   isRequired: boolean;
-  values?: string[];
+  values: string[];
 }
 
 /* ─── Master form state ──────────────────────────────────────────── */

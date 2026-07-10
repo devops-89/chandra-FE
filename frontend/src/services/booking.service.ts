@@ -7,6 +7,11 @@ import type {
   CreateBookingRequest,
   CreateBookingResponse,
 } from '@/types/booking.types';
+import type {
+  CancelBookingRequest,
+  CancelBookingResponse,
+  CancelledBooking,
+} from '@/types/customerBooking.types';
 
 type BookingResponseEnvelope =
   | CreateBookingResponse
@@ -64,4 +69,16 @@ export const createBookingService = async (
       (error instanceof Error ? error.message : 'Failed to create booking')
     );
   }
+};
+
+export const cancelBookingService = async (
+  payload: CancelBookingRequest
+): Promise<CancelledBooking> => {
+  const response =
+    await api.patch<CancelBookingResponse>(
+      ENDPOINTS.CANCEL_BOOKING,
+      payload
+    );
+
+  return response.data.data.data;
 };
