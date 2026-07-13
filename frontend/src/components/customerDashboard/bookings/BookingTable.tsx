@@ -55,13 +55,13 @@ export default function BookingTable() {
   return (
     <div
       className="
-        overflow-hidden
+        overflow-x-auto
         rounded-3xl
         bg-white
         shadow-sm
       "
     >
-      <table className="w-full">
+      <table className="w-full min-width-720px">
         <thead>
           <tr className="bg-emerald-600">
             <th className="px-4 py-4 text-left text-white">

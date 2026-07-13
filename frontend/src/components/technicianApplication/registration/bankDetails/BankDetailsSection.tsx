@@ -41,6 +41,7 @@ export default function BankDetailsSection() {
     ifscCode: '',
     accountNumber: '',
     confirmAccountNumber: '',
+    upiId: '',
   });
 
   const [selectedPayoutMethod, setSelectedPayoutMethod] = useState<'bank-transfer' | 'upi'>(
@@ -64,6 +65,7 @@ export default function BankDetailsSection() {
           ifscCode: parsed.ifscCode || '',
           accountNumber: parsed.accountNumber || '',
           confirmAccountNumber: parsed.accountNumber || '',
+          upiId: parsed.upiId || '',
         });
 
         if (parsed.payoutMethod === 'bank-transfer' || parsed.payoutMethod === 'upi') {
@@ -91,6 +93,7 @@ export default function BankDetailsSection() {
       ifscCode: formData.ifscCode,
       bankName: '',
       payoutMethod: selectedPayoutMethod,
+      upiId: formData.upiId,
     }));
   }, [formData, selectedPayoutMethod]);
 
@@ -104,6 +107,7 @@ export default function BankDetailsSection() {
         ifscCode: formData.ifscCode,
         bankName: '',
         payoutMethod: selectedPayoutMethod,
+        upiId: formData.upiId,
       };
       sessionStorage.setItem('bankDetailsData', JSON.stringify(payload));
       markStepComplete(4);
@@ -147,6 +151,10 @@ export default function BankDetailsSection() {
         <PayoutMethodCard
           selectedMethod={selectedPayoutMethod}
           onMethodChange={setSelectedPayoutMethod}
+          upiId={formData.upiId}
+          onUpiIdChange={(value) =>
+            setFormData((prev) => ({ ...prev, upiId: value }))
+          }
         />
       </motion.div>
 

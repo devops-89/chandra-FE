@@ -62,6 +62,38 @@ export interface LoginResponse {
   };
 }
 
+// ─── Forgot Password ──────────────────────────────────────────────────────────
+
+export interface ForgotPasswordRequest {
+  phone: string;
+}
+
+export interface ForgotPasswordResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    message: string;
+  };
+}
+
+// ─── Reset Password ─────────────────────────────────────────────────────────────
+
+export interface ResetPasswordRequest {
+  phone: string;
+  otp: string;
+  newPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    message: string;
+  };
+}
+
 // ─── Generate OTP ─────────────────────────────────────────────────────────────
 
 export interface GenerateOtpRequest {

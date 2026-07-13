@@ -5,7 +5,8 @@ import authReducer from './slices/authSlice';
 import bookingReducer from './slices/bookingSlice';
 import complaintReducer from './slices/complaintSlice';
 import customerBookingsReducer from './slices/customerBookingSlice';
-import customerProfileReducer from './slices/customerProfileSlice'
+import customerProfileReducer from './slices/customerProfileSlice';
+import forgotPasswordReducer from './slices/forgotPasswordSlice'
 import nearbyJobsReducer from './slices/nearbyJobsSlice';
 import onboardingReducer from './slices/onboardingSlice';
 import servicesReducer from './slices/servicesSlice';
@@ -16,6 +17,7 @@ import { setAppStore } from './storeAccessor';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    forgotPassword: forgotPasswordReducer,
     services: servicesReducer,
     nearbyJobs: nearbyJobsReducer,
     activeJobs: activeJobsReducer,

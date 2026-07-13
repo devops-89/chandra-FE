@@ -51,9 +51,6 @@ export default function DocumentUploadPage() {
       const hasAllReduxFiles = Boolean(
         selfieFile
         && aadharFile
-        && panFile
-        && policeCertFile
-        && tradeLicenseFile,
       );
 
       if (hasSavedDocumentData && !hasAllReduxFiles) {
@@ -82,18 +79,15 @@ export default function DocumentUploadPage() {
     } catch {
       // ignore malformed data
     }
-  }, []);  
+  }, [selfieFile, aadharFile, panFile, policeCertFile, tradeLicenseFile]);  
 
   // ── Watch Redux files to clear recovery message ─────────────────────────────
   useEffect(() => {
-    const hasAllReduxFiles = Boolean(
+    const hasRequiredReduxFiles = Boolean(
       selfieFile
       && aadharFile
-      && panFile
-      && policeCertFile
-      && tradeLicenseFile,
     );
-    if (hasAllReduxFiles) {
+    if (hasRequiredReduxFiles) {
       setFileRecoveryMessage(null);
     }
   }, [selfieFile, aadharFile, panFile, policeCertFile, tradeLicenseFile]);
@@ -128,13 +122,12 @@ export default function DocumentUploadPage() {
     }));
   };
 
-  // ── Validation: All 5 files must be uploaded ──────────────────────────────
+  // ── Validation: Selfie + Aadhaar Card required; other documents optional ────
   const isComplete = useMemo(() => {
-    const requiredDocIds = ['aadhaar-card', 'pan-card', 'police-verification', 'trade-license'];
-    const documentsOk = requiredDocIds.every(
-      (id) => state.uploadedDocuments[id] !== undefined && state.uploadedDocuments[id] !== null
-    );
-    return state.selfieImage !== null && documentsOk;
+    const aadharOk =
+      state.uploadedDocuments['aadhaar-card'] !== undefined
+      && state.uploadedDocuments['aadhaar-card'] !== null;
+    return state.selfieImage !== null && aadharOk;
   }, [state.selfieImage, state.uploadedDocuments]);
 
   const handlePrevious = () => {

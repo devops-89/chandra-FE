@@ -7,6 +7,7 @@ export default function InvoiceTable() {
     <div
       className="
         overflow-hidden
+        overflow-x-auto
         rounded-3xl
         bg-white
         shadow-lg
