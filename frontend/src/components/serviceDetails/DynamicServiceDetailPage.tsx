@@ -136,7 +136,7 @@ export default function DynamicServiceDetailPage({
       serviceSlug:  mappedService.slug,
       servicePrice: mappedService.price,
     });
-    router.push(`${bookingBasePath}?serviceId=${service.id}`);
+    router.push(`${bookingBasePath}?service=${encodeURIComponent(mappedService.slug)}`);
   };
 
   return (

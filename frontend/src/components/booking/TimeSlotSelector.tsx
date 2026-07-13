@@ -103,7 +103,7 @@ export default function TimeSlotSelector({
           Service Time <span className="text-slate-400 font-normal">(IST)</span>
         </label>
 
-        <div className="flex items-center gap-2">
+<div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* Hour */}
           <input
             id="booking-hour"
@@ -114,33 +114,33 @@ export default function TimeSlotSelector({
             placeholder="HH"
             maxLength={2}
             className="
-              w-16 rounded-xl border-2 border-slate-300 p-4 text-center text-slate-950 text-lg outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+              w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-slate-300 p-2 text-center text-slate-950 text-lg font-semibold outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
           />
 
           <span className="text-2xl font-bold text-slate-400 select-none">:</span>
 
           {/* Minute */}
-          <input
+         <input
+            maxLength={2}
             id="booking-minute"
             type="text"
             inputMode="numeric"
             value={minute}
             onChange={handleMinuteChange}
             placeholder="MM"
-            maxLength={2}
             className="
-              w-14 h-14 rounded-xl border-2 border-slate-300 text-center text-slate-950 font-semibold
+              w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-slate-300 p-2 text-center text-slate-950 text-lg font-semibold
               outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200
             "
           />
 
           {/* AM / PM toggle */}
-          <div className="ml-2 flex rounded-xl border-2 border-slate-300 overflow-hidden">
+          <div className="ml-1 sm:ml-2 flex rounded-xl border-2 border-slate-300 overflow-hidden">
             <button
               type="button"
               onClick={() => setPeriod('AM')}
               className={`
-                px-4 py-3 text-sm font-semibold transition-colors duration-200 cursor-pointer
+                px-3 py-2 sm:px-4 sm:py-3 text-sm font-semibold transition-colors duration-200 cursor-pointer
                 ${period === 'AM'
                   ? 'bg-emerald-600 text-white'
                   : 'bg-white text-slate-600 hover:bg-emerald-50'
@@ -153,7 +153,7 @@ export default function TimeSlotSelector({
               type="button"
               onClick={() => setPeriod('PM')}
               className={`
-                px-4 py-3 text-sm font-semibold transition-colors duration-200 cursor-pointer
+                px-3 py-2 sm:px-4 sm:py-3 text-sm font-semibold transition-colors duration-200 cursor-pointer
                 ${period === 'PM'
                   ? 'bg-emerald-600 text-white'
                   : 'bg-white text-slate-600 hover:bg-emerald-50'

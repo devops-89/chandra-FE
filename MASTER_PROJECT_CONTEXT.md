@@ -1,6 +1,6 @@
 # HiChandra Frontend — Master Project Context
 
-> **Last updated:** July 8, 2026
+> **Last updated:** July 10, 2026
 > **Purpose:** Permanent handoff document. Paste this file into any new chat to restore full project context instantly.
 
 ---
@@ -34,7 +34,7 @@ Roles:
 | React Compiler | Enabled in `next.config.ts` |
 
 Config notes:
-- `allowedDevOrigins` includes `192.168.1.6`
+- `allowedDevOrigins` updated per network IP
 - `images.remotePatterns` allows Google images and `*.s3.eu-north-1.amazonaws.com`
 - `images.minimumCacheTTL: 3600`
 - S3 images use `unoptimized={true}` on `<Image>` to bypass 7s server-side proxy timeout
@@ -46,8 +46,8 @@ Config notes:
 
 ### Base URLs (`src/api/endpoints.ts`)
 ```ts
-auth:        'http://192.168.1.33:8000/api'  // IP changes per network
-userService: 'http://192.168.1.33:8001/api'
+auth:        'http://<IP>:8000/api'   // IP changes per network
+userService: 'http://<IP>:8001/api'
 ```
 
 ### Endpoints
@@ -89,6 +89,12 @@ userService: 'http://192.168.1.33:8001/api'
   - Does NOT logout on: network failure, timeout, 500, validation error, backend unavailable
   - Retries original request with new access token
 
+### Login error handling (`LoginForm.tsx`)
+Three distinct error cases:
+- `error.response` present → use backend message; fallback to `'Invalid credentials'` on 401/403
+- `error.request` present, no response → CORS/network: `'Unable to reach the server...'`
+- Neither → `'Something went wrong. Please try again.'`
+
 ### Auth Service (`src/services/auth.service.ts`)
 Functions: `loginService`, `generateOtpService`, `verifyOtpService`, `registerCustomerService`, `registerTechnicianService`, `getProfileService`
 
@@ -109,7 +115,10 @@ Actions:
 
 **Persistence:** All three (`accessToken`, `refreshToken`, `user`) written to localStorage on login/signup/registration. Survive page refresh and tab close.
 
-**Bootstrap:** `ReduxProvider` (`src/redux/Provider.tsx`) contains `AuthHydrator` that reads all three from localStorage on mount and dispatches `setCredentials` if valid tokens exist. No bootstrap API call needed.
+**Bootstrap:** `ReduxProvider` (`src/redux/Provider.tsx`) contains `AuthHydrator` that reads all three from localStorage on mount and dispatches `setCredentials` if valid tokens exist.
+
+### ApiTechnicianProfileData type (`src/types/auth.types.ts`)
+Now includes `createdAt?: string` and `updatedAt?: string` — used by `LoginForm` to store the application submission date into `localStorage.user`.
 
 ---
 
@@ -122,41 +131,26 @@ auth, services, nearbyJobs, activeJobs, support, onboarding
 
 `serializableCheck: false` — `onboardingSlice` stores raw `File` objects for document upload.
 
-Not wired: `activitySlice`, `bookingSlice`, `dashboardStatsSlice`, `loyaltySlice`, `performanceSlice`
-
 Legacy Zustand: `src/redux/legacy/bookingStore.ts` — active for booking flow only.
 
 ---
 
 ## 6. Admin Header — Dynamic Page Titles
 
-`src/components/adminDashboard/layout/AdminHeader.tsx` uses `usePathname()` to derive the page title and subtitle from a `PAGE_META` map keyed by route. The heading updates automatically on every sidebar navigation — no props needed.
-
-```ts
-const PAGE_META: Record<string, { title: string; subtitle: string }> = {
-  '/dashboard/admin':             { title: 'Admin Dashboard', ... },
-  '/dashboard/admin/bookings':    { title: 'Bookings', ... },
-  '/dashboard/admin/technicians': { title: 'Technicians', ... },
-  // ...all 8 admin routes
-}
-```
+`src/components/adminDashboard/layout/AdminHeader.tsx` uses `usePathname()` to derive the page title and subtitle from a `PAGE_META` map keyed by route. Updates automatically on every sidebar navigation.
 
 ---
 
 ## 7. Admin Services — Edit Service
 
-Specification fields in edit service are now fully wired:
-
-**`UpdateServiceRequest.specifications` shape** (per backend contract):
+**`UpdateServiceRequest.specifications`** shape (per backend contract):
 ```ts
-{ name: string; type: 'text'|'number'|'select'|'image'; isRequired: boolean; isActive: boolean; values?: string[] }
+{ name: string; type: 'text'|'number'|'select'|'image'; isRequired: boolean; isActive: boolean; values: string[] }
 ```
 
-**`useServiceManager.saveEdit`** maps specs with `isActive: true` and `values: values ?? []`.
-
-**`SpecificationsStep`** FIELD_TYPES: `text`, `number`, `select (dropdown)`, `image upload`. `textarea` removed — backend enum rejects it.
-
-**Edit Service fix:** Specs loaded from backend have no `id`. `EditServiceForm` now assigns a stable `uid()` to each on init so `SpecificationsStep` can key and update them correctly.
+- `useServiceManager.saveEdit` maps specs with `isActive: true` and `values: values ?? []`
+- `SpecificationsStep` FIELD_TYPES: `text`, `number`, `select`, `image`. `textarea` removed.
+- `EditServiceForm` assigns stable `uid()` to specs loaded from backend (which have no client-side `id`)
 
 ---
 
@@ -164,13 +158,11 @@ Specification fields in edit service are now fully wired:
 
 Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/technician`, `/technician/apply`
 
-`PublicRoute.tsx` — checks Redux `isAuthenticated` + `localStorage.user` on mount, redirects authenticated users to their dashboard.
+`PublicRoute.tsx` — checks Redux `isAuthenticated` + `localStorage.user` on mount.
 
-`PublicNavbar.tsx` — shows auth state. Logout dispatches `logout()` (clears all localStorage keys) and routes to `/`.
+`AdminDashboardLayout.tsx` — ADMIN role guard via `localStorage.user`.
 
-`AdminDashboardLayout.tsx` — guard uses `localStorage.user`, ADMIN role check only.
-
-`DashboardLayout.tsx` — guard uses `localStorage.user`, CUSTOMER role check.
+`DashboardLayout.tsx` — CUSTOMER role guard via `localStorage.user`.
 
 `dashboard/technician/layout.tsx` — calls `getProfileService()`, uses `getTechnicianRedirectPath()`.
 
@@ -180,10 +172,10 @@ Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/techn
 
 **Login** (`LoginForm.tsx`):
 - Accepts email or 10-digit mobile
-- Writes `localStorage.user`, `localStorage.accessToken`, `localStorage.refreshToken`
-- Dispatches `setCredentials({ user, accessToken, refreshToken })`
-- TECHNICIAN: fetches `GET /auth/profile` → `getTechnicianRedirectPath()`
+- Writes all 3 localStorage keys; dispatches `setCredentials`
+- TECHNICIAN: fetches `GET /auth/profile` → stores `technicianProfile.createdAt` into `localStorage.user` → `getTechnicianRedirectPath()`
 - Others: `handlePostAuthRedirect(user.role)`
+- Error messages distinguish CORS/network failures from credential errors
 
 **Customer signup** (`useSignupForm.ts`):
 - Phone OTP → register → auto-login
@@ -204,25 +196,11 @@ Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/techn
 | 5 | `/technician/onboarding/review-submit` |
 | status | `/technician/onboarding/pending-verification` |
 
-`/technician/onboarding/skill-tagging` → compatibility redirect to skills-equipment.
-
-### Draft keys (sessionStorage)
-`registerData`, `skillsEquipmentData`, `documentUploadData`, `serviceAreaData`, `bankDetailsData`
-
-### Step 0 behavior
-- `usePersonalInfoForm` handles mobile OTP for `role: 'TECHNICIAN'`
-- OTP verification only — does NOT call `/users/register`
-- After verify: saves `registerData`, marks step 0 complete, routes to skills-equipment
-
-### Final submit
-- `useReviewSubmit` reads all draft keys, builds one multipart `POST /users/register`
-- After success: writes all 3 localStorage keys, dispatches credentials, clears Redux onboarding files
-
-### Onboarding guard (`useOnboardingGuard.ts`)
-- Feature flag: `NEXT_PUBLIC_ENABLE_ONBOARDING_LOCK=true`
-- Bitmask key: `localStorage.technician_onboarding_progress`
-- On missing/zero bitmask with token present: calls `GET /auth/profile` + `syncProgressFromProfile()`
-- `stepIndex: -1` = dashboard guard
+### Pending Verification page
+- **Applicant** — `localStorage.user.username`
+- **Submitted On** — `localStorage.user.technicianProfile.createdAt` (formatted `Month D, YYYY`), fallback to `user.createdAt`
+- **Back to Home** — navigates to `/technician`
+- Props `applicationId` and `submittedDate` removed — values derived directly from localStorage
 
 ### Bitmask rules
 | Bit | Step | Required |
@@ -252,7 +230,13 @@ Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/techn
 
 ## 12. Booking Flow
 
-Routes: `/booking?serviceId=N`, `/booking/address`, `/booking/slot`, `/booking/summary`, `/booking/confirmation`, `/dashboard/customer/booking/*`
+### URL scheme (updated)
+- **Before:** `/booking?serviceId=55`
+- **After:** `/booking?service=electrical-service` (human-readable slug)
+
+The numeric `serviceId` travels via the Zustand booking store (pre-seeded in `handleBookingClick` before navigation) — never exposed in the URL. `UnifiedBookingPage` reads `savedServiceId` from the store, not from the URL.
+
+Routes: `/booking?service=<slug>`, `/booking/address`, `/booking/slot`, `/booking/summary`, `/booking/confirmation`, `/dashboard/customer/booking/*`
 
 Core files: `BookingAuthGuard.tsx`, `UnifiedBookingPage.tsx`, `DynamicServiceDetailPage.tsx`, `bookingStore.ts` (Zustand), `booking.service.ts` (empty)
 
@@ -268,10 +252,13 @@ Backend response shape handling: double-wrap and triple-wrap defensive parsing.
 
 ---
 
-## 14. Auth Rotation Report
+## 14. Reference Documents
 
-`AUTH_ROTATION_CHANGES.md` documents the refresh token rotation implementation.
-`AUTH_REFRESH_ROOT_CAUSE_REPORT.md` documents the root cause investigation.
+| File | Contents |
+|---|---|
+| `AUTH_ROTATION_CHANGES.md` | Refresh token rotation implementation |
+| `AUTH_REFRESH_ROOT_CAUSE_REPORT.md` | Root cause investigation for logout bug |
+| `docs/TECHNICIAN_PENDING_APPROVAL_FLOW.md` | Complete technician application lifecycle |
 
 ---
 
@@ -280,11 +267,12 @@ Backend response shape handling: double-wrap and triple-wrap defensive parsing.
 | Area | Status |
 |---|---|
 | `booking.service.ts` | Empty — booking submission pending |
-| Pending verification page | Hardcoded `'pending'` status |
+| Pending verification page | Shows real username + submission date; status still hardcoded `'pending'` |
 | Technician profile save | Partially implemented |
 | Customer booking detail `/bookings/[id]` | Skeleton |
 | Some dashboard pages | Mock data |
 | `REJECTED` technician routing | Not explicitly handled |
+| Admin dashboard `/dashboard/admin` 404 | Turbopack dev artefact; page.tsx exists and is correct |
 
 ---
 

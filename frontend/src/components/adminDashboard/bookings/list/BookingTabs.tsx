@@ -44,14 +44,14 @@ const BookingTabs = ({ active, bookings, onChange }: Props) => {
       count: bookings.filter((b) => b.status === 'Completed').length,
       dotColor: 'bg-green-400',
     },
-    {
-      id: 'manual',
-      label: 'Manual Assignment',
-      count: bookings.filter(
-        (b) => b.status === 'Pending' && (!b.technician || b.technician === '-'),
-      ).length,
-      dotColor: 'bg-emerald-500',
-    },
+    // {
+    //   id: 'manual',
+    //   label: 'Manual Assignment',
+    //   count: bookings.filter(
+    //     (b) => b.status === 'Pending' && (!b.technician || b.technician === '-'),
+    //   ).length,
+    //   dotColor: 'bg-emerald-500',
+    // },
   ];
 
   return (

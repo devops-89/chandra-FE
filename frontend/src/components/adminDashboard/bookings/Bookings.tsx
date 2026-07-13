@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 import { bookingsData } from '@/constants/admin/bookingData';
 
-import BookingFilters from './list/BookingFilters';
 import BookingsTable from './list/BookingsTable';
 import BookingTabs, { type BookingTab } from './list/BookingTabs';
 import ManualAssignmentPanel from './list/ManualAssignmentPanel';
@@ -44,7 +43,7 @@ const Bookings = () => {
       />
 
       {/* Filters — hidden on manual assignment tab */}
-      {!isManualTab && <BookingFilters />}
+      {/* {!isManualTab && <BookingFilters />} */}
 
       {/* Content */}
       {isManualTab ? (
