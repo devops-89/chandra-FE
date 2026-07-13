@@ -12,8 +12,8 @@ const Complaints = () => {
         <p className="text-slate-500">Track and resolve customer issues</p>
       </div>
 
-      <ComplaintStats />
-      <ComplaintFilters />
+      {/* <ComplaintStats /> */}
+      {/* <ComplaintFilters /> */}
       <ComplaintsTable />
     </div>
   );

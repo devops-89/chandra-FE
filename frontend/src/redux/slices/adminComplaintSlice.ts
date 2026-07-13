@@ -1,16 +1,32 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getAdminComplaintByIdService } from '@/services/admin.service';
-import type { AdminComplaint } from '@/types/admin/complaint.types';
+import {
+  getAdminComplaintByIdService,
+  getAdminComplaintsService,
+} from '@/services/admin.service';
+
+import type {
+  AdminComplaint,
+  AdminComplaintListItem,
+  ComplaintPagination,
+} from '@/types/admin/complaints.types';
 
 interface AdminComplaintState {
   complaint: AdminComplaint | null;
+
+  complaints: AdminComplaintListItem[];
+  pagination: ComplaintPagination | null;
+
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: AdminComplaintState = {
   complaint: null,
+
+  complaints: [],
+  pagination: null,
+
   isLoading: false,
   error: null,
 };
@@ -37,6 +53,29 @@ export const fetchAdminComplaint = createAsyncThunk<
   },
 );
 
+export const fetchAdminComplaints = createAsyncThunk<
+  {
+    complaints: AdminComplaintListItem[];
+    pagination: ComplaintPagination;
+  },
+  void,
+  { rejectValue: string }
+>(
+  'adminComplaint/fetchAll',
+
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getAdminComplaintsService();
+    } catch (err) {
+      return rejectWithValue(
+        err instanceof Error
+          ? err.message
+          : 'Failed to fetch complaints',
+      );
+    }
+  },
+);
+
 const adminComplaintSlice = createSlice({
   name: 'adminComplaint',
 
@@ -44,9 +83,13 @@ const adminComplaintSlice = createSlice({
 
   reducers: {
     clearAdminComplaint(state) {
-      state.complaint = null;
-      state.error = null;
-    },
+        state.complaint = null;
+
+        state.complaints = [];
+        state.pagination = null;
+
+        state.error = null;
+    }
   },
 
   extraReducers: (builder) => {
@@ -68,6 +111,27 @@ const adminComplaintSlice = createSlice({
         state.isLoading = false;
         state.error =
           action.payload ?? 'Failed to fetch complaint';
+      })
+
+      // ─── Fetch All Complaints ─────────────────────────────
+
+      .addCase(fetchAdminComplaints.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+
+      .addCase(fetchAdminComplaints.fulfilled, (state, action) => {
+        state.isLoading = false;
+
+        state.complaints = action.payload.complaints;
+        state.pagination = action.payload.pagination;
+      })
+
+      .addCase(fetchAdminComplaints.rejected, (state, action) => {
+        state.isLoading = false;
+
+        state.error =
+        action.payload ?? 'Failed to fetch complaints';
       });
   },
 });

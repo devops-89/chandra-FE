@@ -12,8 +12,8 @@ const Reviews = () => {
         <p className="text-slate-500">Manage customer feedback and ratings</p>
       </div>
 
-      <ReviewStats />
-      <ReviewFilters />
+      {/* <ReviewStats /> */}
+      {/* <ReviewFilters /> */}
       <ReviewsTable />
     </div>
   );

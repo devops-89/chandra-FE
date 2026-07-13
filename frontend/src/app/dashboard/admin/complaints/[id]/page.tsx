@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
-  fetchAdminComplaint,
   clearAdminComplaint,
+  fetchAdminComplaint,
 } from '@/redux/slices/adminComplaintSlice';
 
 export default function ComplaintDetailsPage() {

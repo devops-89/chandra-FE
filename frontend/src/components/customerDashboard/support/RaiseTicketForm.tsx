@@ -22,19 +22,19 @@ export default function RaiseTicketForm() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
-  const loadComplaint = (complaint: {
-    id: number;
-    bookingId: number;
-    serviceId: number;
-    title: string;
-    description: string;
-  }) => {
-    setComplaintId(complaint.id);
-    setBookingId(String(complaint.bookingId));
-    setServiceId(String(complaint.serviceId));
-    setTitle(complaint.title);
-    setDescription(complaint.description);
-  };
+  // const loadComplaint = (complaint: {
+  //   id: number;
+  //   bookingId: number;
+  //   serviceId: number;
+  //   title: string;
+  //   description: string;
+  // }) => {
+  //   setComplaintId(complaint.id);
+  //   setBookingId(String(complaint.bookingId));
+  //   setServiceId(String(complaint.serviceId));
+  //   setTitle(complaint.title);
+  //   setDescription(complaint.description);
+  // };
 
   const handleSubmit = async () => {
     setSuccess('');

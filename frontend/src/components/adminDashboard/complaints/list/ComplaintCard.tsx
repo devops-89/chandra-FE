@@ -1,17 +1,16 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import type { Complaint } from '@/constants/admin/complaintData';
-
-import ComplaintDetailsDrawer from '../details/ComplaintDetailsDrawer';
-
+import type { AdminComplaintListItem } from '@/types/admin/complaints.types';
+import router from 'next/dist/shared/lib/router/router';
 interface Props {
-  complaint: Complaint;
+  complaint: AdminComplaintListItem;
 }
 
 const ComplaintCard = ({ complaint }: Props) => {
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [ ] = useState(false);
 
   return (
     <>
@@ -23,33 +22,32 @@ const ComplaintCard = ({ complaint }: Props) => {
                 Complaint ID: {complaint.id}
               </span>
               <h4 className="mt-1 font-semibold text-slate-900 text-lg leading-snug">
-                {complaint.customerName}
+                {complaint.createdBy.name}
               </h4>
             </div>
-
             <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                complaint.priority === 'High'
-                  ? 'bg-red-100 text-red-700'
-                  : complaint.priority === 'Medium'
+             className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                complaint.status === 'PENDING'
                   ? 'bg-yellow-100 text-yellow-700'
-                  : 'bg-green-100 text-green-700'
+                  : complaint.status === 'RESOLVED'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-red-100 text-red-700'
               }`}
-            >
-              {complaint.priority} Priority
+              >
+              {complaint.status}
             </span>
           </div>
 
           <div className="mt-4 space-y-1">
             <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Issue Description</p>
-            <p className="text-sm text-slate-700 font-medium leading-relaxed">{complaint.issueType}</p>
+            <p className="text-sm text-slate-700 font-medium leading-relaxed">{complaint.title}</p>
           </div>
         </div>
 
         <div className="border-t border-slate-100 mt-4 pt-3 flex items-center justify-between text-slate-700">
           <div>
             <span className="text-xs text-slate-500 font-medium block">Created On</span>
-            <span className="text-xs text-slate-700 font-semibold">{complaint.createdAt}</span>
+            <span className="text-xs text-slate-700 font-semibold">{new Date(complaint.createdAt).toLocaleDateString()}</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -58,7 +56,7 @@ const ComplaintCard = ({ complaint }: Props) => {
             </span>
 
             <button
-              onClick={() => setOpen(true)}
+              onClick={() => router.push(`/dashboard/admin/complaints/${complaint.id}`)}
               className="text-emerald-600 hover:text-emerald-700 font-medium text-sm hover:underline cursor-pointer"
             >
               View
