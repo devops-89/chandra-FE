@@ -114,8 +114,9 @@ export default function TimeSlotSelector({
             placeholder="HH"
             maxLength={2}
             className="
-              w-16 rounded-xl border-2 border-slate-300 p-4 text-center text-slate-950 text-lg outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
-          />
+              w-14 rounded-xl border-2 border-slate-300 px-2 py-3 text-center text-slate-950 text-sm font-semibold
+              outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            />
 
           <span className="text-2xl font-bold text-slate-400 select-none">:</span>
 
@@ -129,7 +130,7 @@ export default function TimeSlotSelector({
             placeholder="MM"
             maxLength={2}
             className="
-              w-14 h-14 rounded-xl border-2 border-slate-300 text-center text-slate-950 font-semibold
+              w-14 rounded-xl border-2 border-slate-300 px-2 py-3 text-center text-slate-950 text-sm font-semibold
               outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200
             "
           />
