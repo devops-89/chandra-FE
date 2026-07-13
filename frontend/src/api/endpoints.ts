@@ -50,5 +50,6 @@ export const ENDPOINTS = {
   //Complaints
   CREATE_COMPLAINT: '/bookings/complaint',
   UPDATE_COMPLAINT: '/bookings/complaint',
+  ADMIN_COMPLAINTS: '/bookings/admin/complaints',
 
 } as const;
