@@ -7,6 +7,8 @@ import { PAYOUT_METHOD_OPTIONS } from '@/data/technicianApplication/bankDetailsD
 interface PayoutMethodCardProps {
   selectedMethod: 'bank-transfer' | 'upi';
   onMethodChange: (method: 'bank-transfer' | 'upi') => void;
+  upiId: string;
+  onUpiIdChange: (value: string) => void;
 }
 
 const containerVariants = {
@@ -31,6 +33,8 @@ const itemVariants = {
 export default function PayoutMethodCard({
   selectedMethod,
   onMethodChange,
+  upiId,
+  onUpiIdChange,
 }: PayoutMethodCardProps) {
   return (
     <motion.section
@@ -96,6 +100,31 @@ export default function PayoutMethodCard({
           </motion.div>
         ))}
       </motion.div>
+
+      {selectedMethod === 'upi' && (
+        <motion.div
+          className="mt-6"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <label
+            htmlFor="upi-id"
+            className="block text-xs md:text-sm font-medium text-on-surface mb-2"
+          >
+            UPI ID
+          </label>
+          <input
+            id="upi-id"
+            type="text"
+            value={upiId}
+            onChange={(e) => onUpiIdChange(e.target.value)}
+            placeholder="e.g. yourname@upi"
+            className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant bg-transparent text-sm text-on-surface placeholder:text-secondary/50 focus:border-primary focus:outline-none transition-colors duration-200"
+          />
+        </motion.div>
+      )}
     </motion.section>
   );
 }

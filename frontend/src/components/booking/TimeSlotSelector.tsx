@@ -1,6 +1,6 @@
 'use client';
 
-import { TIME_SLOTS } from '@/constants/booking/timeSlots';
+import { useEffect, useState } from 'react';
 
 interface TimeSlotSelectorProps {
   date: string;
@@ -9,61 +9,73 @@ interface TimeSlotSelectorProps {
   onSlotSelect: (slot: string) => void;
 }
 
+function parseSlot(slot: string) {
+  if (!slot) return { hour: '', minute: '', period: 'AM' as 'AM' | 'PM' };
+  const [time, period] = slot.trim().split(/\s+/);
+  const [h, m] = time.split(':');
+  return {
+    hour: h || '',
+    minute: m || '',
+    period: (period === 'PM' ? 'PM' : 'AM') as 'AM' | 'PM',
+  };
+}
+
 export default function TimeSlotSelector({
   date,
   slot,
   onDateChange,
   onSlotSelect,
 }: TimeSlotSelectorProps) {
-  const handleSlotClick = (e: React.MouseEvent, selectedSlot: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onSlotSelect(selectedSlot);
+  const parsed = parseSlot(slot);
+  const [hour, setHour] = useState(parsed.hour);
+  const [minute, setMinute] = useState(parsed.minute);
+  const [period, setPeriod] = useState<'AM' | 'PM'>(parsed.period);
+
+  // Sync local state when the slot prop changes externally
+  useEffect(() => {
+    const p = parseSlot(slot);
+    setHour(p.hour);
+    setMinute(p.minute);
+    setPeriod(p.period);
+  }, [slot]);
+
+  // Build and emit the slot string whenever inputs change
+  useEffect(() => {
+    if (hour === '' || minute === '') return;
+
+    const h = Number(hour);
+    const m = Number(minute);
+    if (Number.isNaN(h) || Number.isNaN(m)) return;
+    if (h < 1 || h > 12 || m < 0 || m > 59) return;
+
+    const formatted = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} ${period}`;
+    if (formatted !== slot) {
+      onSlotSelect(formatted);
+    }
+  }, [hour, minute, period]);
+
+  const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '').slice(0, 2);
+    setHour(raw);
+  };
+
+  const handleMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '').slice(0, 2);
+    setMinute(raw);
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = e.target.value;
-    onDateChange(selectedDate);
+    onDateChange(e.target.value);
   };
-
-  const renderSlots = (title: string, slots: string[]) => (
-    <div className="mt-6">
-      <h4 className="mb-3 text-sm font-semibold text-slate-700">{title}</h4>
-
-      <div className="grid grid-cols-3 gap-2 md:grid-cols-4">
-        {slots.map((time) => {
-          const selected = slot === time;
-
-          return (
-            <button
-              key={time}
-              type="button"
-              onClick={(e) => handleSlotClick(e, time)}
-              className={`
-                rounded-lg border-2 px-3 py-2 text-xs font-medium transition-all duration-200 cursor-pointer
-                ${
-                  selected
-                    ? 'border-emerald-600 bg-emerald-600 text-white shadow-md'
-                    : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-400 hover:bg-emerald-50'
-                }
-              `}
-              style={{ zIndex: 10, position: 'relative' }}
-            >
-              {time}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
 
   return (
     <div className="border-t border-slate-200 pt-8 lg:border-t-0 lg:pt-0">
-      <h2 className="text-xl font-semibold text-slate-900">Select Date & Time</h2>
+      <h2 className="text-xl font-semibold text-slate-900">Select Date &amp; Time</h2>
       <p className="mt-2 text-sm text-slate-500">
-        Choose your preferred service date and time slot
+        Choose your preferred service date and time
       </p>
 
+      {/* Date picker */}
       <div className="mt-6">
         <label
           htmlFor="booking-date"
@@ -85,12 +97,77 @@ export default function TimeSlotSelector({
         />
       </div>
 
+      {/* Time input */}
       <div className="mt-6">
-        <h4 className="mb-4 text-sm font-semibold text-slate-700">Available Time Slots</h4>
+        <label className="mb-3 block text-sm font-medium text-slate-700">
+          Service Time <span className="text-slate-400 font-normal">(IST)</span>
+        </label>
 
-        {TIME_SLOTS.morning && renderSlots('Morning', TIME_SLOTS.morning)}
-        {TIME_SLOTS.afternoon && renderSlots('Afternoon', TIME_SLOTS.afternoon)}
-        {TIME_SLOTS.evening && renderSlots('Evening', TIME_SLOTS.evening)}
+        <div className="flex items-center gap-2">
+          {/* Hour */}
+          <input
+            id="booking-hour"
+            type="text"
+            inputMode="numeric"
+            value={hour}
+            onChange={handleHourChange}
+            placeholder="HH"
+            maxLength={2}
+            className="
+              w-16 rounded-xl border-2 border-slate-300 p-4 text-center text-slate-950 text-lg outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          />
+
+          <span className="text-2xl font-bold text-slate-400 select-none">:</span>
+
+          {/* Minute */}
+          <input
+            id="booking-minute"
+            type="text"
+            inputMode="numeric"
+            value={minute}
+            onChange={handleMinuteChange}
+            placeholder="MM"
+            maxLength={2}
+            className="
+              w-14 h-14 rounded-xl border-2 border-slate-300 text-center text-slate-950 font-semibold
+              outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200
+            "
+          />
+
+          {/* AM / PM toggle */}
+          <div className="ml-2 flex rounded-xl border-2 border-slate-300 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setPeriod('AM')}
+              className={`
+                px-4 py-3 text-sm font-semibold transition-colors duration-200 cursor-pointer
+                ${period === 'AM'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-white text-slate-600 hover:bg-emerald-50'
+                }
+              `}
+            >
+              AM
+            </button>
+            <button
+              type="button"
+              onClick={() => setPeriod('PM')}
+              className={`
+                px-4 py-3 text-sm font-semibold transition-colors duration-200 cursor-pointer
+                ${period === 'PM'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-white text-slate-600 hover:bg-emerald-50'
+                }
+              `}
+            >
+              PM
+            </button>
+          </div>
+        </div>
+
+        <p className="mt-2 text-xs text-slate-400">
+          Enter hour (1–12) and minute (00–59)
+        </p>
       </div>
     </div>
   );

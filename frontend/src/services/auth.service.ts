@@ -1,6 +1,8 @@
 import { authApi, userServiceApi } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import type {
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   GenerateOtpRequest,
   GenerateOtpResponse,
   GetProfileResponse,
@@ -10,6 +12,8 @@ import type {
   RegisterCustomerResponse,
   RegisterTechnicianRequest,
   RegisterTechnicianResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
   VerifyOtpRequest,
   VerifyOtpResponse,
 } from '@/types/auth.types';
@@ -18,6 +22,32 @@ import type {
 
 export const loginService = async (payload: LoginRequest): Promise<LoginResponse> => {
   const response = await authApi.post<LoginResponse>(ENDPOINTS.LOGIN, payload);
+  return response.data;
+};
+
+// ─── Forgot Password ───────────────────────────────────────────────
+
+export const forgotPasswordService = async (
+  payload: ForgotPasswordRequest,
+): Promise<ForgotPasswordResponse> => {
+  const response = await authApi.post<ForgotPasswordResponse>(
+    ENDPOINTS.FORGOT_PASSWORD,
+    payload,
+  );
+
+  return response.data;
+};
+
+// ─── Reset Password ───────────────────────────────────────────────
+
+export const resetPasswordService = async (
+  payload: ResetPasswordRequest,
+): Promise<ResetPasswordResponse> => {
+  const response = await authApi.patch<ResetPasswordResponse>(
+    ENDPOINTS.RESET_PASSWORD,
+    payload,
+  );
+
   return response.data;
 };
 

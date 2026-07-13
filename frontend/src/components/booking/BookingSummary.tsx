@@ -28,8 +28,17 @@ function buildScheduledAt(date: string, slot: string) {
     hours = 0;
   }
 
-  return new Date(Date.UTC(year, month - 1, day, hours, minuteValue, 0, 0))
-    .toISOString();
+  // The user selects time in IST (UTC+5:30).
+  // Subtract the IST offset to get the correct UTC time.
+  const istOffsetMinutes = 5 * 60 + 30; // 330 minutes
+  const totalMinutesIST = hours * 60 + minuteValue;
+  const totalMinutesUTC = totalMinutesIST - istOffsetMinutes;
+
+  // Build a Date in UTC using the adjusted time (may roll into previous day)
+  const utcDate = new Date(Date.UTC(year, month - 1, day));
+  utcDate.setUTCMinutes(utcDate.getUTCMinutes() + totalMinutesUTC);
+
+  return utcDate.toISOString();
 }
 
 export function BookingSummaryContent({
@@ -105,7 +114,7 @@ export function BookingSummaryContent({
       serviceId,
       customerAddressId,
       isEmergency: false,
-      scheduledAtIst: scheduledAt,
+      scheduledAt: scheduledAt,
       serviceSpecifications: sanitizedSpecifications,
     };
 

@@ -14,6 +14,7 @@ export const DOCUMENTS: Document[] = [
     description: 'Upload your PAN Card document',
     icon: 'credit_card',
     acceptedFormats: ['pdf', 'jpg', 'png'],
+    optional: true,
   },
   {
     id: 'police-verification',
@@ -21,6 +22,7 @@ export const DOCUMENTS: Document[] = [
     description: 'Upload your Police Verification Certificate',
     icon: 'verified_user',
     acceptedFormats: ['pdf', 'jpg', 'png'],
+    optional: true,
   },
   {
     id: 'trade-license',
@@ -28,6 +30,7 @@ export const DOCUMENTS: Document[] = [
     description: 'Upload your Trade License certificate',
     icon: 'business',
     acceptedFormats: ['pdf', 'jpg', 'png'],
+    optional: true,
   },
 ];
 

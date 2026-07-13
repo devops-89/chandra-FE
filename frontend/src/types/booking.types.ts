@@ -11,7 +11,7 @@ export interface CreateBookingRequest {
   serviceId: number;
   customerAddressId: number;
   isEmergency: boolean;
-  scheduledAtIst: string;
+  scheduledAt: string;
   serviceSpecifications: ServiceSpecification[];
 }
 

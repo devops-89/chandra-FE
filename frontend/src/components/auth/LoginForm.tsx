@@ -257,7 +257,7 @@ export const LoginForm = () => {
                 />
                 Remember me
               </label>
-              <Link href="/" className="font-semibold text-emerald-700 hover:text-emerald-800">
+              <Link href="/forgot-password" className="font-semibold text-emerald-700 hover:text-emerald-800">
                 Forgot password?
               </Link>
             </div>

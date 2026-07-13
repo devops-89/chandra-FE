@@ -20,6 +20,12 @@ interface OtpModalProps {
   onResend: () => void;
   /** True while resend is in-flight */
   isResending: boolean;
+  /** Custom modal title */
+  title?: string;
+  /** Custom modal subtitle */
+  subtitle?: string;
+  /** Custom verify button text */
+  verifyButtonText?: string;
 }
 
 export default function OtpModal({
@@ -30,6 +36,9 @@ export default function OtpModal({
   onClose,
   onResend,
   isResending,
+  title = "Verify your account",
+  subtitle = "We sent a 6-digit code to",
+  verifyButtonText = "Verify OTP",
 }: OtpModalProps) {
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -126,9 +135,9 @@ export default function OtpModal({
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100">
             <CheckCircle2 className="h-7 w-7 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-bold text-slate-900">Verify your account</h2>
-          <p className="mt-2 text-sm text-slate-500">
-            We sent a {OTP_LENGTH}-digit code to
+          <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+          <p className="mt-2 text-sm text-slate-500 font-medium">
+            {subtitle}
           </p>
           <p className="mt-0.5 text-sm font-semibold text-slate-700 break-all">{identifier}</p>
         </div>
@@ -177,7 +186,7 @@ export default function OtpModal({
           className="w-full h-11 rounded-lg bg-emerald-600 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {isVerifying && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isVerifying ? 'Verifying…' : 'Verify OTP'}
+          {isVerifying ? 'Verifying…' : verifyButtonText}
         </button>
 
         {/* Resend */}
@@ -203,3 +212,4 @@ export default function OtpModal({
     </div>
   );
 }
+

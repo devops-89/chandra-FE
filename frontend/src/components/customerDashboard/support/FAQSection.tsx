@@ -8,16 +8,17 @@ export default function FAQSection() {
       className="
         rounded-3xl
         bg-white
-        p-6
+        p-4
         shadow-lg
         text-slate-700
+        sm:p-6
       "
     >
-      <h2 className="mb-6 text-xl font-bold">
+      <h2 className="mb-4 text-lg font-bold sm:mb-6 sm:text-xl">
         Frequently Asked Questions
       </h2>
 
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {faqs.map((faq) => (
           <FAQItem
             key={faq.id}

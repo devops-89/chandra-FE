@@ -4,6 +4,7 @@ export interface Document {
   description: string;
   icon: string;
   acceptedFormats: string[];
+  optional?: boolean;
 }
 
 export interface UploadedFile {
