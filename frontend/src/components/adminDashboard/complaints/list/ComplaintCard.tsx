@@ -67,10 +67,10 @@ const ComplaintCard = ({ complaint }: Props) => {
         </div>
       </div>
 
-      <ComplaintDetailsDrawer
+      {/* <ComplaintDetailsDrawer
         open={open}
         onClose={() => setOpen(false)}
-      />
+      /> */}
     </>
   );
 };

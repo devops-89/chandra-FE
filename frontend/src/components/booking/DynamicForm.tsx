@@ -30,7 +30,7 @@ export interface DynamicFormProps {
   specifications: {
     id: number;
     name: string;
-    type: 'text' | 'number' | 'textarea' | 'select' | 'image';
+    type: 'text' | 'number' | 'select' | 'image';
     isRequired: boolean;
     values?: string[];
   }[];
@@ -105,18 +105,6 @@ export default function DynamicForm({
                     </option>
                   ))}
                 </select>
-              )}
-
-              {spec.type === 'textarea' && (
-                <textarea
-                  id={fieldId}
-                  rows={4}
-                  value={value as string || ''}
-                  onChange={(e) => onChange(spec.id, e.target.value)}
-                  placeholder={`Enter details...`}
-                  className={`w-full rounded-xl border-2 p-4 text-slate-950 outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 ${hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-slate-300'
-                    }`}
-                />
               )}
 
               {spec.type === 'number' && (

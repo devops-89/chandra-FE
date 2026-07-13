@@ -106,9 +106,10 @@ export default function RaiseTicketForm() {
       </h2>
 
       <div className="space-y-4">
-        <select
+        <input
           value={bookingId}
           onChange={(e) => setBookingId(e.target.value)}
+          placeholder="Booking ID"
           className="
             w-full
             rounded-xl
@@ -117,9 +118,7 @@ export default function RaiseTicketForm() {
             outline-emerald-600
             p-4
           "
-        >
-          <option value="">Select Booking</option>
-        </select>
+          />
 
         <input
           value={title}

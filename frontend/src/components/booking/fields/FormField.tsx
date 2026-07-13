@@ -73,11 +73,6 @@ const validateMandatoryField = (field: BookingFormField, value: string | number 
     if (field.type === 'number' && (value === '' || value === 0)) {
       return `${field.label} must be greater than 0`;
     }
-
-    // For textarea fields (Problem Description, Issue Description, etc.)
-    if ((field.type === 'textarea' && field.required) && (value === '' || (typeof value === 'string' && value.trim() === ''))) {
-      return `${field.label} is required`;
-    }
   }
 
   return undefined;
@@ -128,18 +123,18 @@ export default function FormField({ field, value, onChange, error, shouldShow }:
           </select>
         );
 
-      case 'textarea':
-        return (
-          <textarea
-            id={fieldId}
-            rows={4}
-            value={value as string || ''}
-            onChange={(e) => onChange(field.name, e.target.value)}
-            placeholder={field.placeholder}
-            className={commonClasses}
-            required={field.required}
-          />
-        );
+      // case 'textarea':
+      //   return (
+      //     <textarea
+      //       id={fieldId}
+      //       rows={4}
+      //       value={value as string || ''}
+      //       onChange={(e) => onChange(field.name, e.target.value)}
+      //       placeholder={field.placeholder}
+      //       className={commonClasses}
+      //       required={field.required}
+      //     />
+      //   );
 
       case 'checkbox':
         return (

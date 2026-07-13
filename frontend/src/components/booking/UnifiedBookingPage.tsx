@@ -165,7 +165,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
       }
 
       // Validate text / textarea: must not be blank
-      if ((spec.type === 'text' || spec.type === 'textarea') && typeof value === 'string' && !value.trim()) {
+      if ((spec.type === 'text' ) && typeof value === 'string' && !value.trim()) {
         newErrors[spec.name] = `${spec.name} is required`;
       }
     }

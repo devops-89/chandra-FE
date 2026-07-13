@@ -5,7 +5,7 @@ import type { BookingFormData } from '@/types/services.types';
 interface Specification {
   id: number;
   name: string;
-  type: 'text' | 'number' | 'textarea' | 'select' | 'image';
+  type: 'text' | 'number' | 'select' | 'image';
   isRequired: boolean;
   values?: string[];
 }
@@ -67,7 +67,7 @@ export default function BookingDetailsForm({
               ">
                 {/* User avatar icon */}
                 <svg
-                  className="h-5 w-5 flex-shrink-0 text-emerald-500"
+                  className="h-5 w-5 shrink-0 text-emerald-500"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={2}
@@ -97,7 +97,7 @@ export default function BookingDetailsForm({
               ">
                 {/* Phone icon */}
                 <svg
-                  className="h-5 w-5 flex-shrink-0 text-emerald-500"
+                  className="h-5 w-5 shrink-0 text-emerald-500"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={2}

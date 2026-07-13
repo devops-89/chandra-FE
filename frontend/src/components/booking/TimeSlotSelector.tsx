@@ -52,17 +52,54 @@ export default function TimeSlotSelector({
     if (formatted !== slot) {
       onSlotSelect(formatted);
     }
-  }, [hour, minute, period]);
+  }, [hour, minute, period, slot, onSlotSelect]);
 
-  const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\D/g, '').slice(0, 2);
-    setHour(raw);
-  };
+  const handleHourKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === 'Backspace') {
+    e.preventDefault();
 
-  const handleMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\D/g, '').slice(0, 2);
-    setMinute(raw);
-  };
+    setHour((prev) => {
+      if (!prev) return '';
+      return `0${prev[0]}`;
+    });
+
+    return;
+  }
+
+  if (!/^\d$/.test(e.key)) {
+    return;
+  }
+
+  e.preventDefault();
+
+  setHour((prev) => {
+    const current = (prev || '00').padStart(2, '0');
+    return `${current[1]}${e.key}`;
+  });
+};
+  const handleMinuteKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === 'Backspace') {
+    e.preventDefault();
+
+    setMinute((prev) => {
+      if (!prev) return '';
+      return `0${prev[0]}`;
+    });
+
+    return;
+  }
+
+  if (!/^\d$/.test(e.key)) {
+    return;
+  }
+
+  e.preventDefault();
+
+  setMinute((prev) => {
+    const current = (prev || '00').padStart(2, '0');
+    return `${current[1]}${e.key}`;
+  });
+};
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onDateChange(e.target.value);
@@ -100,7 +137,7 @@ export default function TimeSlotSelector({
       {/* Time input */}
       <div className="mt-6">
         <label className="mb-3 block text-sm font-medium text-slate-700">
-          Service Time <span className="text-slate-400 font-normal">(IST)</span>
+          Service Time
         </label>
 
 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -110,12 +147,13 @@ export default function TimeSlotSelector({
             type="text"
             inputMode="numeric"
             value={hour}
-            onChange={handleHourChange}
+            onKeyDown={handleHourKeyDown}
             placeholder="HH"
             maxLength={2}
             className="
-              w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-slate-300 p-2 text-center text-slate-950 text-lg font-semibold outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
-          />
+              w-14 rounded-xl border-2 border-slate-300 px-2 py-3 text-center text-slate-950 text-sm font-semibold
+              outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            />
 
           <span className="text-2xl font-bold text-slate-400 select-none">:</span>
 
@@ -126,10 +164,10 @@ export default function TimeSlotSelector({
             type="text"
             inputMode="numeric"
             value={minute}
-            onChange={handleMinuteChange}
+            onKeyDown={handleMinuteKeyDown}
             placeholder="MM"
             className="
-              w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-slate-300 p-2 text-center text-slate-950 text-lg font-semibold
+              w-14 rounded-xl border-2 border-slate-300 px-2 py-3 text-center text-slate-950 text-sm font-semibold
               outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200
             "
           />

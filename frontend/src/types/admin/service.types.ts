@@ -17,7 +17,7 @@ export interface AdminService {
   specifications?: {
     id: number;
     name: string;
-    type: 'text' | 'number' | 'textarea' | 'select' | 'image';
+    type: 'text' | 'number' | 'select' | 'image';
     isRequired: boolean;
     values?: string[];
   }[];
@@ -37,7 +37,7 @@ export interface EditServiceFormData {
   emergencyCharge: string;
   specifications?: {
     name: string;
-    type: 'text' | 'number' | 'textarea' | 'select' | 'image';
+    type: 'text' | 'number' | 'select' | 'image';
     isRequired: boolean;
     values?: string[];
   }[];
@@ -98,7 +98,7 @@ export interface ApiService {
   specifications?: {
     id: number;
     name: string;
-    type: 'text' | 'number' | 'textarea' | 'select' | 'image';
+    type: 'text' | 'number' | 'select' | 'image';
     isRequired: boolean;
     values?: string[];
   }[];
@@ -152,7 +152,7 @@ export interface CreateServiceRequest {
   isActive?: boolean;
   specifications?: {
     name: string;
-    type: 'text' | 'number' | 'textarea' | 'select' | 'image';
+    type: 'text' | 'number' | 'select' | 'image';
     isRequired: boolean;
     values?: string[];
   }[];

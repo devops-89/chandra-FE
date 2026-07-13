@@ -36,7 +36,6 @@ const STEP_SUBTITLES = [
 export type SpecFieldType =
   | 'text'
   | 'number'
-  | 'textarea'
   | 'select'
   | 'image';
 
