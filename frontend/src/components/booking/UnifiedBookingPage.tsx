@@ -111,10 +111,24 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   const [date, setDate] = useState(savedDate || '');
   const [slot, setSlot] = useState(savedSlot || '');
 
-  // ── Step 3: Personal details ──────────────────────────────────────────────
-  const [name, setName]                 = useState(savedName || '');
-  const [phone, setPhone]               = useState(savedPhone || '');
+  // ── Step 3: Personal details (auto-filled from logged-in profile) ──────────
+  const profileFullName = profile
+    ? `${profile.firstName} ${profile.lastName}`.trim()
+    : '';
+  const profilePhone = profile?.phone ?? '';
+
+  const [name, setName]                 = useState(savedName || profileFullName);
+  const [phone, setPhone]               = useState(savedPhone || profilePhone);
   const [instructions, setInstructions] = useState('');
+
+  // Keep name/phone in sync when profile arrives (first load)
+  useEffect(() => {
+    if (profile) {
+      if (!name) setName(`${profile.firstName} ${profile.lastName}`.trim());
+      if (!phone) setPhone(profile.phone);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile]);
 
   // ── Global error ──────────────────────────────────────────────────────────
   const [error, setError] = useState('');
@@ -348,6 +362,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
                 service={currentService}
                 servicePrice={currentServicePrice}
                 serviceSpecificData={specFormData as BookingFormData}
+                specifications={specifications}
                 name={name}
                 phone={phone}
                 instructions={instructions}

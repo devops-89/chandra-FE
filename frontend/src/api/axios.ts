@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
 
 import { logout, updateTokens } from '@/redux/slices/authSlice';
-import { store } from '@/redux/store';
+import { getAppStore } from '@/redux/storeAccessor';
 
 import { API_BASE_URLS, type ApiServicePurpose, ENDPOINTS, getApiBaseUrl } from './endpoints';
 
@@ -18,7 +18,7 @@ function processQueue(error: unknown, token: string | null) {
 }
 
 function forceLogout() {
-  store.dispatch(logout());
+  getAppStore().dispatch(logout());
   if (typeof window !== 'undefined') window.location.href = '/login';
 }
 
@@ -30,7 +30,7 @@ function attachRequestInterceptor(client: AxiosInstance) {
   client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const token =
       (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null)
-      ?? store.getState().auth.accessToken;
+      ?? getAppStore().getState().auth.accessToken;
 
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
@@ -81,7 +81,7 @@ function attachResponseInterceptor(client: AxiosInstance) {
 
       const storedRefreshToken =
         (typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null)
-        ?? store.getState().auth.refreshToken;
+        ?? getAppStore().getState().auth.refreshToken;
 
       if (!storedRefreshToken) {
         isRefreshing = false;
@@ -126,7 +126,7 @@ function attachResponseInterceptor(client: AxiosInstance) {
         }
 
         // ── Persist rotated tokens (both Redux + localStorage) ────────────────
-        store.dispatch(updateTokens({ accessToken: newAccessToken, refreshToken: newRefreshToken }));
+        getAppStore().dispatch(updateTokens({ accessToken: newAccessToken, refreshToken: newRefreshToken }));
         processQueue(null, newAccessToken);
 
         // ── Retry the original request with the new access token ──────────────

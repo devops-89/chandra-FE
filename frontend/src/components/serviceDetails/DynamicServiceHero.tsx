@@ -195,18 +195,18 @@ export default function DynamicServiceHero({
           </motion.div>
         </motion.div>
 
-        <motion.div className="hidden md:flex md:flex-1 md:justify-center" variants={imageVariants}>
+        <motion.div className="hidden md:flex-1 md:flex md:justify-center" variants={imageVariants}>
           <Image
             src={service.image}
             alt={service.title}
-            width={700}
-            height={500}
+            width={400}
+            height={1}
             unoptimized={service.image.startsWith('http://') || service.image.startsWith('https://')}
             className="
-              w-162.5
-              h-107.5
+              width: 106px
+              height: 104px
               rounded-4xl
-              object-contain
+              object-center
               shadow-xl
               bg-white
             "
