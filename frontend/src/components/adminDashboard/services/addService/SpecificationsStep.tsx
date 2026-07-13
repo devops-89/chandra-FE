@@ -18,7 +18,6 @@ const FIELD_TYPES: { value: SpecFieldType; label: string }[] = [
   { value: 'text',     label: 'Text' },
   { value: 'number',   label: 'Number' },
   { value: 'select',   label: 'Select (dropdown)' },
-  { value: 'textarea', label: 'Textarea' },
   { value: 'image',    label: 'Image Upload' },
 ];
 

@@ -5,7 +5,7 @@ import type { BookingFormData } from '@/types/services.types';
 interface Specification {
   id: number;
   name: string;
-  type: 'text' | 'number' | 'textarea' | 'select' | 'image';
+  type: 'text' | 'number' | 'select' | 'image';
   isRequired: boolean;
   values?: string[];
 }
