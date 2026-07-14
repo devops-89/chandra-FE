@@ -15,7 +15,7 @@ const ReviewCard = ({ review }: Props) => {
 
   return (
     <>
-      <div className="border border-slate-200 rounded-2xl bg-white p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between cursor-default">
+      <div className="border border-slate-200 rounded-2xl bg-slate-50 p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between cursor-default">
         <div>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">

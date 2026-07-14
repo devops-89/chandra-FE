@@ -6,6 +6,8 @@ import type {
   ComplaintPagination,
   GetAdminComplaintResponse,
   GetAdminComplaintsResponse,
+  ResolveComplaintRequest,
+  ResolveComplaintResponse,
 } from '@/types/admin/complaints.types';
 
 // ─── Get Complaint By Id ───────────────────────────────────────────────
@@ -36,4 +38,26 @@ export const getAdminComplaintsService = async (): Promise<{
     complaints: response.data.data.data,
     pagination: response.data.data.pagination,
   };
+};
+
+export const deleteComplaintsService = async (
+  complaintId: number,
+): Promise<void> => {
+  await userServiceApi.delete(
+    `${ENDPOINTS.DELETE_COMPLAINT}/${complaintId}`,
+  );
+};
+
+export const resolveAdminComplaintService = async (
+  payload: ResolveComplaintRequest,
+): Promise<AdminComplaint> => {
+  const response =
+    await userServiceApi.patch<ResolveComplaintResponse>(
+      `${ENDPOINTS.ADMIN_RESOLVE_COMPLAINT}/${payload.id}`,
+      {
+        status: payload.status,
+      },
+    );
+
+  return response.data.data.data;
 };

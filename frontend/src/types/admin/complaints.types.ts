@@ -87,3 +87,21 @@ export interface GetAdminComplaintsResponse {
     pagination: ComplaintPagination;
   };
 }
+
+// ─── Resolve Complaint Response ───────────────────────────────────
+export interface ResolveComplaintRequest {
+  id: number;
+  status: ComplaintStatus;
+}
+
+export interface ResolveComplaintResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+
+  data: {
+    success: boolean;
+    message: string;
+    data: AdminComplaint;
+  };
+}

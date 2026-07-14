@@ -1,6 +1,6 @@
-import ReviewFilters from "./list/ReviewFilters";
+// import ReviewFilters from "./list/ReviewFilters";
 import ReviewsTable from "./list/ReviewsTable";
-import ReviewStats from "./stats/ReviewStats";
+// import ReviewStats from "./stats/ReviewStats";
 
 const Reviews = () => {
   return (

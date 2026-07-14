@@ -6,6 +6,8 @@ import type {
   Booking,
   CreateBookingRequest,
   CreateBookingResponse,
+  RescheduleBookingRequest,
+  RescheduleBookingResponse,
 } from '@/types/booking.types';
 import type {
   CancelBookingRequest,
@@ -78,6 +80,19 @@ export const cancelBookingService = async (
     await api.patch<CancelBookingResponse>(
       ENDPOINTS.CANCEL_BOOKING,
       payload
+    );
+
+  return response.data.data.data;
+};
+
+export const rescheduleBookingService = async (
+  bookingId: number,
+  payload: RescheduleBookingRequest,
+): Promise<Booking> => {
+  const response =
+    await api.patch<RescheduleBookingResponse>(
+      `${ENDPOINTS.RESCHEDULE_BOOKING}/${bookingId}`,
+      payload,
     );
 
   return response.data.data.data;

@@ -2,8 +2,9 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { useAppDispatch } from '@/redux/hooks';
+import { deleteAdminComplaint } from '@/redux/slices/adminComplaintSlice';
 import type { AdminComplaintListItem } from '@/types/admin/complaints.types';
-import router from 'next/dist/shared/lib/router/router';
 interface Props {
   complaint: AdminComplaintListItem;
 }
@@ -11,6 +12,15 @@ interface Props {
 const ComplaintCard = ({ complaint }: Props) => {
   const router = useRouter();
   const [ ] = useState(false);
+
+  const dispatch = useAppDispatch();
+  const handleDelete = async (id: number) => {
+  try {
+    await dispatch(deleteAdminComplaint(id)).unwrap();
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <>
@@ -60,6 +70,14 @@ const ComplaintCard = ({ complaint }: Props) => {
               className="text-emerald-600 hover:text-emerald-700 font-medium text-sm hover:underline cursor-pointer"
             >
               View
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleDelete(complaint.id)}
+              className="text-red-600 hover:text-red-700 font-medium text-sm hover:underline cursor-pointer"
+              >
+              Delete
             </button>
           </div>
         </div>

@@ -27,13 +27,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       try {
         const res = await getProfileService();
-        console.log('[DEBUG dashboard layout] getProfileService raw response:', res);
-        console.log('[DEBUG dashboard layout] getProfileService res.data:', res?.data);
         const technicianProfile = res.data?.technicianProfile;
-        console.log('[DEBUG dashboard layout] technicianProfile:', technicianProfile);
 
         if (!technicianProfile) {
-          console.log('[DEBUG dashboard layout] No technicianProfile found. Redirecting to /technician/onboarding/register');
           router.replace('/technician/onboarding/register');
           return;
         }
@@ -43,10 +39,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           technicianProfile,
         });
 
-        console.log('[DEBUG dashboard layout] redirectPath decided:', redirectPath);
+
 
         if (redirectPath !== '/dashboard/technician') {
-          console.log('[DEBUG dashboard layout] Redirecting away to:', redirectPath);
           router.replace(redirectPath);
           return;
         }

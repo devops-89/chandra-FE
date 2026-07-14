@@ -1,8 +1,9 @@
 "use client";
+/* eslint-disable simple-import-sort/imports */
+import { useEffect, useState, useCallback } from "react";
 
 import { AnimatePresence } from "framer-motion";
 import { ClipboardList, UserCog } from "lucide-react";
-import { useEffect, useState } from "react";
 
 import { userServiceApi } from "@/api/axios";
 import { getAllServicesService } from "@/services/service.service";
@@ -14,6 +15,30 @@ import VerificationQueue from "./approvals/VerificationQueue";
 import TechniciansTable from "./list/TechniciansTable";
 
 const Technicians = () => {
+  type RawUser = {
+    id?: number | string;
+    technicianProfile?: {
+      status?: string;
+      aadharUrl?: string;
+      panUrl?: string;
+      policeCertUrl?: string;
+      tradeLicenseUrl?: string;
+      selfieUrl?: string;
+      yearsOfExperience?: number;
+      locations?: { isActive?: boolean; isDefault?: boolean; city?: string }[];
+      services?: { serviceId?: number }[];
+      rejectionReason?: string;
+    };
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    profileImage?: string;
+    overallRating?: string | number;
+    status?: string;
+    email?: string;
+    phone?: string;
+    createdAt?: string;
+  };
   const [allTechnicians, setAllTechnicians] = useState<Technician[]>([]);
   const [pendingTechnicians, setPendingTechnicians] = useState<Technician[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +46,7 @@ const Technicians = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
-  const [skillFilter, setSkillFilter] = useState("All Skills");
+  const [skillFilter, _setSkillFilter] = useState("All Skills");
   const [activeTab, setActiveTab] = useState<"all" | "pending">("all");
 
   // State for All Technicians detail drawer
@@ -29,11 +54,11 @@ const Technicians = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [viewingDoc, setViewingDoc] = useState<{ name: string; techName: string } | null>(null);
 
-  const fetchTechnicians = async () => {
+  const fetchTechnicians = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      let serviceMap: Record<number, string> = {};
+      const serviceMap: Record<number, string> = {};
       try {
         const services = await getAllServicesService();
         services.forEach((s) => {
@@ -44,12 +69,12 @@ const Technicians = () => {
       }
 
       const allRes = await userServiceApi.get("/users/all?role=TECHNICIAN");
-      const allUsers: any[] = allRes.data?.data?.data || allRes.data?.data || [];
+      const allUsers = allRes.data?.data?.data || allRes.data?.data || [];
 
       const pendingRes = await userServiceApi.get("/users/all?role=TECHNICIAN&technicianProfileStatus=PENDING_APPROVAL");
-      const pendingUsers: any[] = pendingRes.data?.data?.data || pendingRes.data?.data || [];
+      const pendingUsers = pendingRes.data?.data?.data || pendingRes.data?.data || [];
 
-      const mapUserToTechnician = (u: any): Technician => {
+      const mapUserToTechnician = (u: RawUser): Technician => {
         const profile = u.technicianProfile;
         const docStatus = profile?.status === "APPROVED" ? "Approved" : profile?.status === "REJECTED" ? "Rejected" : "Pending";
 
@@ -108,16 +133,19 @@ const Technicians = () => {
         }
 
         return {
-          id: u.id.toString(),
+          id: `${u.id ?? ""}`,
           name: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
           avatar: u.profileImage || "",
           experience: profile?.yearsOfExperience || 0,
-          city: profile?.locations?.find((loc: any) => loc.isActive || loc.isDefault)?.city || profile?.locations?.[0]?.city || "Noida",
-          skills: profile?.services?.map((s: any) => serviceMap[s.serviceId]).filter(Boolean) || [],
-          rating: u.overallRating ? parseFloat(u.overallRating) : 0,
+          city:
+            profile?.locations?.find((loc) => loc?.isActive || loc?.isDefault)?.city ||
+            profile?.locations?.[0]?.city ||
+            "Noida",
+          skills: profile?.services?.map((s) => serviceMap[s.serviceId as number]).filter(Boolean) || [],
+          rating: u.overallRating ? Number(u.overallRating) : 0,
           completedJobs: 0,
           status,
-          email: u.email,
+          email: u.email || "",
           phone: u.phone || "",
           appliedAt: u.createdAt ? u.createdAt.split("T")[0] : "",
           documents: docs,
@@ -127,18 +155,20 @@ const Technicians = () => {
 
       setAllTechnicians(allUsers.map(mapUserToTechnician));
       setPendingTechnicians(pendingUsers.map(mapUserToTechnician));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching technicians", err);
-      setError(err.message || "Failed to load technicians");
+      const e = err as Error;
+      setError(e?.message || "Failed to load technicians");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchTechnicians();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    (async () => {
+      await fetchTechnicians();
+    })();
+  }, [fetchTechnicians]);
 
   // Filter handler for All Technicians tab
   const filteredTechnicians = allTechnicians.filter((tech) => {
@@ -179,11 +209,11 @@ const Technicians = () => {
       prev.map((tech) =>
         tech.id === id
           ? {
-              ...tech,
-              status: "Suspended",
-              rejectionReason: reason,
-              rejectionNotes: notes,
-            }
+            ...tech,
+            status: "Suspended",
+            rejectionReason: reason,
+            rejectionNotes: notes,
+          }
           : tech
       )
     );
@@ -230,11 +260,10 @@ const Technicians = () => {
             setActiveTab("all");
             setSearchQuery("");
           }}
-          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 cursor-pointer ${
-            activeTab === "all"
+          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 cursor-pointer ${activeTab === "all"
               ? "border-emerald-600 text-emerald-600 bg-emerald-50/30"
               : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-          }`}
+            }`}
         >
           <UserCog size={16} />
           All Technicians
@@ -250,11 +279,10 @@ const Technicians = () => {
             setActiveTab("pending");
             setSearchQuery("");
           }}
-          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 relative cursor-pointer ${
-            activeTab === "pending"
+          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 relative cursor-pointer ${activeTab === "pending"
               ? "border-emerald-600 text-emerald-600 bg-emerald-50/30"
               : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-          }`}
+            }`}
         >
           <ClipboardList size={16} />
           Pending Approvals
