@@ -1,16 +1,88 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ChevronRight,ClipboardList } from 'lucide-react';
+import { ChevronRight, ClipboardList } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { technicians } from '@/constants/admin/approvalQueue';
+import { userServiceApi } from '@/api/axios';
+import { getAllServicesService } from '@/services/service.service';
+import type { TechnicianApproval } from '@/types/admin.types';
 
 import TechnicianApprovalCard from './TechnicianApprovalCard';
 
+const MAX_RECENT = 3;
+
 export default function ApprovalQueue() {
   const router = useRouter();
-  const count = technicians.length;
+
+  const [technicians, setTechnicians] = useState<TechnicianApproval[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchPending = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch service map for skill labels
+        let serviceMap: Record<number, string> = {};
+        try {
+          const services = await getAllServicesService();
+          services.forEach((s) => { serviceMap[s.id] = s.name; });
+        } catch { /* silently skip */ }
+
+        const res = await userServiceApi.get(
+          '/users/all?role=TECHNICIAN&technicianProfileStatus=PENDING_APPROVAL',
+        );
+        const users: any[] = res.data?.data?.data || res.data?.data || [];
+
+        if (cancelled) return;
+
+        const mapped: TechnicianApproval[] = users.map((u: any) => {
+          const profile = u.technicianProfile;
+          const city =
+            profile?.locations?.find((l: any) => l.isActive || l.isDefault)?.city ||
+            profile?.locations?.[0]?.city ||
+            '';
+          const country =
+            profile?.locations?.find((l: any) => l.isActive || l.isDefault)?.country ||
+            profile?.locations?.[0]?.country ||
+            'India';
+
+          return {
+            id: u.id,
+            name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.username || 'Unknown',
+            image: u.profileImage || undefined,
+            experience: profile?.yearsOfExperience ?? 0,
+            verified: profile?.status === 'APPROVED',
+            email: u.email,
+            phone: u.phone || '',
+            address: [city, country].filter(Boolean).join(', ') || 'N/A',
+            skills: profile?.services?.map((s: any) => serviceMap[s.serviceId]).filter(Boolean) || [],
+            createdAt: u.createdAt,
+          };
+        });
+
+        // Sort by createdAt descending → most recent first
+        mapped.sort((a, b) => {
+          if (!a.createdAt || !b.createdAt) return 0;
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+
+        setTotalCount(mapped.length);
+        setTechnicians(mapped.slice(0, MAX_RECENT));
+      } catch (err) {
+        console.error('ApprovalQueue fetch failed', err);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+
+    fetchPending();
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <motion.div
@@ -35,9 +107,11 @@ export default function ApprovalQueue() {
 
           {/* Count Badge + link */}
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-white">
-              {count} request{count !== 1 ? 's' : ''}
-            </span>
+            {!isLoading && (
+              <span className="flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-white">
+                {totalCount} request{totalCount !== 1 ? 's' : ''}
+              </span>
+            )}
             <button
               onClick={() => router.push('/dashboard/admin/technicians')}
               className="flex items-center gap-0.5 text-xs font-medium text-emerald-700 hover:text-emerald-800 transition-colors cursor-pointer"
@@ -48,16 +122,46 @@ export default function ApprovalQueue() {
           </div>
         </div>
 
-        {/* Cards list */}
-        <div className="space-y-3">
-          {technicians.map((technician) => (
-            <TechnicianApprovalCard
-              key={technician.id}
-              technician={technician}
-            />
-          ))}
-        </div>
+        {/* Loading */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-10 gap-3">
+            <div className="h-6 w-6 animate-spin rounded-full border-4 border-slate-200 border-t-amber-500" />
+            <span className="text-sm text-slate-400">Loading requests…</span>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!isLoading && technicians.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+              <ClipboardList size={22} className="text-slate-400" />
+            </div>
+            <p className="text-sm font-medium text-slate-600">No pending approvals</p>
+            <p className="mt-1 text-xs text-slate-400">All technician requests have been reviewed.</p>
+          </div>
+        )}
+
+        {/* Cards list — only recent MAX_RECENT */}
+        {!isLoading && technicians.length > 0 && (
+          <div className="space-y-3">
+            {technicians.map((technician) => (
+              <TechnicianApprovalCard
+                key={technician.id}
+                technician={technician}
+              />
+            ))}
+
+            {totalCount > MAX_RECENT && (
+              <button
+                onClick={() => router.push('/dashboard/admin/technicians')}
+                className="w-full rounded-xl border border-dashed border-slate-200 py-2.5 text-xs font-medium text-slate-400 hover:border-emerald-300 hover:text-emerald-600 transition-colors cursor-pointer"
+              >
+                +{totalCount - MAX_RECENT} more request{totalCount - MAX_RECENT !== 1 ? 's' : ''} — View all
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </motion.div>
   );
-}
+}

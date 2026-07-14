@@ -1,20 +1,24 @@
 "use client";
 
 import { AnimatePresence } from "framer-motion";
-import { ClipboardList,UserCog } from "lucide-react";
-import { useState } from "react";
+import { ClipboardList, UserCog } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import type { Technician} from "@/constants/admin/technicianData";
-import {techniciansData } from "@/constants/admin/technicianData";
+import { userServiceApi } from "@/api/axios";
+import { getAllServicesService } from "@/services/service.service";
+import type { Technician, VerificationDocument } from "@/constants/admin/technicianData";
 
 import DocumentViewerModal from "./approvals/DocumentViewerModal";
 import VerificationDrawer from "./approvals/VerificationDrawer";
 import VerificationQueue from "./approvals/VerificationQueue";
-import TechnicianFilters from "./list/TechnicianFilters";
 import TechniciansTable from "./list/TechniciansTable";
 
 const Technicians = () => {
-  const [technicians, setTechnicians] = useState<Technician[]>(techniciansData);
+  const [allTechnicians, setAllTechnicians] = useState<Technician[]>([]);
+  const [pendingTechnicians, setPendingTechnicians] = useState<Technician[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [skillFilter, setSkillFilter] = useState("All Skills");
@@ -25,15 +29,119 @@ const Technicians = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [viewingDoc, setViewingDoc] = useState<{ name: string; techName: string } | null>(null);
 
-  // Filter handler for All Technicians tab
-  const filteredTechnicians = technicians.filter((tech) => {
-    // Search query match
-    const matchesSearch =
-      tech.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tech.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tech.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tech.id.toLowerCase().includes(searchQuery.toLowerCase());
+  const fetchTechnicians = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      let serviceMap: Record<number, string> = {};
+      try {
+        const services = await getAllServicesService();
+        services.forEach((s) => {
+          serviceMap[s.id] = s.name;
+        });
+      } catch (err) {
+        console.error("Failed to fetch services", err);
+      }
 
+      const allRes = await userServiceApi.get("/users/all?role=TECHNICIAN");
+      const allUsers: any[] = allRes.data?.data?.data || allRes.data?.data || [];
+
+      const pendingRes = await userServiceApi.get("/users/all?role=TECHNICIAN&technicianProfileStatus=PENDING_APPROVAL");
+      const pendingUsers: any[] = pendingRes.data?.data?.data || pendingRes.data?.data || [];
+
+      const mapUserToTechnician = (u: any): Technician => {
+        const profile = u.technicianProfile;
+        const docStatus = profile?.status === "APPROVED" ? "Approved" : profile?.status === "REJECTED" ? "Rejected" : "Pending";
+
+        const docs: VerificationDocument[] = [];
+        if (profile) {
+          if (profile.aadharUrl) {
+            docs.push({
+              name: "Aadhaar Card",
+              type: "Identity Proof",
+              status: docStatus,
+              url: profile.aadharUrl,
+            });
+          }
+          if (profile.panUrl) {
+            docs.push({
+              name: "PAN Card",
+              type: "Tax ID",
+              status: docStatus,
+              url: profile.panUrl,
+            });
+          }
+          if (profile.policeCertUrl) {
+            docs.push({
+              name: "Police Clearance Certificate",
+              type: "Certification",
+              status: docStatus,
+              url: profile.policeCertUrl,
+            });
+          }
+          if (profile.tradeLicenseUrl) {
+            docs.push({
+              name: "Trade License",
+              type: "Certification",
+              status: docStatus,
+              url: profile.tradeLicenseUrl,
+            });
+          }
+          if (profile.selfieUrl) {
+            docs.push({
+              name: "Selfie",
+              type: "Verification Photo",
+              status: docStatus,
+              url: profile.selfieUrl,
+            });
+          }
+        }
+
+        let status: "Active" | "Pending" | "Suspended" = "Pending";
+        if (profile?.status === "APPROVED") {
+          status = "Active";
+        } else if (profile?.status === "REJECTED") {
+          status = "Suspended";
+        }
+        if (u.status === "SUSPENDED") {
+          status = "Suspended";
+        }
+
+        return {
+          id: u.id.toString(),
+          name: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
+          avatar: u.profileImage || "",
+          experience: profile?.yearsOfExperience || 0,
+          city: profile?.locations?.find((loc: any) => loc.isActive || loc.isDefault)?.city || profile?.locations?.[0]?.city || "Noida",
+          skills: profile?.services?.map((s: any) => serviceMap[s.serviceId]).filter(Boolean) || [],
+          rating: u.overallRating ? parseFloat(u.overallRating) : 0,
+          completedJobs: 0,
+          status,
+          email: u.email,
+          phone: u.phone || "",
+          appliedAt: u.createdAt ? u.createdAt.split("T")[0] : "",
+          documents: docs,
+          rejectionReason: profile?.rejectionReason || undefined,
+        };
+      };
+
+      setAllTechnicians(allUsers.map(mapUserToTechnician));
+      setPendingTechnicians(pendingUsers.map(mapUserToTechnician));
+    } catch (err: any) {
+      console.error("Error fetching technicians", err);
+      setError(err.message || "Failed to load technicians");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTechnicians();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Filter handler for All Technicians tab
+  const filteredTechnicians = allTechnicians.filter((tech) => {
     // Status filter match
     const matchesStatus =
       statusFilter === "All Status" || tech.status === statusFilter;
@@ -42,31 +150,32 @@ const Technicians = () => {
     const matchesSkill =
       skillFilter === "All Skills" || tech.skills.includes(skillFilter);
 
-    return matchesSearch && matchesStatus && matchesSkill;
+    return matchesStatus && matchesSkill;
   });
 
-  // Pending technicians for the approvals queue
-  const pendingTechnicians = technicians.filter(
+  // Pending technicians for the approvals queue filtered by search
+  const pendingTechniciansFiltered = pendingTechnicians.filter(
     (tech) =>
       tech.status === "Pending" &&
       (tech.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         tech.email.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const pendingCount = technicians.filter(
-    (tech) => tech.status === "Pending"
-  ).length;
+  const pendingCount = pendingTechnicians.length;
 
   const handleApprove = (id: string) => {
-    setTechnicians((prev) =>
+    setAllTechnicians((prev) =>
       prev.map((tech) =>
         tech.id === id ? { ...tech, status: "Active" } : tech
       )
     );
+    setPendingTechnicians((prev) =>
+      prev.filter((tech) => tech.id !== id)
+    );
   };
 
   const handleReject = (id: string, reason: string, notes: string) => {
-    setTechnicians((prev) =>
+    setAllTechnicians((prev) =>
       prev.map((tech) =>
         tech.id === id
           ? {
@@ -78,10 +187,13 @@ const Technicians = () => {
           : tech
       )
     );
+    setPendingTechnicians((prev) =>
+      prev.filter((tech) => tech.id !== id)
+    );
   };
 
   const handleToggleSuspend = (id: string) => {
-    setTechnicians((prev) =>
+    setAllTechnicians((prev) =>
       prev.map((tech) => {
         if (tech.id === id) {
           const isCurrentlyActive = tech.status === "Active";
@@ -126,9 +238,11 @@ const Technicians = () => {
         >
           <UserCog size={16} />
           All Technicians
-          <span className="ml-1 rounded-full bg-emerald-600 px-2 py-0.5 text-xs text-white">
-            {technicians.length}
-          </span>
+          {!isLoading && (
+            <span className="ml-1 rounded-full bg-emerald-600 px-2 py-0.5 text-xs text-white">
+              {allTechnicians.length}
+            </span>
+          )}
         </button>
 
         <button
@@ -144,7 +258,7 @@ const Technicians = () => {
         >
           <ClipboardList size={16} />
           Pending Approvals
-          {pendingCount > 0 && (
+          {!isLoading && pendingCount > 0 && (
             <span className="ml-1 rounded-full bg-amber-500 px-2.5 py-0.5 text-xs text-white animate-pulse">
               {pendingCount}
             </span>
@@ -152,42 +266,63 @@ const Technicians = () => {
         </button>
       </div>
 
-      {activeTab === "all" ? (
-        <div className="space-y-6">
-          <TechnicianFilters
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            skillFilter={skillFilter}
-            setSkillFilter={setSkillFilter}
-          />
-          <TechniciansTable
-            technicians={filteredTechnicians}
-            onToggleSuspend={handleToggleSuspend}
-            onViewDetails={(tech) => {
-              setSelectedTech(tech);
-              setIsDrawerOpen(true);
-            }}
-          />
+      {/* Loading state */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-16">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600" />
+          <span className="ml-3 text-sm text-slate-500">Loading technicians…</span>
         </div>
-      ) : (
-        <div className="space-y-6">
-          {/* Search bar on approvals queue for quick searching */}
-          <div className="rounded-2xl bg-white p-4 border border-slate-200">
-            <input
-              placeholder="Search pending applications..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-11 w-full rounded-xl border border-slate-300 px-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-sm"
-            />
-          </div>
-          <VerificationQueue
-            pendingTechnicians={pendingTechnicians}
-            onApprove={handleApprove}
-            onReject={handleReject}
-          />
+      )}
+
+      {/* Error state */}
+      {!isLoading && error && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-6 py-5">
+          <p className="text-sm font-medium text-red-700">{error}</p>
+          <button
+            type="button"
+            onClick={fetchTechnicians}
+            className="mt-3 rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors cursor-pointer"
+          >
+            Retry
+          </button>
         </div>
+      )}
+
+      {!isLoading && !error && (
+        <>
+          {activeTab === "all" ? (
+            <div className="space-y-6">
+              <TechniciansTable
+                technicians={filteredTechnicians}
+                allTechnicians={allTechnicians}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+                onToggleSuspend={handleToggleSuspend}
+                onViewDetails={(tech) => {
+                  setSelectedTech(tech);
+                  setIsDrawerOpen(true);
+                }}
+              />
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Search bar on approvals queue for quick searching */}
+              <div className="rounded-2xl bg-white p-4 border border-slate-200">
+                <input
+                  placeholder="Search pending applications..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-11 w-full rounded-xl border border-slate-300 px-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-sm"
+                />
+              </div>
+              <VerificationQueue
+                pendingTechnicians={pendingTechniciansFiltered}
+                onApprove={handleApprove}
+                onReject={handleReject}
+              />
+            </div>
+          )}
+        </>
       )}
 
       {/* Drawer and Document Viewer for All Technicians Tab */}

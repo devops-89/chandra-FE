@@ -1,4 +1,4 @@
-import { AlertCircle, Ban, CheckCircle,MapPin, Star, User } from "lucide-react";
+import { AlertCircle, Ban, CheckCircle, MapPin, Star, User } from "lucide-react";
 
 import type { Technician } from "@/constants/admin/technicianData";
 
@@ -14,7 +14,7 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
   const isSuspended = technician.status === "Suspended";
 
   return (
-    <div className="border border-slate-200 rounded-2xl bg-white p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between cursor-default">
+    <div className="border border-slate-200 rounded-2xl bg-[#F8FAFC] p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between cursor-default">
       <div>
         {/* Card Header: Initial avatar & Status */}
         <div className="flex items-start justify-between">
@@ -32,15 +32,14 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
               </p>
             </div>
           </div>
-          
+
           <span
-            className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-              isActive
+            className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${isActive
                 ? "bg-emerald-100 text-emerald-700"
                 : isPending
-                ? "bg-yellow-100 text-yellow-700 animate-pulse"
-                : "bg-red-100 text-red-700"
-            }`}
+                  ? "bg-yellow-100 text-yellow-700 animate-pulse"
+                  : "bg-red-100 text-red-700"
+              }`}
           >
             {isActive && <CheckCircle size={10} />}
             {isPending && <AlertCircle size={10} />}
@@ -95,11 +94,10 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
           {!isPending && (
             <button
               onClick={() => onToggleSuspend(technician.id)}
-              className={`text-xs font-semibold cursor-pointer hover:underline transition-colors ${
-                isActive
+              className={`text-xs font-semibold cursor-pointer hover:underline transition-colors ${isActive
                   ? "text-red-600 hover:text-red-700"
                   : "text-emerald-600 hover:text-emerald-700"
-              }`}
+                }`}
             >
               {isActive ? "Suspend" : "Reactivate"}
             </button>

@@ -1,16 +1,34 @@
-import type { Booking } from '@/constants/admin/bookingData';
+import { useState } from 'react';
 
+import type { Booking } from '@/constants/admin/bookingData';
+import { bookingsData } from '@/constants/admin/bookingData';
 import BookingCard from './BookingCard';
+import BookingTabs, { type BookingTab } from './BookingTabs';
+import ManualAssignmentPanel from './ManualAssignmentPanel';
 
 interface Props {
   bookings: Booking[];
 }
 
 const BookingsTable = ({ bookings }: Props) => {
+
+  const [activeTab, setActiveTab] = useState<BookingTab>('all');
+
+  const filteredBookings = bookingsData.filter((b) => {
+    if (activeTab === 'all') return true;
+    if (activeTab === 'pending') return b.status === 'Pending';
+    if (activeTab === 'active')
+      return b.status === 'Assigned' || b.status === 'In Progress';
+    if (activeTab === 'completed') return b.status === 'Completed';
+    return true;
+  });
+
+  const isManualTab = activeTab === 'manual';
+
   if (bookings.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-20 text-center">
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 py-20 text-center">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full">
           <svg
             className="h-7 w-7 text-slate-400"
             fill="none"
@@ -33,11 +51,24 @@ const BookingsTable = ({ bookings }: Props) => {
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-        {bookings.map((booking) => (
-          <BookingCard key={booking.id} booking={booking} />
-        ))}
+      {/* Tabs */}
+      <div className="px-4 pt-4">
+        <BookingTabs
+          active={activeTab}
+          bookings={bookingsData}
+          onChange={setActiveTab}
+        />
       </div>
+
+      {isManualTab ? (
+        <ManualAssignmentPanel bookings={bookingsData} />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+          {filteredBookings.map((booking) => (
+            <BookingCard key={booking.id} booking={booking} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,27 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-
 import { bookingsData } from '@/constants/admin/bookingData';
-
-import BookingsTable from './list/BookingsTable';
-import BookingTabs, { type BookingTab } from './list/BookingTabs';
-import ManualAssignmentPanel from './list/ManualAssignmentPanel';
 import BookingStats from './stats/BookingStats';
+import BookingsTable from './list/BookingsTable';
 
 const Bookings = () => {
-  const [activeTab, setActiveTab] = useState<BookingTab>('all');
-
-  const filteredBookings = bookingsData.filter((b) => {
-    if (activeTab === 'all') return true;
-    if (activeTab === 'pending') return b.status === 'Pending';
-    if (activeTab === 'active')
-      return b.status === 'Assigned' || b.status === 'In Progress';
-    if (activeTab === 'completed') return b.status === 'Completed';
-    return true;
-  });
-
-  const isManualTab = activeTab === 'manual';
 
   return (
     <div className="space-y-6">
@@ -35,22 +18,7 @@ const Bookings = () => {
 
       <BookingStats />
 
-      {/* Tabs */}
-      <BookingTabs
-        active={activeTab}
-        bookings={bookingsData}
-        onChange={setActiveTab}
-      />
-
-      {/* Filters — hidden on manual assignment tab */}
-      {/* {!isManualTab && <BookingFilters />} */}
-
-      {/* Content */}
-      {isManualTab ? (
-        <ManualAssignmentPanel bookings={bookingsData} />
-      ) : (
-        <BookingsTable bookings={filteredBookings} />
-      )}
+      <BookingsTable bookings={bookingsData} />
     </div>
   );
 };

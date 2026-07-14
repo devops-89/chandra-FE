@@ -44,9 +44,8 @@ const BookingCard = ({ booking: initialBooking }: Props) => {
             </div>
 
             <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                statusColors[booking.status] || 'bg-slate-100 text-slate-700'
-              }`}
+              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[booking.status] || 'bg-slate-100 text-slate-700'
+                }`}
             >
               {booking.status}
             </span>
