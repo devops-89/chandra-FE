@@ -1,6 +1,5 @@
 import {
   CalendarDays,
-  Headphones,
   LayoutDashboard,
   MapPin,
   Receipt,
@@ -29,11 +28,11 @@ export const customerDashboardSidebarLinks = [
     href: '/dashboard/customer/addresses',
     icon: MapPin,
   },
-  {
-    label: 'Support',
-    href: '/dashboard/customer/support',
-    icon: Headphones,
-  },
+  // {
+  //   label: 'Support',
+  //   href: '/dashboard/customer/support',
+  //   icon: Headphones,
+  // },
   {
     label: 'Profile',
     href: '/dashboard/customer/profile',

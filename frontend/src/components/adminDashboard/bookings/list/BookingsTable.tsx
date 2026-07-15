@@ -1,25 +1,39 @@
+'use client';
+
 import { useState } from 'react';
 
-import type { Booking } from '@/constants/admin/bookingData';
-import { bookingsData } from '@/constants/admin/bookingData';
+import type { AdminBooking } from '@/types/admin/bookings.types';
+
 import BookingCard from './BookingCard';
 import BookingTabs, { type BookingTab } from './BookingTabs';
 import ManualAssignmentPanel from './ManualAssignmentPanel';
 
 interface Props {
-  bookings: Booking[];
+  bookings: AdminBooking[];
 }
 
 const BookingsTable = ({ bookings }: Props) => {
+  const [activeTab, setActiveTab] =
+    useState<BookingTab>('all');
 
-  const [activeTab, setActiveTab] = useState<BookingTab>('all');
-
-  const filteredBookings = bookingsData.filter((b) => {
+  const filteredBookings = bookings.filter((booking) => {
     if (activeTab === 'all') return true;
-    if (activeTab === 'pending') return b.status === 'Pending';
+
+    if (activeTab === 'pending')
+      return booking.status === 'PENDING';
+
     if (activeTab === 'active')
-      return b.status === 'Assigned' || b.status === 'In Progress';
-    if (activeTab === 'completed') return b.status === 'Completed';
+      return (
+        booking.status === 'ASSIGNED' ||
+        booking.status === 'IN_PROGRESS'
+      );
+
+    if (activeTab === 'completed')
+      return booking.status === 'COMPLETED';
+
+    if (activeTab === 'manual')
+      return booking.technician === null;
+
     return true;
   });
 
@@ -43,29 +57,37 @@ const BookingsTable = ({ bookings }: Props) => {
             />
           </svg>
         </div>
-        <h3 className="text-base font-semibold text-slate-700">No bookings found</h3>
-        <p className="mt-1 text-sm text-slate-400">No bookings match this filter.</p>
+
+        <h3 className="text-base font-semibold text-slate-700">
+          No bookings found
+        </h3>
+
+        <p className="mt-1 text-sm text-slate-400">
+          No bookings match this filter.
+        </p>
       </div>
     );
   }
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      {/* Tabs */}
       <div className="px-4 pt-4">
         <BookingTabs
           active={activeTab}
-          bookings={bookingsData}
+          bookings={bookings}
           onChange={setActiveTab}
         />
       </div>
 
       {isManualTab ? (
-        <ManualAssignmentPanel bookings={bookingsData} />
+        <ManualAssignmentPanel bookings={filteredBookings} />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredBookings.map((booking) => (
-            <BookingCard key={booking.id} booking={booking} />
+            <BookingCard
+              key={booking.bookingId}
+              booking={booking}
+            />
           ))}
         </div>
       )}

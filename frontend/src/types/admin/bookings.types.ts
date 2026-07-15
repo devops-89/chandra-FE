@@ -1,0 +1,76 @@
+export interface BookingService {
+  id: number;
+  name: string;
+}
+
+export interface BookingAddress {
+  fullAddress: string;
+  city: string;
+  state: string;
+  pincode: string;
+}
+
+export interface BookingCustomer {
+  id: number;
+  name: string;
+  phone: string;
+}
+
+export interface BookingTechnician {
+  id: number;
+  name: string;
+  phone: string;
+}
+
+export interface AdminBooking {
+  bookingId: number;
+
+  status: string;
+
+  paymentStatus: string;
+
+  service: BookingService | null;
+
+  address: BookingAddress;
+
+  scheduledAt: string;
+
+  scheduledAtIst: string;
+
+  totalAmount: string | null;
+
+  isEmergency: boolean;
+
+  createdAt: string;
+
+  createdAtIst: string;
+
+  customer: BookingCustomer;
+
+  technician: BookingTechnician | null;
+}
+
+export interface BookingPagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface GetAdminBookingsResponse {
+  success: boolean;
+
+  statusCode: number;
+
+  message: string;
+
+  data: {
+    success: boolean;
+
+    message: string;
+
+    data: AdminBooking[];
+
+    pagination: BookingPagination;
+  };
+}

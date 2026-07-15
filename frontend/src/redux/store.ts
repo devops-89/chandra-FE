@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import activeJobsReducer from './slices/activeJobsSlice';
+import adminBookingReducer from './slices/adminBookingSlice';
 import adminComplaintReducer from './slices/adminComplaintSlice';
 import authReducer from './slices/authSlice';
 import bookingReducer from './slices/bookingSlice';
@@ -30,6 +31,7 @@ export const store = configureStore({
     complaint: complaintReducer,
     customerBookings: customerBookingsReducer,
     adminComplaint: adminComplaintReducer,
+    adminBookings: adminBookingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

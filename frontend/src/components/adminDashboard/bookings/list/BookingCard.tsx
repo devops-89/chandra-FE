@@ -2,32 +2,32 @@
 
 import { useState } from 'react';
 
-import type { Booking } from '@/constants/admin/bookingData';
+import type { AdminBooking } from '@/types/admin/bookings.types';
 
-import AssignTechnicianModal from '../actions/AssignTechnicianModal';
+// import AssignTechnicianModal from '../actions/AssignTechnicianModal';
 import BookingDetailsDrawer from '../details/BookingDetailsDrawer';
 
 interface Props {
-  booking: Booking;
+  booking: AdminBooking;
 }
 
 const BookingCard = ({ booking: initialBooking }: Props) => {
-  const [booking, setBooking] = useState<Booking>(initialBooking);
+  const booking = initialBooking;
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
 
   const statusColors: Record<string, string> = {
-    Pending: 'bg-yellow-100 text-yellow-700',
-    Assigned: 'bg-blue-100 text-blue-700',
-    'In Progress': 'bg-emerald-100 text-emerald-700',
-    Completed: 'bg-green-100 text-green-700',
-    Cancelled: 'bg-red-100 text-red-700',
-  };
+  PENDING: 'bg-yellow-100 text-yellow-700',
+  ASSIGNED: 'bg-blue-100 text-blue-700',
+  IN_PROGRESS: 'bg-emerald-100 text-emerald-700',
+  COMPLETED: 'bg-green-100 text-green-700',
+  CANCELLED: 'bg-red-100 text-red-700',
+};
 
-  const handleAssign = (technicianName: string) => {
-    setBooking((prev) => ({ ...prev, technician: technicianName, status: 'Assigned' }));
-    setAssignOpen(false);
-  };
+  // const handleAssign = (technicianName: string) => {
+  //   setBooking((prev) => ({ ...prev, technician: technicianName, status: 'Assigned' }));
+  //   setAssignOpen(false);
+  // };
 
   return (
     <>
@@ -36,10 +36,10 @@ const BookingCard = ({ booking: initialBooking }: Props) => {
           <div className="flex items-start justify-between">
             <div>
               <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600">
-                Booking ID: {booking.id}
+                Booking ID: {booking.bookingId}
               </span>
               <h4 className="mt-1 font-semibold text-slate-900 text-lg leading-snug">
-                {booking.customer}
+                {booking.customer.name}
               </h4>
             </div>
 
@@ -54,12 +54,12 @@ const BookingCard = ({ booking: initialBooking }: Props) => {
           <div className="mt-4 grid grid-cols-2 gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
             <div>
               <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Service</p>
-              <p className="text-xs font-semibold text-slate-800 mt-0.5">{booking.service}</p>
+              <p className="text-xs font-semibold text-slate-800 mt-0.5">{booking.service?.name}</p>
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Technician</p>
-              {booking.technician && booking.technician !== '-' ? (
-                <p className="text-xs font-semibold text-slate-800 mt-0.5">{booking.technician}</p>
+              {booking.technician ? (
+                <p className="text-xs font-semibold text-slate-800 mt-0.5">{booking.technician?.name}</p>
               ) : (
                 <button
                   onClick={() => setAssignOpen(true)}
@@ -78,11 +78,11 @@ const BookingCard = ({ booking: initialBooking }: Props) => {
         <div className="border-t border-slate-100 mt-4 pt-3 flex items-center justify-between text-slate-700">
           <div>
             <span className="text-xs text-slate-500 font-medium block">Date</span>
-            <span className="text-xs text-slate-700 font-semibold">{booking.date}</span>
+            <span className="text-xs text-slate-700 font-semibold">{new Date(booking.scheduledAtIst).toLocaleDateString('en-IN', {day: '2-digit',month: '2-digit',year: 'numeric',})}</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-base font-bold text-slate-900">₹{booking.amount}</span>
+            <span className="text-base font-bold text-slate-900">₹{booking.totalAmount ?? '0'}</span>
 
             <button
               onClick={() => setDrawerOpen(true)}
@@ -102,12 +102,12 @@ const BookingCard = ({ booking: initialBooking }: Props) => {
       />
 
       {/* Quick-assign modal (from card shortcut) */}
-      <AssignTechnicianModal
+      {/* <AssignTechnicianModal
         open={assignOpen}
         booking={booking}
         onClose={() => setAssignOpen(false)}
-        onAssign={handleAssign}
-      />
+        // onAssign={handleAssign}
+      /> */}
     </>
   );
 };

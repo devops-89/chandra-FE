@@ -1,9 +1,11 @@
+import type { BookingTechnician } from '@/types/admin/bookings.types';
+
 interface Props {
-  technician: string;
+  technician: BookingTechnician | null;
 }
 
 const TechnicianInfo = ({ technician }: Props) => {
-  const hasTechnician = technician && technician !== '-';
+  const hasTechnician = technician !== null;
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6">
@@ -13,14 +15,15 @@ const TechnicianInfo = ({ technician }: Props) => {
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm shrink-0">
-              {technician
+              {technician?.name
                 .split(' ')
                 .map((n) => n[0])
                 .join('')
                 .slice(0, 2)}
             </div>
             <div>
-              <p className="font-semibold text-slate-900 text-sm">{technician}</p>
+              <p className="font-semibold text-slate-900 text-sm">{technician.name}</p>
+              <p className="text-xs text-slate-500">{technician?.phone}</p>
               <p className="text-xs text-slate-500">Assigned Technician</p>
             </div>
           </div>
