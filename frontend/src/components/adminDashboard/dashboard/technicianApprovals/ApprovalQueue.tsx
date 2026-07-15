@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { ChevronRight, ClipboardList } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { userServiceApi } from '@/api/axios';
 import { getAllServicesService } from '@/services/service.service';
@@ -27,7 +27,7 @@ export default function ApprovalQueue() {
       setIsLoading(true);
       try {
         // Fetch service map for skill labels
-        let serviceMap: Record<number, string> = {};
+        const serviceMap: Record<number, string> = {};
         try {
           const services = await getAllServicesService();
           services.forEach((s) => { serviceMap[s.id] = s.name; });

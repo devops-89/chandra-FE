@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
-import ChangePasswordCard from '@/components/customerDashboard/profile/ChangePasswordCard';
+// import ChangePasswordCard from '@/components/customerDashboard/profile/ChangePasswordCard';
 import ProfileForm from '@/components/customerDashboard/profile/ProfileForm';
 import { useAppDispatch } from '@/redux/hooks';
 import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
@@ -27,10 +27,9 @@ export default function ProfilePage() {
             Manage your account information.
           </p>
         </div>
-
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="mx-auto w-full max-w-lg">
           <ProfileForm />
-          <ChangePasswordCard />
+          {/* <ChangePasswordCard /> */}
         </div>
       </div>
     </DashboardLayout>

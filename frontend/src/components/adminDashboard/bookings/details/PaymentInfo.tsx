@@ -1,8 +1,8 @@
 interface Props {
-  amount: number;
+  totalAmount: string | null;
 }
 
-const PaymentInfo = ({ amount }: Props) => {
+const PaymentInfo = ({ totalAmount }: Props) => {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6">
       <h3 className="mb-4 text-lg font-semibold text-slate-900">Payment Details</h3>
@@ -10,7 +10,7 @@ const PaymentInfo = ({ amount }: Props) => {
       <div className="space-y-2">
         <p className="text-sm text-slate-700">
           <span className="text-slate-400 text-xs uppercase tracking-wider block mb-0.5">Amount</span>
-          ₹{amount}
+          ₹{totalAmount}
         </p>
         <p className="text-sm text-slate-700">
           <span className="text-slate-400 text-xs uppercase tracking-wider block mb-0.5">Method</span>

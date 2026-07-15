@@ -1,5 +1,3 @@
-import type { Booking } from '@/constants/admin/bookingData';
-
 const steps = [
   'Booking Created',
   'Assigned',
@@ -17,7 +15,7 @@ const statusStepMap: Record<string, number> = {
 };
 
 interface Props {
-  status: Booking['status'];
+  status: string;
 }
 
 const BookingTimeline = ({ status }: Props) => {

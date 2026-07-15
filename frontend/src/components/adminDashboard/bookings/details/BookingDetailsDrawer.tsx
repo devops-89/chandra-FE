@@ -2,45 +2,48 @@
 
 import { useState } from 'react';
 
-import type { Booking } from '@/constants/admin/bookingData';
+import type { AdminBooking } from '@/types/admin/bookings.types';
 
-import AssignTechnicianModal from '../actions/AssignTechnicianModal';
-import ReassignTechnicianModal from '../actions/ReassignTechnicianModal';
+// import AssignTechnicianModal from '../actions/AssignTechnicianModal';
+// import ReassignTechnicianModal from '../actions/ReassignTechnicianModal';
 import BookingDetails from './BookingDetails';
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  booking: Booking;
+  booking: AdminBooking;
 }
 
 const BookingDetailsDrawer = ({ open, onClose, booking: initialBooking }: Props) => {
-  const [booking, setBooking] = useState<Booking>(initialBooking);
+  const [booking, setBooking] = useState<AdminBooking>(initialBooking);
   const [assignOpen, setAssignOpen] = useState(false);
   const [reassignOpen, setReassignOpen] = useState(false);
 
   if (!open) return null;
 
-  const isPending = booking.status === 'Pending';
-  const isAssigned = booking.status === 'Assigned' || booking.status === 'In Progress';
+  const isPending = booking.status === 'PENDING';
 
-  const handleAssign = (technicianName: string) => {
-    setBooking((prev) => ({ ...prev, technician: technicianName, status: 'Assigned' }));
-    setAssignOpen(false);
-  };
+  const isAssigned =
+    booking.status === 'ASSIGNED' ||
+    booking.status === 'IN_PROGRESS';
 
-  const handleReassign = (technicianName: string) => {
-    setBooking((prev) => ({ ...prev, technician: technicianName }));
-    setReassignOpen(false);
-  };
+  // const handleAssign = (technicianName: string) => {
+  //   setBooking((prev) => ({ ...prev, technician: technicianName, status: 'ASSIGNED' }));
+  //   setAssignOpen(false);
+  // };
+
+  // const handleReassign = (technicianName: string) => {
+  //   setBooking((prev) => ({ ...prev, technician: technicianName }));
+  //   setReassignOpen(false);
+  // };
 
   const statusColors: Record<string, string> = {
-    Pending: 'bg-yellow-100 text-yellow-700',
-    Assigned: 'bg-blue-100 text-blue-700',
-    'In Progress': 'bg-emerald-100 text-emerald-700',
-    Completed: 'bg-green-100 text-green-700',
-    Cancelled: 'bg-red-100 text-red-700',
-  };
+  PENDING: 'bg-yellow-100 text-yellow-700',
+  ASSIGNED: 'bg-blue-100 text-blue-700',
+  IN_PROGRESS: 'bg-emerald-100 text-emerald-700',
+  COMPLETED: 'bg-green-100 text-green-700',
+  CANCELLED: 'bg-red-100 text-red-700',
+};
 
   return (
     <>
@@ -53,7 +56,7 @@ const BookingDetailsDrawer = ({ open, onClose, booking: initialBooking }: Props)
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-slate-900">Booking Details</h2>
-              <p className="text-slate-500 mt-0.5">{booking.id}</p>
+              <p className="text-slate-500 mt-0.5">{booking.bookingId}</p>
             </div>
             <button
               onClick={onClose}
@@ -67,12 +70,12 @@ const BookingDetailsDrawer = ({ open, onClose, booking: initialBooking }: Props)
           <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="font-semibold text-slate-900">{booking.customer}</h3>
-                <p className="text-sm text-slate-500 mt-0.5">{booking.service}</p>
+                <h3 className="font-semibold text-slate-900">{booking.customer.name}</h3>
+                <p className="text-sm text-slate-500 mt-0.5">{booking.service?.name}</p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-lg font-bold text-slate-900">₹{booking.amount}</p>
-                <p className="text-xs text-slate-500">{booking.date}</p>
+                <p className="text-lg font-bold text-slate-900">₹{booking.totalAmount}</p>
+                <p className="text-xs text-slate-500">{booking.scheduledAtIst}</p>
               </div>
             </div>
 
@@ -87,10 +90,10 @@ const BookingDetailsDrawer = ({ open, onClose, booking: initialBooking }: Props)
               </span>
 
               <div className="flex items-center gap-2 text-sm">
-                {booking.technician && booking.technician !== '-' ? (
+                {booking.technician ? (
                   <span className="text-slate-600">
                     Technician:{' '}
-                    <span className="font-semibold text-slate-900">{booking.technician}</span>
+                    <span className="font-semibold text-slate-900">{booking.technician.name}</span>
                   </span>
                 ) : (
                   <span className="text-slate-400 italic text-xs">No technician assigned</span>
@@ -129,7 +132,7 @@ const BookingDetailsDrawer = ({ open, onClose, booking: initialBooking }: Props)
                 <div className="flex-1">
                   <p className="text-sm text-slate-500">
                     Currently assigned to{' '}
-                    <span className="font-medium text-slate-800">{booking.technician}</span>.
+                    <span className="font-medium text-slate-800">{booking.technician?.name}</span>.
                   </p>
                 </div>
                 <button
@@ -156,20 +159,20 @@ const BookingDetailsDrawer = ({ open, onClose, booking: initialBooking }: Props)
       </div>
 
       {/* Assign Modal */}
-      <AssignTechnicianModal
+      {/* <AssignTechnicianModal
         open={assignOpen}
         booking={booking}
         onClose={() => setAssignOpen(false)}
         onAssign={handleAssign}
-      />
+      /> */}
 
       {/* Reassign Modal */}
-      <ReassignTechnicianModal
+      {/* <ReassignTechnicianModal
         open={reassignOpen}
         booking={booking}
         onClose={() => setReassignOpen(false)}
         onConfirm={handleReassign}
-      />
+      /> */}
     </>
   );
 };
