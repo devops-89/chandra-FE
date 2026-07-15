@@ -13,11 +13,12 @@ import VerificationDrawer from "./VerificationDrawer";
 
 interface Props {
   pendingTechnicians: Technician[];
+  actionLoading?: Record<string, boolean>;
   onApprove: (id: string) => void;
   onReject: (id: string, reason: string, notes: string) => void;
 }
 
-const VerificationQueue = ({ pendingTechnicians, onApprove, onReject }: Props) => {
+const VerificationQueue = ({ pendingTechnicians, actionLoading, onApprove, onReject }: Props) => {
   const [selectedTech, setSelectedTech] = useState<Technician | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -52,6 +53,7 @@ const VerificationQueue = ({ pendingTechnicians, onApprove, onReject }: Props) =
             <VerificationCard
               key={tech.id}
               technician={tech}
+              isActionLoading={Boolean(actionLoading?.[tech.id])}
               onApprove={() => setApprovingTech(tech)}
               onReject={() => setRejectingTech(tech)}
               onReview={() => handleOpenDrawer(tech)}

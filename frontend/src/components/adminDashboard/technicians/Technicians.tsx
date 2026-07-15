@@ -6,6 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { ClipboardList, UserCog } from "lucide-react";
 
 import { userServiceApi } from "@/api/axios";
+import { ENDPOINTS } from "@/api/endpoints";
 import { getAllServicesService } from "@/services/service.service";
 import type { Technician, VerificationDocument } from "@/constants/admin/technicianData";
 
@@ -15,6 +16,41 @@ import VerificationQueue from "./approvals/VerificationQueue";
 import TechniciansTable from "./list/TechniciansTable";
 
 type TechnicianStatus = "APPROVED" | "PENDING_APPROVAL" | "REJECTED";
+
+type RawTechnicianProfile = {
+  id: number | string | null;
+  userId?: number | string | null;
+  yearsOfExperience?: number | null;
+  status?: TechnicianStatus | string | null;
+  rejectionReason?: string | null;
+  aadharUrl?: string | null;
+  panUrl?: string | null;
+  policeCertUrl?: string | null;
+  tradeLicenseUrl?: string | null;
+  selfieUrl?: string | null;
+  services?: Array<{ serviceId?: number | null }>;
+  locations?: Array<{
+    city?: string | null;
+    isActive?: boolean | null;
+    isDefault?: boolean | null;
+  }>;
+};
+
+type RawUser = {
+  id: number | string;
+  email?: string | null;
+  username?: string | null;
+  phone?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  profileImage?: string | null;
+  createdAt?: string | null;
+  overallRating?: number | string | null;
+  technicianProfileId?: number | string | null;
+  technicianProfile: RawTechnicianProfile | null;
+};
+
+type RawUsersResponsePayload = RawUser[] | { data?: RawUser[] | { data?: RawUser[] } };
 
 // Pre-fetched data keyed by status (plus "All Status" for the unfiltered list)
 export type PrefetchedData = {
@@ -37,6 +73,7 @@ const Technicians = () => {
   const [pendingTechnicians, setPendingTechnicians] = useState<Technician[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All Status" | TechnicianStatus>("All Status");
@@ -50,9 +87,10 @@ const Technicians = () => {
   const fetchTechnicians = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+    setActionError(null);
     try {
       // Build service map first
-      let serviceMap: Record<number, string> = {};
+      const serviceMap: Record<number, string> = {};
       try {
         const services = await getAllServicesService();
         services.forEach((s) => {
@@ -71,64 +109,97 @@ const Technicians = () => {
         userServiceApi.get("/users/all?role=TECHNICIAN&technicianProfileStatus=REJECTED"),
       ]);
 
-      const extract = (res: any): any[] =>
-        res.data?.data?.data || res.data?.data || [];
+      const extract = (res: { data?: RawUsersResponsePayload }): RawUser[] => {
+        const root = res.data;
+        if (Array.isArray(root)) return root;
+
+        const nested = root?.data;
+        if (Array.isArray(nested)) return nested;
+        if (!Array.isArray(nested) && Array.isArray(nested?.data)) return nested.data;
+
+        return [];
+      };
 
       const mapUserToTechnician = (u: RawUser): Technician => {
         const profile = u.technicianProfile;
+
+        // Users with no technicianProfile cannot be approved/rejected
+        if (!profile) {
+          return {
+            id:          `${u.id}`,
+            profileId:   null,
+            profileUserId: null,
+            name:        `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
+            avatar:      u.profileImage || "",
+            experience:  0,
+            city:        "—",
+            skills:      [],
+            rating:      0,
+            completedJobs: 0,
+            status:      "NO_PROFILE",
+            email:       u.email || "",
+            phone:       u.phone || "",
+            appliedAt:   u.createdAt ? u.createdAt.split("T")[0] : "",
+            documents:   [],
+            rejectionReason: undefined,
+          };
+        }
+
+        const profileId = profile.id === null ? null : `${profile.id}`;
+        const profileUserId = profile.userId == null ? null : `${profile.userId}`;
+
         const docStatus =
-          profile?.status === "APPROVED"
-            ? "APPROVED"
-            : profile?.status === "REJECTED"
-            ? "REJECTED"
-            : "PENDING_APPROVAL";
+          profile.status === "APPROVED" ? "APPROVED"
+          : profile.status === "REJECTED" ? "REJECTED"
+          : "PENDING_APPROVAL";
 
         const docs: VerificationDocument[] = [];
-        if (profile) {
-          if (profile.aadharUrl)
-            docs.push({ name: "Aadhaar Card", type: "Identity Proof", status: docStatus, url: profile.aadharUrl });
-          if (profile.panUrl)
-            docs.push({ name: "PAN Card", type: "Tax ID", status: docStatus, url: profile.panUrl });
-          if (profile.policeCertUrl)
-            docs.push({ name: "Police Clearance Certificate", type: "Certification", status: docStatus, url: profile.policeCertUrl });
-          if (profile.tradeLicenseUrl)
-            docs.push({ name: "Trade License", type: "Certification", status: docStatus, url: profile.tradeLicenseUrl });
-          if (profile.selfieUrl)
-            docs.push({ name: "Selfie", type: "Verification Photo", status: docStatus, url: profile.selfieUrl });
-        }
-
-        // Fallback to default documents if none are populated
-        if (docs.length === 0) {
-          docs.push(
-            { name: "Aadhaar Card", type: "Identity Proof", status: docStatus, url: profile?.aadharUrl || "/docs/aadhaar_default.pdf" },
-            { name: "PAN Card", type: "Tax ID", status: docStatus, url: profile?.panUrl || "/docs/pan_default.pdf" },
-            { name: "Trade License", type: "Certification", status: docStatus, url: profile?.tradeLicenseUrl || "/docs/license_default.pdf" }
-          );
-        }
+        if (profile.aadharUrl)
+          docs.push({ name: "Aadhaar Card", type: "Identity Proof", status: docStatus, url: profile.aadharUrl });
+        if (profile.panUrl)
+          docs.push({ name: "PAN Card", type: "Tax ID", status: docStatus, url: profile.panUrl });
+        if (profile.policeCertUrl)
+          docs.push({ name: "Police Clearance Certificate", type: "Certification", status: docStatus, url: profile.policeCertUrl });
+        if (profile.tradeLicenseUrl)
+          docs.push({ name: "Trade License", type: "Certification", status: docStatus, url: profile.tradeLicenseUrl });
+        if (profile.selfieUrl)
+          docs.push({ name: "Selfie", type: "Verification Photo", status: docStatus, url: profile.selfieUrl });
 
         let status: TechnicianStatus = "PENDING_APPROVAL";
-        if (profile?.status === "APPROVED") status = "APPROVED";
-        else if (profile?.status === "REJECTED") status = "REJECTED";
-        if (u.status === "SUSPENDED") status = "REJECTED";
+        if (profile.status === "APPROVED") status = "APPROVED";
+        else if (profile.status === "REJECTED") status = "REJECTED";
+
+        const skills =
+          profile.services
+            ?.map((s) => (s.serviceId == null ? undefined : serviceMap[s.serviceId]))
+            .filter((skill): skill is string => Boolean(skill)) || [];
+        const rating =
+          typeof u.overallRating === "number"
+            ? u.overallRating
+            : u.overallRating
+              ? parseFloat(u.overallRating)
+              : 0;
 
         return {
-          id: `${u.id ?? ""}`,
-          name: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
-          avatar: u.profileImage || "",
-          experience: profile?.yearsOfExperience || 0,
+          id:          `${u.id}`,
+          profileId,
+          profileUserId,
+          name:        `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
+          avatar:      u.profileImage || "",
+          experience:  profile.yearsOfExperience || 0,
           city:
-            profile?.locations?.find((loc: any) => loc.isActive || loc.isDefault)?.city ||
-            profile?.locations?.[0]?.city ||
-            "Noida",
-          skills: profile?.services?.map((s: any) => serviceMap[s.serviceId]).filter(Boolean) || [],
-          rating: u.overallRating ? parseFloat(u.overallRating) : 0,
+            profile.locations?.find((loc) => loc.isActive || loc.isDefault)?.city ||
+            profile.locations?.[0]?.city ||
+            "—",
+          skills,
+          rating,
           completedJobs: 0,
           status,
-          email: u.email || "",
-          phone: u.phone || "",
-          appliedAt: u.createdAt ? u.createdAt.split("T")[0] : "",
-          documents: docs,
-          rejectionReason: profile?.rejectionReason || undefined,
+          email:       u.email || "",
+          phone:       u.phone || "",
+          appliedAt:   u.createdAt ? u.createdAt.split("T")[0] : "",
+          documents:   docs,
+          rejectionReason: profile.rejectionReason || undefined,
         };
       };
 
@@ -143,7 +214,7 @@ const Technicians = () => {
 
       setPrefetchedData(mapped);
       setPendingTechnicians(mapped.PENDING_APPROVAL);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching technicians", err);
       const e = err as Error;
       setError(e?.message || "Failed to load technicians");
@@ -171,64 +242,138 @@ const Technicians = () => {
 
   const pendingCount = pendingTechnicians.length;
 
-  const handleApprove = (id: string) => {
-    // Move from PENDING → APPROVED in all relevant buckets
-    const approvedEntry = pendingTechnicians.find((t) => t.id === id);
+  const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
 
-    setPrefetchedData((prev) => ({
-      "All Status": prev["All Status"].map((t) =>
-        t.id === id ? { ...t, status: "APPROVED" as TechnicianStatus } : t
-      ),
-      APPROVED: approvedEntry
-        ? [...prev.APPROVED, { ...approvedEntry, status: "APPROVED" as TechnicianStatus }]
-        : prev.APPROVED,
-      PENDING_APPROVAL: prev.PENDING_APPROVAL.filter((t) => t.id !== id),
-      REJECTED: prev.REJECTED,
-    }));
-    setPendingTechnicians((prev) => prev.filter((tech) => tech.id !== id));
+  const setLoading = (id: string, val: boolean) =>
+    setActionLoading((prev) => ({ ...prev, [id]: val }));
+
+  const findTechnician = (id: string) =>
+    pendingTechnicians.find((t) => t.id === id) ??
+    prefetchedData["All Status"].find((t) => t.id === id);
+
+  const getProfileUserIdForAction = (id: string, action: string) => {
+    const technician = findTechnician(id);
+
+    if (!technician) {
+      setActionError(`Unable to ${action}. Technician record was not found.`);
+      return null;
+    }
+
+    if (!technician.profileUserId) {
+      setActionError(`Unable to ${action} ${technician.name}. Technician profile userId is not available yet.`);
+      console.warn("Technician status action skipped because technicianProfile.userId is missing", {
+        action,
+        technicianUserId: technician.id,
+        technicianProfileId: technician.profileId,
+      });
+      return null;
+    }
+
+    setActionError(null);
+    return technician.profileUserId;
   };
 
-  const handleReject = (id: string, reason: string, notes: string) => {
-    const rejectedEntry = pendingTechnicians.find((t) => t.id === id);
+  const handleApprove = async (id: string) => {
+    const profileUserId = getProfileUserIdForAction(id, "approve");
+    if (!profileUserId) return;
 
-    setPrefetchedData((prev) => ({
-      "All Status": prev["All Status"].map((t) =>
-        t.id === id ? { ...t, status: "REJECTED" as TechnicianStatus, rejectionReason: reason, rejectionNotes: notes } : t
-      ),
-      APPROVED: prev.APPROVED.filter((t) => t.id !== id),
-      PENDING_APPROVAL: prev.PENDING_APPROVAL.filter((t) => t.id !== id),
-      REJECTED: rejectedEntry
-        ? [...prev.REJECTED, { ...rejectedEntry, status: "REJECTED" as TechnicianStatus, rejectionReason: reason, rejectionNotes: notes }]
-        : prev.REJECTED,
-    }));
-    setPendingTechnicians((prev) => prev.filter((tech) => tech.id !== id));
+    setLoading(id, true);
+    try {
+      await userServiceApi.patch(`${ENDPOINTS.UPDATE_TECHNICIAN_STATUS}/${profileUserId}`, { status: 'APPROVED' });
+      setActionError(null);
+      // Move from PENDING → APPROVED in all relevant buckets
+      const approvedEntry = pendingTechnicians.find((t) => t.id === id) ??
+        prefetchedData["All Status"].find((t) => t.id === id);
+      setPrefetchedData((prev) => ({
+        "All Status": prev["All Status"].map((t) =>
+          t.id === id ? { ...t, status: "APPROVED" as TechnicianStatus } : t
+        ),
+        APPROVED: approvedEntry
+          ? [...prev.APPROVED, { ...approvedEntry, status: "APPROVED" as TechnicianStatus }]
+          : prev.APPROVED,
+        PENDING_APPROVAL: prev.PENDING_APPROVAL.filter((t) => t.id !== id),
+        REJECTED: prev.REJECTED,
+      }));
+      setPendingTechnicians((prev) => prev.filter((tech) => tech.id !== id));
+    } catch (err) {
+      console.error('Failed to approve technician', err);
+      setActionError("Failed to approve technician. Please try again.");
+    } finally {
+      setLoading(id, false);
+    }
   };
 
-  const handleToggleSuspend = (id: string) => {
-    setPrefetchedData((prev) => {
-      const target = prev["All Status"].find((t) => t.id === id);
-      if (!target) return prev;
-      const isCurrentlyActive = target.status === "APPROVED";
-      const newStatus: TechnicianStatus = isCurrentlyActive ? "REJECTED" : "APPROVED";
+  const handleReject = async (id: string, reason: string, notes: string) => {
+    const profileUserId = getProfileUserIdForAction(id, "reject");
+    if (!profileUserId) return;
 
+    setLoading(id, true);
+    try {
+      await userServiceApi.patch(`${ENDPOINTS.UPDATE_TECHNICIAN_STATUS}/${profileUserId}`, { status: 'REJECTED' });
+      setActionError(null);
+      const rejectedEntry = pendingTechnicians.find((t) => t.id === id) ??
+        prefetchedData["All Status"].find((t) => t.id === id);
+      setPrefetchedData((prev) => ({
+        "All Status": prev["All Status"].map((t) =>
+          t.id === id ? { ...t, status: "REJECTED" as TechnicianStatus, rejectionReason: reason, rejectionNotes: notes } : t
+        ),
+        APPROVED: prev.APPROVED.filter((t) => t.id !== id),
+        PENDING_APPROVAL: prev.PENDING_APPROVAL.filter((t) => t.id !== id),
+        REJECTED: rejectedEntry
+          ? [...prev.REJECTED, { ...rejectedEntry, status: "REJECTED" as TechnicianStatus, rejectionReason: reason, rejectionNotes: notes }]
+          : prev.REJECTED,
+      }));
+      setPendingTechnicians((prev) => prev.filter((tech) => tech.id !== id));
+    } catch (err) {
+      console.error('Failed to reject technician', err);
+      setActionError("Failed to reject technician. Please try again.");
+    } finally {
+      setLoading(id, false);
+    }
+  };
+
+  const handleToggleSuspend = async (id: string) => {
+    const target = prefetchedData["All Status"].find((t) => t.id === id);
+    if (!target) {
+      setActionError("Unable to update technician status. Technician record was not found.");
+      return;
+    }
+    const isCurrentlyActive = target.status === "APPROVED";
+    const newStatus: TechnicianStatus = isCurrentlyActive ? "REJECTED" : "PENDING_APPROVAL";
+    const profileUserId = getProfileUserIdForAction(id, isCurrentlyActive ? "reject" : "reactivate");
+    if (!profileUserId) return;
+
+    setLoading(id, true);
+    try {
+      await userServiceApi.patch(`${ENDPOINTS.UPDATE_TECHNICIAN_STATUS}/${profileUserId}`, { status: newStatus });
+      setActionError(null);
       const updatedTarget = {
         ...target,
         status: newStatus,
         rejectionReason: isCurrentlyActive ? "Administrative Rejection" : undefined,
         rejectionNotes: isCurrentlyActive ? "Rejected by Administrator" : undefined,
       };
-
-      return {
+      setPrefetchedData((prev) => ({
         "All Status": prev["All Status"].map((t) => (t.id === id ? updatedTarget : t)),
         APPROVED: isCurrentlyActive
           ? prev.APPROVED.filter((t) => t.id !== id)
-          : [...prev.APPROVED, updatedTarget],
-        PENDING_APPROVAL: prev.PENDING_APPROVAL,
+          : prev.APPROVED,
+        PENDING_APPROVAL: isCurrentlyActive
+          ? prev.PENDING_APPROVAL
+          : [...prev.PENDING_APPROVAL, updatedTarget],
         REJECTED: isCurrentlyActive
           ? [...prev.REJECTED, updatedTarget]
           : prev.REJECTED.filter((t) => t.id !== id),
-      };
-    });
+      }));
+      if (!isCurrentlyActive) {
+        setPendingTechnicians((prev) => [...prev, updatedTarget]);
+      }
+    } catch (err) {
+      console.error('Failed to toggle technician status', err);
+      setActionError("Failed to update technician status. Please try again.");
+    } finally {
+      setLoading(id, false);
+    }
   };
 
   return (
@@ -307,6 +452,12 @@ const Technicians = () => {
         </div>
       )}
 
+      {!isLoading && !error && actionError && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+          {actionError}
+        </div>
+      )}
+
       {!isLoading && !error && (
         <>
           {activeTab === "all" ? (
@@ -319,6 +470,7 @@ const Technicians = () => {
                 rejectedCount={prefetchedData.REJECTED.length}
                 statusFilter={statusFilter}
                 setStatusFilter={(val) => setStatusFilter(val as "All Status" | TechnicianStatus)}
+                actionLoading={actionLoading}
                 onToggleSuspend={handleToggleSuspend}
                 onViewDetails={(tech) => {
                   setSelectedTech(tech);
@@ -339,6 +491,7 @@ const Technicians = () => {
               </div>
               <VerificationQueue
                 pendingTechnicians={pendingTechniciansFiltered}
+                actionLoading={actionLoading}
                 onApprove={handleApprove}
                 onReject={handleReject}
               />

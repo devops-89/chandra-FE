@@ -23,6 +23,8 @@ export const ENDPOINTS = {
   // Users
   REGISTER_CUSTOMER: '/users/register',
   REGISTER_TECHNICIAN: '/users/register',  // same endpoint, role determined by payload
+  GET_ALL_USERS: '/users/all',             // GET /users/all?role=TECHNICIAN[&technicianProfileStatus=...]
+  UPDATE_TECHNICIAN_STATUS: '/users/admin/technician/status', // PATCH /users/admin/technician/status/:technicianProfile.userId
 
   // Services
   GET_ALL_SERVICES: '/users/service/all',

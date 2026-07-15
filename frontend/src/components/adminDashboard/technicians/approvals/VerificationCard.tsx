@@ -4,12 +4,15 @@ import type { Technician } from "@/constants/admin/technicianData";
 
 interface Props {
   technician: Technician;
+  isActionLoading?: boolean;
   onApprove: () => void;
   onReject: () => void;
   onReview: () => void;
 }
 
-const VerificationCard = ({ technician, onApprove, onReject, onReview }: Props) => {
+const VerificationCard = ({ technician, isActionLoading = false, onApprove, onReject, onReview }: Props) => {
+  const canUpdateStatus = technician.profileUserId !== null && !isActionLoading;
+
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 hover:shadow-md transition-shadow duration-200">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -42,14 +45,16 @@ const VerificationCard = ({ technician, onApprove, onReject, onReview }: Props) 
         <div className="flex items-center gap-2 mt-2 md:mt-0">
           <button
             onClick={onApprove}
-            className="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2 cursor-pointer text-white text-xs font-semibold shadow-xs transition-colors"
+            disabled={!canUpdateStatus}
+            className="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2 cursor-pointer text-white text-xs font-semibold shadow-xs transition-colors disabled:cursor-not-allowed disabled:bg-slate-300"
           >
-            Approve
+            {isActionLoading ? "Updating..." : "Approve"}
           </button>
 
           <button
             onClick={onReject}
-            className="rounded-xl border border-slate-200 hover:bg-slate-50 px-4 py-2 cursor-pointer text-slate-600 text-xs font-semibold transition-colors"
+            disabled={!canUpdateStatus}
+            className="rounded-xl border border-slate-200 hover:bg-slate-50 px-4 py-2 cursor-pointer text-slate-600 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60"
           >
             Reject
           </button>

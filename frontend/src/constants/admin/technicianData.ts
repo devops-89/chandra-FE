@@ -6,7 +6,9 @@ export interface VerificationDocument {
 }
 
 export interface Technician {
-  id: string;
+  id: string;          // user.id — used as React key and local state key
+  profileId: string | null;  // technicianProfile.id — profile row id for display/reference
+  profileUserId: string | null;  // technicianProfile.userId — used for PATCH /users/admin/technician/status/:id
   name: string;
   avatar: string;
   experience: number;
@@ -14,7 +16,7 @@ export interface Technician {
   skills: string[];
   rating: number;
   completedJobs: number;
-  status: "APPROVED" | "PENDING_APPROVAL" | "REJECTED";
+  status: "APPROVED" | "PENDING_APPROVAL" | "REJECTED" | "NO_PROFILE";
   email: string;
   phone: string;
   appliedAt: string;
@@ -26,6 +28,8 @@ export interface Technician {
 export const techniciansData: Technician[] = [
   {
     id: "TECH001",
+    profileId: "TP001",
+    profileUserId: "TECH001",
     name: "Arjun Sharma",
     avatar: "/images/technicians/arjun.jpg",
     experience: 8,
@@ -45,6 +49,8 @@ export const techniciansData: Technician[] = [
   },
   {
     id: "TECH002",
+    profileId: "TP002",
+    profileUserId: "TECH002",
     name: "Priya Das",
     avatar: "/images/technicians/priya.jpg",
     experience: 5,
@@ -63,6 +69,8 @@ export const techniciansData: Technician[] = [
   },
   {
     id: "TECH003",
+    profileId: "TP003",
+    profileUserId: "TECH003",
     name: "Rajesh Kumar",
     avatar: "/images/technicians/rajesh.jpg",
     experience: 6,
@@ -81,6 +89,8 @@ export const techniciansData: Technician[] = [
   },
   {
     id: "TECH004",
+    profileId: "TP004",
+    profileUserId: "TECH004",
     name: "Vikram Singh",
     avatar: "/images/technicians/vikram.jpg",
     experience: 10,
@@ -99,6 +109,8 @@ export const techniciansData: Technician[] = [
   },
   {
     id: "TECH005",
+    profileId: "TP005",
+    profileUserId: "TECH005",
     name: "Sneha Reddy",
     avatar: "/images/technicians/sneha.jpg",
     experience: 3,
@@ -119,6 +131,8 @@ export const techniciansData: Technician[] = [
   },
   {
     id: "TECH006",
+    profileId: "TP006",
+    profileUserId: "TECH006",
     name: "Amit Patel",
     avatar: "/images/technicians/amit.jpg",
     experience: 4,

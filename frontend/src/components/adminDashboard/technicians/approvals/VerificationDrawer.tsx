@@ -20,6 +20,9 @@ const VerificationDrawer = ({ open, onClose, technician, onApprove, onReject, on
   const isPending = technician.status === "PENDING_APPROVAL";
   const isActive = technician.status === "APPROVED";
   const isRejected = technician.status === "REJECTED";
+  const hasProfile = technician.profileId !== null;
+  const canUpdateStatus = technician.profileUserId !== null;
+  const isNoProfile = !hasProfile;
 
   return (
     <div className="fixed inset-0 z-40 flex justify-end">
@@ -37,7 +40,12 @@ const VerificationDrawer = ({ open, onClose, technician, onApprove, onReject, on
           <div className="mb-6 flex items-center justify-between border-b pb-4">
             <div>
               <h2 className="text-xl font-bold text-slate-900">Technician Profile</h2>
-              <p className="text-xs text-slate-500 mt-0.5">ID: {technician.id}</p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Profile ID: {technician.profileId ?? "Not available"}
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                User ID: {technician.profileUserId ?? "Not available"}
+              </p>
             </div>
 
             <button
@@ -58,16 +66,19 @@ const VerificationDrawer = ({ open, onClose, technician, onApprove, onReject, on
               <div>
                 <h3 className="text-lg font-bold text-slate-900 leading-snug">{technician.name}</h3>
                 <span
-                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 mt-1 text-[10px] font-bold ${isActive
-                      ? "bg-emerald-100 text-emerald-700"
-                      : isPending
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-red-100 text-red-700"
+                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 mt-1 text-[10px] font-bold ${isNoProfile
+                      ? "bg-slate-100 text-slate-600"
+                      : isActive
+                        ? "bg-emerald-100 text-emerald-700"
+                        : isPending
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-red-100 text-red-700"
                     }`}
                 >
-                  {isActive && <CheckCircle size={10} />}
-                  {isPending && <AlertCircle size={10} />}
-                  {isRejected && <Ban size={10} />}
+                  {isNoProfile && <AlertCircle size={10} />}
+                  {!isNoProfile && isActive && <CheckCircle size={10} />}
+                  {!isNoProfile && isPending && <AlertCircle size={10} />}
+                  {!isNoProfile && isRejected && <Ban size={10} />}
                   {technician.status}
                 </span>
               </div>
@@ -125,7 +136,7 @@ const VerificationDrawer = ({ open, onClose, technician, onApprove, onReject, on
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Uploaded Documents</h4>
 
               <div className="space-y-2">
-                {technician.documents?.map((doc) => (
+                {technician.documents.length > 0 ? technician.documents.map((doc) => (
                   <div
                     key={doc.name}
                     className="flex items-center justify-between rounded-xl border border-slate-200 p-3 bg-white hover:border-emerald-600/30 transition-colors"
@@ -149,7 +160,11 @@ const VerificationDrawer = ({ open, onClose, technician, onApprove, onReject, on
                     </button>
 
                   </div>
-                ))}
+                )) : (
+                  <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                    No uploaded documents available.
+                  </div>
+                )}
               </div>
             </div>
 
@@ -166,7 +181,7 @@ const VerificationDrawer = ({ open, onClose, technician, onApprove, onReject, on
         </div>
 
         {/* Footer Actions */}
-        {isPending ? (
+        {isPending && canUpdateStatus ? (
           <div className="flex gap-3 border-t pt-4 mt-6">
             <button
               onClick={() => onReject(technician)}

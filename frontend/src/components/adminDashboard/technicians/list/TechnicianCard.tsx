@@ -1,17 +1,21 @@
-import { AlertCircle, Ban, CheckCircle, MapPin, Star, User } from "lucide-react";
+import { AlertCircle, Ban, CheckCircle, MapPin, User } from "lucide-react";
 
 import type { Technician } from "@/constants/admin/technicianData";
 
 interface Props {
   technician: Technician;
+  isActionLoading?: boolean;
   onToggleSuspend: (id: string) => void;
   onViewDetails?: (technician: Technician) => void;
 }
 
-const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) => {
+const TechnicianCard = ({ technician, isActionLoading = false, onToggleSuspend, onViewDetails }: Props) => {
   const isPending = technician.status === "PENDING_APPROVAL";
   const isActive = technician.status === "APPROVED";
   const isRejected = technician.status === "REJECTED";
+  const hasProfile = technician.profileId !== null;
+  const canUpdateStatus = technician.profileUserId !== null;
+  const isNoProfile = !hasProfile;
 
   return (
     <div className="border border-slate-200 rounded-2xl bg-[#F8FAFC] p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between cursor-default">
@@ -34,16 +38,19 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
           </div>
 
           <span
-            className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${isActive
-                ? "bg-emerald-100 text-emerald-700"
-                : isPending
-                  ? "bg-yellow-100 text-yellow-700 animate-pulse"
-                  : "bg-red-100 text-red-700"
+            className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${isNoProfile
+                ? "bg-slate-100 text-slate-600"
+                : isActive
+                  ? "bg-emerald-100 text-emerald-700"
+                  : isPending
+                    ? "bg-yellow-100 text-yellow-700 animate-pulse"
+                    : "bg-red-100 text-red-700"
               }`}
           >
-            {isActive && <CheckCircle size={10} />}
-            {isPending && <AlertCircle size={10} />}
-            {isRejected && <Ban size={10} />}
+            {isNoProfile && <AlertCircle size={10} />}
+            {!isNoProfile && isActive && <CheckCircle size={10} />}
+            {!isNoProfile && isPending && <AlertCircle size={10} />}
+            {!isNoProfile && isRejected && <Ban size={10} />}
             {technician.status}
           </span>
         </div>
@@ -80,15 +87,16 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
       {/* Card Actions */}
       <div className="flex items-center justify-between border-t border-slate-100 pt-3">
         <div>
-          {!isPending && (
+          {canUpdateStatus && !isPending && (
             <button
+              disabled={isActionLoading}
               onClick={() => onToggleSuspend(technician.id)}
-              className={`text-xs font-semibold cursor-pointer hover:underline transition-colors ${isActive
+              className={`text-xs font-semibold hover:underline transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${isActive
                   ? "text-red-600 hover:text-red-700"
                   : "text-emerald-600 hover:text-emerald-700"
                 }`}
             >
-              {isActive ? "Reject" : "Reactivate"}
+              {isActionLoading ? "Updating..." : isActive ? "Reject" : "Reactivate"}
             </button>
           )}
         </div>
@@ -98,7 +106,7 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
           className="flex items-center gap-1 text-emerald-600 hover:underline hover:text-emerald-700 font-semibold text-sm cursor-pointer transition-colors"
         >
           <User size={14} />
-          {isPending ? "Review Application" : "View Profile"}
+          {!hasProfile ? "View Details" : isPending ? "Review Application" : "View Profile"}
         </button>
       </div>
     </div>

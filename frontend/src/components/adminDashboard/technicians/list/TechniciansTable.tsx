@@ -26,6 +26,7 @@ interface Props {
   rejectedCount: number;
   statusFilter: string;
   setStatusFilter: (val: string) => void;
+  actionLoading?: Record<string, boolean>;
   onToggleSuspend: (id: string) => void;
   onViewDetails?: (technician: Technician) => void;
 }
@@ -38,6 +39,7 @@ const TechniciansTable = ({
   rejectedCount,
   statusFilter,
   setStatusFilter,
+  actionLoading,
   onToggleSuspend,
   onViewDetails,
 }: Props) => {
@@ -110,6 +112,7 @@ const TechniciansTable = ({
             <TechnicianCard
               key={technician.id}
               technician={technician}
+              isActionLoading={Boolean(actionLoading?.[technician.id])}
               onToggleSuspend={onToggleSuspend}
               onViewDetails={onViewDetails}
             />
