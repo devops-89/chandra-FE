@@ -4,7 +4,6 @@ import {
 } from '@reduxjs/toolkit';
 
 import { getFavouriteTechniciansService } from '@/services/favouriteTechnician.service';
-
 import type { FavouriteTechnician } from '@/types/customer/favouriteTechnician.types';
 
 interface FavouriteTechnicianState {

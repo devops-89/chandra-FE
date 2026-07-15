@@ -50,6 +50,7 @@ export const ENDPOINTS = {
   CANCEL_BOOKING: '/bookings/cancel',
   RESCHEDULE_BOOKING: '/bookings/reschedule',
   ADMIN_BOOKINGS: '/bookings/all',
+  CUSTOMER_TOKEN_PAYMENT_LINK:'/users/customer/token-payment-link',
 
   //Complaints
   CREATE_COMPLAINT: '/bookings/complaint',

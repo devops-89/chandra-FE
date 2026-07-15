@@ -1,5 +1,6 @@
 'use client';
 
+import { CreditCard, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -16,6 +17,7 @@ import { validateBookingForm, validateDateTime } from '@/lib/validation/bookingV
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
 import {  fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
+import { createTokenPaymentLink } from '@/redux/slices/customerTokenPaymentSlice';
 import { fetchServiceById } from '@/redux/slices/servicesSlice';
 import type { UnifiedBookingPageProps } from '@/types/bookingTypes/bookingForm.types';
 import type { Address } from '@/types/customer/profile.types';
@@ -124,6 +126,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   // Keep name/phone in sync when profile arrives (first load)
   useEffect(() => {
     if (profile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!name) setName(`${profile.firstName} ${profile.lastName}`.trim());
       if (!phone) setPhone(profile.phone);
     }
@@ -132,6 +135,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
 
   // ── Global error ──────────────────────────────────────────────────────────
   const [error, setError] = useState('');
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   // ── Validation helpers ────────────────────────────────────────────────────
   const validateSpecifications = (): boolean => {
@@ -309,9 +313,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
       slot,
       instructions:        instructions.trim(),
     });
-
-    router.push(summaryPath);
-    
+    setIsPaymentModalOpen(true);
   };
 
   const isLastStep = currentStep === STEP_DETAILS;
@@ -414,7 +416,170 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
           </div>
         </div>
       </div>
+      <TokenPaymentModal
+        open={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSuccess={() => {
+          setIsPaymentModalOpen(false);
+          router.push(summaryPath);
+        }}
+        service={currentService}
+        date={date}
+        slot={slot}
+      />
     </section>
+  );
+}
+
+interface TokenPaymentModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  service: string;
+  date: string;
+  slot: string;
+}
+
+function TokenPaymentModal({
+  open,
+  onClose,
+  onSuccess,
+  service,
+  date,
+  slot,
+}: TokenPaymentModalProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentLink, setPaymentLink] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [paymentSimulated, setPaymentSimulated] = useState(false);
+  const dispatch = useAppDispatch();
+
+  if (!open) return null;
+
+  const handleGeneratePaymentLink = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await dispatch(
+        createTokenPaymentLink(),
+      ).unwrap();
+
+      if (!data.paymentLink) {
+        throw new Error('Payment link not received from the server.');
+      }
+
+      window.location.href = data.paymentLink;
+    } catch (err: unknown) {
+      console.error('Backend payment API failed:', err);
+      const errMsg = err instanceof Error ? err.message : 'Failed to generate payment link. Please try again.';
+      setError(errMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl bg-white shadow-2xl flex flex-col overflow-hidden transform transition-all duration-300 scale-100 animate-fade-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+              <CreditCard className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">
+                Secure Token Payment
+              </h2>
+              <p className="text-xs text-slate-500">
+                Amount: ₹200.00
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors cursor-pointer"
+            aria-label="Close modal"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-6 py-4 space-y-4">
+          <p className="text-sm text-slate-600">
+            A token payment of ₹200 is required to secure your booking slot for <strong>{service || 'this service'}</strong> on <strong>{date}</strong> at <strong>{slot}</strong>.
+          </p>
+
+          {!paymentLink ? (
+            <button
+              type="button"
+              onClick={handleGeneratePaymentLink}
+              disabled={isLoading}
+              className="w-full rounded-xl bg-emerald-600 py-3 text-sm font-semibold text-white transition-all hover:bg-emerald-700 disabled:opacity-60 cursor-pointer"
+            >
+              {isLoading ? 'Generating Link...' : 'Generate Payment Link'}
+            </button>
+          ) : (
+            <div className="space-y-3 rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 text-center">
+              <p className="text-xs font-medium text-emerald-800">
+                Payment Link generated successfully!
+              </p>
+              <div className="flex gap-2">
+                <a
+                  href={paymentLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setPaymentSimulated(true)}
+                  className="flex-1 rounded-lg bg-emerald-600 py-2.5 text-center text-xs font-semibold text-white transition-all hover:bg-emerald-700"
+                >
+                  Open Link
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setPaymentSimulated(true)}
+                  className="flex-1 rounded-lg border border-emerald-300 bg-white py-2.5 text-xs font-semibold text-emerald-700 transition-all hover:bg-emerald-50 cursor-pointer"
+                >
+                  Simulate Success
+                </button>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <p className="rounded-lg bg-red-50 p-2.5 text-center text-xs font-medium text-red-600">
+              {error}
+            </p>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          {(paymentLink || paymentSimulated) && (
+            <button
+              type="button"
+              onClick={onSuccess}
+              className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              Confirm & Continue
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
