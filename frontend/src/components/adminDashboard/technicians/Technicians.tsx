@@ -338,9 +338,9 @@ const Technicians = () => {
       setActionError("Unable to update technician status. Technician record was not found.");
       return;
     }
-    const isCurrentlyActive = target.status === "APPROVED";
-    const newStatus: TechnicianStatus = isCurrentlyActive ? "REJECTED" : "PENDING_APPROVAL";
-    const profileUserId = getProfileUserIdForAction(id, isCurrentlyActive ? "reject" : "reactivate");
+    const isCurrentlyRejected = target.status === "REJECTED";
+    const newStatus: TechnicianStatus = isCurrentlyRejected ? "PENDING_APPROVAL" : "REJECTED";
+    const profileUserId = getProfileUserIdForAction(id, isCurrentlyRejected ? "reactivate" : "reject");
     if (!profileUserId) return;
 
     setLoading(id, true);
@@ -350,24 +350,24 @@ const Technicians = () => {
       const updatedTarget = {
         ...target,
         status: newStatus,
-        rejectionReason: isCurrentlyActive ? "Administrative Rejection" : undefined,
-        rejectionNotes: isCurrentlyActive ? "Rejected by Administrator" : undefined,
+        rejectionReason: isCurrentlyRejected ? undefined : "Administrative Rejection",
+        rejectionNotes: isCurrentlyRejected ? undefined : "Rejected by Administrator",
       };
       setPrefetchedData((prev) => ({
         "All Status": prev["All Status"].map((t) => (t.id === id ? updatedTarget : t)),
-        APPROVED: isCurrentlyActive
-          ? prev.APPROVED.filter((t) => t.id !== id)
-          : prev.APPROVED,
-        PENDING_APPROVAL: isCurrentlyActive
-          ? prev.PENDING_APPROVAL
-          : [...prev.PENDING_APPROVAL, updatedTarget],
-        REJECTED: isCurrentlyActive
-          ? [...prev.REJECTED, updatedTarget]
-          : prev.REJECTED.filter((t) => t.id !== id),
+        APPROVED: prev.APPROVED.filter((t) => t.id !== id),
+        PENDING_APPROVAL: isCurrentlyRejected
+          ? [...prev.PENDING_APPROVAL, updatedTarget]
+          : prev.PENDING_APPROVAL.filter((t) => t.id !== id),
+        REJECTED: isCurrentlyRejected
+          ? prev.REJECTED.filter((t) => t.id !== id)
+          : [...prev.REJECTED, updatedTarget],
       }));
-      if (!isCurrentlyActive) {
-        setPendingTechnicians((prev) => [...prev, updatedTarget]);
-      }
+      setPendingTechnicians((prev) =>
+        isCurrentlyRejected
+          ? [...prev, updatedTarget]
+          : prev.filter((tech) => tech.id !== id)
+      );
     } catch (err) {
       console.error('Failed to toggle technician status', err);
       setActionError("Failed to update technician status. Please try again.");

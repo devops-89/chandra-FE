@@ -24,7 +24,7 @@ const VerificationQueue = ({ pendingTechnicians, actionLoading, onApprove, onRej
 
   const [approvingTech, setApprovingTech] = useState<Technician | null>(null);
   const [rejectingTech, setRejectingTech] = useState<Technician | null>(null);
-  const [viewingDoc, setViewingDoc] = useState<{ name: string; techName: string } | null>(null);
+  const [viewingDoc, setViewingDoc] = useState<{ name: string; techName: string; url?: string } | null>(null);
 
   const handleOpenDrawer = (tech: Technician) => {
     setSelectedTech(tech);
@@ -75,7 +75,7 @@ const VerificationQueue = ({ pendingTechnicians, actionLoading, onApprove, onRej
           handleCloseDrawer();
           setRejectingTech(tech);
         }}
-        onViewDoc={(docName, techName) => setViewingDoc({ name: docName, techName })}
+        onViewDoc={(docName, techName, docUrl) => setViewingDoc({ name: docName, techName, url: docUrl })}
       />
 
       <AnimatePresence>
@@ -86,6 +86,7 @@ const VerificationQueue = ({ pendingTechnicians, actionLoading, onApprove, onRej
             onClose={() => setViewingDoc(null)}
             documentName={viewingDoc.name}
             technicianName={viewingDoc.techName}
+            documentUrl={viewingDoc.url}
           />
         )}
 

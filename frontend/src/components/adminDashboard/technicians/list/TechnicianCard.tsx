@@ -87,16 +87,16 @@ const TechnicianCard = ({ technician, isActionLoading = false, onToggleSuspend, 
       {/* Card Actions */}
       <div className="flex items-center justify-between border-t border-slate-100 pt-3">
         <div>
-          {canUpdateStatus && !isPending && (
+          {canUpdateStatus && !isActive && (
             <button
               disabled={isActionLoading}
               onClick={() => onToggleSuspend(technician.id)}
-              className={`text-xs font-semibold hover:underline transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${isActive
+              className={`text-xs font-semibold hover:underline transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${isPending
                   ? "text-red-600 hover:text-red-700"
                   : "text-emerald-600 hover:text-emerald-700"
                 }`}
             >
-              {isActionLoading ? "Updating..." : isActive ? "Reject" : "Reactivate"}
+              {isActionLoading ? "Updating..." : isPending ? "Reject" : "Reactivate"}
             </button>
           )}
         </div>

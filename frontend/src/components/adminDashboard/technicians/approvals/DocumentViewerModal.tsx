@@ -30,7 +30,7 @@ const isRealUrl = (url?: string) =>
 const isPdf = (url: string) => url.toLowerCase().includes(".pdf");
 
 const isImage = (url: string) =>
-  /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?|$)/i.test(url);
+  /\.(jpg|jpeg|png|webp|gif|bmp|svg|avif|heic|heif)(\?|$)/i.test(url);
 
 const extractFilename = (url: string) => {
   try {
