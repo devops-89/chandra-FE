@@ -1,4 +1,4 @@
-import { AlertCircle, Ban, CheckCircle, MapPin, Star, User } from "lucide-react";
+import { AlertCircle, Ban, CheckCircle, MapPin, User } from "lucide-react";
 
 import type { Technician } from "@/constants/admin/technicianData";
 

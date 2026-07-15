@@ -7,7 +7,9 @@ import authReducer from './slices/authSlice';
 import bookingReducer from './slices/bookingSlice';
 import complaintReducer from './slices/complaintSlice';
 import customerBookingsReducer from './slices/customerBookingSlice';
+import customerDashboardReducer from './slices/customerDashboardSlice';
 import customerProfileReducer from './slices/customerProfileSlice';
+import favouriteTechnicianReducer from './slices/favouriteTechnicianSlice';
 import forgotPasswordReducer from './slices/forgotPasswordSlice'
 import nearbyJobsReducer from './slices/nearbyJobsSlice';
 import onboardingReducer from './slices/onboardingSlice';
@@ -32,6 +34,8 @@ export const store = configureStore({
     customerBookings: customerBookingsReducer,
     adminComplaint: adminComplaintReducer,
     adminBookings: adminBookingReducer,
+    customerDashboard: customerDashboardReducer,
+    favouriteTechnicians: favouriteTechnicianReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

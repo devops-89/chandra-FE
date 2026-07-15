@@ -1,28 +1,40 @@
-import { Star } from "lucide-react";
-import Image from "next/image";
+import { Star } from 'lucide-react';
+import Image from 'next/image';
 
-import type { FavoriteTechnician } from "@/types/dashboardTypes/customerDashboard/customerDashboard.types";
+import type { FavouriteTechnician } from '@/types/customer/favouriteTechnician.types';
 
-type TechnicianCardProps = {
-  technician: FavoriteTechnician;
-};
+interface TechnicianCardProps {
+  technician: FavouriteTechnician;
+}
 
 const TechnicianCard = ({ technician }: TechnicianCardProps) => {
+  const fullName = `${technician.firstName} ${technician.lastName}`;
+
   return (
     <div className="flex items-center justify-between rounded-xl border border-slate-200 p-8 ambient-shadow">
       <div className="flex items-center gap-4">
         <Image
-          alt={technician.name}
-          className="h-12 w-12 rounded-full object-cover"
-          src={technician.avatar}
+          src={technician.profileImage ?? '/images/default-avatar.png'}
+          alt={fullName}
           width={48}
           height={48}
+          unoptimized
+          className="h-12 w-12 rounded-full object-cover"
         />
+
         <div>
-          <p className="text-sm font-bold">{technician.name}</p>
-          <div className="flex items-center gap-1 text-emerald-600">
+          <p className="text-sm font-bold">{fullName}</p>
+
+          <p className="mt-1 text-xs text-slate-500">
+            {technician.phone}
+          </p>
+
+          <div className="mt-1 flex items-center gap-1 text-emerald-600">
             <Star className="h-4 w-4 fill-emerald-600" />
-            <span className="text-sm font-bold">{technician.rating}</span>
+
+            <span className="text-sm font-bold">
+              {technician.technicianProfile.status}
+            </span>
           </div>
         </div>
       </div>

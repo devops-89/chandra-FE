@@ -57,4 +57,8 @@ export const ENDPOINTS = {
   DELETE_COMPLAINT: '/bookings/complaint',
   ADMIN_RESOLVE_COMPLAINT: '/bookings/admin/complaints/resolve',
 
+  //Dashboard
+  CUSTOMER_DASHBOARD_STATS:'/users/customer/dashboard-stats',
+  FAVOURITE_TECHNICIANS:'/users/favourite-technicians',
+
 } as const;

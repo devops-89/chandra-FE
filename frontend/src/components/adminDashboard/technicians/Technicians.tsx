@@ -52,7 +52,7 @@ const Technicians = () => {
     setError(null);
     try {
       // Build service map first
-      let serviceMap: Record<number, string> = {};
+      const serviceMap: Record<number, string> = {};
       try {
         const services = await getAllServicesService();
         services.forEach((s) => {
