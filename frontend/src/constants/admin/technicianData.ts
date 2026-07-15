@@ -1,7 +1,7 @@
 export interface VerificationDocument {
   name: string;
   type: string;
-  status: "Pending" | "Approved" | "Rejected";
+  status: "PENDING_APPROVAL" | "APPROVED" | "REJECTED";
   url: string;
 }
 
@@ -14,7 +14,7 @@ export interface Technician {
   skills: string[];
   rating: number;
   completedJobs: number;
-  status: "Active" | "Pending" | "Suspended";
+  status: "APPROVED" | "PENDING_APPROVAL" | "REJECTED";
   email: string;
   phone: string;
   appliedAt: string;
@@ -33,14 +33,14 @@ export const techniciansData: Technician[] = [
     skills: ["Electrical", "EV Charger"],
     rating: 4.8,
     completedJobs: 326,
-    status: "Pending",
+    status: "PENDING_APPROVAL",
     email: "arjun.sharma@example.com",
     phone: "+91 98765 43210",
     appliedAt: "2026-06-12",
     documents: [
-      { name: "Aadhaar Card", type: "Identity Proof", status: "Pending", url: "/docs/aadhaar_arjun.pdf" },
-      { name: "PAN Card", type: "Tax ID", status: "Pending", url: "/docs/pan_arjun.pdf" },
-      { name: "Electrical Trade License", type: "Certification", status: "Pending", url: "/docs/license_arjun.pdf" }
+      { name: "Aadhaar Card", type: "Identity Proof", status: "PENDING_APPROVAL", url: "/docs/aadhaar_arjun.pdf" },
+      { name: "PAN Card", type: "Tax ID", status: "PENDING_APPROVAL", url: "/docs/pan_arjun.pdf" },
+      { name: "Electrical Trade License", type: "Certification", status: "PENDING_APPROVAL", url: "/docs/license_arjun.pdf" }
     ]
   },
   {
@@ -52,13 +52,13 @@ export const techniciansData: Technician[] = [
     skills: ["AC Repair", "Solar Cleaning"],
     rating: 4.7,
     completedJobs: 210,
-    status: "Active",
+    status: "APPROVED",
     email: "priya.das@example.com",
     phone: "+91 99999 88888",
     appliedAt: "2026-05-10",
     documents: [
-      { name: "Aadhaar Card", type: "Identity Proof", status: "Approved", url: "/docs/aadhaar_priya.pdf" },
-      { name: "PAN Card", type: "Tax ID", status: "Approved", url: "/docs/pan_priya.pdf" }
+      { name: "Aadhaar Card", type: "Identity Proof", status: "APPROVED", url: "/docs/aadhaar_priya.pdf" },
+      { name: "PAN Card", type: "Tax ID", status: "APPROVED", url: "/docs/pan_priya.pdf" }
     ]
   },
   {
@@ -70,13 +70,13 @@ export const techniciansData: Technician[] = [
     skills: ["Plumbing", "Water Purifier"],
     rating: 4.2,
     completedJobs: 145,
-    status: "Pending",
+    status: "PENDING_APPROVAL",
     email: "rajesh.k@example.com",
     phone: "+91 91234 56789",
     appliedAt: "2026-06-14",
     documents: [
-      { name: "Aadhaar Card", type: "Identity Proof", status: "Pending", url: "/docs/aadhaar_rajesh.pdf" },
-      { name: "PAN Card", type: "Tax ID", status: "Pending", url: "/docs/pan_rajesh.pdf" }
+      { name: "Aadhaar Card", type: "Identity Proof", status: "PENDING_APPROVAL", url: "/docs/aadhaar_rajesh.pdf" },
+      { name: "PAN Card", type: "Tax ID", status: "PENDING_APPROVAL", url: "/docs/pan_rajesh.pdf" }
     ]
   },
   {
@@ -88,13 +88,13 @@ export const techniciansData: Technician[] = [
     skills: ["Electrical", "Home Automation"],
     rating: 4.9,
     completedJobs: 512,
-    status: "Active",
+    status: "APPROVED",
     email: "vikram.s@example.com",
     phone: "+91 88888 77777",
     appliedAt: "2025-11-20",
     documents: [
-      { name: "Aadhaar Card", type: "Identity Proof", status: "Approved", url: "/docs/aadhaar_vikram.pdf" },
-      { name: "PAN Card", type: "Tax ID", status: "Approved", url: "/docs/pan_vikram.pdf" }
+      { name: "Aadhaar Card", type: "Identity Proof", status: "APPROVED", url: "/docs/aadhaar_vikram.pdf" },
+      { name: "PAN Card", type: "Tax ID", status: "APPROVED", url: "/docs/pan_vikram.pdf" }
     ]
   },
   {
@@ -106,15 +106,15 @@ export const techniciansData: Technician[] = [
     skills: ["Cleaning", "Disinfection"],
     rating: 4.0,
     completedJobs: 82,
-    status: "Suspended",
+    status: "REJECTED",
     email: "sneha.r@example.com",
     phone: "+91 77777 66666",
     appliedAt: "2026-04-15",
     rejectionReason: "Failed background check",
     rejectionNotes: "Address verification failed during the physical audit process.",
     documents: [
-      { name: "Aadhaar Card", type: "Identity Proof", status: "Approved", url: "/docs/aadhaar_sneha.pdf" },
-      { name: "PAN Card", type: "Tax ID", status: "Rejected", url: "/docs/pan_sneha.pdf" }
+      { name: "Aadhaar Card", type: "Identity Proof", status: "APPROVED", url: "/docs/aadhaar_sneha.pdf" },
+      { name: "PAN Card", type: "Tax ID", status: "REJECTED", url: "/docs/pan_sneha.pdf" }
     ]
   },
   {
@@ -126,13 +126,13 @@ export const techniciansData: Technician[] = [
     skills: ["Electrical", "Cleaning"],
     rating: 4.5,
     completedJobs: 120,
-    status: "Pending",
+    status: "PENDING_APPROVAL",
     email: "amit.patel@example.com",
     phone: "+91 90000 11111",
     appliedAt: "2026-06-15",
     documents: [
-      { name: "Aadhaar Card", type: "Identity Proof", status: "Pending", url: "/docs/aadhaar_amit.pdf" },
-      { name: "PAN Card", type: "Tax ID", status: "Pending", url: "/docs/pan_amit.pdf" }
+      { name: "Aadhaar Card", type: "Identity Proof", status: "PENDING_APPROVAL", url: "/docs/aadhaar_amit.pdf" },
+      { name: "PAN Card", type: "Tax ID", status: "PENDING_APPROVAL", url: "/docs/pan_amit.pdf" }
     ]
   }
 ];

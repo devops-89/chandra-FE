@@ -10,15 +10,16 @@ interface Props {
   technician: Technician | null;
   onApprove: (tech: Technician) => void;
   onReject: (tech: Technician) => void;
-  onViewDoc: (docName: string, techName: string) => void;
+  onViewDoc: (docName: string, techName: string, docUrl?: string) => void;
 }
+
 
 const VerificationDrawer = ({ open, onClose, technician, onApprove, onReject, onViewDoc }: Props) => {
   if (!open || !technician) return null;
 
-  const isPending = technician.status === "Pending";
-  const isActive = technician.status === "Active";
-  const isSuspended = technician.status === "Suspended";
+  const isPending = technician.status === "PENDING_APPROVAL";
+  const isActive = technician.status === "APPROVED";
+  const isRejected = technician.status === "REJECTED";
 
   return (
     <div className="fixed inset-0 z-40 flex justify-end">
@@ -67,7 +68,7 @@ const VerificationDrawer = ({ open, onClose, technician, onApprove, onReject, on
                 >
                   {isActive && <CheckCircle size={10} />}
                   {isPending && <AlertCircle size={10} />}
-                  {isSuspended && <Ban size={10} />}
+                  {isRejected && <Ban size={10} />}
                   {technician.status}
                 </span>
               </div>
@@ -141,25 +142,27 @@ const VerificationDrawer = ({ open, onClose, technician, onApprove, onReject, on
                     </div>
 
                     <button
-                      onClick={() => onViewDoc(doc.name, technician.name)}
+                      onClick={() => onViewDoc(doc.name, technician.name, doc.url)}
                       className="rounded-lg p-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all flex items-center justify-center gap-1 text-xs font-bold cursor-pointer"
                     >
                       <Eye size={14} />
                       View
                     </button>
+
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* If Suspended show the reason */}
-            {isSuspended && technician.rejectionReason && (
+            {/* If Rejected show the reason */}
+            {isRejected && technician.rejectionReason && (
               <div className="rounded-xl bg-red-50 p-4 border border-red-100 text-xs text-red-700 space-y-1">
-                <p className="font-bold">Suspension / Rejection Details</p>
+                <p className="font-bold">Rejection Details</p>
                 <p><strong>Reason:</strong> {technician.rejectionReason}</p>
                 {technician.rejectionNotes && <p><strong>Notes:</strong> {technician.rejectionNotes}</p>}
               </div>
             )}
+
           </div>
         </div>
 

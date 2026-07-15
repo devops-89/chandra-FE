@@ -2,7 +2,7 @@ import type { Technician } from "@/constants/admin/technicianData";
 
 import TechnicianCard from "./TechnicianCard";
 
-type StatusTab = "All Status" | "Active" | "Pending" | "Suspended";
+type StatusTab = "All Status" | "APPROVED" | "PENDING_APPROVAL" | "REJECTED";
 
 interface TabConfig {
   id: StatusTab;
@@ -12,14 +12,18 @@ interface TabConfig {
 
 const STATUS_TABS: TabConfig[] = [
   { id: "All Status", label: "All" },
-  { id: "Active", label: "Active", dotColor: "bg-green-400" },
-  { id: "Pending", label: "Pending", dotColor: "bg-yellow-400" },
-  { id: "Suspended", label: "Suspended", dotColor: "bg-red-400" },
+  { id: "APPROVED", label: "APPROVED", dotColor: "bg-green-400" },
+  { id: "PENDING_APPROVAL", label: "PENDING_APPROVAL", dotColor: "bg-yellow-400" },
+  { id: "REJECTED", label: "REJECTED", dotColor: "bg-red-400" },
 ];
+
 
 interface Props {
   technicians: Technician[];
   allTechnicians: Technician[];
+  approvedCount: number;
+  pendingCount: number;
+  rejectedCount: number;
   statusFilter: string;
   setStatusFilter: (val: string) => void;
   onToggleSuspend: (id: string) => void;
@@ -29,6 +33,9 @@ interface Props {
 const TechniciansTable = ({
   technicians,
   allTechnicians,
+  approvedCount,
+  pendingCount,
+  rejectedCount,
   statusFilter,
   setStatusFilter,
   onToggleSuspend,
@@ -36,7 +43,10 @@ const TechniciansTable = ({
 }: Props) => {
   const getCount = (id: StatusTab) => {
     if (id === "All Status") return allTechnicians.length;
-    return allTechnicians.filter((t) => t.status === id).length;
+    if (id === "APPROVED") return approvedCount;
+    if (id === "PENDING_APPROVAL") return pendingCount;
+    if (id === "REJECTED") return rejectedCount;
+    return 0;
   };
 
   return (

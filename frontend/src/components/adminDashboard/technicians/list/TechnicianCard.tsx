@@ -9,9 +9,9 @@ interface Props {
 }
 
 const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) => {
-  const isPending = technician.status === "Pending";
-  const isActive = technician.status === "Active";
-  const isSuspended = technician.status === "Suspended";
+  const isPending = technician.status === "PENDING_APPROVAL";
+  const isActive = technician.status === "APPROVED";
+  const isRejected = technician.status === "REJECTED";
 
   return (
     <div className="border border-slate-200 rounded-2xl bg-[#F8FAFC] p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between cursor-default">
@@ -43,27 +43,16 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
           >
             {isActive && <CheckCircle size={10} />}
             {isPending && <AlertCircle size={10} />}
-            {isSuspended && <Ban size={10} />}
+            {isRejected && <Ban size={10} />}
             {technician.status}
           </span>
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-2 border-t border-b border-slate-100 my-4 py-3 text-center">
+        <div className="border-t border-b border-slate-100 my-4 py-3">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Experience</p>
             <p className="text-sm font-semibold text-slate-800 mt-1">{technician.experience} Yrs</p>
-          </div>
-          <div>
-            <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Rating</p>
-            <p className="text-sm font-semibold text-slate-800 mt-1 flex items-center justify-center gap-0.5">
-              <Star size={12} className="text-amber-500 fill-amber-500" />
-              {technician.rating}
-            </p>
-          </div>
-          <div>
-            <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Jobs</p>
-            <p className="text-sm font-semibold text-slate-800 mt-1">{technician.completedJobs}</p>
           </div>
         </div>
 
@@ -80,8 +69,8 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
         </div>
       </div>
 
-      {/* Rejection / Suspension Notes if applicable */}
-      {isSuspended && technician.rejectionReason && (
+      {/* Rejection Notes if applicable */}
+      {isRejected && technician.rejectionReason && (
         <div className="mb-4 rounded-xl bg-red-50 p-2.5 text-xs text-red-700 border border-red-100">
           <p className="font-semibold">Reason: {technician.rejectionReason}</p>
           {technician.rejectionNotes && <p className="mt-0.5 opacity-80">{technician.rejectionNotes}</p>}
@@ -99,7 +88,7 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
                   : "text-emerald-600 hover:text-emerald-700"
                 }`}
             >
-              {isActive ? "Suspend" : "Reactivate"}
+              {isActive ? "Reject" : "Reactivate"}
             </button>
           )}
         </div>
@@ -113,6 +102,7 @@ const TechnicianCard = ({ technician, onToggleSuspend, onViewDetails }: Props) =
         </button>
       </div>
     </div>
+
   );
 };
 
