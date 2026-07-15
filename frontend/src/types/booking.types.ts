@@ -37,3 +37,17 @@ export interface CreateBookingResponse {
     data: Booking;
   };
 }
+
+export interface RescheduleBookingRequest {
+  scheduledAt: string;
+}
+
+export interface RescheduleBookingResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    message: string;
+    data: Booking;
+  };
+}

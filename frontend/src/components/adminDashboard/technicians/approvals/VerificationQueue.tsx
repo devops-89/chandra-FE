@@ -20,7 +20,7 @@ interface Props {
 const VerificationQueue = ({ pendingTechnicians, onApprove, onReject }: Props) => {
   const [selectedTech, setSelectedTech] = useState<Technician | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  
+
   const [approvingTech, setApprovingTech] = useState<Technician | null>(null);
   const [rejectingTech, setRejectingTech] = useState<Technician | null>(null);
   const [viewingDoc, setViewingDoc] = useState<{ name: string; techName: string } | null>(null);

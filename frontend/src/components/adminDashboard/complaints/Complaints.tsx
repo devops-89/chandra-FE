@@ -1,6 +1,4 @@
-import ComplaintFilters from "./list/ComplaintFilters";
 import ComplaintsTable from "./list/ComplaintsTable";
-import ComplaintStats from "./stats/ComplaintStats";
 
 const Complaints = () => {
   return (

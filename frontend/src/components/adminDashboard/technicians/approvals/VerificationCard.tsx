@@ -1,4 +1,4 @@
-import { ArrowRight,Calendar, ClipboardCheck, MapPin } from "lucide-react";
+import { ArrowRight, Calendar, ClipboardCheck, MapPin } from "lucide-react";
 
 import type { Technician } from "@/constants/admin/technicianData";
 

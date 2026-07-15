@@ -46,11 +46,14 @@ export const ENDPOINTS = {
   GET_CUSTOMER_BOOKINGS: '/bookings/all',
   CREATE_BOOKING: '/bookings',
   CANCEL_BOOKING: '/bookings/cancel',
+  RESCHEDULE_BOOKING: '/bookings/reschedule',
 
   //Complaints
   CREATE_COMPLAINT: '/bookings/complaint',
   UPDATE_COMPLAINT: '/bookings/complaint',
-  ADMIN_COMPLAINTS: 'bookings/complaints',
+  ADMIN_COMPLAINTS: '/bookings/complaints',
   ADMIN_COMPLAINTS_BY_ID: '/bookings/admin/complaints',
+  DELETE_COMPLAINT: '/bookings/complaint',
+  ADMIN_RESOLVE_COMPLAINT: '/bookings/admin/complaints/resolve',
 
 } as const;

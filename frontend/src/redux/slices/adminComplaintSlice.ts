@@ -1,14 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import {
+import {deleteComplaintsService,
   getAdminComplaintByIdService,
   getAdminComplaintsService,
+  resolveAdminComplaintService
 } from '@/services/admin.service';
-
 import type {
   AdminComplaint,
   AdminComplaintListItem,
   ComplaintPagination,
+  ResolveComplaintRequest,
 } from '@/types/admin/complaints.types';
 
 interface AdminComplaintState {
@@ -76,6 +77,48 @@ export const fetchAdminComplaints = createAsyncThunk<
   },
 );
 
+export const deleteAdminComplaint = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>(
+  'adminComplaint/delete',
+
+  async (id, { rejectWithValue }) => {
+    try {
+      await deleteComplaintsService(id);
+
+      return id;
+    } catch (err) {
+      return rejectWithValue(
+        err instanceof Error
+          ? err.message
+          : 'Failed to delete complaint',
+      );
+    }
+  },
+);
+
+export const resolveAdminComplaint = createAsyncThunk<
+  AdminComplaint,
+  ResolveComplaintRequest,
+  { rejectValue: string }
+>(
+  'adminComplaint/resolve',
+
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await resolveAdminComplaintService(payload);
+    } catch (err) {
+      return rejectWithValue(
+        err instanceof Error
+          ? err.message
+          : 'Failed to resolve complaint',
+      );
+    }
+  },
+);
+
 const adminComplaintSlice = createSlice({
   name: 'adminComplaint',
 
@@ -132,7 +175,59 @@ const adminComplaintSlice = createSlice({
 
         state.error =
         action.payload ?? 'Failed to fetch complaints';
-      });
+      })
+
+      .addCase(deleteAdminComplaint.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+
+      .addCase(deleteAdminComplaint.fulfilled, (state, action) => {
+        state.isLoading = false;
+
+        state.complaints = state.complaints.filter(
+          complaint => complaint.id !== action.payload,
+        );
+      })
+
+      .addCase(deleteAdminComplaint.rejected, (state, action) => {
+        state.isLoading = false;
+
+        state.error =
+          action.payload ?? 'Failed to delete complaint';
+      })
+
+      .addCase(resolveAdminComplaint.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+
+      .addCase(resolveAdminComplaint.fulfilled, (state, action) => {
+        state.isLoading = false;
+
+        if (
+          state.complaint &&
+          state.complaint.id === action.payload.id
+        ) {
+          state.complaint = action.payload;
+        }
+
+        state.complaints = state.complaints.map((complaint) =>
+        complaint.id === action.payload.id
+      ? {
+          ...complaint,
+          status: action.payload.status,
+        }
+        : complaint,
+      );
+    })
+
+    .addCase(resolveAdminComplaint.rejected, (state, action) => {
+      state.isLoading = false;
+
+      state.error =
+        action.payload ?? 'Failed to resolve complaint';
+    });
   },
 });
 

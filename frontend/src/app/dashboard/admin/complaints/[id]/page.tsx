@@ -1,5 +1,6 @@
 'use client';
 
+import { CheckCircle } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -7,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
   clearAdminComplaint,
   fetchAdminComplaint,
+  resolveAdminComplaint,
 } from '@/redux/slices/adminComplaintSlice';
 
 export default function ComplaintDetailsPage() {
@@ -23,6 +25,24 @@ export default function ComplaintDetailsPage() {
   } = useAppSelector(
     (state) => state.adminComplaint
   );
+
+  const handleResolve = async () => {
+  if (!complaint) return;
+
+  try {
+    await dispatch(
+      resolveAdminComplaint({
+        id: complaint.id,
+        status: 'RESOLVED',
+      }),
+    ).unwrap();
+
+    // Refresh complaint details after resolving
+    dispatch(fetchAdminComplaint(complaint.id));
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   useEffect(() => {
     if (!Number.isNaN(complaintId)) {
@@ -142,6 +162,21 @@ export default function ComplaintDetailsPage() {
         </div>
 
       </div>
+
+      {complaint.status !== 'RESOLVED' && (
+        <div className="flex justify-end border-t border-slate-100 pt-6">
+          <button
+            type="button"
+            onClick={handleResolve}
+            disabled={isLoading}
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <CheckCircle className="h-4 w-4" />
+
+            {isLoading ? 'Updating...' : 'Mark as Resolved'}
+          </button>
+        </div>
+      )}
 
     </div>
   );

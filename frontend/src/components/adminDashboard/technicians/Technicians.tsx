@@ -1,8 +1,9 @@
 "use client";
+/* eslint-disable simple-import-sort/imports */
+import { useEffect, useState, useCallback } from "react";
 
 import { AnimatePresence } from "framer-motion";
 import { ClipboardList, UserCog } from "lucide-react";
-import { useEffect, useState } from "react";
 
 import { userServiceApi } from "@/api/axios";
 import { getAllServicesService } from "@/services/service.service";
@@ -32,6 +33,7 @@ const EMPTY_PREFETCH: PrefetchedData = {
 
 const Technicians = () => {
   const [prefetchedData, setPrefetchedData] = useState<PrefetchedData>(EMPTY_PREFETCH);
+
   const [pendingTechnicians, setPendingTechnicians] = useState<Technician[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +47,7 @@ const Technicians = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [viewingDoc, setViewingDoc] = useState<{ name: string; techName: string; url?: string } | null>(null);
 
-  const fetchTechnicians = async () => {
+  const fetchTechnicians = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -60,6 +62,7 @@ const Technicians = () => {
         console.error("Failed to fetch services", err);
       }
 
+
       // ── Fire all 4 requests in parallel ──────────────────────────────────
       const [allRes, approvedRes, pendingRes, rejectedRes] = await Promise.all([
         userServiceApi.get("/users/all?role=TECHNICIAN"),
@@ -71,7 +74,7 @@ const Technicians = () => {
       const extract = (res: any): any[] =>
         res.data?.data?.data || res.data?.data || [];
 
-      const mapUserToTechnician = (u: any): Technician => {
+      const mapUserToTechnician = (u: RawUser): Technician => {
         const profile = u.technicianProfile;
         const docStatus =
           profile?.status === "APPROVED"
@@ -109,7 +112,7 @@ const Technicians = () => {
         if (u.status === "SUSPENDED") status = "REJECTED";
 
         return {
-          id: u.id.toString(),
+          id: `${u.id ?? ""}`,
           name: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
           avatar: u.profileImage || "",
           experience: profile?.yearsOfExperience || 0,
@@ -121,13 +124,14 @@ const Technicians = () => {
           rating: u.overallRating ? parseFloat(u.overallRating) : 0,
           completedJobs: 0,
           status,
-          email: u.email,
+          email: u.email || "",
           phone: u.phone || "",
           appliedAt: u.createdAt ? u.createdAt.split("T")[0] : "",
           documents: docs,
           rejectionReason: profile?.rejectionReason || undefined,
         };
       };
+
 
       // ── Populate the pre-fetched map ──────────────────────────────────────
       const mapped: PrefetchedData = {
@@ -141,16 +145,18 @@ const Technicians = () => {
       setPendingTechnicians(mapped.PENDING_APPROVAL);
     } catch (err: any) {
       console.error("Error fetching technicians", err);
-      setError(err.message || "Failed to load technicians");
+      const e = err as Error;
+      setError(e?.message || "Failed to load technicians");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchTechnicians();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    (async () => {
+      await fetchTechnicians();
+    })();
+  }, [fetchTechnicians]);
 
   // ── Instant lookup — no extra filtering needed ────────────────────────────
   const filteredTechnicians = prefetchedData[statusFilter];
@@ -245,11 +251,10 @@ const Technicians = () => {
             setActiveTab("all");
             setSearchQuery("");
           }}
-          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 cursor-pointer ${
-            activeTab === "all"
+          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 cursor-pointer ${activeTab === "all"
               ? "border-emerald-600 text-emerald-600 bg-emerald-50/30"
               : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-          }`}
+            }`}
         >
           <UserCog size={16} />
           All Technicians
@@ -265,11 +270,10 @@ const Technicians = () => {
             setActiveTab("pending");
             setSearchQuery("");
           }}
-          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 relative cursor-pointer ${
-            activeTab === "pending"
+          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 relative cursor-pointer ${activeTab === "pending"
               ? "border-emerald-600 text-emerald-600 bg-emerald-50/30"
               : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-          }`}
+            }`}
         >
           <ClipboardList size={16} />
           Pending Approvals
