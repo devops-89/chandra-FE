@@ -19,6 +19,7 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
       <UnifiedBookingPage
         serviceId={params.serviceId ? Number(params.serviceId) : undefined}
         service={params.service ?? ''}
+        summaryPath="/booking/payment"
       />
       <PublicFooter />
     </BookingAuthGuard>

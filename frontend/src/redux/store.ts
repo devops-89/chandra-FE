@@ -9,13 +9,14 @@ import complaintReducer from './slices/complaintSlice';
 import customerBookingsReducer from './slices/customerBookingSlice';
 import customerDashboardReducer from './slices/customerDashboardSlice';
 import customerProfileReducer from './slices/customerProfileSlice';
+import tokenPaymentReducer from './slices/customerTokenPaymentSlice';
 import favouriteTechnicianReducer from './slices/favouriteTechnicianSlice';
 import forgotPasswordReducer from './slices/forgotPasswordSlice'
 import nearbyJobsReducer from './slices/nearbyJobsSlice';
 import onboardingReducer from './slices/onboardingSlice';
 import servicesReducer from './slices/servicesSlice';
 import supportReducer from './slices/supportSlice';
-import technicianProfileReducer from './slices/technicianProfileSlice'
+import technicianProfileReducer from './slices/technicianProfileSlice';
 import { setAppStore } from './storeAccessor';
 
 export const store = configureStore({
@@ -36,6 +37,7 @@ export const store = configureStore({
     adminBookings: adminBookingReducer,
     customerDashboard: customerDashboardReducer,
     favouriteTechnicians: favouriteTechnicianReducer,
+    tokenPayment: tokenPaymentReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

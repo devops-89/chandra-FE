@@ -1,6 +1,5 @@
 import { userServiceApi } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
-
 import type {
   FavouriteTechnician,
   GetFavouriteTechniciansResponse,

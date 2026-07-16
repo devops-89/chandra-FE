@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 
 import TechnicianCard from '@/components/customerDashboard/favoriteTechnicians/TechnicianCard';
 import { EmptyState } from '@/components/customerDashboard/shared';
-
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchFavouriteTechnicians } from '@/redux/slices/favouriteTechnicianSlice';
 
