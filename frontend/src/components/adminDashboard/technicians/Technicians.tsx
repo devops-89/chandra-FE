@@ -126,21 +126,21 @@ const Technicians = () => {
         // Users with no technicianProfile cannot be approved/rejected
         if (!profile) {
           return {
-            id:          `${u.id}`,
-            profileId:   null,
+            id: `${u.id}`,
+            profileId: null,
             profileUserId: null,
-            name:        `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
-            avatar:      u.profileImage || "",
-            experience:  0,
-            city:        "—",
-            skills:      [],
-            rating:      0,
+            name: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
+            avatar: u.profileImage || "",
+            experience: 0,
+            city: "—",
+            skills: [],
+            rating: 0,
             completedJobs: 0,
-            status:      "NO_PROFILE",
-            email:       u.email || "",
-            phone:       u.phone || "",
-            appliedAt:   u.createdAt ? u.createdAt.split("T")[0] : "",
-            documents:   [],
+            status: "NO_PROFILE",
+            email: u.email || "",
+            phone: u.phone || "",
+            appliedAt: u.createdAt ? u.createdAt.split("T")[0] : "",
+            documents: [],
             rejectionReason: undefined,
           };
         }
@@ -150,8 +150,8 @@ const Technicians = () => {
 
         const docStatus =
           profile.status === "APPROVED" ? "APPROVED"
-          : profile.status === "REJECTED" ? "REJECTED"
-          : "PENDING_APPROVAL";
+            : profile.status === "REJECTED" ? "REJECTED"
+              : "PENDING_APPROVAL";
 
         const docs: VerificationDocument[] = [];
         if (profile.aadharUrl)
@@ -181,12 +181,12 @@ const Technicians = () => {
               : 0;
 
         return {
-          id:          `${u.id}`,
+          id: `${u.id}`,
           profileId,
           profileUserId,
-          name:        `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
-          avatar:      u.profileImage || "",
-          experience:  profile.yearsOfExperience || 0,
+          name: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
+          avatar: u.profileImage || "",
+          experience: profile.yearsOfExperience || 0,
           city:
             profile.locations?.find((loc) => loc.isActive || loc.isDefault)?.city ||
             profile.locations?.[0]?.city ||
@@ -195,10 +195,10 @@ const Technicians = () => {
           rating,
           completedJobs: 0,
           status,
-          email:       u.email || "",
-          phone:       u.phone || "",
-          appliedAt:   u.createdAt ? u.createdAt.split("T")[0] : "",
-          documents:   docs,
+          email: u.email || "",
+          phone: u.phone || "",
+          appliedAt: u.createdAt ? u.createdAt.split("T")[0] : "",
+          documents: docs,
           rejectionReason: profile.rejectionReason || undefined,
         };
       };
@@ -397,8 +397,8 @@ const Technicians = () => {
             setSearchQuery("");
           }}
           className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 cursor-pointer ${activeTab === "all"
-              ? "border-emerald-600 text-emerald-600 bg-emerald-50/30"
-              : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+            ? "border-emerald-600 text-emerald-600 bg-emerald-50/30"
+            : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
             }`}
         >
           <UserCog size={16} />
@@ -416,8 +416,8 @@ const Technicians = () => {
             setSearchQuery("");
           }}
           className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 relative cursor-pointer ${activeTab === "pending"
-              ? "border-emerald-600 text-emerald-600 bg-emerald-50/30"
-              : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+            ? "border-emerald-600 text-emerald-600 bg-emerald-50/30"
+            : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
             }`}
         >
           <ClipboardList size={16} />

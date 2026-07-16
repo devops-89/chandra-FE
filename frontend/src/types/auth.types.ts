@@ -203,7 +203,13 @@ export interface RegisterTechnicianResponse {
     user: User & {
       status: string;
       phone: string;
-      technicianProfile: TechnicianProfile;
+      technicianProfile: TechnicianProfile & {
+        selfieUrl?: string | null;
+        aadharUrl?: string | null;
+        panUrl: string | null;
+        policeCertUrl: string | null;
+        tradeLicenseUrl: string | null;
+      };
     };
   };
 }
@@ -252,7 +258,7 @@ export interface ApiTechnicianProfileData {
   serviceRadiusKm: number;
   preferredAreas: string[];
   pincodes: string[];
-  aadharUrl: string | null;
+  aadharUrl?: string | null;
   panUrl: string | null;
   policeCertUrl: string | null;
   tradeLicenseUrl: string | null;

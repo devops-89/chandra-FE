@@ -45,22 +45,13 @@ const buildServiceLocation = (value: Record<string, unknown>) => {
 };
 
 const hasDocumentUploadData = (value: Record<string, unknown>) => {
-  return Boolean(
-    value.selfieUrl
-    && value.aadharUrl
-    && value.panUrl
-    && value.policeCertUrl
-    && value.tradeLicenseUrl,
-  );
+  // Only Aadhaar is mandatory
+  return Boolean(value.aadharUrl);
 };
 
 const hasAllRequiredFiles = (
-  selfieFile: File | null,
   aadharFile: File | null,
-  panFile: File | null,
-  policeCertFile: File | null,
-  tradeLicenseFile: File | null,
-) => Boolean(selfieFile && aadharFile && panFile && policeCertFile && tradeLicenseFile);
+) => Boolean(aadharFile);
 
 function buildInitialState(): ReviewSubmitState {
   return {
@@ -72,9 +63,6 @@ function buildInitialState(): ReviewSubmitState {
       selfieUrl: '',
     },
     bankDetails: {
-      accountHolderName: '',
-      accountNumber: '',
-      ifscCode: '',
       payoutMethod: 'bank-transfer',
     },
     services: [],
@@ -116,7 +104,7 @@ export const useReviewSubmit = () => {
         const hasSavedDocumentData = hasDocumentUploadData(documentData);
         if (
           hasSavedDocumentData
-          && !hasAllRequiredFiles(selfieFile, aadharFile, panFile, policeCertFile, tradeLicenseFile)
+          && !hasAllRequiredFiles(aadharFile)
         ) {
           setSubmitError(REUPLOAD_DOCUMENTS_MESSAGE);
         } else {
@@ -227,14 +215,18 @@ export const useReviewSubmit = () => {
           const raw = sessionStorage.getItem('bankDetailsData');
           if (raw) {
             const b = JSON.parse(raw);
+            const method = b.payoutMethod === 'upi' ? 'upi' : 'bank-transfer';
             next = {
               ...next,
-              bankDetails: {
-                accountHolderName: b.accountHolderName ?? '',
-                accountNumber: b.accountNumber ?? '',
-                ifscCode: b.ifscCode ?? '',
-                payoutMethod: b.payoutMethod === 'upi' ? 'upi' : 'bank-transfer',
-              },
+              bankDetails:
+                method === 'upi'
+                  ? { payoutMethod: 'upi', upiId: b.upiId ?? '' }
+                  : {
+                      payoutMethod: 'bank-transfer',
+                      accountHolderName: b.accountHolderName ?? '',
+                      accountNumber: b.accountNumber ?? '',
+                      ifscCode: b.ifscCode ?? '',
+                    },
             };
           }
         } catch { /* ignore */ }
@@ -274,15 +266,29 @@ export const useReviewSubmit = () => {
       const documentRaw = sessionStorage.getItem('documentUploadData');
       const documentData = documentRaw ? JSON.parse(documentRaw) : {};
       if (!hasDocumentUploadData(documentData)) {
-        throw new Error('Document upload data is missing. Please complete the Document Upload step again.');
+        throw new Error('Aadhaar Card is required. Please complete the Document Upload step.');
       }
-      if (!hasAllRequiredFiles(selfieFile, aadharFile, panFile, policeCertFile, tradeLicenseFile)) {
-        throw new Error(REUPLOAD_DOCUMENTS_MESSAGE);
+      if (!hasAllRequiredFiles(aadharFile)) {
+        throw new Error('Please re-upload your Aadhaar Card before submitting.');
       }
 
-      // ── Read bank details ─────────────────────────────────────────────────
+      // ── Read bank details and validate ────────────────────────────────────
       const bankRaw = sessionStorage.getItem('bankDetailsData');
       const bankData = bankRaw ? JSON.parse(bankRaw) : {};
+      const payoutMethod = bankData.payoutMethod;
+      if (payoutMethod === 'upi') {
+        if (!bankData.upiId?.trim()) {
+          throw new Error('UPI ID is required. Please complete the Bank Details step.');
+        }
+      } else {
+        if (
+          !bankData.accountHolderName?.trim()
+          || !bankData.accountNumber?.trim()
+          || !bankData.ifscCode?.trim()
+        ) {
+          throw new Error('Bank account details are required. Please complete the Bank Details step.');
+        }
+      }
 
       // ── Build technicianProfile JSON ──────────────────────────────────────
       const technicianProfile = {
@@ -295,11 +301,17 @@ export const useReviewSubmit = () => {
         hasSafetyEquipment: (skillsData.hasSafetyEquipment as boolean) ?? false,
         hasVehicle:         (skillsData.hasVehicle          as boolean) ?? false,
         serviceRadiusKm,
-        accountHolderName:  (bankData.accountHolderName     as string)  ?? '',
-        accountNumber:      (bankData.accountNumber          as string)  ?? '',
-        ifscCode:           (bankData.ifscCode               as string)  ?? '',
-        bankName:           (bankData.bankName               as string)  ?? '',
-        // Flatten location fields (only included when geolocation was captured)
+        // ── Payout method (mutually exclusive) ────────────────────────────
+        ...(payoutMethod === 'upi'
+          ? { upiId: bankData.upiId as string }
+          : {
+              accountHolderName: (bankData.accountHolderName as string) ?? '',
+              accountNumber:     (bankData.accountNumber      as string) ?? '',
+              ifscCode:          (bankData.ifscCode           as string) ?? '',
+              bankName:          (bankData.bankName           as string) ?? '',
+            }
+        ),
+        // ── Location (only when captured) ─────────────────────────────────
         ...(serviceLocation && {
           address:   serviceLocation.fullAddress,
           latitude:  serviceLocation.latitude,
@@ -331,6 +343,19 @@ export const useReviewSubmit = () => {
       );
 
       const { user, tokens } = response.data;
+
+      // ── Replace blob URLs with real S3 URLs from the registration response ──
+      const profile = user.technicianProfile;
+      if (profile) {
+        const s3Urls = {
+          selfieUrl:      profile.selfieUrl      ?? null,
+          aadharUrl:      profile.aadharUrl      ?? null,
+          panUrl:         profile.panUrl         ?? null,
+          policeCertUrl:  profile.policeCertUrl  ?? null,
+          tradeLicenseUrl: profile.tradeLicenseUrl ?? null,
+        };
+        sessionStorage.setItem('documentUploadData', JSON.stringify(s3Urls));
+      }
 
       // ── Persist tokens + user — survives page refresh and tab close ─────
       localStorage.setItem('user',         JSON.stringify(user));

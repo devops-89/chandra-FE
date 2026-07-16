@@ -18,8 +18,11 @@ export default function BankDetailsSummaryCard({
 }: BankDetailsSummaryCardProps) {
   if (!bankDetails) return null;
 
-  const { accountHolderName, accountNumber, ifscCode, payoutMethod } = bankDetails;
-  const hasData = accountHolderName || accountNumber || ifscCode;
+  const { payoutMethod } = bankDetails;
+  const hasData =
+    payoutMethod === 'upi'
+      ? !!bankDetails.upiId
+      : !!(bankDetails.accountHolderName || bankDetails.accountNumber || bankDetails.ifscCode);
 
   return (
     <motion.div
@@ -58,36 +61,48 @@ export default function BankDetailsSummaryCard({
             </span>
           </div>
 
-          {/* Account Holder */}
-          {accountHolderName && (
+          {/* UPI ID */}
+          {payoutMethod === 'upi' && bankDetails.upiId && (
             <div>
               <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-1">
-                Account Holder
+                UPI ID
               </p>
-              <p className="text-base font-semibold text-on-surface">{accountHolderName}</p>
+              <p className="text-base font-mono font-medium text-on-surface">{bankDetails.upiId}</p>
             </div>
           )}
 
-          {/* Account Number */}
-          {accountNumber && (
-            <div>
-              <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-1">
-                Account Number
-              </p>
-              <p className="text-base font-mono font-medium text-on-surface tracking-widest">
-                {maskAccountNumber(accountNumber)}
-              </p>
-            </div>
-          )}
+          {/* Bank Transfer fields */}
+          {payoutMethod === 'bank-transfer' && (
+            <>
+              {bankDetails.accountHolderName && (
+                <div>
+                  <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-1">
+                    Account Holder
+                  </p>
+                  <p className="text-base font-semibold text-on-surface">{bankDetails.accountHolderName}</p>
+                </div>
+              )}
 
-          {/* IFSC Code */}
-          {ifscCode && (
-            <div>
-              <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-1">
-                IFSC Code
-              </p>
-              <p className="text-base font-mono font-medium text-on-surface uppercase">{ifscCode}</p>
-            </div>
+              {bankDetails.accountNumber && (
+                <div>
+                  <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-1">
+                    Account Number
+                  </p>
+                  <p className="text-base font-mono font-medium text-on-surface tracking-widest">
+                    {maskAccountNumber(bankDetails.accountNumber)}
+                  </p>
+                </div>
+              )}
+
+              {bankDetails.ifscCode && (
+                <div>
+                  <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-1">
+                    IFSC Code
+                  </p>
+                  <p className="text-base font-mono font-medium text-on-surface uppercase">{bankDetails.ifscCode}</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       ) : (

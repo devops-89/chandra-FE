@@ -102,18 +102,23 @@ export const registerTechnicianService = async (
   technicianProfile: {
     yearsOfExperience: number;
     languages: string[];
-    services: { serviceId: number; serviceName?: string }[];
+    services: { serviceId: number }[];
     brandExpertise: { brandName: string }[];
     hasLadder: boolean;
     hasACGauges: boolean;
     hasSafetyEquipment: boolean;
     hasVehicle: boolean;
     serviceRadiusKm: number;
-    accountHolderName: string;
-    accountNumber: string;
-    ifscCode: string;
-    bankName: string;
-    // Flat location fields (optional — only present when geolocation was captured)
+    // UPI payout
+    upiId?: string;
+    // Bank transfer payout
+    accountHolderName?: string;
+    accountNumber?: string;
+    ifscCode?: string;
+    bankName?: string;
+    // GST (optional)
+    gst?: string;
+    // Location (always included when available)
     address?: string;
     latitude?: number;
     longitude?: number;

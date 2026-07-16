@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from 'react';
 
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 
-import AccountInformationCard from './AccountInformationCard';
 import BankDetailsFooter from './BankDetailsFooter';
 import BankDetailsHeader from './BankDetailsHeader';
 import PayoutMethodCard from './PayoutMethodCard';
@@ -32,9 +31,18 @@ const itemVariants = {
   },
 };
 
+export interface BankDetailsErrors {
+  accountHolderName?: string;
+  ifscCode?: string;
+  accountNumber?: string;
+  confirmAccountNumber?: string;
+  upiId?: string;
+}
+
 export default function BankDetailsSection() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<BankDetailsErrors>({});
 
   const [formData, setFormData] = useState({
     accountHolderName: '',
@@ -81,34 +89,81 @@ export default function BankDetailsSection() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!hasRestoredDraft.current) return;
-
-    const hasAnyBankValue = Object.values(formData).some((value) => value.trim() !== '');
-    if (!hasAnyBankValue && selectedPayoutMethod === 'bank-transfer') return;
-
-    sessionStorage.setItem('bankDetailsData', JSON.stringify({
+  const buildPayload = () => {
+    if (selectedPayoutMethod === 'upi') {
+      return {
+        payoutMethod: 'upi' as const,
+        upiId: formData.upiId,
+      };
+    }
+    return {
+      payoutMethod: 'bank-transfer' as const,
       accountHolderName: formData.accountHolderName,
       accountNumber: formData.accountNumber,
       ifscCode: formData.ifscCode,
       bankName: '',
-      payoutMethod: selectedPayoutMethod,
-      upiId: formData.upiId,
-    }));
+    };
+  };
+
+  const validate = (): boolean => {
+    const newErrors: BankDetailsErrors = {};
+
+    if (selectedPayoutMethod === 'bank-transfer') {
+      if (!formData.accountHolderName.trim()) {
+        newErrors.accountHolderName = 'Account holder name is required';
+      }
+      if (!formData.ifscCode.trim()) {
+        newErrors.ifscCode = 'IFSC code is required';
+      }
+      if (!formData.accountNumber.trim()) {
+        newErrors.accountNumber = 'Account number is required';
+      }
+      if (!formData.confirmAccountNumber.trim()) {
+        newErrors.confirmAccountNumber = 'Please confirm your account number';
+      } else if (formData.accountNumber !== formData.confirmAccountNumber) {
+        newErrors.confirmAccountNumber = 'Account numbers do not match';
+      }
+    } else {
+      if (!formData.upiId.trim()) {
+        newErrors.upiId = 'UPI ID is required';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  useEffect(() => {
+    if (!hasRestoredDraft.current) return;
+
+    const payload = buildPayload();
+    const hasAnyValue =
+      selectedPayoutMethod === 'upi'
+        ? formData.upiId.trim() !== ''
+        : Object.values({
+            accountHolderName: formData.accountHolderName,
+            accountNumber: formData.accountNumber,
+            ifscCode: formData.ifscCode,
+          }).some((v) => v.trim() !== '');
+
+    if (!hasAnyValue) return;
+
+    sessionStorage.setItem('bankDetailsData', JSON.stringify(payload));
   }, [formData, selectedPayoutMethod]);
 
+  // Clear errors for the relevant field when method switches
+  const handleMethodChange = (method: 'bank-transfer' | 'upi') => {
+    setSelectedPayoutMethod(method);
+    setErrors({});
+  };
+
   const handleSaveContinue = () => {
+    if (!validate()) return;
+
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      const payload = {
-        accountHolderName: formData.accountHolderName,
-        accountNumber: formData.accountNumber,
-        ifscCode: formData.ifscCode,
-        bankName: '',
-        payoutMethod: selectedPayoutMethod,
-        upiId: formData.upiId,
-      };
+      const payload = buildPayload();
       sessionStorage.setItem('bankDetailsData', JSON.stringify(payload));
       markStepComplete(4);
       router.push('/technician/onboarding/review-submit');
@@ -127,34 +182,35 @@ export default function BankDetailsSection() {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <AccountInformationCard
+        <PayoutMethodCard
+          selectedMethod={selectedPayoutMethod}
+          onMethodChange={handleMethodChange}
           accountHolderName={formData.accountHolderName}
           ifscCode={formData.ifscCode}
           accountNumber={formData.accountNumber}
           confirmAccountNumber={formData.confirmAccountNumber}
-          onAccountHolderNameChange={(value) =>
-            setFormData((prev) => ({ ...prev, accountHolderName: value }))
-          }
-          onIfscCodeChange={(value) =>
-            setFormData((prev) => ({ ...prev, ifscCode: value }))
-          }
-          onAccountNumberChange={(value) =>
-            setFormData((prev) => ({ ...prev, accountNumber: value }))
-          }
-          onConfirmAccountNumberChange={(value) =>
-            setFormData((prev) => ({ ...prev, confirmAccountNumber: value }))
-          }
-        />
-      </motion.div>
-
-      <motion.div variants={itemVariants}>
-        <PayoutMethodCard
-          selectedMethod={selectedPayoutMethod}
-          onMethodChange={setSelectedPayoutMethod}
+          onAccountHolderNameChange={(value) => {
+            setFormData((prev) => ({ ...prev, accountHolderName: value }));
+            if (errors.accountHolderName) setErrors((prev) => ({ ...prev, accountHolderName: undefined }));
+          }}
+          onIfscCodeChange={(value) => {
+            setFormData((prev) => ({ ...prev, ifscCode: value.toUpperCase() }));
+            if (errors.ifscCode) setErrors((prev) => ({ ...prev, ifscCode: undefined }));
+          }}
+          onAccountNumberChange={(value) => {
+            setFormData((prev) => ({ ...prev, accountNumber: value }));
+            if (errors.accountNumber) setErrors((prev) => ({ ...prev, accountNumber: undefined }));
+          }}
+          onConfirmAccountNumberChange={(value) => {
+            setFormData((prev) => ({ ...prev, confirmAccountNumber: value }));
+            if (errors.confirmAccountNumber) setErrors((prev) => ({ ...prev, confirmAccountNumber: undefined }));
+          }}
           upiId={formData.upiId}
-          onUpiIdChange={(value) =>
-            setFormData((prev) => ({ ...prev, upiId: value }))
-          }
+          onUpiIdChange={(value) => {
+            setFormData((prev) => ({ ...prev, upiId: value }));
+            if (errors.upiId) setErrors((prev) => ({ ...prev, upiId: undefined }));
+          }}
+          errors={errors}
         />
       </motion.div>
 

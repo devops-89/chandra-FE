@@ -7,10 +7,13 @@ export interface ReviewSubmitState {
     selfieUrl: string;
   };
   bankDetails: {
-    accountHolderName: string;
-    accountNumber: string;
-    ifscCode: string;
     payoutMethod: 'bank-transfer' | 'upi';
+    // Bank transfer fields
+    accountHolderName?: string;
+    accountNumber?: string;
+    ifscCode?: string;
+    // UPI fields
+    upiId?: string;
   };
   // Skills & Equipments step data
   services: { serviceId: number }[];
