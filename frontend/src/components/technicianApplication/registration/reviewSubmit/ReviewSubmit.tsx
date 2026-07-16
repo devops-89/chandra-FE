@@ -118,6 +118,7 @@ export default function ReviewSubmit() {
             hasACGauges={state.hasACGauges}
             hasSafetyEquipment={state.hasSafetyEquipment}
             hasVehicle={state.hasVehicle}
+            gst={state.gst}
             onEdit={handleEditSkills}
           />
         </motion.div>
@@ -136,7 +137,6 @@ export default function ReviewSubmit() {
         <motion.div className="md:col-span-7">
           <ServiceCoverageCard
             radius={state.serviceArea.radius}
-            areas={state.serviceArea.areas}
             latitude={state.serviceArea.latitude}
             longitude={state.serviceArea.longitude}
             fullAddress={state.serviceArea.fullAddress}

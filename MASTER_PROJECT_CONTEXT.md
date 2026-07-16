@@ -1,6 +1,6 @@
 # HiChandra Frontend — Master Project Context
 
-> **Last updated:** July 10, 2026
+> **Last updated:** July 16, 2026
 > **Purpose:** Permanent handoff document. Paste this file into any new chat to restore full project context instantly.
 
 ---
@@ -46,8 +46,8 @@ Config notes:
 
 ### Base URLs (`src/api/endpoints.ts`)
 ```ts
-auth:        'http://<IP>:8000/api'   // IP changes per network
-userService: 'http://<IP>:8001/api'
+auth:        'http://<IP>/api'   // single load-balanced IP; no port
+userService: 'http://<IP>/api'
 ```
 
 ### Endpoints
@@ -77,7 +77,7 @@ userService: 'http://<IP>:8001/api'
 | `UPDATE_COMPLAINT` | `PATCH /bookings/complaint` | |
 
 ### Axios (`src/api/axios.ts`)
-- Creates `authApi` (port 8000) and `userServiceApi` (port 8001)
+- Creates `authApi` and `userServiceApi` (both point to same base URL)
 - **Request interceptor:** reads `localStorage.accessToken` → falls back to Redux store
 - **Response interceptor (401 handler — Refresh Token Rotation):**
   - On 401: reads `localStorage.refreshToken`, POSTs to `ENDPOINTS.REFRESH_TOKEN`
@@ -130,6 +130,8 @@ auth, services, nearbyJobs, activeJobs, support, onboarding
 ```
 
 `serializableCheck: false` — `onboardingSlice` stores raw `File` objects for document upload.
+
+`onboardingSlice` fields: `selfieFile`, `aadharFile`, `panFile`, `policeCertFile`, `tradeLicenseFile` (all `File | null`).
 
 Legacy Zustand: `src/redux/legacy/bookingStore.ts` — active for booking flow only.
 
@@ -196,20 +198,74 @@ Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/techn
 | 5 | `/technician/onboarding/review-submit` |
 | status | `/technician/onboarding/pending-verification` |
 
+### Session Storage Keys
+| Key | Contents |
+|---|---|
+| `registerData` | `firstName`, `lastName`, `username`, `email`, `phoneNumber`, `password` |
+| `skillsEquipmentData` | `services[]`, `yearsOfExperience`, `languages[]`, `brandExpertise[]`, `hasLadder`, `hasACGauges`, `hasSafetyEquipment`, `hasVehicle`, `gst` |
+| `documentUploadData` | `selfieUrl`, `aadharUrl`, `panUrl`, `policeCertUrl`, `tradeLicenseUrl` (S3 URLs after registration) |
+| `serviceAreaData` | `radius`, `pincodes[]`, `latitude?`, `longitude?`, `fullAddress?`, `city?`, `state?`, `pincode?` |
+| `bankDetailsData` | `payoutMethod` + either `{ upiId }` or `{ accountHolderName, accountNumber, ifscCode, bankName }` |
+
+### Document Upload Rules
+- Only **Aadhaar Card** is mandatory — all other documents (PAN, police verification, trade license, selfie) are optional
+- Selfie is captured via camera or file upload; uses plain `<img>` tag (not Next.js `<Image>`) because `blob:` URLs are not handled by the Next.js image optimizer
+- After successful registration, blob URLs in `documentUploadData` are replaced with real S3 URLs from `response.data.user.technicianProfile`
+
+### Bank Details Rules
+- Payout method is mutually exclusive: either `bank-transfer` (accountHolderName + accountNumber + ifscCode required) or `upi` (upiId required)
+- Session storage stores **only** the fields for the selected method — never both
+- Bank transfer fields appear inline inside the Payout Method card (same animated expand behaviour as UPI ID field)
+- Validation runs on "Save & Continue"; blocks navigation if required fields for the chosen method are missing
+
+### technicianProfile payload (sent to `POST /users/register`)
+```json
+{
+  "yearsOfExperience": 5,
+  "languages": ["English", "Hindi"],
+  "services": [{ "serviceId": 56 }],
+  "brandExpertise": [{ "brandName": "Samsung" }],
+  "hasLadder": true,
+  "hasACGauges": true,
+  "hasSafetyEquipment": true,
+  "hasVehicle": true,
+  "serviceRadiusKm": 10,
+  "gst": "22AAAAA0000A1Z5",          // optional — omitted when blank
+  "upiId": "9817361209@ybl",          // OR bank transfer fields below (never both)
+  "accountHolderName": "...",          // bank transfer only
+  "accountNumber": "...",              // bank transfer only
+  "ifscCode": "...",                   // bank transfer only
+  "bankName": "",                      // bank transfer only
+  "address": "123 Main Street",        // location fields — only when geolocation captured
+  "latitude": 28.6139,
+  "longitude": 77.2090,
+  "city": "New Delhi",
+  "state": "Delhi",
+  "pincode": "110001"
+}
+```
+
+**Removed from payload:** `preferredAreas` — no longer accepted by the backend.
+
+### Submit Approval validation
+- Blocks submission if Aadhaar Card is missing from session storage
+- Blocks submission if bank/UPI details are missing or incomplete
+- All other documents are optional for submission
+
 ### Pending Verification page
 - **Applicant** — `localStorage.user.username`
 - **Submitted On** — `localStorage.user.technicianProfile.createdAt` (formatted `Month D, YYYY`), fallback to `user.createdAt`
 - **Back to Home** — navigates to `/technician`
 - Props `applicationId` and `submittedDate` removed — values derived directly from localStorage
 
-### Bitmask rules
+### Bitmask rules (onboarding progress)
 | Bit | Step | Required |
 |---|---|---|
 | 0 | Register | `profile.id` |
 | 1 | Skills | services + yearsOfExperience + languages |
-| 2 | Documents | all 5 document URLs |
-| 3 | Service area | `serviceAreas.length > 0` |
-| 4 | Bank | accountHolder + accountNumber + IFSC |
+| 2 | Documents | Aadhaar URL only (others optional) |
+| 3 | Service area | `pincodes.length > 0` or location set |
+| 4 | Bank | upiId OR (accountHolder + accountNumber + IFSC) |
 | 5 | Submitted | `profile.status === 'PENDING_APPROVAL'` |
 
 ---
@@ -252,7 +308,26 @@ Backend response shape handling: double-wrap and triple-wrap defensive parsing.
 
 ---
 
-## 14. Reference Documents
+## 14. Service Area
+
+- `preferredAreas` **removed** from state, session storage, API payload, and all UI — no longer accepted by backend
+- Remaining fields: `radius`, `pincodes[]`, `latitude?`, `longitude?`, `fullAddress?`, `city?`, `state?`, `pincode?`
+- `CoverageSummary` sidebar shows Service Area (km) and Pincodes count only
+- `ServiceCoverageCard` (Review page) shows map + full address only — no areas list
+
+---
+
+## 15. Skills & Equipment — Business Details
+
+A **Business Details** section was added at the bottom of the Skills & Equipment step (below Brand Expertise, above Equipment):
+- **GST Number** (optional) — validated against Indian GST regex when non-empty; placeholder `22AAAAA0000A1Z5`
+- Persisted in `skillsEquipmentData.gst` in session storage
+- Sent as `technicianProfile.gst` (omitted from payload when blank)
+- Displayed in Review & Submit under the Skills & Equipments card
+
+---
+
+## 16. Reference Documents
 
 | File | Contents |
 |---|---|
@@ -262,7 +337,7 @@ Backend response shape handling: double-wrap and triple-wrap defensive parsing.
 
 ---
 
-## 15. Current Gaps / Follow-up
+## 17. Current Gaps / Follow-up
 
 | Area | Status |
 |---|---|
@@ -276,7 +351,7 @@ Backend response shape handling: double-wrap and triple-wrap defensive parsing.
 
 ---
 
-## 16. Quick Verification
+## 18. Quick Verification
 
 Run from `frontend/`:
 ```bash
