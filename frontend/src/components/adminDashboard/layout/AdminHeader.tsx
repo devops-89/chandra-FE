@@ -61,7 +61,7 @@ const AdminHeader = ({ onMenuClick }: AdminHeaderProps) => {
           <Menu size={24} />
         </button>
 
-        <div className="relative w-full max-w-xs sm:max-w-sm lg:max-w-md hidden sm:block">
+        <div className="relative w-full bg-amber-300 max-w-xs sm:max-w-sm lg:max-w-md hidden sm:block">
           {/* <Search
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
@@ -79,7 +79,7 @@ const AdminHeader = ({ onMenuClick }: AdminHeaderProps) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+     <div className="flex items-center gap-3 sm:gap-5">
         {/* Mobile search button */}
         <button
           type="button"
