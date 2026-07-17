@@ -19,6 +19,8 @@ import supportReducer from './slices/supportSlice';
 import technicianProfileReducer from './slices/technicianProfileSlice';
 import { setAppStore } from './storeAccessor';
 
+import snackbarReducer from './slices/snackbarSlice';
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -38,6 +40,7 @@ export const store = configureStore({
     customerDashboard: customerDashboardReducer,
     favouriteTechnicians: favouriteTechnicianReducer,
     tokenPayment: tokenPaymentReducer,
+    snackbar: snackbarReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

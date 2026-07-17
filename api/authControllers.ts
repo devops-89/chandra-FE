@@ -116,25 +116,19 @@ export const AuthControllers = {
   getProfile: async (): Promise<GetProfileResponse> => {
     try {
       const response = await authSecuredApi.get<GetProfileResponse>('/auth/profile');
-      const resData = response.data;
-      if (typeof window !== 'undefined' && resData.data) {
-        try {
-          const stored = JSON.parse(localStorage.getItem('user') ?? '{}');
-          if (resData.data.createdAt) stored.createdAt = resData.data.createdAt;
-          if (resData.data.technicianProfile) {
-            stored.technicianProfile = {
-              ...stored.technicianProfile,
-              createdAt: resData.data.technicianProfile.createdAt,
-              status: resData.data.technicianProfile.status,
-              updatedAt: resData.data.technicianProfile.updatedAt,
-            };
-          }
-          localStorage.setItem('user', JSON.stringify(stored));
-        } catch {
-          // ignore
-        }
-      }
-      return resData;
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  logout: async (): Promise<{ success: boolean; message: string }> => {
+    try {
+      const refreshToken =
+        (typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null) || '';
+      
+      const response = await authSecuredApi.post('/auth/logout', { refreshToken });
+      return response.data;
     } catch (error) {
       throw error;
     }

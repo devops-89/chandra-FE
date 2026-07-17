@@ -28,14 +28,16 @@ export const fetchAdminBookings = createAsyncThunk<
   {
     page?: number;
     limit?: number;
+    status?: string;
+    search?: string;
   },
   { rejectValue: string }
 >(
   'adminBookings/fetch',
 
-  async ({ page = 1, limit = 30 }, { rejectWithValue }) => {
+  async ({ page = 1, limit = 10, status, search }, { rejectWithValue }) => {
     try {
-      return await AdminControllers.getAdminBookings(page, limit);
+      return await AdminControllers.getAdminBookings(page, limit, status, search);
     } catch (err) {
       return rejectWithValue(
         err instanceof Error

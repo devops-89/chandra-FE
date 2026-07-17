@@ -76,11 +76,37 @@ function forceLogout() {
   if (typeof window !== 'undefined') window.location.href = '/login';
 }
 
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
+
 const setupResponseInterceptor = (instance: AxiosInstance) => {
   instance.interceptors.response.use(
-    (response: AxiosResponse) => response,
+    (response: AxiosResponse) => {
+      // Auto-show success messages for mutations
+      const method = response.config.method?.toLowerCase() || '';
+      if (['post', 'put', 'patch', 'delete'].includes(method)) {
+        const msg = response.data?.message;
+        if (msg) {
+          let severity: 'success' | 'info' | 'warning' | 'error' = 'success';
+          if (method === 'delete') severity = 'error'; // Red
+          else if (method === 'put' || method === 'patch') severity = 'info'; // Blue
+          else severity = 'success'; // Green for POST
+          
+          getAppStore().dispatch(showSnackbar({ message: msg, severity }));
+        }
+      }
+      return response;
+    },
     async (error: AxiosError) => {
       const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+      // Auto-show error messages
+      const errMsg = (error.response?.data as any)?.message || error.message || 'An error occurred';
+      if (error.response?.status !== 401) {
+        // Don't show toast for 401s if we are just refreshing the token
+        if (!originalRequest || !originalRequest._retry) {
+           getAppStore().dispatch(showSnackbar({ message: errMsg, severity: 'error' }));
+        }
+      }
 
       if (!originalRequest) return Promise.reject(error);
 
@@ -158,3 +184,5 @@ const setupResponseInterceptor = (instance: AxiosInstance) => {
 
 setupResponseInterceptor(authSecuredApi);
 setupResponseInterceptor(userSecuredApi);
+setupResponseInterceptor(authPublicApi);
+setupResponseInterceptor(userPublicApi);

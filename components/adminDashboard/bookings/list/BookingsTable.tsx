@@ -2,10 +2,10 @@
 
 import {
   Box,
+  Card,
   Chip,
   CircularProgress,
   IconButton,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -17,12 +17,14 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { fetchAdminBookings } from '@/redux/slices/adminBookingSlice';
 import type { AdminBooking } from '@/types/admin/bookings.types';
+import { BOOKING_STATUS, BOOKING_PAYMENT_STATUS } from '@/types/enums';
 
 import BookingDetailsDrawer from '../details/BookingDetailsDrawer';
-import ManualAssignmentPanel from './ManualAssignmentPanel';
 import BookingTabs, { type BookingTab } from './BookingTabs';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -39,26 +41,22 @@ type SortField =
 
 type SortDir = 'asc' | 'desc';
 
-interface Props {
-  bookings: AdminBooking[];
-  isLoading?: boolean;
-  error?: string | null;
-}
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const STATUS_CHIP: Record<string, { label: string; color: 'warning' | 'info' | 'success' | 'error' | 'default' }> = {
-  PENDING:     { label: 'Pending',     color: 'warning' },
-  ASSIGNED:    { label: 'Assigned',    color: 'info' },
-  IN_PROGRESS: { label: 'In Progress', color: 'info' },
-  COMPLETED:   { label: 'Completed',   color: 'success' },
-  CANCELLED:   { label: 'Cancelled',   color: 'error' },
+const STATUS_CHIP: Record<BOOKING_STATUS | string, { label: string; color: 'warning' | 'info' | 'success' | 'error' | 'default' }> = {
+  [BOOKING_STATUS.PENDING]:     { label: 'Pending',     color: 'warning' },
+  [BOOKING_STATUS.ACCEPTED]:    { label: 'Accepted',    color: 'info' },
+  [BOOKING_STATUS.ENROUTE]:     { label: 'En Route',    color: 'info' },
+  [BOOKING_STATUS.ARRIVED]:     { label: 'Arrived',     color: 'info' },
+  [BOOKING_STATUS.ONGOING]:     { label: 'In Progress', color: 'info' },
+  [BOOKING_STATUS.COMPLETED]:   { label: 'Completed',   color: 'success' },
+  [BOOKING_STATUS.CANCELLED]:   { label: 'Cancelled',   color: 'error' },
 };
 
-const PAYMENT_CHIP: Record<string, { label: string; color: 'success' | 'warning' | 'error' | 'default' }> = {
-  PAID:    { label: 'Paid',    color: 'success' },
-  PENDING: { label: 'Pending', color: 'warning' },
-  FAILED:  { label: 'Failed',  color: 'error' },
+const PAYMENT_CHIP: Record<BOOKING_PAYMENT_STATUS | string, { label: string; color: 'success' | 'warning' | 'error' | 'default' }> = {
+  [BOOKING_PAYMENT_STATUS.PAID]:    { label: 'Paid',    color: 'success' },
+  [BOOKING_PAYMENT_STATUS.PENDING]: { label: 'Pending', color: 'warning' },
+  [BOOKING_PAYMENT_STATUS.FAILED]:  { label: 'Failed',  color: 'error' },
 };
 
 function formatDate(raw: string): string {
@@ -95,16 +93,6 @@ function sortBookings(bookings: AdminBooking[], field: SortField, dir: SortDir):
     if (av > bv) return dir === 'asc' ? 1 : -1;
     return 0;
   });
-}
-
-function filterByTab(bookings: AdminBooking[], tab: BookingTab): AdminBooking[] {
-  switch (tab) {
-    case 'pending':   return bookings.filter((b) => b.status === 'PENDING');
-    case 'active':    return bookings.filter((b) => b.status === 'ASSIGNED' || b.status === 'IN_PROGRESS');
-    case 'completed': return bookings.filter((b) => b.status === 'COMPLETED');
-    case 'manual':    return bookings.filter((b) => b.technician === null);
-    default:          return bookings;
-  }
 }
 
 // ─── Column header cell with sort ─────────────────────────────────────────────
@@ -158,13 +146,28 @@ function EmptyState({ message }: { message: string }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => {
+const BookingsTable = () => {
+  const dispatch = useAppDispatch();
+  const { bookings, pagination, isLoading, error } = useAppSelector((state) => state.adminBookings);
+
   const [activeTab, setActiveTab] = useState<BookingTab>('all');
   const [sortField, setSortField] = useState<SortField>('scheduledAt');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
+  
+  // Backend pagination is 1-indexed, MUI is 0-indexed
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [drawerBooking, setDrawerBooking] = useState<AdminBooking | null>(null);
+
+  useEffect(() => {
+    let statusFilter: string | undefined = activeTab.toUpperCase();
+    
+    if (activeTab === 'all') {
+      statusFilter = undefined;
+    }
+
+    dispatch(fetchAdminBookings({ page: page + 1, limit: rowsPerPage, status: statusFilter }));
+  }, [dispatch, page, rowsPerPage, activeTab]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -173,43 +176,27 @@ const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => 
       setSortField(field);
       setSortDir('asc');
     }
-    setPage(0);
   };
 
   const handleTabChange = (tab: BookingTab) => {
     setActiveTab(tab);
-    setPage(0);
+    setPage(0); // Reset page on tab change
   };
 
-  const tabFiltered = filterByTab(bookings, activeTab);
-  const sorted = sortBookings(tabFiltered, sortField, sortDir);
-  const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const sorted = sortBookings(bookings, sortField, sortDir);
+  const totalCount = pagination?.total || 0;
 
   const headProps = { sortField, sortDir, onSort: handleSort };
 
-  // Manual assignment tab renders its own panel
-  if (activeTab === 'manual') {
-    return (
-      <Paper elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: 3, overflow: 'hidden' }}>
-        <Box sx={{ px: 2, pt: 2 }}>
-          <BookingTabs active={activeTab} bookings={bookings} onChange={handleTabChange} />
-        </Box>
-        <Box sx={{ p: 2 }}>
-          <ManualAssignmentPanel bookings={tabFiltered} />
-        </Box>
-      </Paper>
-    );
-  }
-
   return (
     <>
-      <Paper elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: 3, overflow: 'hidden' }}>
+      <Card sx={{ boxShadow: "0px 0px 1px 1px #eee", border: "1px solid #eeeeee", py: 2, mt: 2 }}>
         {/* Tabs */}
-        <Box sx={{ px: 2, pt: 2, pb: 1 }}>
-          <BookingTabs active={activeTab} bookings={bookings} onChange={handleTabChange} />
+        <Box sx={{ pb: 1 }}>
+          <BookingTabs active={activeTab} onChange={handleTabChange} />
         </Box>
 
-        <TableContainer>
+        <TableContainer sx={{ overflowX: 'auto' }}>
           <Table size="small" sx={{ minWidth: 900 }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f8fafc' }}>
@@ -220,7 +207,6 @@ const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => 
                 <HeadCell field="scheduledAt"   label="Booking Date"   {...headProps} />
                 <HeadCell field="totalAmount"   label="Amount"         {...headProps} align="right" />
                 <HeadCell field="status"        label="Status"         {...headProps} />
-                <HeadCell field="paymentStatus" label="Payment"        {...headProps} />
                 <HeadCell field={null}          label="Actions"        {...headProps} align="center" />
               </TableRow>
             </TableHead>
@@ -244,22 +230,22 @@ const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => 
                 </TableRow>
               )}
 
-              {/* Empty */}
-              {!isLoading && !error && paginated.length === 0 && (
+              {!isLoading && !error && sorted.length === 0 && (
                 <EmptyState message={bookings.length === 0 ? 'No bookings found.' : 'No bookings match this filter.'} />
               )}
 
               {/* Rows */}
-              {!isLoading && !error && paginated.map((booking) => {
+              {!isLoading && !error && sorted.map((booking) => {
                 const status = STATUS_CHIP[booking.status] ?? { label: booking.status, color: 'default' as const };
                 const payment = PAYMENT_CHIP[booking.paymentStatus?.toUpperCase?.()] ?? { label: booking.paymentStatus ?? '—', color: 'default' as const };
-                const needsAssign = booking.technician === null;
+                const needsAssign = booking.technician === null && booking.status !== BOOKING_STATUS.COMPLETED && booking.status !== BOOKING_STATUS.CANCELLED;
 
                 return (
                   <TableRow
                     key={booking.bookingId}
                     hover
-                    sx={{ '&:last-child td': { borderBottom: 0 }, cursor: 'default' }}
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => setDrawerBooking(booking)}
                   >
                     {/* Booking ID */}
                     <TableCell sx={{ fontSize: 13 }}>
@@ -323,19 +309,8 @@ const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => 
                       />
                     </TableCell>
 
-                    {/* Payment Status */}
-                    <TableCell>
-                      <Chip
-                        label={payment.label}
-                        color={payment.color}
-                        size="small"
-                        variant="outlined"
-                        sx={{ fontWeight: 600, fontSize: 11 }}
-                      />
-                    </TableCell>
-
                     {/* Actions */}
-                    <TableCell align="center">
+                    <TableCell align="center" onClick={(e) => e.stopPropagation()} sx={{ width: 100 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
                         {/* View */}
                         <Tooltip title="View details">
@@ -352,22 +327,24 @@ const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => 
                         </Tooltip>
 
                         {/* Assign shortcut for unassigned */}
-                        {needsAssign && (
-                          <Tooltip title="Assign technician">
-                            <IconButton
-                              size="small"
-                              onClick={() => setDrawerBooking(booking)}
-                              sx={{ color: '#f59e0b', '&:hover': { backgroundColor: '#fffbeb' } }}
-                            >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                                <line x1="19" y1="8" x2="23" y2="8" />
-                                <line x1="21" y1="6" x2="21" y2="10" />
-                              </svg>
-                            </IconButton>
-                          </Tooltip>
-                        )}
+                        <Tooltip title={needsAssign ? "Assign technician" : ""}>
+                          <IconButton
+                            size="small"
+                            onClick={() => needsAssign && setDrawerBooking(booking)}
+                            sx={{ 
+                              color: '#f59e0b', 
+                              '&:hover': { backgroundColor: '#fffbeb' },
+                              visibility: needsAssign ? 'visible' : 'hidden'
+                            }}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                              <circle cx="12" cy="7" r="4" />
+                              <line x1="19" y1="8" x2="23" y2="8" />
+                              <line x1="21" y1="6" x2="21" y2="10" />
+                            </svg>
+                          </IconButton>
+                        </Tooltip>
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -377,11 +354,10 @@ const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => 
           </Table>
         </TableContainer>
 
-        {/* Pagination */}
-        {!isLoading && !error && tabFiltered.length > 0 && (
+        {pagination && (
           <TablePagination
             component="div"
-            count={tabFiltered.length}
+            count={totalCount}
             page={page}
             onPageChange={(_, newPage) => setPage(newPage)}
             rowsPerPage={rowsPerPage}
@@ -393,7 +369,7 @@ const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => 
             sx={{ borderTop: '1px solid #e2e8f0', fontSize: 13 }}
           />
         )}
-      </Paper>
+      </Card>
 
       {/* Details drawer */}
       {drawerBooking && (

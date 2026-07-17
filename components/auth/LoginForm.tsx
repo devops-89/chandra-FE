@@ -14,6 +14,7 @@ import { validateIdentifier } from '@/lib/validator/identifier.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 const inputClassName =
   'h-11 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20';
@@ -74,8 +75,19 @@ export const LoginForm = () => {
 
       const { user, tokens } = response.data;
 
-      // Persist tokens + user — survives page refresh and tab close
-      localStorage.setItem('user',         JSON.stringify(user));
+      // Prevent Admin login from the public portal
+      if (user.role?.toUpperCase() === 'ADMIN') {
+        dispatch(
+          showSnackbar({
+            message: 'Admin login is restricted from this portal. Please use the Admin Panel.',
+            severity: 'error',
+          })
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      // Persist tokens — survives page refresh and tab close
       localStorage.setItem('accessToken',  tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
 
@@ -95,21 +107,7 @@ export const LoginForm = () => {
         // Store technicianProfile so PendingStatus can show the real submission date and status
         const technicianProfile = profileRes.data.technicianProfile;
         if (technicianProfile) {
-          try {
-            const stored = JSON.parse(localStorage.getItem('user') ?? '{}');
-            if (profileRes.data.createdAt) {
-              stored.createdAt = profileRes.data.createdAt;
-            }
-            stored.technicianProfile = {
-              ...stored.technicianProfile,
-              createdAt: technicianProfile.createdAt,
-              status: technicianProfile.status,
-              updatedAt: technicianProfile.updatedAt,
-            };
-            localStorage.setItem('user', JSON.stringify(stored));
-          } catch {
-            // ignore
-          }
+          // We no longer update local storage with user profile data here
         }
 
         redirectTo = getTechnicianRedirectPath({

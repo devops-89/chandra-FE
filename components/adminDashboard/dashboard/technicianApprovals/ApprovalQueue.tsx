@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { ServiceControllers } from '@/api/serviceControllers';
 
 
@@ -67,7 +67,7 @@ export default function ApprovalQueue() {
           };
         });
 
-        // Sort by createdAt descending → most recent first
+        // Sort by createdAt descending â†’ most recent first
         mapped.sort((a, b) => {
           if (!a.createdAt || !b.createdAt) return 0;
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -115,7 +115,7 @@ export default function ApprovalQueue() {
               </span>
             )}
             <button
-              onClick={() => router.push('/dashboard/admin/technicians')}
+              onClick={() => router.push('/admin/technicians')}
               className="flex items-center gap-0.5 text-xs font-medium text-emerald-700 hover:text-emerald-800 transition-colors cursor-pointer"
             >
               View all
@@ -128,7 +128,7 @@ export default function ApprovalQueue() {
         {isLoading && (
           <div className="flex items-center justify-center py-10 gap-3">
             <div className="h-6 w-6 animate-spin rounded-full border-4 border-slate-200 border-t-amber-500" />
-            <span className="text-sm text-slate-400">Loading requests…</span>
+            <span className="text-sm text-slate-400">Loading requestsâ€¦</span>
           </div>
         )}
 
@@ -143,7 +143,7 @@ export default function ApprovalQueue() {
           </div>
         )}
 
-        {/* Cards list — only recent MAX_RECENT */}
+        {/* Cards list â€” only recent MAX_RECENT */}
         {!isLoading && technicians.length > 0 && (
           <div className="space-y-3">
             {technicians.map((technician) => (
@@ -155,10 +155,10 @@ export default function ApprovalQueue() {
 
             {totalCount > MAX_RECENT && (
               <button
-                onClick={() => router.push('/dashboard/admin/technicians')}
+                onClick={() => router.push('/admin/technicians')}
                 className="w-full rounded-xl border border-dashed border-slate-200 py-2.5 text-xs font-medium text-slate-400 hover:border-emerald-300 hover:text-emerald-600 transition-colors cursor-pointer"
               >
-                +{totalCount - MAX_RECENT} more request{totalCount - MAX_RECENT !== 1 ? 's' : ''} — View all
+                +{totalCount - MAX_RECENT} more request{totalCount - MAX_RECENT !== 1 ? 's' : ''} â€” View all
               </button>
             )}
           </div>
@@ -166,4 +166,4 @@ export default function ApprovalQueue() {
       </div>
     </motion.div>
   );
-}
+}

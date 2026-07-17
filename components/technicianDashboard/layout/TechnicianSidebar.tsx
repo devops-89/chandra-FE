@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '@/redux/hooks';
 
 import { technicianNavigationConfig } from '@/constants/technician/navigationConfig';
-import { logout } from '@/redux/slices/authSlice';
+import { logoutUser } from '@/redux/slices/authSlice';
 
 interface TechnicianSidebarProps {
   onClose?: () => void;
@@ -24,7 +24,7 @@ export default function TechnicianSidebar({ onClose }: TechnicianSidebarProps) {
     return pathname.startsWith(href);
   };
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -32,9 +32,9 @@ export default function TechnicianSidebar({ onClose }: TechnicianSidebarProps) {
     onClose?.();
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.push('/login');
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    router.push('/');
   };
 
   return (

@@ -40,8 +40,15 @@ export const AdminControllers = {
     return response.data.data.data;
   },
 
-  getAdminBookings: async (page = 1, limit = 30): Promise<{ bookings: AdminBooking[]; pagination: BookingPagination }> => {
-    const response = await userSecuredApi.get<GetAdminBookingsResponse>(`/bookings/all?page=${page}&limit=${limit}`);
+  getAdminBookings: async (page = 1, limit = 10, status?: string, search?: string): Promise<{ bookings: AdminBooking[]; pagination: BookingPagination }> => {
+    let url = `/bookings/all?page=${page}&limit=${limit}`;
+    if (status && status !== 'all') {
+      url += `&status=${status}`;
+    }
+    if (search) {
+      url += `&search=${search}`;
+    }
+    const response = await userSecuredApi.get<GetAdminBookingsResponse>(url);
     return {
       bookings: response.data.data.data,
       pagination: response.data.data.pagination,

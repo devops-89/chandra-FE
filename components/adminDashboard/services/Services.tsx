@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchServices } from "@/redux/slices/servicesSlice";
@@ -34,7 +34,7 @@ const Services = () => {
 
         <button
           type="button"
-          onClick={() => router.push("/dashboard/admin/services/add")}
+          onClick={() => router.push("/admin/services/add")}
           className="rounded-xl bg-emerald-600 cursor-pointer px-5 py-3 font-medium text-white hover:bg-emerald-700 transition-colors self-start sm:self-auto"
         >
           Create Service
@@ -47,7 +47,7 @@ const Services = () => {
       {isLoading && (
         <div className="flex items-center justify-center py-16">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600" />
-          <span className="ml-3 text-sm text-slate-500">Loading services…</span>
+          <span className="ml-3 text-sm text-slate-500">Loading servicesâ€¦</span>
         </div>
       )}
 
@@ -65,7 +65,7 @@ const Services = () => {
         </div>
       )}
 
-      {/* Table — only rendered once loading is done and there is no error */}
+      {/* Table â€” only rendered once loading is done and there is no error */}
       {!isLoading && !error && <ServicesTable />}
     </div>
   );

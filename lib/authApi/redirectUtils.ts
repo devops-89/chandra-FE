@@ -22,7 +22,7 @@ export function getDashboardPathForRole(role?: string | null): string {
   const normalizedRole = role?.toUpperCase();
 
   if (normalizedRole === 'ADMIN') {
-    return '/dashboard/admin';
+    return '/admin/dashboard';
   }
 
   if (normalizedRole === 'TECHNICIAN') {
@@ -43,7 +43,7 @@ function isRedirectAllowedForRole(path: string, role?: string | null): boolean {
 
   const normalizedRole = role?.toUpperCase();
 
-  if (path.startsWith('/dashboard/admin')) {
+  if (path.startsWith('/admin')) {
     return normalizedRole === 'ADMIN';
   }
 
@@ -73,8 +73,8 @@ export function handlePostAuthRedirect(role?: string | null): string {
   return fallbackPath;
 }
 
-// ─── Technician-specific redirect ────────────────────────────────────────────
-// Imported lazily to avoid circular deps — called only from LoginForm for TECHNICIAN role.
+// â”€â”€â”€ Technician-specific redirect â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Imported lazily to avoid circular deps â€” called only from LoginForm for TECHNICIAN role.
 
 import {
   firstIncompleteRoute,
@@ -92,12 +92,12 @@ function normalizeStatus(status?: string | null): string {
  * Called with the response from GET /auth/profile.
  *
  * Priority:
- *   1. No technicianProfile → /technician/onboarding/register
- *   2. profile.status === 'PENDING_APPROVAL' → pending-verification
+ *   1. No technicianProfile â†’ /technician/onboarding/register
+ *   2. profile.status === 'PENDING_APPROVAL' â†’ pending-verification
  *   3. profile.isVerified === true OR user.status === 'ACTIVE' AND onboarding complete
- *      → /dashboard/technician
- *   4. profile.status === 'INCOMPLETE' → sync bitmask from profile → firstIncompleteRoute()
- *   5. Fallback → /dashboard/technician
+ *      â†’ /dashboard/technician
+ *   4. profile.status === 'INCOMPLETE' â†’ sync bitmask from profile â†’ firstIncompleteRoute()
+ *   5. Fallback â†’ /dashboard/technician
  */
 export function getTechnicianRedirectPath(params: {
   userStatus: string;
@@ -112,8 +112,8 @@ export function getTechnicianRedirectPath(params: {
     return '/technician/onboarding/register';
   }
 
-  // Always sync bitmask from backend — overwrites any stale localStorage state.
-  // This is the key to surviving localStorage.clear() — every login re-syncs.
+  // Always sync bitmask from backend â€” overwrites any stale localStorage state.
+  // This is the key to surviving localStorage.clear() â€” every login re-syncs.
   syncProgressFromProfile({
     id:                technicianProfile.id,
     services:          technicianProfile.services,
@@ -141,7 +141,7 @@ export function getTechnicianRedirectPath(params: {
     return '/dashboard/technician';
   }
 
-  // 4. Incomplete onboarding — go to first gap (bitmask already synced above)
+  // 4. Incomplete onboarding â€” go to first gap (bitmask already synced above)
   if (normalizedProfileStatus === 'PENDING_APPROVAL') {
     return firstIncompleteRoute();
   }

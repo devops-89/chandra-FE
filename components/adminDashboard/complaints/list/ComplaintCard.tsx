@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -66,7 +66,7 @@ const ComplaintCard = ({ complaint }: Props) => {
             </span>
 
             <button
-              onClick={() => router.push(`/dashboard/admin/complaints/${complaint.id}`)}
+              onClick={() => router.push(`/admin/complaints/${complaint.id}`)}
               className="text-emerald-600 hover:text-emerald-700 font-medium text-sm hover:underline cursor-pointer"
             >
               View

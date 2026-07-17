@@ -96,6 +96,19 @@ const authSlice = createSlice({
   },
 });
 
+import { AuthControllers } from '@/api/authControllers';
+import type { AppDispatch } from '../store';
+
 export const { setCredentials, updateTokens, logout, updateUser } = authSlice.actions;
+
+export const logoutUser = () => async (dispatch: AppDispatch) => {
+  try {
+    await AuthControllers.logout();
+  } catch (error) {
+    console.error('Logout API error:', error);
+  } finally {
+    dispatch(logout());
+  }
+};
 
 export default authSlice.reducer;

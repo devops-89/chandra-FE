@@ -286,6 +286,7 @@ export interface GetProfileResponse {
   statusCode: number;
   message: string;
   data: {
+    id: number;
     email: string;
     username: string;
     phone: string;

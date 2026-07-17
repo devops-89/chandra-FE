@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/sidebar/customerDashboardSidebarLinks';
 import { useAppDispatch } from '@/redux/hooks';
-import { logout } from '@/redux/slices/authSlice';
+import { logoutUser } from '@/redux/slices/authSlice';
 
 interface DashboardSidebarProps {
   isOpen: boolean;
@@ -44,8 +44,8 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
   const pathname = usePathname();
   const dispatch = useAppDispatch();
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
     router.push('/');
   };
 

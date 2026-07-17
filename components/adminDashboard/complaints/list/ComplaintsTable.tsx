@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   Box,
@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { deleteAdminComplaint, fetchAdminComplaints } from '@/redux/slices/adminComplaintSlice';
 import type { AdminComplaintListItem } from '@/types/admin/complaints.types';
 
-// ─── Types & Sorting helpers ──────────────────────────────────────────────────
+// â”€â”€â”€ Types & Sorting helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type SortField = 'id' | 'customer' | 'title' | 'createdAt' | 'status';
 type SortDir = 'asc' | 'desc';
@@ -51,7 +51,7 @@ function sortComplaints(
   });
 }
 
-// ─── Head cell with sort ──────────────────────────────────────────────────────
+// â”€â”€â”€ Head cell with sort â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface HeadCellProps {
   field: SortField | null;
@@ -110,7 +110,7 @@ function HeadCell({
   );
 }
 
-// ─── Status Chip config ───────────────────────────────────────────────────────
+// â”€â”€â”€ Status Chip config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const STATUS_CHIP: Record<
   string,
@@ -233,7 +233,7 @@ const ComplaintsTable = () => {
 
                   {/* Customer Name */}
                   <TableCell sx={{ fontSize: 13, fontWeight: 600, color: '#1e293b' }}>
-                    {complaint.createdBy?.name || '—'}
+                    {complaint.createdBy?.name || 'â€”'}
                   </TableCell>
 
                   {/* Title (Issue) */}
@@ -267,7 +267,7 @@ const ComplaintsTable = () => {
                     <Box sx={{ display: 'flex', gap: 2 }}>
                       <button
                         type="button"
-                        onClick={() => router.push(`/dashboard/admin/complaints/${complaint.id}`)}
+                        onClick={() => router.push(`/admin/complaints/${complaint.id}`)}
                         className="text-emerald-600 hover:text-emerald-700 font-semibold text-xs transition-colors cursor-pointer"
                       >
                         View

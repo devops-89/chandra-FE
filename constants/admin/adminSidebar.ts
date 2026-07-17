@@ -11,42 +11,56 @@ import {
 export const adminSidebarItems = [
   {
     label: "Dashboard",
-    href: "/dashboard/admin",
+    href: "/admin/dashboard",
     icon: LayoutDashboard,
   },
   {
     label: "Bookings",
-    href: "/dashboard/admin/bookings",
+    href: "/admin/bookings",
     icon: CalendarCheck,
   },
   // {
   //   label: "Customers",
-  //   href: "/dashboard/admin/customers",
+  //   href: "/admin/customers",
   //   icon: Users,
   // },
   {
     label: "Technicians",
-    href: "/dashboard/admin/technicians",
+    href: "/admin/technicians",
     icon: UserCog,
   },
   {
     label: "Services",
-    href: "/dashboard/admin/services",
+    href: "/admin/services",
     icon: Briefcase,
   },
   {
     label: "Finance",
-    href: "/dashboard/admin/finance",
+    href: "/admin/finance",
     icon: Wallet,
+    children: [
+      {
+        label: "Transactions",
+        href: "/admin/finance/transactions",
+      },
+      {
+        label: "Service Commission",
+        href: "/admin/finance/commission",
+      },
+      {
+        label: "Technician Payouts",
+        href: "/admin/finance/payouts",
+      },
+    ],
   },
   {
     label: "Reviews",
-    href: "/dashboard/admin/reviews",
+    href: "/admin/reviews",
     icon: Star,
   },
   {
     label: "Complaints",
-    href: "/dashboard/admin/complaints",
+    href: "/admin/complaints",
     icon: AlertTriangle,
   },
 ];
