@@ -10,7 +10,6 @@ import AreaSelector from './AreaSelector';
 import CoverageSummary from './CoverageSummary';
 import { useServiceArea } from './hooks/useServiceArea';
 import PincodeMapping from './PincodeMapping';
-import PreferredAreasInput from './PreferredAreasInput';
 import ServiceAreaFooter from './ServiceAreaFooter';
 import ServiceAreaHeader from './ServiceAreaHeader';
 
@@ -26,8 +25,6 @@ export default function ServiceArea({
   const {
     state,
     setRadius,
-    addArea,
-    removeArea,
     addPincode,
     removePincode,
     setServiceLocation,
@@ -136,12 +133,6 @@ export default function ServiceArea({
           </div>
         </section>
 
-        <PreferredAreasInput
-          selectedAreas={state.preferredAreas}
-          onAddArea={addArea}
-          onRemoveArea={removeArea}
-        />
-
         <PincodeMapping
           pincodes={state.pincodes}
           onAddPincode={addPincode}
@@ -158,7 +149,6 @@ export default function ServiceArea({
       <div className="hidden lg:block">
         <CoverageSummary
           radius={state.radius}
-          areasCount={state.preferredAreas.length}
           pincodesCount={state.pincodes.length}
         />
       </div>
@@ -167,7 +157,6 @@ export default function ServiceArea({
       <div className="lg:hidden">
         <CoverageSummary
           radius={state.radius}
-          areasCount={state.preferredAreas.length}
           pincodesCount={state.pincodes.length}
         />
       </div>

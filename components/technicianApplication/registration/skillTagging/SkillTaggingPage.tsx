@@ -32,6 +32,8 @@ const EQUIPMENT_OPTIONS: EquipmentOption[] = [
   { key: 'hasVehicle', label: 'Vehicle', icon: Car },
 ];
 
+const GST_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+
 const INITIAL_STATE: SkillsEquipmentState = {
   yearsOfExperience: '',
   languages: [],
@@ -41,6 +43,7 @@ const INITIAL_STATE: SkillsEquipmentState = {
   hasACGauges: false,
   hasSafetyEquipment: false,
   hasVehicle: false,
+  gst: '',
 };
 
 const INITIAL_VISIBLE_SERVICES = 6;
@@ -63,6 +66,7 @@ export default function SkillTaggingPage() {
 
   // ── Form state ─────────────────────────────────────────────────────────────
   const [state, setState] = useState<SkillsEquipmentState>(INITIAL_STATE);
+  const [gstError, setGstError] = useState<string | null>(null);
   const hasRestoredDraft = useRef(false);
 
   // ── Services from API ──────────────────────────────────────────────────────
@@ -180,6 +184,18 @@ export default function SkillTaggingPage() {
     }));
   };
 
+  const handleGstChange = (value: string) => {
+    const upper = value.toUpperCase();
+    setState((prev) => ({ ...prev, gst: upper }));
+    if (upper === '') {
+      setGstError(null);
+    } else if (!GST_REGEX.test(upper)) {
+      setGstError('Invalid GST format. Example: 22AAAAA0000A1Z5');
+    } else {
+      setGstError(null);
+    }
+  };
+
   const canProceed = useMemo(() => {
     return (
       state.services.length > 0 &&
@@ -187,9 +203,10 @@ export default function SkillTaggingPage() {
       state.yearsOfExperience !== null &&
       state.yearsOfExperience !== undefined &&
       Number(state.yearsOfExperience) >= 0 &&
-      state.languages.length > 0
+      state.languages.length > 0 &&
+      gstError === null
     );
-  }, [state.services, state.yearsOfExperience, state.languages]);
+  }, [state.services, state.yearsOfExperience, state.languages, gstError]);
 
   const handleNext = () => {
     if (!canProceed) return;
@@ -397,7 +414,40 @@ export default function SkillTaggingPage() {
         />
       </section>
 
-      {/* ── 5. Equipments ────────────────────────────────────────────────── */}
+      {/* ── 5. Business Details ──────────────────────────────────────────── */}
+      <section>
+        <SectionTitle
+          title="Business Details"
+          subtitle="Optional business information for your technician profile."
+        />
+        <div className="max-w-md space-y-1">
+          <label className="block text-sm font-medium text-gray-700">
+            GST Number{' '}
+            <span className="text-gray-400 font-normal">(Optional)</span>
+          </label>
+          <input
+            type="text"
+            value={state.gst}
+            onChange={(e) => handleGstChange(e.target.value)}
+            placeholder="22AAAAA0000A1Z5"
+            maxLength={15}
+            className={`w-full h-12 border rounded-xl px-4 text-base focus:outline-none focus:ring-2 transition ${
+              gstError
+                ? 'border-red-400 focus:ring-red-200 focus:border-red-500'
+                : 'border-slate-300 focus:ring-emerald-500 focus:border-transparent'
+            }`}
+          />
+          {gstError ? (
+            <p className="text-xs text-red-500 mt-1">{gstError}</p>
+          ) : (
+            <p className="text-xs text-gray-400 mt-1">
+              Leave blank if you are not GST registered.
+            </p>
+          )}
+        </div>
+      </section>
+
+      {/* ── 6. Equipments ────────────────────────────────────────────────── */}
       <section>
         <SectionTitle
           title="Equipments"
