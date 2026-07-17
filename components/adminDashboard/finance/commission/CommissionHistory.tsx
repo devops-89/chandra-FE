@@ -1,57 +1,91 @@
+"use client";
+
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+
 import { commissionHistoryData } from "@/constants/admin/commissionHistoryData";
 
 const CommissionHistory = () => {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
-      <div className="p-5 bg-emerald-600 ">
-        <div>
-          <h3 className="text-lg font-semibold text-white ">
-            Commission History
-          </h3>
-          <p className="mt-1 text-sm text-white">
-            Track all commission changes made by admins.
-          </p>
-        </div>
-      </div>
+    <Paper
+      elevation={0}
+      sx={{ border: "1px solid #e2e8f0", borderRadius: 3, overflow: "hidden" }}
+    >
+      <Box sx={{ p: 2.5, backgroundColor: "#059669", color: "#fff" }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+          Commission History
+        </Typography>
+        <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.8)", mt: 0.5, display: "block" }}>
+          Track all commission changes made by admins.
+        </Typography>
+      </Box>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-        {commissionHistoryData.map((history) => (
-          <div
-            key={history.id}
-            className="border border-slate-200 rounded-2xl bg-white p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between cursor-default"
-          >
-            <div>
-              <h4 className="font-semibold text-slate-900 leading-snug">
-                {history.serviceName}
-              </h4>
-              
-              <div className="flex items-center gap-3 mt-4">
-                <div>
-                  <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Was</p>
-                  <span className="inline-block rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-600 mt-1">
+      <TableContainer>
+        <Table size="small" sx={{ minWidth: 600 }}>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: "#f8fafc" }}>
+              <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Service
+              </TableCell>
+              <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Previous Rate
+              </TableCell>
+              <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                New Rate
+              </TableCell>
+              <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Updated By
+              </TableCell>
+              <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Updated At
+              </TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {commissionHistoryData.map((history) => (
+              <TableRow
+                key={history.id}
+                hover
+                sx={{
+                  "&:last-child td": { borderBottom: 0 },
+                  cursor: "default",
+                }}
+              >
+                <TableCell sx={{ fontSize: 13, fontWeight: 600, color: "#1e293b" }}>
+                  {history.serviceName}
+                </TableCell>
+                <TableCell sx={{ fontSize: 13 }}>
+                  <span className="inline-block rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-600">
                     {history.oldCommission}%
                   </span>
-                </div>
-                
-                <span className="text-slate-400 font-medium text-lg mt-3">→</span>
-                
-                <div>
-                  <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Now</p>
-                  <span className="inline-block rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 mt-1">
+                </TableCell>
+                <TableCell sx={{ fontSize: 13 }}>
+                  <span className="inline-block rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-600">
                     {history.newCommission}%
                   </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-slate-100 mt-4 pt-3 flex items-center justify-between text-xs text-slate-500">
-              <span>By {history.updatedBy}</span>
-              <span>{history.updatedAt}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+                </TableCell>
+                <TableCell sx={{ fontSize: 13, color: "#475569" }}>
+                  By {history.updatedBy}
+                </TableCell>
+                <TableCell sx={{ fontSize: 13, color: "#475569" }}>
+                  {history.updatedAt}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   );
 };
 

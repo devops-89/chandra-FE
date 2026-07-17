@@ -1,10 +1,117 @@
 'use client';
 
+import {
+  Box,
+  Chip,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TableSortLabel,
+  Typography,
+} from '@mui/material';
+import { useState } from 'react';
+
 import DeleteServiceModal from '@/components/adminDashboard/services/manageService/DeleteServiceModal';
 import EditServiceForm from '@/components/adminDashboard/services/manageService/EditServiceForm';
 import { useServiceManager } from '@/hooks/useServiceManager';
+import type { AdminService } from '@/types/admin/service.types';
 
-import ServiceRow from './ServiceRow';
+// Inline SVG data URI — no network request, never 404s
+const PLACEHOLDER =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='8' fill='%23e2e8f0'/%3E%3Cpath d='M16 30 Q24 18 32 30' stroke='%2394a3b8' stroke-width='2' fill='none'/%3E%3Ccircle cx='20' cy='22' r='3' fill='%2394a3b8'/%3E%3C/svg%3E";
+
+// ─── Types & Sorting helpers ──────────────────────────────────────────────────
+
+type SortField = 'name' | 'price' | 'status' | 'bookings';
+type SortDir = 'asc' | 'desc';
+
+function getSortValue(service: AdminService, field: SortField): string | number {
+  switch (field) {
+    case 'name':     return service.name.toLowerCase();
+    case 'price':    return service.price;
+    case 'status':   return service.status.toLowerCase();
+    case 'bookings': return service.bookings;
+    default:         return '';
+  }
+}
+
+function sortServices(
+  services: AdminService[],
+  field: SortField,
+  dir: SortDir,
+): AdminService[] {
+  return [...services].sort((a, b) => {
+    const av = getSortValue(a, field);
+    const bv = getSortValue(b, field);
+    if (av < bv) return dir === 'asc' ? -1 : 1;
+    if (av > bv) return dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
+// ─── Head cell with sort ──────────────────────────────────────────────────────
+
+interface HeadCellProps {
+  field: SortField | null;
+  label: string;
+  sortField: SortField;
+  sortDir: SortDir;
+  onSort: (field: SortField) => void;
+  align?: 'left' | 'right' | 'center';
+}
+
+function HeadCell({
+  field,
+  label,
+  sortField,
+  sortDir,
+  onSort,
+  align = 'left',
+}: HeadCellProps) {
+  if (!field) {
+    return (
+      <TableCell
+        align={align}
+        sx={{
+          fontWeight: 700,
+          fontSize: 12,
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          color: '#64748b',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {label}
+      </TableCell>
+    );
+  }
+  return (
+    <TableCell
+      align={align}
+      sx={{
+        fontWeight: 700,
+        fontSize: 12,
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+        color: '#64748b',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      <TableSortLabel
+        active={sortField === field}
+        direction={sortField === field ? sortDir : 'asc'}
+        onClick={() => onSort(field)}
+      >
+        {label}
+      </TableSortLabel>
+    </TableCell>
+  );
+}
 
 const ServicesTable = () => {
   const {
@@ -13,43 +120,159 @@ const ServicesTable = () => {
     deleteTarget, openDelete, closeDelete, confirmDelete,
   } = useServiceManager();
 
+  // Sorting & Pagination state
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortDir('asc');
+    }
+    setPage(0);
+  };
+
+  const sorted = sortServices(services, sortField, sortDir);
+  const paginated = sorted.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage,
+  );
+
+  const headProps = { sortField, sortDir, onSort: handleSort };
+
   return (
     <>
-      <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-200">
-            <thead>
-              <tr className="bg-emerald-600 text-white text-left">
-                <th className="p-4">Image</th>
-                <th className="p-4">Service</th>
-                <th className="p-4">Price</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Bookings</th>
-                <th className="p-4">Actions</th>
-              </tr>
-            </thead>
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e2e8f0', borderRadius: 3, overflow: 'hidden' }}
+      >
+        <TableContainer>
+          <Table size="small" sx={{ minWidth: 800 }}>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: '#f8fafc' }}>
+                <HeadCell field={null}       label="Image"      {...headProps} />
+                <HeadCell field="name"       label="Service"    {...headProps} />
+                <HeadCell field="price"      label="Price"      {...headProps} />
+                <HeadCell field="status"     label="Status"     {...headProps} />
+                <HeadCell field="bookings"   label="Bookings"   {...headProps} />
+                <HeadCell field={null}       label="Actions"    {...headProps} />
+              </TableRow>
+            </TableHead>
 
-            <tbody>
-              {services.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="py-16 text-center text-slate-400">
-                    No services found.
-                  </td>
-                </tr>
+            <TableBody>
+              {paginated.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 10 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No services found.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
               ) : (
-                services.map((service) => (
-                  <ServiceRow
+                paginated.map((service) => (
+                  <TableRow
                     key={service.id}
-                    service={service}
-                    onEdit={() => openEdit(service)}
-                    onDelete={() => openDelete(service)}
-                  />
+                    hover
+                    sx={{
+                      '&:last-child td': { borderBottom: 0 },
+                      cursor: 'default',
+                    }}
+                  >
+                    {/* Image */}
+                    <TableCell>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        width={48}
+                        height={48}
+                        src={service.image || PLACEHOLDER}
+                        alt={service.name}
+                        className="h-12 w-12 rounded-lg object-cover bg-slate-100"
+                        onError={(e) => {
+                          const img = e.currentTarget as HTMLImageElement;
+                          img.onerror = null;
+                          img.src = PLACEHOLDER;
+                        }}
+                      />
+                    </TableCell>
+
+                    {/* Service Name */}
+                    <TableCell sx={{ fontSize: 13, fontWeight: 600, color: '#1e293b' }}>
+                      {service.name}
+                    </TableCell>
+
+                    {/* Price */}
+                    <TableCell sx={{ fontSize: 13, color: '#475569' }}>
+                      ₹{service.price}
+                    </TableCell>
+
+                    {/* Status */}
+                    <TableCell>
+                      <Chip
+                        label={service.status}
+                        color={service.status === 'Active' ? 'success' : 'default'}
+                        size="small"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: 11,
+                          backgroundColor: service.status === 'Active' ? '#d1fae5' : '#f1f5f9',
+                          color: service.status === 'Active' ? '#065f46' : '#475569',
+                        }}
+                      />
+                    </TableCell>
+
+                    {/* Bookings */}
+                    <TableCell sx={{ fontSize: 13, color: '#475569' }}>
+                      {service.bookings}
+                    </TableCell>
+
+                    {/* Actions */}
+                    <TableCell>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <button
+                          type="button"
+                          onClick={() => openEdit(service)}
+                          className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition-colors cursor-pointer"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => openDelete(service)}
+                          className="rounded-xl bg-red-500 px-4 py-2 text-xs font-semibold text-white hover:bg-red-600 transition-colors cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* Pagination */}
+        {services.length > 0 && (
+          <TablePagination
+            component="div"
+            count={services.length}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 25, 50]}
+            sx={{ borderTop: '1px solid #e2e8f0', fontSize: 13 }}
+          />
+        )}
+      </Paper>
 
       {/* Edit drawer */}
       <EditServiceForm

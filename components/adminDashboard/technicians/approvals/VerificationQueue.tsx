@@ -3,7 +3,6 @@
 import {
   Box,
   Chip,
-  CircularProgress,
   IconButton,
   Paper,
   Table,
@@ -50,15 +49,15 @@ type SortDir = "asc" | "desc";
 
 function getSortValue(tech: Technician, field: SortField): string | number {
   switch (field) {
-    case "name":      return tech.name.toLowerCase();
-    case "city":      return tech.city.toLowerCase();
-    case "experience":return tech.experience;
-    case "skills":    return tech.skills.join(", ").toLowerCase();
-    case "status":    return tech.status.toLowerCase();
-    case "email":     return tech.email.toLowerCase();
-    case "phone":     return tech.phone.toLowerCase();
+    case "name": return tech.name.toLowerCase();
+    case "city": return tech.city.toLowerCase();
+    case "experience": return tech.experience;
+    case "skills": return tech.skills.join(", ").toLowerCase();
+    case "status": return tech.status.toLowerCase();
+    case "email": return tech.email.toLowerCase();
+    case "phone": return tech.phone.toLowerCase();
     case "appliedAt": return tech.appliedAt;
-    default:          return "";
+    default: return "";
   }
 }
 
@@ -141,10 +140,10 @@ const STATUS_CHIP: Record<
   string,
   { label: string; color: "success" | "warning" | "error" | "default" }
 > = {
-  APPROVED:         { label: "Approved",         color: "success" },
+  APPROVED: { label: "Approved", color: "success" },
   PENDING_APPROVAL: { label: "Pending Approval", color: "warning" },
-  REJECTED:         { label: "Rejected",          color: "error" },
-  NO_PROFILE:       { label: "No Profile",        color: "default" },
+  REJECTED: { label: "Rejected", color: "error" },
+  NO_PROFILE: { label: "No Profile", color: "default" },
 };
 
 const VerificationQueue = ({
@@ -222,14 +221,14 @@ const VerificationQueue = ({
             <Table size="small" sx={{ minWidth: 900 }}>
               <TableHead>
                 <TableRow sx={{ backgroundColor: "#f8fafc" }}>
-                  <HeadCell field="name"       label="Technician"   {...headProps} />
-                  <HeadCell field="city"       label="City"         {...headProps} />
+                  <HeadCell field="name" label="Technician"   {...headProps} />
+                  <HeadCell field="city" label="City"         {...headProps} />
                   <HeadCell field="experience" label="Experience"   {...headProps} align="right" />
-                  <HeadCell field="skills"     label="Skills"       {...headProps} />
-                  <HeadCell field="status"     label="Status"       {...headProps} />
-                  <HeadCell field="phone"      label="Phone"        {...headProps} />
-                  <HeadCell field="appliedAt"  label="Applied At"   {...headProps} />
-                  <HeadCell field={null}       label="Actions"      {...headProps} align="center" />
+                  <HeadCell field="skills" label="Skills"       {...headProps} />
+                  <HeadCell field="status" label="Status"       {...headProps} />
+                  <HeadCell field="phone" label="Phone"        {...headProps} />
+                  <HeadCell field="appliedAt" label="Applied At"   {...headProps} />
+                  <HeadCell field={null} label="Actions"      {...headProps} align="center" />
                 </TableRow>
               </TableHead>
 
