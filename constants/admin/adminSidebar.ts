@@ -4,7 +4,6 @@ import {
   CalendarCheck,
   LayoutDashboard,
   Star,
-  User,
   UserCog,
   Wallet,
 } from "lucide-react";
@@ -49,10 +48,5 @@ export const adminSidebarItems = [
     label: "Complaints",
     href: "/dashboard/admin/complaints",
     icon: AlertTriangle,
-  },
-  {
-    label: "Profile",
-    href: "/dashboard/admin/profile",
-    icon: User,
   },
 ];
