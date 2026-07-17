@@ -1,9 +1,10 @@
 'use client';
 
-import UnifiedBookingPage from '@/components/booking/UnifiedBookingPage';
-import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+
+import UnifiedBookingPage from '@/components/booking/UnifiedBookingPage';
+import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
 
 function BookingContent() {
   const searchParams = useSearchParams();

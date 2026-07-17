@@ -1,6 +1,7 @@
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+
 import { CustomerControllers } from '@/api/customerControllers';
 import type { CustomerDashboardStats } from '@/types/customer/dashboard.types';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 interface CustomerDashboardState {
   stats: CustomerDashboardStats | null;

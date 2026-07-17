@@ -10,7 +10,7 @@ export default function ActiveJobsSection() {
     <motion.div
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.2, ease: 'easeOut' as any }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
       className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md overflow-hidden cursor-default transition-shadow"
     >
       {/* Header */}

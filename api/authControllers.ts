@@ -1,4 +1,3 @@
-import { authPublicApi, authSecuredApi, userSecuredApi, userPublicApi } from './config';
 import type {
   ForgotPasswordRequest,
   ForgotPasswordResponse,
@@ -16,6 +15,8 @@ import type {
   VerifyOtpRequest,
   VerifyOtpResponse,
 } from '@/types/auth.types';
+
+import { authPublicApi, authSecuredApi, userPublicApi } from './config';
 
 export const AuthControllers = {
   login: async (payload: LoginRequest): Promise<LoginResponse> => {
@@ -85,8 +86,8 @@ export const AuthControllers = {
 
   registerTechnician: async (
     payload: RegisterTechnicianRequest,
-    technicianProfile: any,
-    files: any
+    technicianProfile: Record<string, unknown>,
+    files: Record<string, Blob | string | undefined | null>
   ): Promise<RegisterTechnicianResponse> => {
     try {
       const formData = new FormData();

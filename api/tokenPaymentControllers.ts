@@ -1,5 +1,6 @@
-import { userSecuredApi } from './config';
 import type { CreateTokenPaymentLinkResponse, TokenPaymentLink } from '@/types/customer/tokenPayment.types';
+
+import { userSecuredApi } from './config';
 
 export const TokenPaymentControllers = {
   createTokenPaymentLink: async (): Promise<TokenPaymentLink> => {

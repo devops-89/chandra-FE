@@ -52,7 +52,7 @@ export default function ForgotPasswordForm() {
       if (result) {
         router.push(`/reset-password?phone=${encodeURIComponent(phone)}`);
       }
-    } catch (err) {
+    } catch {
       // Handled by Redux slice state (apiError)
     }
   };

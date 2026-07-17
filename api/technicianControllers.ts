@@ -1,5 +1,6 @@
-import { authSecuredApi } from './config';
 import type { TechnicianProfileResponse, TechnicianUser } from '@/types/technician/profile.types';
+
+import { authSecuredApi } from './config';
 
 export const TechnicianControllers = {
   getTechnicianProfile: async (): Promise<TechnicianUser> => {

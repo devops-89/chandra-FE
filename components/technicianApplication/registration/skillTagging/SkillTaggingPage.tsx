@@ -1,10 +1,10 @@
 'use client';
-import { ServiceControllers } from '@/api/serviceControllers';
 import type { LucideIcon } from 'lucide-react';
 import { Car, Hammer, Search, Shield, Wrench } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { ServiceControllers } from '@/api/serviceControllers';
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import type { AdminService } from '@/types/admin/service.types';
 import type { BrandExpertiseEntry, SkillsEquipmentState } from '@/types/technicianApplication/skillTagging.types';

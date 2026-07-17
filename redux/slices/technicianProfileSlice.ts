@@ -1,6 +1,6 @@
-import { TechnicianControllers } from '@/api/technicianControllers';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { TechnicianControllers } from '@/api/technicianControllers';
 import type { TechnicianUser } from '@/types/technician/profile.types';
 
 // ─── State ─────────────────────────────────────────────────────────────

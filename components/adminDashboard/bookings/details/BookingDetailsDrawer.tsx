@@ -15,9 +15,9 @@ interface Props {
 }
 
 const BookingDetailsDrawer = ({ open, onClose, booking: initialBooking }: Props) => {
-  const [booking, setBooking] = useState<AdminBooking>(initialBooking);
-  const [assignOpen, setAssignOpen] = useState(false);
-  const [reassignOpen, setReassignOpen] = useState(false);
+  const [booking, _setBooking] = useState<AdminBooking>(initialBooking);
+  const [_assignOpen, _setAssignOpen] = useState(false);
+  const [_reassignOpen, _setReassignOpen] = useState(false);
 
   if (!open) return null;
 

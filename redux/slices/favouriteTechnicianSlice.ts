@@ -1,9 +1,9 @@
-import { FavouriteTechnicianControllers } from '@/api/favouriteTechnicianControllers';
 import {
   createAsyncThunk,
   createSlice,
 } from '@reduxjs/toolkit';
 
+import { FavouriteTechnicianControllers } from '@/api/favouriteTechnicianControllers';
 import type { FavouriteTechnician } from '@/types/customer/favouriteTechnician.types';
 
 interface FavouriteTechnicianState {

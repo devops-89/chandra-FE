@@ -17,13 +17,14 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import { ClipboardList, Eye, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 
 import type { AdminBooking } from '@/types/admin/bookings.types';
 
 import BookingDetailsDrawer from '../details/BookingDetailsDrawer';
-import ManualAssignmentPanel from './ManualAssignmentPanel';
 import BookingTabs, { type BookingTab } from './BookingTabs';
+import ManualAssignmentPanel from './ManualAssignmentPanel';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -158,6 +159,163 @@ function EmptyState({ message }: { message: string }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
+function MobileState({ message, type }: { message: string; type: 'empty' | 'error' | 'loading' }) {
+  return (
+    <div className="flex min-h-52 flex-col items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-white p-6 text-center">
+      {type === 'loading' ? (
+        <CircularProgress size={30} sx={{ color: '#059669' }} />
+      ) : (
+        <div
+          className={`flex h-12 w-12 items-center justify-center rounded-full ${
+            type === 'error' ? 'bg-red-50 text-red-600' : 'bg-slate-100 text-slate-400'
+          }`}
+        >
+          <ClipboardList size={24} />
+        </div>
+      )}
+      <p className={`text-sm font-medium ${type === 'error' ? 'text-red-600' : 'text-slate-600'}`}>
+        {message}
+      </p>
+    </div>
+  );
+}
+
+interface MobileBookingsListProps {
+  bookings: AdminBooking[];
+  emptyMessage: string;
+  error: string | null;
+  isLoading: boolean;
+  onOpen: (booking: AdminBooking) => void;
+}
+
+function MobileBookingsList({
+  bookings,
+  emptyMessage,
+  error,
+  isLoading,
+  onOpen,
+}: MobileBookingsListProps) {
+  if (isLoading) {
+    return <MobileState message="Loading bookings..." type="loading" />;
+  }
+
+  if (error) {
+    return <MobileState message={error} type="error" />;
+  }
+
+  if (bookings.length === 0) {
+    return <MobileState message={emptyMessage} type="empty" />;
+  }
+
+  return (
+    <div className="space-y-4">
+      {bookings.map((booking) => {
+        const status = STATUS_CHIP[booking.status] ?? { label: booking.status, color: 'default' as const };
+        const payment = PAYMENT_CHIP[booking.paymentStatus?.toUpperCase?.()] ?? { label: booking.paymentStatus ?? '---', color: 'default' as const };
+        const needsAssign = booking.technician === null;
+
+        return (
+          <article
+            key={booking.bookingId}
+            className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
+                  #{booking.bookingId}
+                </p>
+                <h3 className="mt-2 break-words text-base font-semibold leading-snug text-slate-900">
+                  {booking.customer.name}
+                </h3>
+                <p className="mt-1 text-sm text-slate-600">
+                  {booking.customer.phone}
+                </p>
+              </div>
+
+              <div className="flex shrink-0 flex-col items-end gap-2">
+                <Chip
+                  label={status.label}
+                  color={status.color}
+                  size="small"
+                  sx={{ fontWeight: 700, fontSize: 11 }}
+                />
+                <Chip
+                  label={payment.label}
+                  color={payment.color}
+                  size="small"
+                  variant="outlined"
+                  sx={{ fontWeight: 700, fontSize: 11 }}
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p className="text-xs font-medium text-slate-500">Service</p>
+                <p className="mt-1 font-semibold text-slate-900">
+                  {booking.service?.name ?? '---'}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-medium text-slate-500">Amount</p>
+                <p className="mt-1 font-bold text-slate-900">
+                  ₹{booking.totalAmount ?? '0'}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-medium text-slate-500">Date</p>
+                <p className="mt-1 font-semibold text-slate-800">
+                  {formatDate(booking.scheduledAtIst || booking.scheduledAt)}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-medium text-slate-500">Technician</p>
+                {booking.technician ? (
+                  <>
+                    <p className="mt-1 font-semibold text-slate-900">
+                      {booking.technician.name}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {booking.technician.phone}
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-1 font-semibold text-amber-600">Unassigned</p>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 gap-2 border-t border-slate-100 pt-4">
+              <button
+                type="button"
+                onClick={() => onOpen(booking)}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 cursor-pointer"
+              >
+                <Eye size={16} />
+                View Details
+              </button>
+
+              {needsAssign && (
+                <button
+                  type="button"
+                  onClick={() => onOpen(booking)}
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 text-sm font-semibold text-amber-700 transition-colors hover:bg-amber-100 cursor-pointer"
+                >
+                  <UserPlus size={16} />
+                  Assign Technician
+                </button>
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
 const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => {
   const [activeTab, setActiveTab] = useState<BookingTab>('all');
   const [sortField, setSortField] = useState<SortField>('scheduledAt');
@@ -184,6 +342,7 @@ const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => 
   const tabFiltered = filterByTab(bookings, activeTab);
   const sorted = sortBookings(tabFiltered, sortField, sortDir);
   const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const emptyMessage = bookings.length === 0 ? 'No bookings found.' : 'No bookings match this filter.';
 
   const headProps = { sortField, sortDir, onSort: handleSort };
 
@@ -209,7 +368,17 @@ const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => 
           <BookingTabs active={activeTab} bookings={bookings} onChange={handleTabChange} />
         </Box>
 
-        <TableContainer>
+        <Box sx={{ display: { xs: 'block', md: 'none' }, px: 2, pb: 2 }}>
+          <MobileBookingsList
+            bookings={paginated}
+            emptyMessage={emptyMessage}
+            error={error}
+            isLoading={isLoading}
+            onOpen={setDrawerBooking}
+          />
+        </Box>
+
+        <TableContainer sx={{ display: { xs: 'none', md: 'block' } }}>
           <Table size="small" sx={{ minWidth: 900 }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f8fafc' }}>
@@ -246,7 +415,7 @@ const BookingsTable = ({ bookings, isLoading = false, error = null }: Props) => 
 
               {/* Empty */}
               {!isLoading && !error && paginated.length === 0 && (
-                <EmptyState message={bookings.length === 0 ? 'No bookings found.' : 'No bookings match this filter.'} />
+                <EmptyState message={emptyMessage} />
               )}
 
               {/* Rows */}

@@ -1,10 +1,8 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
-
-
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { AuthControllers } from '@/api/authControllers';
 import TechnicianDashboardLayout from '@/components/technicianDashboard/layout/TechnicianDashboardLayout';
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { getTechnicianRedirectPath } from '@/lib/authApi/redirectUtils';

@@ -23,7 +23,7 @@ export default function BookingDetailsPage() {
   const id = params?.id;
 
   const [booking, setBooking] = useState<CustomerBooking | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!id);
   const [error, setError] = useState<string | null>(null);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
@@ -31,7 +31,6 @@ export default function BookingDetailsPage() {
 
   useEffect(() => {
     if (!id) {
-      setLoading(false);
       return;
     }
 

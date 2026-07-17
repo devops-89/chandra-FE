@@ -1,9 +1,10 @@
 'use client';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+
 import { AuthControllers } from '@/api/authControllers';
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import type { PersonalInfoFormData, ValidationErrors } from '@/types/technicianApplication/personalInfo.types';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
 
 
 function validateFirstName(v: string): string | undefined {

@@ -1,7 +1,7 @@
-import { ServiceControllers } from '@/api/serviceControllers';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { ServiceControllers } from '@/api/serviceControllers';
 import type { AdminService, CreateServiceRequest, UpdateServiceRequest } from '@/types/admin/service.types';
 
 // ─── State ────────────────────────────────────────────────────────────────────

@@ -1,10 +1,11 @@
-import { userSecuredApi } from './config';
 import type {
   Complaint,
   CreateComplaintRequest,
   CreateComplaintResponse,
   UpdateComplaintRequest,
 } from '@/types/complaint.types';
+
+import { userSecuredApi } from './config';
 
 export const ComplaintControllers = {
   createComplaint: async (payload: CreateComplaintRequest): Promise<Complaint> => {

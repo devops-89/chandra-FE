@@ -9,7 +9,7 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <DashboardOverview />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
         <ActiveJobsSection />
         <ApprovalQueue />
       </div>
