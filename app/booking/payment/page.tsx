@@ -30,8 +30,6 @@ function TokenPaymentContent() {
       createTokenPaymentLink(),
     ).unwrap();
 
-    console.log('Payment Response:', data);
-
     if (data.paymentLink) {
       // Opens the Razorpay payment link in a new tab
       window.open(data.paymentLink, '_blank');

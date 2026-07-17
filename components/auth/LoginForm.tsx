@@ -1,13 +1,17 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
 
-
+import {
+  IconButton,
+  InputAdornment,
+  TextField,
+} from '@mui/material';
 import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { AuthControllers } from '@/api/authControllers';
 import { loginContent } from '@/constants/auth/loginContent';
 import { getTechnicianRedirectPath, handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
 import { validateIdentifier } from '@/lib/validator/identifier.validator';
@@ -20,6 +24,21 @@ const inputClassName =
   'h-11 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20';
 
 const errorClassName = 'text-xs font-medium text-red-600';
+
+const textFieldStyles = {
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '0.5rem',
+    '&:hover fieldset': {
+      borderColor: '#10b981',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#059669',
+    },
+  },
+  '& .MuiInputLabel-root.Mui-focused': {
+    color: '#059669',
+  },
+};
 
 type LoginFormData = {
   identifier: string;
@@ -94,7 +113,7 @@ export const LoginForm = () => {
       dispatch(
         setCredentials({
           user,
-          accessToken:  tokens.accessToken,
+          accessToken: tokens.accessToken,
           refreshToken: tokens.refreshToken,
         }),
       );
@@ -213,45 +232,52 @@ export const LoginForm = () => {
             )}
 
             {/* Email or Mobile Number */}
-            <label className="grid gap-1.5">
-              <span className="text-sm font-medium text-slate-700">Email or Mobile Number</span>
-              <input
-                className={inputClassName}
-                name="identifier"
-                type="text"
-                value={form.identifier}
-                onChange={(e) => handleChange('identifier', e.target.value)}
-              />
-              {errors.identifier && <span className={errorClassName}>{errors.identifier}</span>}
-            </label>
+            <TextField
+              label="Email or Mobile Number"
+              variant="outlined"
+              fullWidth
+              name="identifier"
+              value={form.identifier}
+              onChange={(e) => handleChange('identifier', e.target.value)}
+              error={!!errors.identifier}
+              helperText={errors.identifier}
+              sx={textFieldStyles}
+            />
 
             {/* Password */}
-            <label className="grid gap-1.5">
-              <span className="text-sm font-medium text-slate-700">Password</span>
-              <div className="relative">
-                <input
-                  className={`${inputClassName} w-full pr-10`}
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={form.password}
-                  onChange={(e) => handleChange('password', e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={handleTogglePassword}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.password && <span className={errorClassName}>{errors.password}</span>}
-            </label>
+            <TextField
+              label="Password"
+              variant="outlined"
+              fullWidth
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              value={form.password}
+              onChange={(e) => handleChange('password', e.target.value)}
+              error={!!errors.password}
+              helperText={errors.password}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleTogglePassword}
+                        edge="end"
+                        sx={{ color: '#94a3b8' }}
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              sx={textFieldStyles}
+            />
 
             {/* Remember me + Forgot password */}
             <div className="flex items-center justify-between gap-3 text-sm">
               <label className="flex items-center gap-2 text-slate-700">
                 <input
-                  className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  className="h-4 w-4 rounded cursor-pointer border-slate-300 text-emerald-600 focus:ring-emerald-500"
                   type="checkbox"
                 />
                 Remember me

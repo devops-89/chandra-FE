@@ -14,8 +14,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-import { payoutsData } from "@/constants/admin/financeData";
 import type { Payout } from "@/constants/admin/financeData";
+import { payoutsData } from "@/constants/admin/financeData";
 
 import ReleasePayoutModal from "./ReleasePayoutModal";
 
@@ -29,10 +29,10 @@ const STATUS_CHIP: Record<
 
 const PayoutTable = () => {
   const [open, setOpen] = useState(false);
-  const [selectedPayout, setSelectedPayout] = useState<Payout | null>(null);
+  const [_selectedPayout, _setSelectedPayout] = useState<Payout | null>(null);
 
   const handleOpenReleaseModal = (payout: Payout) => {
-    setSelectedPayout(payout);
+    _setSelectedPayout(payout);
     setOpen(true);
   };
 
@@ -145,7 +145,7 @@ const PayoutTable = () => {
         open={open}
         onClose={() => {
           setOpen(false);
-          setSelectedPayout(null);
+          _setSelectedPayout(null);
         }}
       />
     </>

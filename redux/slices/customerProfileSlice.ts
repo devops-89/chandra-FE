@@ -1,6 +1,6 @@
-import { CustomerControllers } from '@/api/customerControllers';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { CustomerControllers } from '@/api/customerControllers';
 import type {Address, CreateAddressRequest, UpdateAddressRequest,} from '@/types/address.types';
 import type { CustomerProfile, UpdateCustomerProfileRequest } from '@/types/customer/profile.types';
 

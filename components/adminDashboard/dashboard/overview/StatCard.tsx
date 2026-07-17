@@ -24,18 +24,30 @@ export default function StatCard({
     <motion.div
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.2, ease: 'easeOut' as any }}
-      className={`rounded-2xl border bg-white shadow-sm hover:shadow-md p-5 cursor-default transition-shadow ${
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className={`min-h-32 min-w-0 rounded-2xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:p-5 cursor-default ${
         priority ? 'border-red-200 bg-red-50/20' : 'border-slate-200'
       }`}
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
+      <div className="flex h-full min-w-0 flex-col justify-between gap-4">
+        <div className="min-w-0">
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-xs font-medium leading-snug text-slate-500 sm:text-sm">{title}</p>
 
-          <div className="mt-2 flex items-center gap-2">
+            <div
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12 ${
+                priority
+                  ? 'bg-red-100 text-red-600'
+                  : 'bg-emerald-100 text-emerald-700'
+              }`}
+            >
+              {icon}
+            </div>
+          </div>
+
+          <div className="mt-3 flex min-w-0 flex-wrap items-center gap-2">
             <h3
-              className={`text-3xl font-bold ${
+              className={`text-2xl font-bold leading-none sm:text-3xl ${
                 priority ? 'text-red-600' : 'text-slate-900'
               }`}
             >
@@ -43,28 +55,18 @@ export default function StatCard({
             </h3>
 
             {subtitle && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-red-100 text-red-600">
+              <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold uppercase text-red-600">
                 {subtitle}
               </span>
             )}
           </div>
 
           {!priority && (
-            <div className="mt-3 flex items-center gap-1 text-emerald-600 text-xs font-medium">
+            <div className="mt-3 flex items-center gap-1 text-xs font-medium text-emerald-600">
               <TrendingUp size={13} />
               +8.4% this week
             </div>
           )}
-        </div>
-
-        <div
-          className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${
-            priority
-              ? 'bg-red-100 text-red-600'
-              : 'bg-emerald-100 text-emerald-700'
-          }`}
-        >
-          {icon}
         </div>
       </div>
     </motion.div>

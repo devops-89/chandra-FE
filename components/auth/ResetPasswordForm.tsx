@@ -105,7 +105,7 @@ export default function ResetPasswordForm() {
       setTimeout(() => {
         router.replace('/login');
       }, 1000);
-    } catch (err) {
+    } catch {
       // Handled by Redux state
     }
   };

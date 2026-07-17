@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance, type InternalAxiosRequestConfig, type AxiosError, type AxiosResponse } from 'axios';
+import axios, { type AxiosError, type AxiosInstance, type AxiosResponse,type InternalAxiosRequestConfig } from 'axios';
 
 import { logout, updateTokens } from '@/redux/slices/authSlice';
 import { getAppStore } from '@/redux/storeAccessor';
@@ -49,7 +49,7 @@ const userPublicApi = axios.create({
   baseURL: SERVER_ENDPOINTS.USER_BASEURL,
 });
 
-export { authPublicApi, authSecuredApi, userSecuredApi, userPublicApi };
+export { authPublicApi, authSecuredApi, userPublicApi,userSecuredApi };
 
 let isRefreshing = false;
 

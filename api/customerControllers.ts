@@ -1,4 +1,3 @@
-import { userSecuredApi } from './config';
 import type {
   Address,
   CreateAddressRequest,
@@ -13,6 +12,8 @@ import type {
   UpdateCustomerProfileRequest,
   UpdateCustomerProfileResponse,
 } from '@/types/customer/profile.types';
+
+import { userSecuredApi } from './config';
 
 export const CustomerControllers = {
   getCustomerProfile: async (): Promise<CustomerProfile> => {
@@ -46,7 +47,7 @@ export const CustomerControllers = {
     return id;
   },
 
-  getCustomerDashboardStats: async (): Promise<any> => {
+  getCustomerDashboardStats: async (): Promise<unknown> => {
     const response = await userSecuredApi.get('/users/customer/dashboard-stats');
     return response.data.data.data;
   },

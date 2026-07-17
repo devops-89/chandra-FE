@@ -22,7 +22,7 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchAdminBookings } from '@/redux/slices/adminBookingSlice';
 import type { AdminBooking } from '@/types/admin/bookings.types';
-import { BOOKING_STATUS, BOOKING_PAYMENT_STATUS } from '@/types/enums';
+import { BOOKING_PAYMENT_STATUS, BOOKING_STATUS } from '@/types/enums';
 
 import BookingDetailsDrawer from '../details/BookingDetailsDrawer';
 import BookingTabs, { type BookingTab } from './BookingTabs';

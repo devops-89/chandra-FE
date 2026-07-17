@@ -1,4 +1,3 @@
-import { userSecuredApi } from './config';
 import type {
   AdminService,
   ApiService,
@@ -7,6 +6,8 @@ import type {
   ServiceStatus,
   UpdateServiceRequest,
 } from '@/types/admin/service.types';
+
+import { userSecuredApi } from './config';
 
 function normalizeService(raw: ApiService): AdminService {
   const status: ServiceStatus = raw.isActive ? 'Active' : 'Inactive';

@@ -1,9 +1,7 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
-
-
 import { useCallback, useEffect, useState } from 'react';
 
+import { AuthControllers } from '@/api/authControllers';
 import { getAreaKm } from '@/data/technicianOnboarding/serviceAreaData';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';

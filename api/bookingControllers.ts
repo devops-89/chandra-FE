@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { userSecuredApi } from './config';
+
 import type {
   Booking,
   CreateBookingRequest,
@@ -14,6 +14,8 @@ import type {
   CustomerBooking,
   CustomerBookingsResponse,
 } from '@/types/customerBooking.types';
+
+import { userSecuredApi } from './config';
 
 type BookingResponseEnvelope =
   | CreateBookingResponse

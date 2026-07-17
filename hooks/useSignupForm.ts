@@ -1,10 +1,8 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
-
-
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { AuthControllers } from '@/api/authControllers';
 import { handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
 import { validateSignup } from '@/lib/validator/signup.validator';
 import { useAppDispatch } from '@/redux/hooks';

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+
 import BasicInfoFields from './BasicInfoFields';
 import ContinueButton from './ContinueButton';
 import EmailAndPasswordFields from './EmailAndPasswordFields';

@@ -1,6 +1,6 @@
-import { AuthControllers } from '@/api/authControllers';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { AuthControllers } from '@/api/authControllers';
 import type {
   ForgotPasswordRequest,
   ForgotPasswordResponse,

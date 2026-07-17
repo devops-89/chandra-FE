@@ -1,6 +1,6 @@
-import { BookingControllers } from '@/api/bookingControllers';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { BookingControllers } from '@/api/bookingControllers';
 import type {
   CancelBookingRequest,
   CancelledBooking,

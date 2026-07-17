@@ -1,6 +1,6 @@
-import { ComplaintControllers } from '@/api/complaintControllers';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { ComplaintControllers } from '@/api/complaintControllers';
 import type {
   Complaint,
   CreateComplaintRequest,

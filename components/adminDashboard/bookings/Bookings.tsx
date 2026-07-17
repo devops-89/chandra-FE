@@ -1,5 +1,7 @@
 'use client';
 
+
+
 import BookingsTable from './list/BookingsTable';
 
 const Bookings = () => {

@@ -1,4 +1,8 @@
-import { userSecuredApi } from './config';
+import type {
+  AdminBooking,
+  BookingPagination,
+  GetAdminBookingsResponse,
+} from '@/types/admin/bookings.types';
 import type {
   AdminComplaint,
   AdminComplaintListItem,
@@ -8,12 +12,9 @@ import type {
   ResolveComplaintRequest,
   ResolveComplaintResponse,
 } from '@/types/admin/complaints.types';
-import type {
-  AdminBooking,
-  BookingPagination,
-  GetAdminBookingsResponse,
-} from '@/types/admin/bookings.types';
 import { type UpdateProfileRequest } from '@/types/admin/profile.types';
+
+import { userSecuredApi } from './config';
 
 export const AdminControllers = {
   getAdminComplaintById: async (id: number): Promise<AdminComplaint> => {

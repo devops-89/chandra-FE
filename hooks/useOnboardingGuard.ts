@@ -1,10 +1,8 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
-
-
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
+import { AuthControllers } from '@/api/authControllers';
 import { getTechnicianRedirectPath } from '@/lib/authApi/redirectUtils';
 import {
   firstIncompleteRoute,

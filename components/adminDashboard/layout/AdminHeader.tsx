@@ -61,12 +61,12 @@ const AdminHeader = ({ onMenuClick }: AdminHeaderProps) => {
           <Menu size={24} />
         </button>
 
-        <div className="relative w-full max-w-xs sm:max-w-sm lg:max-w-md hidden sm:block">
+        <div className="min-w-0 flex-1 sm:max-w-sm lg:max-w-md">
           {/* <Search
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
           /> */}
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900">Admin Portal</h1>
+            <h1 className="truncate text-lg font-bold leading-tight text-slate-900 sm:text-2xl lg:text-3xl">Admin Portal</h1>
 
             <p className="text-sm sm:text-sm text-slate-500 hidden sm:block">
             Manage your Customers and services

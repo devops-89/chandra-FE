@@ -1,6 +1,6 @@
-import { AdminControllers } from '@/api/adminControllers';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { AdminControllers } from '@/api/adminControllers';
 import type {
   AdminComplaint,
   AdminComplaintListItem,

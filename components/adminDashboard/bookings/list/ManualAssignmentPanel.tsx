@@ -11,7 +11,7 @@ interface Props {
 }
 
 const ManualAssignmentPanel = ({ bookings }: Props) => {
-  const [assignTarget, setAssignTarget] =
+  const [_assignTarget, _setAssignTarget] =
     useState<AdminBooking | null>(null);
 
   const unassigned = bookings.filter(
