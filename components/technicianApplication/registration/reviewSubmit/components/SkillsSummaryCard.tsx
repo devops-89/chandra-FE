@@ -16,6 +16,7 @@ export default function SkillsSummaryCard({
   hasACGauges,
   hasSafetyEquipment,
   hasVehicle,
+  gst,
   onEdit,
 }: SkillsSummaryCardProps) {
   const equipmentList = [
@@ -120,6 +121,16 @@ export default function SkillsSummaryCard({
                 </span>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Business Details — GST */}
+        {gst && (
+          <div>
+            <p className="text-xs font-semibold text-charcoal-light uppercase tracking-wider mb-1">
+              GST Number
+            </p>
+            <p className="text-base font-mono font-medium text-on-surface uppercase">{gst}</p>
           </div>
         )}
 

@@ -10,7 +10,6 @@ import { cardHoverVariants, pulseVariants } from '../animations/reviewAnimations
 
 export default function ServiceCoverageCard({
   radius,
-  areas,
   latitude,
   longitude,
   fullAddress,
@@ -62,13 +61,6 @@ export default function ServiceCoverageCard({
           </div>
         </div>
       )}
-
-      <div className="mb-1 mt-4 text-xs font-semibold uppercase tracking-wider text-charcoal-light">
-        Serving Areas
-      </div>
-      <p className="text-sm font-medium text-on-surface">
-        {areas.length > 0 ? areas.join(', ') : 'No preferred areas selected'}
-      </p>
     </motion.div>
   );
 }

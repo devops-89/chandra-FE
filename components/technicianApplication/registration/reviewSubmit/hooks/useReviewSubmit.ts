@@ -74,6 +74,7 @@ function buildInitialState(): ReviewSubmitState {
     hasACGauges: false,
     hasSafetyEquipment: false,
     hasVehicle: false,
+    gst: '',
     verificationStatus: {
       documents: DOCUMENT_NAMES.map((d) => ({ id: d.id, name: d.name, status: 'pending' })),
       completedCount: 0,
@@ -81,7 +82,6 @@ function buildInitialState(): ReviewSubmitState {
     },
     serviceArea: {
       radius: 0,
-      areas: [],
     },
   };
 }
@@ -152,6 +152,7 @@ export const useReviewSubmit = () => {
               hasACGauges: s.hasACGauges ?? next.hasACGauges,
               hasSafetyEquipment: s.hasSafetyEquipment ?? next.hasSafetyEquipment,
               hasVehicle: s.hasVehicle ?? next.hasVehicle,
+              gst: typeof s.gst === 'string' ? s.gst : '',
               profile: {
                 ...next.profile,
                 experience: s.yearsOfExperience ?? 0,
@@ -204,7 +205,6 @@ export const useReviewSubmit = () => {
               ...next,
               serviceArea: {
                 radius: a.radius ?? 0,
-                areas: a.preferredAreas ?? [],
                 ...(location ?? {}),
               },
             };
@@ -302,6 +302,11 @@ export const useReviewSubmit = () => {
         hasSafetyEquipment: (skillsData.hasSafetyEquipment as boolean) ?? false,
         hasVehicle:         (skillsData.hasVehicle          as boolean) ?? false,
         serviceRadiusKm,
+        // GST (only when filled)
+        ...(typeof skillsData.gst === 'string' && skillsData.gst.trim()
+          ? { gst: skillsData.gst.trim() }
+          : {}
+        ),
         // ── Payout method (mutually exclusive) ────────────────────────────
         ...(payoutMethod === 'upi'
           ? { upiId: bankData.upiId as string }

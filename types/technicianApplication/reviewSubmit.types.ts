@@ -24,6 +24,7 @@ export interface ReviewSubmitState {
   hasACGauges: boolean;
   hasSafetyEquipment: boolean;
   hasVehicle: boolean;
+  gst: string;
   verificationStatus: {
     documents: VerificationItem[];
     completedCount: number;
@@ -31,7 +32,6 @@ export interface ReviewSubmitState {
   };
   serviceArea: {
     radius: number;
-    areas: string[];
     latitude?: number;
     longitude?: number;
     fullAddress?: string;
@@ -74,6 +74,7 @@ export interface SkillsSummaryCardProps {
   hasACGauges: boolean;
   hasSafetyEquipment: boolean;
   hasVehicle: boolean;
+  gst: string;
   onEdit?: () => void;
 }
 
@@ -86,7 +87,6 @@ export interface VerificationSummaryCardProps {
 
 export interface ServiceCoverageCardProps {
   radius: number;
-  areas: string[];
   latitude?: number;
   longitude?: number;
   fullAddress?: string;

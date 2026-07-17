@@ -44,4 +44,5 @@ export interface SkillsEquipmentState {
   hasACGauges: boolean;
   hasSafetyEquipment: boolean;
   hasVehicle: boolean;
+  gst: string;
 }

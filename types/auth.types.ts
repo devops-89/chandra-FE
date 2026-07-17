@@ -178,7 +178,6 @@ export interface TechnicianProfile {
   userId: number;
   status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
   serviceRadiusKm: number;
-  preferredAreas: string[];
   pincodes: string[];
   hasLadder: boolean;
   hasACGauges: boolean;
@@ -256,7 +255,6 @@ export interface ApiTechnicianProfileData {
   yearsOfExperience: number | null;
   languages: string[];
   serviceRadiusKm: number;
-  preferredAreas: string[];
   pincodes: string[];
   aadharUrl?: string | null;
   panUrl: string | null;

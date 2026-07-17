@@ -1,5 +1,16 @@
 "use client";
 
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 
 import EditCommissionPage from "./EditCommissionPage";
@@ -46,44 +57,65 @@ const ServiceCommissionTable = () => {
 
   return (
     <>
-      <div className="overflow-hidden rounded-2xl border border-slate-400 bg-white">
-        <div className="border-b p-5 bg-emerald-600 text-white">
-          <h3 className="font-semibold">
+      <Paper
+        elevation={0}
+        sx={{ border: "1px solid #e2e8f0", borderRadius: 3, overflow: "hidden" }}
+      >
+        <Box sx={{ p: 2.5, backgroundColor: "#059669", color: "#fff" }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
             Service Commission Settings
-          </h3>
-        </div>
+          </Typography>
+        </Box>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-6">
-          {services.map((service) => (
-            <div
-              key={service.name}
-              className="border border-slate-200 rounded-2xl bg-white p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between cursor-default"
-            >
-              <div>
-                <h4 className="font-semibold text-slate-900 leading-snug">
-                  {service.name}
-                </h4>
-                <div className="mt-4">
-                  <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Commission Rate</p>
-                  <p className="text-2xl font-bold text-slate-900 mt-1">{service.commission}%</p>
-                </div>
-              </div>
+        <TableContainer>
+          <Table size="small" sx={{ minWidth: 600 }}>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "#f8fafc" }}>
+                <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Service
+                </TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Commission Rate
+                </TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }} align="center">
+                  Actions
+                </TableCell>
+              </TableRow>
+            </TableHead>
 
-              <div className="flex justify-end mt-4 pt-3 border-t border-slate-100">
-                <button
-                  onClick={() => {
-                    setSelectedService(service);
-                    setOpenModal(true);
+            <TableBody>
+              {services.map((service) => (
+                <TableRow
+                  key={service.name}
+                  hover
+                  sx={{
+                    "&:last-child td": { borderBottom: 0 },
+                    cursor: "default",
                   }}
-                  className="cursor-pointer text-emerald-600 hover:text-emerald-700 font-medium text-sm hover:underline"
                 >
-                  Edit
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+                  <TableCell sx={{ fontSize: 13, fontWeight: 600, color: "#1e293b" }}>
+                    {service.name}
+                  </TableCell>
+                  <TableCell sx={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
+                    {service.commission}%
+                  </TableCell>
+                  <TableCell align="center">
+                    <button
+                      onClick={() => {
+                        setSelectedService(service);
+                        setOpenModal(true);
+                      }}
+                      className="cursor-pointer text-emerald-600 hover:text-emerald-700 font-semibold text-xs transition-colors"
+                    >
+                      Edit
+                    </button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
 
       <EditCommissionPage
         open={openModal}
