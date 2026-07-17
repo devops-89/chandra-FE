@@ -2,7 +2,6 @@ interface Props {
   title: string;
   totalServices: number;
 }
-
 const CategoryCard = ({
   title,
   totalServices,

@@ -1,14 +1,10 @@
 "use client";
+import { userSecuredApi } from "@/api/config";
 import { ServiceControllers } from '@/api/serviceControllers';
-
-/* eslint-disable simple-import-sort/imports */
-import { useEffect, useState, useCallback } from "react";
-
+import type { Technician, VerificationDocument } from "@/constants/admin/technicianData";
 import { AnimatePresence } from "framer-motion";
 import { ClipboardList, UserCog } from "lucide-react";
-
-import { userSecuredApi } from "@/api/config";
-import type { Technician, VerificationDocument } from "@/constants/admin/technicianData";
+import { useCallback, useEffect, useState } from "react";
 
 import DocumentViewerModal from "./approvals/DocumentViewerModal";
 import VerificationDrawer from "./approvals/VerificationDrawer";

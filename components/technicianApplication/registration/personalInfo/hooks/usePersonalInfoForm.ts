@@ -1,13 +1,10 @@
 'use client';
-
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-
 import { AuthControllers } from '@/api/authControllers';
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import type { PersonalInfoFormData, ValidationErrors } from '@/types/technicianApplication/personalInfo.types';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
-// ─── Validators ───────────────────────────────────────────────────────────────
 
 function validateFirstName(v: string): string | undefined {
   if (!v.trim()) return 'First name is required';

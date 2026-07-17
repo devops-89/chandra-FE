@@ -1,12 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
-
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchAdminBookings } from '@/redux/slices/adminBookingSlice';
-
+import { useEffect } from 'react';
 import BookingsTable from './list/BookingsTable';
 import BookingStats from './stats/BookingStats';
+
 
 const Bookings = () => {
   const dispatch = useAppDispatch();

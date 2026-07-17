@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-
 interface EmailAndPasswordFieldsProps {
   password: string;
   passwordError?: string;

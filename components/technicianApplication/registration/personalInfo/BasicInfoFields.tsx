@@ -1,5 +1,4 @@
 'use client';
-
 interface BasicInfoFieldsProps {
   firstName:        string;
   lastName:         string;

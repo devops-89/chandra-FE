@@ -1,10 +1,8 @@
 "use client";
-
-import { useState } from "react";
-
 import DeleteCategoryModal from "@/components/adminDashboard/services/manageService/DeleteServiceModal";
 import EditServiceForm from "@/components/adminDashboard/services/manageService/EditServiceForm";
 import type { AdminService } from "@/types/admin/service.types";
+import { useState } from "react";
 
 
 const initialCategories = [

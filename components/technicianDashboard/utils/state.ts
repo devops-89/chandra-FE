@@ -1,7 +1,4 @@
 'use client';
-import { AdminControllers } from '@/api/adminControllers';
-
-
 import { useEffect, useState } from 'react';
 
 export interface WalletData {
@@ -118,27 +115,27 @@ const DEFAULT_PROFILE: ProfileData = {
 
 export function useTechnicianData() {
 
-    // Load from localStorage on mount
-    const [wallet, setWalletState] = useState<WalletData>(() => {
-  if (typeof window === 'undefined') return DEFAULT_WALLET;
+  // Load from localStorage on mount
+  const [wallet, setWalletState] = useState<WalletData>(() => {
+    if (typeof window === 'undefined') return DEFAULT_WALLET;
 
-  const value = localStorage.getItem('tech_wallet');
-  return value ? JSON.parse(value) : DEFAULT_WALLET;
-});
+    const value = localStorage.getItem('tech_wallet');
+    return value ? JSON.parse(value) : DEFAULT_WALLET;
+  });
 
-const [transactions, setTransactionsState] = useState<TransactionItem[]>(() => {
-  if (typeof window === 'undefined') return DEFAULT_TRANSACTIONS;
+  const [transactions, setTransactionsState] = useState<TransactionItem[]>(() => {
+    if (typeof window === 'undefined') return DEFAULT_TRANSACTIONS;
 
-  const value = localStorage.getItem('tech_transactions');
-  return value ? JSON.parse(value) : DEFAULT_TRANSACTIONS;
-});
+    const value = localStorage.getItem('tech_transactions');
+    return value ? JSON.parse(value) : DEFAULT_TRANSACTIONS;
+  });
 
-const [profile, setProfileState] = useState<ProfileData>(() => {
-  if (typeof window === 'undefined') return DEFAULT_PROFILE;
+  const [profile, setProfileState] = useState<ProfileData>(() => {
+    if (typeof window === 'undefined') return DEFAULT_PROFILE;
 
-  const value = localStorage.getItem('tech_profile');
-  return value ? JSON.parse(value) : DEFAULT_PROFILE;
-});
+    const value = localStorage.getItem('tech_profile');
+    return value ? JSON.parse(value) : DEFAULT_PROFILE;
+  });
 
   const updateWallet = (newWallet: Partial<WalletData>) => {
     const updated = { ...wallet, ...newWallet };

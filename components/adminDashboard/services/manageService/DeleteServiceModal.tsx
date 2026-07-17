@@ -1,11 +1,9 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle } from 'lucide-react';
-
-// ─── imported from useServiceManager ────────────────────────────
 import { useServiceManager } from '@/hooks/useServiceManager';
 import type { AdminService } from '@/types/admin/service.types';
+import { AnimatePresence, motion } from 'framer-motion';
+import { AlertTriangle } from 'lucide-react';
 
 /* ─── Props ──────────────────────────────────────────────────────── */
 interface Props {
