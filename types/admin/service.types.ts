@@ -93,6 +93,11 @@ export interface ApiService {
   subcategory?: string;
   duration?: string;
   bookings?: number;
+  totalBookings?: number;
+  pendingBookings?: number;
+  acceptedBookings?: number;
+  cancelledBookings?: number;
+  completedBookings?: number;
   createdAt?: string;
   updatedAt?: string;
   specifications?: {

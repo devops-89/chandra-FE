@@ -32,14 +32,14 @@ function normalizeService(raw: ApiService): AdminService {
     gst: toNum(p?.gst),
     emergencyCharge: toNum(p?.emergencyCharge),
     status,
-    bookings: raw.bookings ?? 0,
+    bookings: raw.totalBookings ?? raw.bookings ?? 0,
     specifications: raw.specifications,
   };
 }
 
 export const ServiceControllers = {
   getAllServices: async (): Promise<AdminService[]> => {
-    const response = await userSecuredApi.get<GetAllServicesResponse>('/users/service/all');
+    const response = await userSecuredApi.get<GetAllServicesResponse>('/users/service/all?page=1&limit=10');
     const outer = response.data.data;
     let raw: ApiService[];
 

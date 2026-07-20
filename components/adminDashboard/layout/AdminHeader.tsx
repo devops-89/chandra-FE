@@ -66,11 +66,6 @@ const AdminHeader = ({ onMenuClick }: AdminHeaderProps) => {
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
           /> */}
-            <h1 className="truncate text-lg font-bold leading-tight text-slate-900 sm:text-2xl lg:text-3xl">Admin Portal</h1>
-
-            <p className="text-sm sm:text-sm text-slate-500 hidden sm:block">
-            Manage your Customers and services
-          </p>
           {/* <input
             placeholder="Search..."
             className="h-11 w-full rounded-xl border pl-11 pr-4 bg-white focus:outline-none focus:border-emerald-400 transition-colors"

@@ -6,6 +6,8 @@ import {
   CircularProgress,
   IconButton,
   Paper,
+  Tab,
+  Tabs,
   Table,
   TableBody,
   TableCell,
@@ -16,6 +18,14 @@ import {
   TableSortLabel,
   Tooltip,
   Typography,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from '@mui/material';
 import { useState } from 'react';
 
@@ -45,30 +55,141 @@ interface TabConfig {
 
 interface Props {
   technicians: Technician[];
-  allTechnicians: Technician[];
-  approvedCount: number;
-  pendingCount: number;
-  rejectedCount: number;
   statusFilter: string;
   setStatusFilter: (val: string) => void;
   actionLoading?: Record<string, boolean>;
-  onToggleSuspend: (id: string) => void;
+  onChangeStatus?: (id: string, newStatus: any) => void;
   onViewDetails?: (technician: Technician) => void;
   isLoading?: boolean;
   error?: string | null;
 }
 
-// ─── Status chip config ───────────────────────────────────────────────────────
-
-const STATUS_CHIP: Record<
-  string,
-  { label: string; color: 'success' | 'warning' | 'error' | 'default' }
-> = {
-  APPROVED:         { label: 'Approved',         color: 'success' },
-  PENDING_APPROVAL: { label: 'Pending Approval', color: 'warning' },
-  REJECTED:         { label: 'Rejected',          color: 'error' },
-  NO_PROFILE:       { label: 'No Profile',        color: 'default' },
+const STATUS_CHIP: Record<string, { label: string; bg: string; text: string }> = {
+  APPROVED:         { label: 'Approved',         bg: '#d1fae5', text: '#047857' },
+  PENDING_APPROVAL: { label: 'Pending Approval', bg: '#fef3c7', text: '#b45309' },
+  REJECTED:         { label: 'Rejected',          bg: '#fee2e2', text: '#b91c1c' },
+  NO_PROFILE:       { label: 'No Profile',        bg: '#f8fafc', text: '#64748b' },
 };
+
+function StatusDropdown({
+  currentStatus,
+  onStatusChange,
+  disabled
+}: {
+  currentStatus: string;
+  onStatusChange: (newStatus: 'APPROVED' | 'PENDING_APPROVAL' | 'REJECTED') => void;
+  disabled: boolean;
+}) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [confirmStatus, setConfirmStatus] = useState<null | 'APPROVED' | 'PENDING_APPROVAL' | 'REJECTED'>(null);
+  
+  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    if (!disabled && currentStatus !== 'NO_PROFILE') setAnchorEl(e.currentTarget);
+  };
+  const handleClose = (e?: any) => {
+    e?.stopPropagation?.();
+    setAnchorEl(null);
+  };
+
+  const handleSelect = (e: React.MouseEvent, status: 'APPROVED' | 'PENDING_APPROVAL' | 'REJECTED') => {
+    e.stopPropagation();
+    handleClose();
+    setConfirmStatus(status);
+  };
+
+  const handleConfirm = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirmStatus) {
+      onStatusChange(confirmStatus);
+    }
+    setConfirmStatus(null);
+  };
+
+  const handleCancelConfirm = (e?: any) => {
+    e?.stopPropagation?.();
+    setConfirmStatus(null);
+  };
+
+  const statusObj = STATUS_CHIP[currentStatus] ?? { label: currentStatus, bg: '#f8fafc', text: '#64748b' };
+  
+  const availableStatuses = currentStatus === 'REJECTED' 
+    ? ['APPROVED'] 
+    : currentStatus === 'APPROVED' 
+      ? ['REJECTED']
+      : ['APPROVED', 'PENDING_APPROVAL', 'REJECTED'];
+
+  return (
+    <>
+      <Chip
+        label={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            {statusObj.label}
+            {!disabled && currentStatus !== 'NO_PROFILE' && (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            )}
+          </Box>
+        }
+        size="small"
+        onClick={handleOpen}
+        sx={{
+          fontWeight: 700, 
+          fontSize: 11,
+          bgcolor: statusObj.bg,
+          color: statusObj.text,
+          border: 'none',
+          borderRadius: '6px',
+          cursor: disabled || currentStatus === 'NO_PROFILE' ? 'default' : 'pointer',
+          '&:hover': { bgcolor: disabled || currentStatus === 'NO_PROFILE' ? statusObj.bg : undefined }
+        }}
+      />
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        sx={{
+          '& .MuiPaper-root': {
+            borderRadius: 2,
+            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
+          },
+          '& .MuiList-root': { p: 1 }
+        }}
+      >
+        {availableStatuses.map((s) => {
+           if (s === currentStatus) return null;
+           const sObj = STATUS_CHIP[s];
+           return (
+             <MenuItem key={s} onClick={(e) => handleSelect(e, s as any)} sx={{ fontSize: 13, borderRadius: 1, mb: 0.5 }}>
+               {sObj.label}
+             </MenuItem>
+           );
+        })}
+      </Menu>
+
+      <Dialog 
+        open={Boolean(confirmStatus)} 
+        onClose={handleCancelConfirm}
+        onClick={(e) => e.stopPropagation()}
+        sx={{ '& .MuiDialog-paper': { borderRadius: '12px', p: 1 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, fontSize: '1.1rem' }}>Confirm Status Change</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to change the technician's status to <strong>{confirmStatus ? STATUS_CHIP[confirmStatus].label : ''}</strong>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelConfirm} sx={{ color: '#64748b', textTransform: 'none', fontWeight: 600 }}>Cancel</Button>
+          <Button onClick={handleConfirm} variant="contained" sx={{ bgcolor: '#059669', '&:hover': { bgcolor: '#047857' }, textTransform: 'none', fontWeight: 600, borderRadius: '8px', boxShadow: 'none' }}>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
 
@@ -157,13 +278,12 @@ function HeadCell({
         whiteSpace: 'nowrap',
       }}
     >
-      <TableSortLabel
-        active={sortField === field}
-        direction={sortField === field ? sortDir : 'asc'}
-        onClick={() => onSort(field)}
+      <div 
+        onClick={() => onSort(field)} 
+        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
       >
         {label}
-      </TableSortLabel>
+      </div>
     </TableCell>
   );
 }
@@ -205,109 +325,56 @@ function EmptyState({ message }: { message: string }) {
   );
 }
 
-// ─── Tabs bar ─────────────────────────────────────────────────────────────────
-
 interface TabsBarProps {
   statusFilter: string;
-  allCount: number;
-  approvedCount: number;
-  pendingCount: number;
-  rejectedCount: number;
   onChange: (val: StatusTab) => void;
 }
 
 function TabsBar({
   statusFilter,
-  allCount,
-  approvedCount,
-  pendingCount,
-  rejectedCount,
   onChange,
 }: TabsBarProps) {
-  const counts: Record<StatusTab, number> = {
-    'All Status': allCount,
-    APPROVED: approvedCount,
-    PENDING_APPROVAL: pendingCount,
-    REJECTED: rejectedCount,
-  };
 
   return (
-    <Box
+    <Tabs
+      value={statusFilter}
+      onChange={(_, newValue) => onChange(newValue)}
       sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '4px',
-        overflowX: 'auto',
-        scrollbarWidth: 'none',
-        '&::-webkit-scrollbar': { display: 'none' },
-        pb: '2px',
+        minHeight: 48,
+        '& .MuiTabs-indicator': {
+          backgroundColor: '#059669',
+          height: 3,
+          borderRadius: '3px 3px 0 0',
+        },
+        borderBottom: '1px solid #e2e8f0',
+        mb: 2,
+        px: 2,
       }}
     >
-      {STATUS_TABS.map((tab) => {
-        const isActive = statusFilter === tab.id;
-        return (
-          <Box
-            key={tab.id}
-            component="button"
-            onClick={() => onChange(tab.id)}
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              whiteSpace: 'nowrap',
-              cursor: 'pointer',
-              border: 'none',
-              borderRadius: '12px',
-              px: '14px',
-              py: '8px',
-              fontSize: '0.8125rem',
-              fontWeight: 500,
-              fontFamily: 'inherit',
-              transition: 'all 0.2s ease',
-              backgroundColor: isActive ? '#059669' : 'transparent',
-              color: isActive ? '#fff' : '#64748b',
-              boxShadow: isActive ? '0 1px 4px rgba(5,150,105,0.3)' : 'none',
-              '&:hover': {
-                backgroundColor: isActive ? '#047857' : '#f1f5f9',
-                color: isActive ? '#fff' : '#1e293b',
-              },
-            }}
-          >
-            {/* dot */}
-            <span
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                flexShrink: 0,
-                backgroundColor: isActive
-                  ? 'rgba(255,255,255,0.7)'
-                  : tab.dotColor,
-                transition: 'background-color 0.2s ease',
-              }}
-            />
-            {tab.label}
-            {/* count badge */}
-            <span
-              style={{
-                borderRadius: '999px',
-                padding: '1px 6px',
-                fontSize: '0.6875rem',
-                fontWeight: 700,
-                lineHeight: 1.4,
-                backgroundColor: isActive
-                  ? 'rgba(255,255,255,0.2)'
-                  : '#f1f5f9',
-                color: isActive ? '#fff' : '#64748b',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              {counts[tab.id]}
-            </span>
-          </Box>
-        );
-      })}
-    </Box>
+      {STATUS_TABS.map((tab) => (
+        <Tab
+          key={tab.id}
+          value={tab.id}
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: statusFilter === tab.id ? 700 : 500 }}
+              >
+                {tab.label}
+              </Typography>
+            </Box>
+          }
+          sx={{
+            textTransform: 'none',
+            minWidth: 'auto',
+            px: 3,
+            color: '#64748b',
+            '&.Mui-selected': { color: '#059669' },
+          }}
+        />
+      ))}
+    </Tabs>
   );
 }
 
@@ -315,14 +382,10 @@ function TabsBar({
 
 const TechniciansTable = ({
   technicians,
-  allTechnicians,
-  approvedCount,
-  pendingCount,
-  rejectedCount,
   statusFilter,
   setStatusFilter,
   actionLoading,
-  onToggleSuspend,
+  onChangeStatus,
   onViewDetails,
   isLoading = false,
   error = null,
@@ -356,51 +419,16 @@ const TechniciansTable = ({
   const headProps = { sortField, sortDir, onSort: handleSort };
 
   return (
-    <Paper
-      elevation={0}
-      sx={{ border: '1px solid #e2e8f0', borderRadius: 3, overflow: 'hidden' }}
-    >
-      {/* Header: title + tabs */}
-      <Box
-        sx={{
-          px: 2.5,
-          pt: 2.5,
-          pb: 1.5,
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          alignItems: { sm: 'center' },
-          justifyContent: 'space-between',
-          gap: 2,
-        }}
-      >
-        <Box>
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: 700, color: '#0f172a', fontSize: '1.2rem' }}
-          >
-            Current Technicians
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Total of{' '}
-            <Box
-              component="span"
-              sx={{ color: '#059669', fontWeight: 600 }}
-            >
-              {technicians.length} technician
-            </Box>{' '}
-            records found
-          </Typography>
-        </Box>
+    <>
+      <TabsBar
+        statusFilter={statusFilter}
+        onChange={handleTabChange}
+      />
 
-        <TabsBar
-          statusFilter={statusFilter}
-          allCount={allTechnicians.length}
-          approvedCount={approvedCount}
-          pendingCount={pendingCount}
-          rejectedCount={rejectedCount}
-          onChange={handleTabChange}
-        />
-      </Box>
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e2e8f0', borderRadius: 3, overflow: 'hidden' }}
+      >
 
       <TableContainer>
         <Table size="small" sx={{ minWidth: 900 }}>
@@ -543,11 +571,10 @@ const TechniciansTable = ({
 
                     {/* Status */}
                     <TableCell>
-                      <Chip
-                        label={statusChip.label}
-                        color={statusChip.color}
-                        size="small"
-                        sx={{ fontWeight: 600, fontSize: 11 }}
+                      <StatusDropdown 
+                        currentStatus={tech.status} 
+                        disabled={isActionBusy || !canUpdateStatus}
+                        onStatusChange={(newStatus) => onChangeStatus?.(tech.id, newStatus)}
                       />
                     </TableCell>
 
@@ -595,66 +622,6 @@ const TechniciansTable = ({
                             </svg>
                           </IconButton>
                         </Tooltip>
-
-                        {/* Reject / Reactivate toggle */}
-                        {canUpdateStatus && !tech.status.includes('APPROVED') && (
-                          <Tooltip
-                            title={
-                              isRejected
-                                ? 'Reactivate Technician'
-                                : 'Reject Technician'
-                            }
-                          >
-                            <span>
-                              <IconButton
-                                size="small"
-                                disabled={isActionBusy}
-                                onClick={() => onToggleSuspend(tech.id)}
-                                sx={{
-                                  color: isRejected ? '#059669' : '#ef4444',
-                                  '&:hover': {
-                                    backgroundColor: isRejected
-                                      ? '#f0fdf4'
-                                      : '#fef2f2',
-                                  },
-                                  '&:disabled': { opacity: 0.4 },
-                                }}
-                              >
-                                {isRejected ? (
-                                  /* reactivate icon */
-                                  <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  >
-                                    <polyline points="23 4 23 10 17 10" />
-                                    <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
-                                  </svg>
-                                ) : (
-                                  /* reject / ban icon */
-                                  <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  >
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-                                  </svg>
-                                )}
-                              </IconButton>
-                            </span>
-                          </Tooltip>
-                        )}
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -681,6 +648,7 @@ const TechniciansTable = ({
         />
       )}
     </Paper>
+    </>
   );
 };
 
