@@ -15,11 +15,10 @@ import forgotPasswordReducer from './slices/forgotPasswordSlice'
 import nearbyJobsReducer from './slices/nearbyJobsSlice';
 import onboardingReducer from './slices/onboardingSlice';
 import servicesReducer from './slices/servicesSlice';
+import snackbarReducer from './slices/snackbarSlice';
 import supportReducer from './slices/supportSlice';
 import technicianProfileReducer from './slices/technicianProfileSlice';
 import { setAppStore } from './storeAccessor';
-
-import snackbarReducer from './slices/snackbarSlice';
 
 export const store = configureStore({
   reducer: {

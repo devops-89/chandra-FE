@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useAppDispatch } from '@/redux/hooks';
 
 import { technicianNavigationConfig } from '@/constants/technician/navigationConfig';
+import { useAppDispatch } from '@/redux/hooks';
 import { logoutUser } from '@/redux/slices/authSlice';
 
 interface TechnicianSidebarProps {

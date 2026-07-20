@@ -1,6 +1,7 @@
 'use client';
 
-import { Snackbar, Alert } from '@mui/material';
+import { Alert,Snackbar } from '@mui/material';
+
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { hideSnackbar } from '@/redux/slices/snackbarSlice';
 

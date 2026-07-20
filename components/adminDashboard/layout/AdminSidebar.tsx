@@ -1,22 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown, ChevronRight, LogOut, X } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import {
+  Box,
+  Collapse,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Collapse,
   Typography,
-  Box,
-  Divider,
-  IconButton,
 } from "@mui/material";
+import { ChevronDown, ChevronRight, LogOut, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { adminSidebarItems } from "@/constants/admin/adminSidebar";
 import { useAppDispatch } from "@/redux/hooks";

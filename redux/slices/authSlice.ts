@@ -97,6 +97,7 @@ const authSlice = createSlice({
 });
 
 import { AuthControllers } from '@/api/authControllers';
+
 import type { AppDispatch } from '../store';
 
 export const { setCredentials, updateTokens, logout, updateUser } = authSlice.actions;

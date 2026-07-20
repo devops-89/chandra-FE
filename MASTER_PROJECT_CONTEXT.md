@@ -1,6 +1,6 @@
-﻿# HiChandra Frontend â€” Master Project Context
+# HiChandra Frontend — Master Project Context
 
-> **Last updated:** July 16, 2026
+> **Last updated:** July 20, 2026
 > **Purpose:** Permanent handoff document. Paste this file into any new chat to restore full project context instantly.
 
 ---
@@ -12,9 +12,9 @@ HiChandra is a home-services platform connecting customers with technicians for 
 The app is a Next.js App Router frontend with live auth integration, live services integration, customer/admin/technician dashboards, a multi-step technician onboarding flow, and a mostly UI-complete booking flow.
 
 Roles:
-1. **CUSTOMER** â€” browses services, books appointments, manages profile
-2. **TECHNICIAN** â€” completes onboarding, waits for approval, uses technician dashboard
-3. **ADMIN** â€” manages bookings, complaints, technicians, finance, reviews, and services
+1. **CUSTOMER** — browses services, books appointments, manages profile
+2. **TECHNICIAN** — completes onboarding, waits for approval, uses technician dashboard
+3. **ADMIN** — manages bookings, complaints, technicians, finance, reviews, and services
 
 ---
 
@@ -44,17 +44,19 @@ Config notes:
 
 ## 3. API Layer
 
-### Base URLs (`src/api/endpoints.ts`)
+### Base URLs (`api/serverConstant.ts`)
 ```ts
-auth:        'http://<IP>/api'   // single load-balanced IP; no port
-userService: 'http://<IP>/api'
+export const SERVER_ENDPOINTS = {
+  AUTH_BASEURL: 'http://192.168.1.16:8000/api',
+  USER_BASEURL: 'http://192.168.1.16:8001/api',
+};
 ```
 
 ### Endpoints
 | Key | Method/path | Notes |
 |---|---|---|
 | `LOGIN` | `POST /auth/login` | Email or phone login |
-| `REFRESH_TOKEN` | `POST /auth/refresh-token` | Refresh Token Rotation â€” returns both new tokens |
+| `REFRESH_TOKEN` | `POST /auth/refresh-token` | Refresh Token Rotation — returns both new tokens |
 | `GENERATE_OTP` | `POST /auth/generate-otp` | Customer and technician OTP |
 | `VERIFY_OTP` | `POST /auth/verify-otp` | OTP verification |
 | `GET_PROFILE` | `GET /auth/profile` | Used by technician guards and login redirect |
@@ -76,24 +78,26 @@ userService: 'http://<IP>/api'
 | `CREATE_COMPLAINT` | `POST /bookings/complaint` | |
 | `UPDATE_COMPLAINT` | `PATCH /bookings/complaint` | |
 
-### Axios (`src/api/axios.ts`)
-- Creates `authApi` and `userServiceApi` (both point to same base URL)
-- **Request interceptor:** reads `localStorage.accessToken` â†’ falls back to Redux store
-- **Response interceptor (401 handler â€” Refresh Token Rotation):**
+### Axios (`api/config.ts`)
+- Creates `authSecuredApi`, `authPublicApi`, `userSecuredApi`, and `userPublicApi` instances.
+- Base URLs loaded dynamically from `SERVER_ENDPOINTS`.
+- **Request interceptor:** reads `localStorage.accessToken` → falls back to Redux store
+- **Response interceptor (401 handler — Refresh Token Rotation):**
   - On 401: reads `localStorage.refreshToken`, POSTs to `ENDPOINTS.REFRESH_TOKEN`
   - Backend returns **both** `accessToken` AND `refreshToken` (old refresh token immediately invalid)
   - Validates both tokens present before updating state
-  - Dispatches `updateTokens({ accessToken, refreshToken })` â€” updates Redux + localStorage
+  - Dispatches `updateTokens({ accessToken, refreshToken })` — updates Redux + localStorage
   - Queues concurrent 401 requests while refresh is in-flight
   - **Force logout ONLY on 401 or 403 from the refresh endpoint itself**
   - Does NOT logout on: network failure, timeout, 500, validation error, backend unavailable
   - Retries original request with new access token
+- **Success Notification Interceptor:** Automatically triggers a custom snackbar message on successful mutations (`POST`, `PUT`, `PATCH`, `DELETE`).
 
 ### Login error handling (`LoginForm.tsx`)
 Three distinct error cases:
-- `error.response` present â†’ use backend message; fallback to `'Invalid credentials'` on 401/403
-- `error.request` present, no response â†’ CORS/network: `'Unable to reach the server...'`
-- Neither â†’ `'Something went wrong. Please try again.'`
+- `error.response` present → use backend message; fallback to `'Invalid credentials'` on 401/403
+- `error.request` present, no response → CORS/network: `'Unable to reach the server...'`
+- Neither → `'Something went wrong. Please try again.'`
 
 ### Auth Service (`src/services/auth.service.ts`)
 Functions: `loginService`, `generateOtpService`, `verifyOtpService`, `registerCustomerService`, `registerTechnicianService`, `getProfileService`
@@ -102,48 +106,48 @@ Functions: `loginService`, `generateOtpService`, `verifyOtpService`, `registerCu
 
 ## 4. Auth State
 
-Redux auth slice (`src/redux/slices/authSlice.ts`):
+Redux auth slice (`redux/slices/authSlice.ts`):
 ```ts
 { user: User | null; accessToken: string | null; refreshToken: string | null; isAuthenticated: boolean }
 ```
 
 Actions:
-- `setCredentials({ user, accessToken, refreshToken? })` â€” writes all 3 to localStorage
-- `updateTokens({ accessToken, refreshToken })` â€” called by refresh interceptor, updates both tokens in Redux + localStorage
-- `logout()` â€” clears Redux + removes all 3 localStorage keys
-- `updateUser(partial)` â€” patches user in Redux + localStorage
+- `setCredentials({ user, accessToken, refreshToken? })` — writes all 3 to localStorage
+- `updateTokens({ accessToken, refreshToken })` — called by refresh interceptor, updates both tokens in Redux + localStorage
+- `logout()` — clears Redux + removes all 3 localStorage keys
+- `updateUser(partial)` — patches user in Redux + localStorage
 
 **Persistence:** All three (`accessToken`, `refreshToken`, `user`) written to localStorage on login/signup/registration. Survive page refresh and tab close.
 
-**Bootstrap:** `ReduxProvider` (`src/redux/Provider.tsx`) contains `AuthHydrator` that reads all three from localStorage on mount and dispatches `setCredentials` if valid tokens exist.
+**Bootstrap:** `ReduxProvider` (`redux/Provider.tsx`) contains `AuthHydrator` that reads all three from localStorage on mount and dispatches `setCredentials` if valid tokens exist.
 
-### ApiTechnicianProfileData type (`src/types/auth.types.ts`)
-Now includes `createdAt?: string` and `updatedAt?: string` â€” used by `LoginForm` to store the application submission date into `localStorage.user`.
+### ApiTechnicianProfileData type (`types/auth.types.ts`)
+Now includes `createdAt?: string` and `updatedAt?: string` — used by `LoginForm` to store the application submission date into `localStorage.user`.
 
 ---
 
 ## 5. Redux Store
 
-`src/redux/store.ts` registers:
+`redux/store.ts` registers:
 ```ts
 auth, services, nearbyJobs, activeJobs, support, onboarding
 ```
 
-`serializableCheck: false` â€” `onboardingSlice` stores raw `File` objects for document upload.
+`serializableCheck: false` — `onboardingSlice` stores raw `File` objects for document upload.
 
 `onboardingSlice` fields: `selfieFile`, `aadharFile`, `panFile`, `policeCertFile`, `tradeLicenseFile` (all `File | null`).
 
-Legacy Zustand: `src/redux/legacy/bookingStore.ts` â€” active for booking flow only.
+Legacy Zustand: `redux/legacy/bookingStore.ts` — active for booking flow only.
 
 ---
 
-## 6. Admin Header â€” Dynamic Page Titles
+## 6. Admin Header — Dynamic Page Titles
 
-`src/components/adminDashboard/layout/AdminHeader.tsx` uses `usePathname()` to derive the page title and subtitle from a `PAGE_META` map keyed by route. Updates automatically on every sidebar navigation.
+`components/adminDashboard/layout/AdminHeader.tsx` uses `usePathname()` to derive the page title and subtitle from a `PAGE_META` map keyed by route. Updates automatically on every sidebar navigation.
 
 ---
 
-## 7. Admin Services â€” Edit Service
+## 7. Admin Services — Edit Service
 
 **`UpdateServiceRequest.specifications`** shape (per backend contract):
 ```ts
@@ -160,13 +164,13 @@ Legacy Zustand: `src/redux/legacy/bookingStore.ts` â€” active for booking f
 
 Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/technician`, `/technician/apply`
 
-`PublicRoute.tsx` â€” checks Redux `isAuthenticated` + `localStorage.user` on mount.
+`PublicRoute.tsx` — checks Redux `isAuthenticated` + `localStorage.user` on mount.
 
-`AdminDashboardLayout.tsx` â€” ADMIN role guard via `localStorage.user`.
+`AdminDashboardLayout.tsx` — ADMIN role guard via `localStorage.user`.
 
-`DashboardLayout.tsx` â€” CUSTOMER role guard via `localStorage.user`.
+`DashboardLayout.tsx` — CUSTOMER role guard via `localStorage.user`.
 
-`dashboard/technician/layout.tsx` â€” calls `getProfileService()`, uses `getTechnicianRedirectPath()`.
+`dashboard/technician/layout.tsx` — calls `getProfileService()`, uses `getTechnicianRedirectPath()`.
 
 ---
 
@@ -175,12 +179,12 @@ Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/techn
 **Login** (`LoginForm.tsx`):
 - Accepts email or 10-digit mobile
 - Writes all 3 localStorage keys; dispatches `setCredentials`
-- TECHNICIAN: fetches `GET /auth/profile` â†’ stores `technicianProfile.createdAt` into `localStorage.user` â†’ `getTechnicianRedirectPath()`
+- TECHNICIAN: fetches `GET /auth/profile` → stores `technicianProfile.createdAt` into `localStorage.user` → `getTechnicianRedirectPath()`
 - Others: `handlePostAuthRedirect(user.role)`
 - Error messages distinguish CORS/network failures from credential errors
 
 **Customer signup** (`useSignupForm.ts`):
-- Phone OTP â†’ register â†’ auto-login
+- Phone OTP → register → auto-login
 - Writes all 3 localStorage keys, dispatches `setCredentials`
 
 ---
@@ -208,13 +212,13 @@ Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/techn
 | `bankDetailsData` | `payoutMethod` + either `{ upiId }` or `{ accountHolderName, accountNumber, ifscCode, bankName }` |
 
 ### Document Upload Rules
-- Only **Aadhaar Card** is mandatory â€” all other documents (PAN, police verification, trade license, selfie) are optional
+- Only **Aadhaar Card** is mandatory — all other documents (PAN, police verification, trade license, selfie) are optional
 - Selfie is captured via camera or file upload; uses plain `<img>` tag (not Next.js `<Image>`) because `blob:` URLs are not handled by the Next.js image optimizer
 - After successful registration, blob URLs in `documentUploadData` are replaced with real S3 URLs from `response.data.user.technicianProfile`
 
 ### Bank Details Rules
 - Payout method is mutually exclusive: either `bank-transfer` (accountHolderName + accountNumber + ifscCode required) or `upi` (upiId required)
-- Session storage stores **only** the fields for the selected method â€” never both
+- Session storage stores **only** the fields for the selected method — never both
 - Bank transfer fields appear inline inside the Payout Method card (same animated expand behaviour as UPI ID field)
 - Validation runs on "Save & Continue"; blocks navigation if required fields for the chosen method are missing
 
@@ -230,13 +234,13 @@ Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/techn
   "hasSafetyEquipment": true,
   "hasVehicle": true,
   "serviceRadiusKm": 10,
-  "gst": "22AAAAA0000A1Z5",          // optional â€” omitted when blank
+  "gst": "22AAAAA0000A1Z5",          // optional — omitted when blank
   "upiId": "9817361209@ybl",          // OR bank transfer fields below (never both)
   "accountHolderName": "...",          // bank transfer only
   "accountNumber": "...",              // bank transfer only
   "ifscCode": "...",                   // bank transfer only
   "bankName": "",                      // bank transfer only
-  "address": "123 Main Street",        // location fields â€” only when geolocation captured
+  "address": "123 Main Street",        // location fields — only when geolocation captured
   "latitude": 28.6139,
   "longitude": 77.2090,
   "city": "New Delhi",
@@ -245,7 +249,7 @@ Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/techn
 }
 ```
 
-**Removed from payload:** `preferredAreas` â€” no longer accepted by the backend.
+**Removed from payload:** `preferredAreas` — no longer accepted by the backend.
 
 ### Submit Approval validation
 - Blocks submission if Aadhaar Card is missing from session storage
@@ -253,10 +257,10 @@ Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/techn
 - All other documents are optional for submission
 
 ### Pending Verification page
-- **Applicant** â€” `localStorage.user.username`
-- **Submitted On** â€” `localStorage.user.technicianProfile.createdAt` (formatted `Month D, YYYY`), fallback to `user.createdAt`
-- **Back to Home** â€” navigates to `/technician`
-- Props `applicationId` and `submittedDate` removed â€” values derived directly from localStorage
+- **Applicant** — `localStorage.user.username`
+- **Submitted On** — `localStorage.user.technicianProfile.createdAt` (formatted `Month D, YYYY`), fallback to `user.createdAt`
+- **Back to Home** — navigates to `/technician`
+- Props `applicationId` and `submittedDate` removed — values derived directly from localStorage
 
 ### Bitmask rules (onboarding progress)
 | Bit | Step | Required |
@@ -290,7 +294,7 @@ Public pages: `/`, `/login`, `/signup`, `/services`, `/services/[slug]`, `/techn
 - **Before:** `/booking?serviceId=55`
 - **After:** `/booking?service=electrical-service` (human-readable slug)
 
-The numeric `serviceId` travels via the Zustand booking store (pre-seeded in `handleBookingClick` before navigation) â€” never exposed in the URL. `UnifiedBookingPage` reads `savedServiceId` from the store, not from the URL.
+The numeric `serviceId` travels via the Zustand booking store (pre-seeded in `handleBookingClick` before navigation) — never exposed in the URL. `UnifiedBookingPage` reads `savedServiceId` from the store, not from the URL.
 
 Routes: `/booking?service=<slug>`, `/booking/address`, `/booking/slot`, `/booking/summary`, `/booking/confirmation`, `/dashboard/customer/booking/*`
 
@@ -310,24 +314,34 @@ Backend response shape handling: double-wrap and triple-wrap defensive parsing.
 
 ## 14. Service Area
 
-- `preferredAreas` **removed** from state, session storage, API payload, and all UI â€” no longer accepted by backend
+- `preferredAreas` **removed** from state, session storage, API payload, and all UI — no longer accepted by backend
 - Remaining fields: `radius`, `pincodes[]`, `latitude?`, `longitude?`, `fullAddress?`, `city?`, `state?`, `pincode?`
 - `CoverageSummary` sidebar shows Service Area (km) and Pincodes count only
-- `ServiceCoverageCard` (Review page) shows map + full address only â€” no areas list
+- `ServiceCoverageCard` (Review page) shows map + full address only — no areas list
 
 ---
 
-## 15. Skills & Equipment â€” Business Details
+## 15. Skills & Equipment — Business Details
 
 A **Business Details** section was added at the bottom of the Skills & Equipment step (below Brand Expertise, above Equipment):
-- **GST Number** (optional) â€” validated against Indian GST regex when non-empty; placeholder `22AAAAA0000A1Z5`
+- **GST Number** (optional) — validated against Indian GST regex when non-empty; placeholder `22AAAAA0000A1Z5`
 - Persisted in `skillsEquipmentData.gst` in session storage
 - Sent as `technicianProfile.gst` (omitted from payload when blank)
 - Displayed in Review & Submit under the Skills & Equipments card
 
 ---
 
-## 16. Reference Documents
+## 16. Technician Approvals (Admin)
+
+### Component: `ApprovalQueue`
+- **Path:** `components/adminDashboard/dashboard/technicianApprovals/ApprovalQueue.tsx`
+- **Details:** Displays a list of technicians awaiting review and approval.
+- **Type-safe responses:** Implements the `PendingTechniciansResponse` type envelope to correctly parse raw JSON payloads defensively, resolving any typescript `@typescript-eslint/no-explicit-any` errors.
+- **Layout & Routing:** Implements responsive design classes (`p-4 sm:p-5`, `sm:items-center`, `sm:justify-between`, etc.) and correctly routes to `/admin/technicians` (aligned with sidebar routes) instead of incorrect dashboard prefixes.
+
+---
+
+## 17. Reference Documents
 
 | File | Contents |
 |---|---|
@@ -337,11 +351,11 @@ A **Business Details** section was added at the bottom of the Skills & Equipment
 
 ---
 
-## 17. Current Gaps / Follow-up
+## 18. Current Gaps / Follow-up
 
 | Area | Status |
 |---|---|
-| `booking.service.ts` | Empty â€” booking submission pending |
+| `booking.service.ts` | Empty — booking submission pending |
 | Pending verification page | Shows real username + submission date; status still hardcoded `'pending'` |
 | Technician profile save | Partially implemented |
 | Customer booking detail `/bookings/[id]` | Skeleton |
@@ -351,7 +365,7 @@ A **Business Details** section was added at the bottom of the Skills & Equipment
 
 ---
 
-## 18. Quick Verification
+## 19. Quick Verification
 
 Run from `frontend/`:
 ```bash

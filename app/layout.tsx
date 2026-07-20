@@ -3,8 +3,8 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
-import ReduxProvider from '@/redux/Provider';
 import GlobalSnackbar from '@/components/common/GlobalSnackbar';
+import ReduxProvider from '@/redux/Provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
