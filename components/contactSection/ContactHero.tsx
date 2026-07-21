@@ -11,7 +11,7 @@ export default function ContactHero() {
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, delay: 0.18, ease: 'easeOut' as any }}
+          transition={{ duration: 0.6, delay: 0.18, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
           className="mt-4"
         >
         <h1 className="text-5xl md:text-7xl font-bold text-emerald-600 leading-tight">

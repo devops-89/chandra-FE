@@ -17,7 +17,7 @@ export function RatingSummaryCard({ index = 0 }: Props) {
       transition={{ 
         duration: 0.6, 
         delay: index * 0.2,
-        ease: 'easeOut' as any 
+        ease: 'easeOut' as any // eslint-disable-line @typescript-eslint/no-explicit-any
       }}
       className="
       h-full

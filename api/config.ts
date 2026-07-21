@@ -101,7 +101,7 @@ const setupResponseInterceptor = (instance: AxiosInstance) => {
       const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
       // Auto-show error messages
-      const errMsg = (error.response?.data as any)?.message || error.message || 'An error occurred';
+      const errMsg = (error.response?.data as { message?: string })?.message || error.message || 'An error occurred';
       if (error.response?.status !== 401) {
         // Don't show toast for 401s if we are just refreshing the token
         if (!originalRequest || !originalRequest._retry) {

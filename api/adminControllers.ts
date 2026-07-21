@@ -108,7 +108,7 @@ export const AdminControllers = {
     return raw;
   },
 
-  createAdminBooking: async (payload: any) => {
+  createAdminBooking: async (payload: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     const response = await userSecuredApi.post('/bookings/admin/create', payload);
     return response.data?.data?.data || response.data?.data || response.data;
   },

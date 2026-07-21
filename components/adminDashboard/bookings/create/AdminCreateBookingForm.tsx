@@ -1,10 +1,5 @@
 'use client';
 
-import { AdminControllers } from '@/api/adminControllers';
-import AdminDynamicBookingFields from './AdminDynamicBookingFields';
-import { FieldValue } from '@/components/booking/DynamicBookingFields';
-import { AdminService } from '@/types/admin/service.types';
-import { BookingFormField } from '@/types/services.types';
 import {
   Alert,
   Box,
@@ -21,11 +16,18 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import { useFormik } from 'formik';
 import { AlertCircle, Calendar, User, Wrench } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useFormik } from 'formik';
 import * as yup from 'yup';
+
+import { AdminControllers } from '@/api/adminControllers';
+import type { FieldValue } from '@/components/booking/DynamicBookingFields';
+import type { AdminService } from '@/types/admin/service.types';
+import type { BookingFormField } from '@/types/services.types';
+
+import AdminDynamicBookingFields from './AdminDynamicBookingFields';
 
 const baseSchema = yup.object({
   customerId: yup.string().required('Customer is required'),
@@ -38,8 +40,8 @@ const baseSchema = yup.object({
 export default function AdminCreateBookingForm() {
   const router = useRouter();
   
-  const [customers, setCustomers] = useState<any[]>([]);
-  const [technicians, setTechnicians] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [technicians, setTechnicians] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [services, setServices] = useState<AdminService[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +50,7 @@ export default function AdminCreateBookingForm() {
   const [dynamicFields, setDynamicFields] = useState<BookingFormField[]>([]);
   const [isServiceLoading, setIsServiceLoading] = useState(false);
   
-  const [validationSchema, setValidationSchema] = useState<any>(baseSchema);
+  const [validationSchema, setValidationSchema] = useState<any>(baseSchema); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   const formik = useFormik({
     initialValues: {
@@ -57,19 +59,19 @@ export default function AdminCreateBookingForm() {
       serviceId: '',
       technicianId: '',
       scheduledAt: '',
-    } as Record<string, any>,
+    } as Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
     validationSchema: validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitError(null);
       try {
-        const selectedService = services.find((s: any) => (s.serviceId || s.id) === Number(values.serviceId));
+        const selectedService = services.find((s: { serviceId?: number; id?: number; specifications?: { id: string; name: string }[] }) => (s.serviceId || s.id) === Number(values.serviceId));
         
-        const serviceSpecifications = selectedService?.specifications?.map((spec: any) => {
+        const serviceSpecifications = selectedService?.specifications?.map((spec: { id: string; name: string }) => {
           return {
             specificationId: spec.id,
             value: values[spec.name] ? String(values[spec.name]) : ''
           };
-        }).filter((s: any) => s.value !== '') || [];
+        }).filter((s: { value: string }) => s.value !== '') || [];
 
         const payload = {
           customerId: Number(values.customerId),
@@ -84,9 +86,9 @@ export default function AdminCreateBookingForm() {
         await AdminControllers.createAdminBooking(payload);
         router.push('/admin/bookings');
         router.refresh();
-      } catch (err: any) {
+      } catch (err) {
         console.error(err);
-        setSubmitError(err.message || 'Failed to create booking');
+        setSubmitError((err as Error).message || 'Failed to create booking');
       } finally {
         setSubmitting(false);
       }
@@ -101,7 +103,7 @@ export default function AdminCreateBookingForm() {
           AdminControllers.getAllServicesForAdmin(),
         ]);
         const validCustomers = (Array.isArray(custRes) ? custRes : []).filter(
-          (c: any) => c.addresses && c.addresses.length > 0
+          (c: { addresses?: unknown[] }) => c.addresses && c.addresses.length > 0
         );
         setCustomers(validCustomers);
         setServices(Array.isArray(servRes) ? servRes : []);
@@ -121,7 +123,7 @@ export default function AdminCreateBookingForm() {
     if (formik.values.customerId) {
       const selectedCustomer = customers.find(c => c.id === Number(formik.values.customerId));
       const addresses = selectedCustomer?.addresses || [];
-      if (formik.values.addressId && !addresses.find((a: any) => a.id === Number(formik.values.addressId))) {
+      if (formik.values.addressId && !addresses.find((a: { id: number }) => a.id === Number(formik.values.addressId))) {
         formik.setFieldValue('addressId', '');
       }
     } else {
@@ -134,6 +136,7 @@ export default function AdminCreateBookingForm() {
   useEffect(() => {
     // Reset technician and dynamic fields on service change
     if (!formik.values.serviceId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDynamicFields([]);
       setTechnicians([]);
       formik.setFieldValue('technicianId', '');
@@ -159,7 +162,7 @@ export default function AdminCreateBookingForm() {
         }
 
         if (serviceData && serviceData.specifications) {
-          const mappedFields: BookingFormField[] = serviceData.specifications.map((spec: any) => ({
+          const mappedFields: BookingFormField[] = serviceData.specifications.map((spec: { name: string; type: string; isRequired: boolean; values?: string[] }) => ({
             name: spec.name,
             label: spec.name,
             type: spec.type === 'image' ? 'file' : spec.type === 'select' ? 'select' : spec.type === 'number' ? 'number' : 'text',
@@ -170,7 +173,7 @@ export default function AdminCreateBookingForm() {
           setDynamicFields(mappedFields);
 
           // Build dynamic Yup schema
-          const dynamicShape: Record<string, any> = {};
+          const dynamicShape: Record<string, any> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
           mappedFields.forEach((field) => {
             if (field.required) {
               if (field.type === 'file' || field.type === 'multi-file') {
@@ -290,7 +293,7 @@ export default function AdminCreateBookingForm() {
                     {(() => {
                       const selectedCustomer = customers.find(c => c.id === Number(formik.values.customerId));
                       const addresses = selectedCustomer?.addresses || [];
-                      return addresses.map((a: any) => (
+                      return addresses.map((a: { id: number; label?: string; fullAddress?: string; city?: string }) => (
                         <MenuItem key={a.id} value={a.id}>
                           {a.label ? `${a.label} - ` : ''}{a.fullAddress || a.city || 'No Address provided'}
                         </MenuItem>
@@ -333,7 +336,7 @@ export default function AdminCreateBookingForm() {
                       transformOrigin: { vertical: 'top', horizontal: 'left' },
                     }}
                   >
-                    {services.map((s: any) => {
+                    {services.map((s: { serviceId?: number; id?: number; serviceName?: string; name?: string }) => {
                       const id = s.serviceId || s.id;
                       const name = s.serviceName || s.name || 'Unnamed Service';
                       return <MenuItem key={id} value={id}>{name}</MenuItem>;

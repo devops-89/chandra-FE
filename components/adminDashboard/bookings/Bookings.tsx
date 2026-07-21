@@ -2,8 +2,8 @@
 
 
 
-import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import Link from 'next/link';
 
 import BookingsTable from './list/BookingsTable';
 

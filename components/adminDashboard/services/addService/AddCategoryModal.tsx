@@ -73,7 +73,7 @@ export default function AddCategoryModal({
         initial={{ opacity: 0, scale: 0.96, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 8 }}
-        transition={{ duration: 0.18, ease: 'easeOut' as any }}
+        transition={{ duration: 0.18, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
         className="fixed inset-0 z-50 flex items-center justify-center px-4"
       // Don't close when clicking inside the dialog
       >

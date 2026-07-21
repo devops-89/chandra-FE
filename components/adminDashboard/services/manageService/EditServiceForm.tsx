@@ -298,7 +298,7 @@ const EditServiceForm = ({ service, onClose, onSave }: Props) => (
           initial={{ x: '100%' }}
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
-          transition={{ type: 'tween', duration: 0.28, ease: 'easeInOut' as any }}
+          transition={{ type: 'tween', duration: 0.28, ease: 'easeInOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
           className="fixed right-0 top-0 z-50 flex h-screen w-full max-w-lg flex-col bg-white shadow-2xl"
         >
           {/* Header */}

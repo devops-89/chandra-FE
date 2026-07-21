@@ -96,7 +96,7 @@ const RealDocViewer = ({
               <ImageIcon size={10} /> Image
             </span>
           )}
-          <span className="text-[11px] text-slate-400 truncate max-w-[200px]">
+          <span className="text-[11px] text-slate-400 truncate max-w-50">
             {filename}
           </span>
         </div>
@@ -138,7 +138,7 @@ const RealDocViewer = ({
       </div>
 
       {/* Document render area */}
-      <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50 min-h-[360px] flex items-center justify-center">
+      <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50 min-h-90 flex items-center justify-center">
         {/* Loading spinner */}
         {loading && !error && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-50 z-10">
@@ -171,7 +171,7 @@ const RealDocViewer = ({
           <iframe
             src={url}
             title={name}
-            className="w-full h-[420px]"
+            className="w-full h-105"
             style={{ opacity: loading ? 0 : 1, transition: "opacity 0.3s" }}
             onLoad={() => setLoading(false)}
             onError={() => {
@@ -183,7 +183,8 @@ const RealDocViewer = ({
 
         {/* Image */}
         {fileIsImage && !error && (
-          <div className="overflow-auto max-h-[420px] flex items-center justify-center p-4 w-full">
+          <div className="overflow-auto max-h-105 flex items-center justify-center p-4 w-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={url}
               alt={name}
@@ -429,7 +430,7 @@ const DocumentViewerModal = ({
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-100 flex flex-col items-center justify-center min-h-[350px]">
+        <div className="flex-1 overflow-y-auto p-6 bg-slate-100 flex flex-col items-center justify-center min-h-87.5">
           {hasRealUrl ? (
             <RealDocViewer url={documentUrl!} name={documentName} />
           ) : (

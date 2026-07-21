@@ -26,7 +26,7 @@ export default function SubmitApprovalButton({
           <motion.span
             className="material-symbols-outlined "
             animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' as any }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
           >
             sync
           </motion.span>

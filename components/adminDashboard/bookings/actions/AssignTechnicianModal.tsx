@@ -1,22 +1,23 @@
 'use client';
-import { AdminControllers } from '@/api/adminControllers';
-import { userSecuredApi } from '@/api/config';
-import { showSnackbar } from '@/redux/slices/snackbarSlice';
-import type { AdminBooking } from '@/types/admin/bookings.types';
 import { Button, CircularProgress, Dialog, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { AdminControllers } from '@/api/adminControllers';
+import { userSecuredApi } from '@/api/config';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
+import type { AdminBooking } from '@/types/admin/bookings.types';
+
 interface Props {
   open: boolean;
-  booking: AdminBooking | any;
+  booking: AdminBooking | any; // eslint-disable-line @typescript-eslint/no-explicit-any
   onClose: () => void;
   onAssign: () => void;
 }
 
 const AssignTechnicianModal = ({ open, booking, onClose, onAssign }: Props) => {
   const [selected, setSelected] = useState<number | ''>('');
-  const [technicians, setTechnicians] = useState<any[]>([]);
+  const [technicians, setTechnicians] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [isLoadingTechs, setIsLoadingTechs] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
   const dispatch = useDispatch();
@@ -40,7 +41,7 @@ const AssignTechnicianModal = ({ open, booking, onClose, onAssign }: Props) => {
       };
       fetchTechs();
     }
-  }, [open]);
+  }, [open, booking?.service?.id, booking?.serviceId]);
 
   const handleConfirm = async () => {
     if (!selected) return;
@@ -54,10 +55,10 @@ const AssignTechnicianModal = ({ open, booking, onClose, onAssign }: Props) => {
       dispatch(showSnackbar({ message: 'Assigned Technician Successfully', severity: 'success' }));
       onAssign();
       handleClose();
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to assign technician', err);
       dispatch(showSnackbar({ 
-        message: err?.response?.data?.message || 'Failed to assign technician. Please try again.', 
+        message: (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to assign technician. Please try again.', 
         severity: 'error' 
       }));
     } finally {

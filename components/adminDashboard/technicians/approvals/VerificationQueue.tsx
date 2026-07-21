@@ -12,7 +12,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -80,8 +79,6 @@ function sortTechnicians(
 interface HeadCellProps {
   field: SortField | null;
   label: string;
-  sortField: SortField;
-  sortDir: SortDir;
   onSort: (field: SortField) => void;
   align?: "left" | "right" | "center";
 }
@@ -89,8 +86,6 @@ interface HeadCellProps {
 function HeadCell({
   field,
   label,
-  sortField,
-  sortDir,
   onSort,
   align = "left",
 }: HeadCellProps) {
@@ -194,7 +189,7 @@ const VerificationQueue = ({
     page * rowsPerPage + rowsPerPage,
   );
 
-  const headProps = { sortField, sortDir, onSort: handleSort };
+  const headProps = { onSort: handleSort };
 
   return (
     <div className="space-y-4">

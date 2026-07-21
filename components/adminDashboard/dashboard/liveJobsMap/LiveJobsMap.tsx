@@ -8,7 +8,7 @@ export default function LiveJobsMap() {
   return (
     <motion.div
       whileHover={{ y: -4 }}
-      transition={{ duration: 0.2, ease: 'easeOut' as any }}
+      transition={{ duration: 0.2, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
       className="rounded-2xl border border-slate-200 bg-white hover:shadow-lg p-5 cursor-default"
     >
     <Card

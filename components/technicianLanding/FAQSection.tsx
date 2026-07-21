@@ -48,7 +48,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' as any }}
+            transition={{ duration: 0.3, ease: 'easeInOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
             className="overflow-hidden"
           >
             <p className="pb-5 text-sm leading-relaxed text-slate-500">{a}</p>

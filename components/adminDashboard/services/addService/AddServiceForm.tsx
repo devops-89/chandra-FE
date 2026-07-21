@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -438,7 +438,7 @@ export default function AddServiceForm() {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.22, ease: 'easeInOut' as any }}
+              transition={{ duration: 0.22, ease: 'easeInOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
             >
               {step === 0 && (
                 <BasicInfoStep

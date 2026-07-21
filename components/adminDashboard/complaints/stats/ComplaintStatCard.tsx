@@ -11,7 +11,7 @@ const ComplaintStatCard = ({ title, value }: Props) => {
   return (
     <motion.div
       whileHover={{ y: -4 }}
-      transition={{ duration: 0.2, ease: 'easeOut' as any }}
+      transition={{ duration: 0.2, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
       className="rounded-2xl border border-slate-200 hover:shadow-lg bg-white p-5 cursor-default"
     >
       <p className="text-sm text-slate-500">{title}</p>

@@ -8,7 +8,7 @@ export default function RevenueTrendCard() {
     <motion.div
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.2, ease: 'easeOut' as any }}
+      transition={{ duration: 0.2, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
       className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md p-5 cursor-default transition-shadow"
     >
       <div className="flex items-center justify-between mb-1">
@@ -21,7 +21,7 @@ export default function RevenueTrendCard() {
 
       <p className="text-xs text-slate-400 mb-4">Past 7 days earnings</p>
 
-      <div className="h-[150px]">
+      <div className="h-37.5">
         <svg viewBox="0 0 400 150" className="w-full h-full">
           <defs>
             <linearGradient id="revenueGradient" x1="0%" y1="0%" x2="0%" y2="100%">

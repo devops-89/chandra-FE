@@ -10,7 +10,7 @@ export function TestimonialHeader() {
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, ease: 'easeOut' as any }}
+          transition={{ duration: 0.6, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
           className="text-4xl font-bold tracking-[-0.04em] text-slate-950 md:text-5xl"
         >
           Real Stories from{' '}
@@ -23,7 +23,7 @@ export function TestimonialHeader() {
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, delay: 0.18, ease: 'easeOut' as any }}
+          transition={{ duration: 0.6, delay: 0.18, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
           className="mt-4 text-lg text-slate-950"
         >
           Success Stories: Better Decisions Through Better Organization

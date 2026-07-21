@@ -28,7 +28,7 @@ export default function LaunchSection({
           className="material-symbols-outlined text-6xl mb-6 text-primary-fixed block"
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' as any }}
+          transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
         >
           task_alt
         </motion.span>

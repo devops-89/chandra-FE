@@ -2,12 +2,19 @@
 
 import {
   Box,
+  Button,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
+  Menu,
+  MenuItem,
   Paper,
   Tab,
-  Tabs,
   Table,
   TableBody,
   TableCell,
@@ -15,17 +22,9 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
+  Tabs,
   Tooltip,
   Typography,
-  Menu,
-  MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
 } from '@mui/material';
 import { useState } from 'react';
 
@@ -58,7 +57,7 @@ interface Props {
   statusFilter: string;
   setStatusFilter: (val: string) => void;
   actionLoading?: Record<string, boolean>;
-  onChangeStatus?: (id: string, newStatus: any) => void;
+  onChangeStatus?: (id: string, newStatus: string) => void;
   onViewDetails?: (technician: Technician) => void;
   isLoading?: boolean;
   error?: string | null;
@@ -87,7 +86,7 @@ function StatusDropdown({
     e.stopPropagation();
     if (!disabled && currentStatus !== 'NO_PROFILE') setAnchorEl(e.currentTarget);
   };
-  const handleClose = (e?: any) => {
+  const handleClose = (e?: React.MouseEvent | Event | React.SyntheticEvent) => {
     e?.stopPropagation?.();
     setAnchorEl(null);
   };
@@ -106,7 +105,7 @@ function StatusDropdown({
     setConfirmStatus(null);
   };
 
-  const handleCancelConfirm = (e?: any) => {
+  const handleCancelConfirm = (e?: React.MouseEvent | Event | React.SyntheticEvent) => {
     e?.stopPropagation?.();
     setConfirmStatus(null);
   };
@@ -148,7 +147,7 @@ function StatusDropdown({
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
-        onClose={handleClose}
+        onClose={() => handleClose()}
         sx={{
           '& .MuiPaper-root': {
             borderRadius: 2,
@@ -161,7 +160,7 @@ function StatusDropdown({
            if (s === currentStatus) return null;
            const sObj = STATUS_CHIP[s];
            return (
-             <MenuItem key={s} onClick={(e) => handleSelect(e, s as any)} sx={{ fontSize: 13, borderRadius: 1, mb: 0.5 }}>
+             <MenuItem key={s} onClick={(e) => handleSelect(e, s as 'APPROVED' | 'PENDING_APPROVAL' | 'REJECTED')} sx={{ fontSize: 13, borderRadius: 1, mb: 0.5 }}>
                {sObj.label}
              </MenuItem>
            );
@@ -170,14 +169,14 @@ function StatusDropdown({
 
       <Dialog 
         open={Boolean(confirmStatus)} 
-        onClose={handleCancelConfirm}
+        onClose={() => handleCancelConfirm()}
         onClick={(e) => e.stopPropagation()}
         sx={{ '& .MuiDialog-paper': { borderRadius: '12px', p: 1 } }}
       >
         <DialogTitle sx={{ fontWeight: 700, fontSize: '1.1rem' }}>Confirm Status Change</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to change the technician's status to <strong>{confirmStatus ? STATUS_CHIP[confirmStatus].label : ''}</strong>?
+            Are you sure you want to change the technician&apos;s status to <strong>{confirmStatus ? STATUS_CHIP[confirmStatus].label : ''}</strong>?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -235,8 +234,6 @@ function sortTechnicians(
 interface HeadCellProps {
   field: SortField | null;
   label: string;
-  sortField: SortField;
-  sortDir: SortDir;
   onSort: (field: SortField) => void;
   align?: 'left' | 'right' | 'center';
 }
@@ -244,8 +241,6 @@ interface HeadCellProps {
 function HeadCell({
   field,
   label,
-  sortField,
-  sortDir,
   onSort,
   align = 'left',
 }: HeadCellProps) {
@@ -416,7 +411,7 @@ const TechniciansTable = ({
     page * rowsPerPage + rowsPerPage,
   );
 
-  const headProps = { sortField, sortDir, onSort: handleSort };
+  const headProps = { onSort: handleSort };
 
   return (
     <>
@@ -481,15 +476,11 @@ const TechniciansTable = ({
             {!isLoading &&
               !error &&
               paginated.map((tech) => {
-                const statusChip =
-                  STATUS_CHIP[tech.status] ?? {
-                    label: tech.status,
-                    color: 'default' as const,
-                  };
+
                 const isActionBusy = Boolean(actionLoading?.[tech.id]);
                 const canUpdateStatus = tech.profileUserId !== null;
                 const isPending = tech.status === 'PENDING_APPROVAL';
-                const isRejected = tech.status === 'REJECTED';
+
 
                 return (
                   <TableRow

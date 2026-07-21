@@ -13,7 +13,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -73,16 +72,11 @@ function formatDateTime(raw: string): string {
   } catch {
     return raw;
   }
-  return d.toLocaleTimeString('en-IN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  });
 }
 
 function getSortValue(booking: AdminBooking, field: SortField): string | number {
   switch (field) {
-    case 'bookingId': return booking.bookingId || (booking as any).id || '';
+    case 'bookingId': return booking.bookingId || (booking as AdminBooking & { id?: number }).id || '';
     case 'customer': return ((booking.customer?.firstName || '') + ' ' + (booking.customer?.lastName || '')).trim().toLowerCase() || booking.customer?.name?.toLowerCase() || '';
     case 'service': return (booking.service?.name ?? '').toLowerCase();
     case 'technician': return booking.technician ? ((booking.technician.firstName || '') + ' ' + (booking.technician.lastName || '')).trim().toLowerCase() || (booking.technician.name || '').toLowerCase() : '';
@@ -109,13 +103,11 @@ function sortBookings(bookings: AdminBooking[], field: SortField, dir: SortDir):
 interface HeadCellProps {
   field: SortField | null;
   label: string;
-  sortField: SortField;
-  sortDir: SortDir;
   onSort: (field: SortField) => void;
   align?: 'left' | 'right' | 'center';
 }
 
-function HeadCell({ field, label, sortField, sortDir, onSort, align = 'left' }: HeadCellProps) {
+function HeadCell({ field, label, onSort, align = 'left' }: HeadCellProps) {
   if (!field) {
     return (
       <TableCell align={align} sx={{ fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', whiteSpace: 'nowrap' }}>
@@ -247,15 +239,15 @@ const BookingsTable = () => {
               {/* Rows */}
               {!isLoading && !error && sorted.map((booking, index) => {
                 const status = STATUS_CHIP[booking.status] ?? { label: booking.status, bg: '#f8fafc', text: '#64748b' };
-                const payment = PAYMENT_CHIP[booking.paymentStatus?.toUpperCase?.()] ?? { label: booking.paymentStatus ?? '—', bg: '#f8fafc', text: '#64748b' };
+                const _payment = PAYMENT_CHIP[booking.paymentStatus?.toUpperCase?.()] ?? { label: booking.paymentStatus ?? '—', bg: '#f8fafc', text: '#64748b' };
                 const needsAssign = booking.technician === null && booking.status !== BOOKING_STATUS.COMPLETED && booking.status !== BOOKING_STATUS.CANCELLED;
 
                 return (
                   <TableRow
-                    key={booking.bookingId || (booking as any).id || index}
+                    key={booking.bookingId || (booking as AdminBooking & { id?: number }).id || index}
                     hover
                     sx={{ cursor: 'pointer' }}
-                    onClick={() => router.push(`/admin/bookings/${booking.bookingId || (booking as any).id}`)}
+                    onClick={() => router.push(`/admin/bookings/${booking.bookingId || (booking as AdminBooking & { id?: number }).id}`)}
                   >
                     {/* Booking ID */}
                     <TableCell sx={{ fontSize: 13 }}>
@@ -332,7 +324,7 @@ const BookingsTable = () => {
                         <Tooltip title="View details">
                           <IconButton
                             size="small"
-                            onClick={() => router.push(`/admin/bookings/${booking.bookingId || (booking as any).id}`)}
+                            onClick={() => router.push(`/admin/bookings/${booking.bookingId || (booking as AdminBooking & { id?: number }).id}`)}
                             sx={{ color: '#059669', '&:hover': { backgroundColor: '#f0fdf4' } }}
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

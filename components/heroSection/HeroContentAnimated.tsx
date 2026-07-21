@@ -52,7 +52,7 @@ const HeroContentAnimated = ({
       transition={{
         duration: 3.5,
         repeat: Infinity,
-        ease: 'easeInOut' as any,
+        ease: 'easeInOut' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
       }}
       style={{
         willChange: 'transform',

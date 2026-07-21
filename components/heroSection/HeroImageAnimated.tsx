@@ -75,7 +75,7 @@ const HeroImageAnimated = ({ image }: HeroImageAnimatedProps) => {
         duration: 4,
         repeat: Infinity,
         repeatType: 'reverse',
-        ease: 'easeInOut' as any,
+        ease: 'easeInOut' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
       }}
       style={{
         willChange: 'transform',

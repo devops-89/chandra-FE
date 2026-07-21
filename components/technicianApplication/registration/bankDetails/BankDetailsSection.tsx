@@ -149,6 +149,7 @@ export default function BankDetailsSection() {
     if (!hasAnyValue) return;
 
     sessionStorage.setItem('bankDetailsData', JSON.stringify(payload));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData, selectedPayoutMethod]);
 
   // Clear errors for the relevant field when method switches

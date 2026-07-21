@@ -1,13 +1,14 @@
 'use client';
 
 import { Box, Button, Card, TextField, Typography } from '@mui/material';
+import { useFormik } from 'formik';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useFormik } from 'formik';
 import * as Yup from 'yup';
+
+import { userSecuredApi } from '@/api/config';
 import { useAppDispatch } from '@/redux/hooks';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
-import { userSecuredApi } from '@/api/config';
 
 export default function AdminAddTechnicianForm() {
   const router = useRouter();
@@ -37,9 +38,9 @@ export default function AdminAddTechnicianForm() {
         setTimeout(() => {
           router.push('/admin/technicians');
         }, 1000);
-      } catch (error: any) {
+      } catch (error) {
         console.error(error);
-        const msg = error.response?.data?.message || 'Failed to add technician';
+        const msg = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to add technician';
         dispatch(showSnackbar({ message: msg, severity: 'error' }));
         setLoading(false);
       }

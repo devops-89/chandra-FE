@@ -1,19 +1,19 @@
 "use client";
 import { AnimatePresence } from "framer-motion";
-import { ClipboardList, UserCog } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { UserCog } from "lucide-react";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from "react";
 
 import { userSecuredApi } from "@/api/config";
 import { ServiceControllers } from '@/api/serviceControllers';
 import type { Technician, VerificationDocument } from "@/constants/admin/technicianData";
+import { useAppDispatch } from '@/redux/hooks';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 import DocumentViewerModal from "./approvals/DocumentViewerModal";
 import VerificationDrawer from "./approvals/VerificationDrawer";
 import TechniciansTable from "./list/TechniciansTable";
-import { useAppDispatch } from '@/redux/hooks';
-import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 type TechnicianStatus = "APPROVED" | "PENDING_APPROVAL" | "REJECTED";
 
@@ -59,7 +59,6 @@ const Technicians = () => {
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All Status" | TechnicianStatus>("All Status");
 
   // State for All Technicians detail drawer
@@ -197,6 +196,7 @@ const Technicians = () => {
   }, [statusFilter]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTechnicians();
   }, [fetchTechnicians]);
 

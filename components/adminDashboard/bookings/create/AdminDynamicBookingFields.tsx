@@ -1,19 +1,19 @@
 'use client';
 
-import React from 'react';
 import { 
+  Checkbox, 
   FormControl, 
+  FormControlLabel, 
+  FormHelperText,
+  Grid,
   InputLabel, 
   MenuItem, 
   Select, 
-  TextField, 
-  Checkbox, 
-  FormControlLabel, 
-  FormHelperText,
-  Grid
-} from '@mui/material';
-import type { BookingFormField } from '@/types/services.types';
+  TextField} from '@mui/material';
+import React from 'react';
+
 import type { FieldValue } from '@/components/booking/DynamicBookingFields';
+import type { BookingFormField } from '@/types/services.types';
 
 export interface AdminDynamicBookingFieldsProps {
   fields: BookingFormField[];
@@ -101,7 +101,7 @@ export default function AdminDynamicBookingFields({
                 <TextField
                   type="file"
                   label={field.label}
-                  // @ts-ignore - MUI type definition mismatch for this specific prop combination
+                  // @ts-expect-error - MUI type definition mismatch for this specific prop combination
                   InputLabelProps={{ shrink: true }}
                   inputProps={{ 
                     multiple: field.type === 'multi-file',

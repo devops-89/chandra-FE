@@ -62,7 +62,7 @@ export default function StatusIcon({
       }
       transition={
         status === 'pending'
-          ? { duration: 3, repeat: Infinity, ease: 'linear' as any }
+          ? { duration: 3, repeat: Infinity, ease: 'linear' as any } // eslint-disable-line @typescript-eslint/no-explicit-any
           : status === 'approved'
             ? { duration: 0.6 }
             : { duration: 2, repeat: Infinity }

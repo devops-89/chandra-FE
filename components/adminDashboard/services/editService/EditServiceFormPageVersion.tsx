@@ -11,18 +11,17 @@ import {
   Info,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { Snackbar, Alert } from '@mui/material';
+import {useState } from 'react';
 
 import { useAppDispatch } from '@/redux/hooks';
 import { updateService } from '@/redux/slices/servicesSlice';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
 import type { AdminService } from '@/types/admin/service.types';
 
+import type { SpecFieldType, Specification } from '../addService/AddServiceForm';
 import BasicInfoStep from '../addService/BasicInfoStep';
 import PricingStep from '../addService/PricingStep';
 import SpecificationsStep from '../addService/SpecificationsStep';
-import type { SpecFieldType, Specification } from '../addService/AddServiceForm';
 
 /* ─── Step Config ────────────────────────────────────────────────────────── */
 const STEPS = [
@@ -129,12 +128,11 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
   const [direction, setDirection] = useState(1);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState(false);
 
   // Extract pricingRule or fallback to empty
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pricing = (initialData as any).pricingRule || {};
 
   const buildInitialData = () => ({
@@ -142,7 +140,7 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
     description: initialData.description || '',
     icon: null,
     isActive: initialData.isActive ?? true,
-    specifications: (initialData.specifications || []).map((s: any) => ({
+    specifications: (initialData.specifications || []).map((s: { id?: string; name: string; type: string; isRequired: boolean; values?: string[] }) => ({
       id: s.id ?? Math.random().toString(),
       name: s.name,
       type: s.type as SpecFieldType,
@@ -217,7 +215,7 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
     setApiError(null);
 
     try {
-      const result = await dispatch(
+      await dispatch(
         updateService({
           id: initialData.id,
           name: data.name,
@@ -243,7 +241,7 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
       setTimeout(() => {
         router.push('/admin/services');
       }, 1000);
-    } catch (err: any) {
+    } catch (_err) {
       // The global API interceptor will show the error toast.
     } finally {
       setIsPublishing(false);
@@ -386,7 +384,7 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.22, ease: 'easeInOut' as any }}
+              transition={{ duration: 0.22, ease: 'easeInOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
             >
               {step === 0 && (
                 <BasicInfoStep
@@ -398,6 +396,7 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
                   }}
                   errors={errors}
                   onChange={update}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   existingIconUrl={(initialData as any).iconDownloadUrl || (initialData as any).iconUrl}
                 />
               )}

@@ -10,7 +10,7 @@ const containerVariants: Variants = {
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as any } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as any } }, // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
 export default function TechnicianHero() {

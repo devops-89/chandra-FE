@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Box, CircularProgress,Typography } from '@mui/material';
+import { CheckCircle, ChevronLeft, ClipboardList, Clock, DollarSign, Info, PenTool, ShieldAlert,Tag, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Info, CheckCircle, Tag, DollarSign, PenTool, ClipboardList, Clock, Truck, ShieldAlert } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import { AdminControllers } from '@/api/adminControllers';
 import type { AdminService } from '@/types/admin/service.types';
-import { Box, CircularProgress, Typography, IconButton } from '@mui/material';
 
 export default function ServiceDetailsPageWrapper({ serviceId }: { serviceId: number }) {
   const router = useRouter();
@@ -19,8 +20,8 @@ export default function ServiceDetailsPageWrapper({ serviceId }: { serviceId: nu
         setLoading(true);
         const data = await AdminControllers.getServiceByIdForAdmin(serviceId);
         setService(data);
-      } catch (err: any) {
-        setError(err?.message || 'Failed to fetch service details');
+      } catch (err) {
+        setError((err as Error)?.message || 'Failed to fetch service details');
       } finally {
         setLoading(false);
       }
@@ -50,6 +51,7 @@ export default function ServiceDetailsPageWrapper({ serviceId }: { serviceId: nu
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pricing = (service as any).pricingRule || {};
   const specs = service.specifications || [];
 
@@ -155,7 +157,7 @@ export default function ServiceDetailsPageWrapper({ serviceId }: { serviceId: nu
               </div>
             ) : (
               <div className="space-y-4">
-                {specs.map((spec: any, idx: number) => (
+                {specs.map((spec: { id?: string; name: string; value?: string }, idx: number) => (
                   <div key={spec.id || idx} className="rounded-xl border border-slate-100 bg-slate-50 p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">

@@ -14,7 +14,7 @@ export default function ServicePerformanceCard() {
     <motion.div
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.2, ease: 'easeOut' as any }}
+      transition={{ duration: 0.2, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
       className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md p-5 cursor-default transition-shadow"
     >
       <h3 className="font-semibold text-slate-800 mb-1">Service Performance</h3>
@@ -34,7 +34,7 @@ export default function ServicePerformanceCard() {
                 className="h-full rounded-full bg-emerald-600"
                 initial={{ width: 0 }}
                 animate={{ width: `${service.value}%` }}
-                transition={{ duration: 0.8, ease: 'easeOut' as any, delay: 0.1 }}
+                transition={{ duration: 0.8, ease: 'easeOut' as any, delay: 0.1 }} // eslint-disable-line @typescript-eslint/no-explicit-any
               />
             </div>
           </div>

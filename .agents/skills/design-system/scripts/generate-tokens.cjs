@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * Generate CSS variables from design tokens JSON
  *
@@ -145,7 +146,7 @@ function generateTailwind(tokens) {
 
   // Extract colors for Tailwind
   const colors = {};
-  for (const [key, value] of Object.entries(semantic)) {
+  for (const key of Object.keys(semantic)) {
     if (key.includes('color')) {
       const name = key.replace('--color-', '').replace(/-/g, '.');
       colors[name] = `var(${key})`;

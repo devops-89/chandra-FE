@@ -1,6 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+
 import BookingDetailsPageWrapper from '@/components/adminDashboard/bookings/details/BookingDetailsPageWrapper';
 
 export default function BookingDetailsPage() {

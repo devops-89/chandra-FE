@@ -32,6 +32,7 @@ export default function ProfileForm() {
   // Update form when profile data loads
   useEffect(() => {
     if (profile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         firstName: profile.firstName ?? '',
         lastName: profile.lastName ?? '',

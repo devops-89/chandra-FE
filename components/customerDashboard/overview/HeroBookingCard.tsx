@@ -12,7 +12,7 @@ function StatsCard({ icon: Icon, title, value, isHighlighted = false }: StatsCar
   return (
     <motion.div
       whileHover={{ y: -4 }}
-      transition={{ duration: 0.2, ease: 'easeOut' as any }}
+      transition={{ duration: 0.2, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
       className="
         bg-white
         p-8

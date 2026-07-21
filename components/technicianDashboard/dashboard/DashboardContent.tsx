@@ -1,10 +1,10 @@
 'use client';
 
 import ActiveJobsSection from './active-jobs/ActiveJobsSection';
-// import LoyaltyCard from './loyalty/LoyaltyCard';
-import NearbyJobsSection from './nearby-jobs/NearbyJobsSection';
 import PerformanceCard from './performance/PerformanceCard';
 import RecentActivityCard from './recent-activity/RecentActivityCard';
+// import LoyaltyCard from './loyalty/LoyaltyCard';
+import NearbyJobsSection from './recent-jobs/NearbyJobsSection';
 
 export default function DashboardContent() {
   return (

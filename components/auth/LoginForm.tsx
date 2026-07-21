@@ -20,11 +20,6 @@ import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
-const inputClassName =
-  'h-11 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20';
-
-const errorClassName = 'text-xs font-medium text-red-600';
-
 const textFieldStyles = {
   '& .MuiOutlinedInput-root': {
     borderRadius: '0.5rem',

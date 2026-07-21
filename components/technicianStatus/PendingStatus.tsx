@@ -38,7 +38,7 @@ export default function PendingStatus({
           <motion.div
             className="flex justify-center"
             animate={{ rotate: 360 }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'linear' as any }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'linear' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
           >
             <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-yellow-50 flex items-center justify-center">
               <span className="material-symbols-outlined text-5xl md:text-6xl text-yellow-600">

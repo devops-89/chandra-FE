@@ -1,8 +1,10 @@
 'use client';
 
+import { Delete as DeleteIcon, Edit as EditIcon, Visibility as ViewIcon } from '@mui/icons-material';
 import {
   Box,
   Chip,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -11,15 +13,11 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
-  IconButton
-} from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon, Visibility as ViewIcon } from '@mui/icons-material';
+  Typography} from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import DeleteServiceModal from '@/components/adminDashboard/services/manageService/DeleteServiceModal';
-import EditServiceForm from '@/components/adminDashboard/services/manageService/EditServiceForm';
 import { useServiceManager } from '@/hooks/useServiceManager';
 import type { AdminService } from '@/types/admin/service.types';
 
@@ -61,8 +59,6 @@ function sortServices(
 interface HeadCellProps {
   field: SortField | null;
   label: string;
-  sortField: SortField;
-  sortDir: SortDir;
   onSort: (field: SortField) => void;
   align?: 'left' | 'right' | 'center';
 }
@@ -70,8 +66,6 @@ interface HeadCellProps {
 function HeadCell({
   field,
   label,
-  sortField,
-  sortDir,
   onSort,
   align = 'left',
 }: HeadCellProps) {
@@ -118,7 +112,6 @@ const ServicesTable = () => {
   const router = useRouter();
   const {
     services,
-    editTarget,   openEdit,   closeEdit,   saveEdit,
     deleteTarget, openDelete, closeDelete, confirmDelete,
   } = useServiceManager();
 
@@ -144,7 +137,7 @@ const ServicesTable = () => {
     page * rowsPerPage + rowsPerPage,
   );
 
-  const headProps = { sortField, sortDir, onSort: handleSort };
+  const headProps = { onSort: handleSort };
 
   return (
     <>
