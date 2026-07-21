@@ -17,6 +17,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
@@ -24,7 +25,7 @@ import { fetchAdminBookings } from '@/redux/slices/adminBookingSlice';
 import type { AdminBooking } from '@/types/admin/bookings.types';
 import { BOOKING_PAYMENT_STATUS, BOOKING_STATUS } from '@/types/enums';
 
-import BookingDetailsDrawer from '../details/BookingDetailsDrawer';
+import AssignTechnicianModal from '../actions/AssignTechnicianModal';
 import BookingTabs, { type BookingTab } from './BookingTabs';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -43,44 +44,34 @@ type SortDir = 'asc' | 'desc';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const STATUS_CHIP: Record<BOOKING_STATUS | string, { label: string; color: 'warning' | 'info' | 'success' | 'error' | 'default' }> = {
-  [BOOKING_STATUS.PENDING]: { label: 'Pending', color: 'warning' },
-  [BOOKING_STATUS.ACCEPTED]: { label: 'Accepted', color: 'info' },
-  [BOOKING_STATUS.ENROUTE]: { label: 'En Route', color: 'info' },
-  [BOOKING_STATUS.ARRIVED]: { label: 'Arrived', color: 'info' },
-  [BOOKING_STATUS.ONGOING]: { label: 'In Progress', color: 'info' },
-  [BOOKING_STATUS.COMPLETED]: { label: 'Completed', color: 'success' },
-  [BOOKING_STATUS.CANCELLED]: { label: 'Cancelled', color: 'error' },
+const STATUS_CHIP: Record<BOOKING_STATUS | string, { label: string; bg: string; text: string }> = {
+  [BOOKING_STATUS.PENDING]: { label: 'Pending', bg: '#fef3c7', text: '#b45309' }, // Amber
+  [BOOKING_STATUS.ACCEPTED]: { label: 'Accepted', bg: '#e0f2fe', text: '#0369a1' }, // Sky Blue
+  [BOOKING_STATUS.ENROUTE]: { label: 'En Route', bg: '#e0f2fe', text: '#0369a1' }, // Sky Blue
+  [BOOKING_STATUS.ARRIVED]: { label: 'Arrived', bg: '#e0f2fe', text: '#0369a1' }, // Sky Blue
+  [BOOKING_STATUS.ONGOING]: { label: 'In Progress', bg: '#f3e8ff', text: '#6b21a8' }, // Purple
+  [BOOKING_STATUS.COMPLETED]: { label: 'Completed', bg: '#d1fae5', text: '#047857' }, // Emerald
+  [BOOKING_STATUS.CANCELLED]: { label: 'Cancelled', bg: '#fee2e2', text: '#b91c1c' }, // Red
 };
 
-const PAYMENT_CHIP: Record<BOOKING_PAYMENT_STATUS | string, { label: string; color: 'success' | 'warning' | 'error' | 'default' }> = {
-  [BOOKING_PAYMENT_STATUS.PAID]: { label: 'Paid', color: 'success' },
-  [BOOKING_PAYMENT_STATUS.PENDING]: { label: 'Pending', color: 'warning' },
-  [BOOKING_PAYMENT_STATUS.FAILED]: { label: 'Failed', color: 'error' },
+const PAYMENT_CHIP: Record<BOOKING_PAYMENT_STATUS | string, { label: string; bg: string; text: string }> = {
+  [BOOKING_PAYMENT_STATUS.PAID]: { label: 'Paid', bg: '#d1fae5', text: '#047857' },
+  [BOOKING_PAYMENT_STATUS.PENDING]: { label: 'Pending', bg: '#fef3c7', text: '#b45309' },
+  [BOOKING_PAYMENT_STATUS.FAILED]: { label: 'Failed', bg: '#fee2e2', text: '#b91c1c' },
 };
 
-function formatDate(raw: string): string {
-  if (!raw) return '—';
-  const d = new Date(raw);
-  if (isNaN(d.getTime())) {
-    // Extract date portion if it contains time (e.g., "09 Aug 2026, 10:00 AM")
-    const dateMatch = raw.match(/^[^,]+/);
-    return dateMatch ? dateMatch[0].trim() : raw;
-  }
-  return d.toLocaleDateString('en-IN', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-}
-
-function formatTime(raw: string): string {
-  if (!raw) return '—';
-  const d = new Date(raw);
-  if (isNaN(d.getTime())) {
-    // Extract time portion if available
-    const timeMatch = raw.match(/\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?/);
-    return timeMatch ? timeMatch[0] : '—';
+function formatDateTime(raw: string): string {
+  try {
+    return new Date(raw).toLocaleString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  } catch {
+    return raw;
   }
   return d.toLocaleTimeString('en-IN', {
     hour: '2-digit',
@@ -91,13 +82,13 @@ function formatTime(raw: string): string {
 
 function getSortValue(booking: AdminBooking, field: SortField): string | number {
   switch (field) {
-    case 'bookingId': return booking.bookingId;
-    case 'customer': return booking.customer.name.toLowerCase();
+    case 'bookingId': return booking.bookingId || (booking as any).id || '';
+    case 'customer': return ((booking.customer?.firstName || '') + ' ' + (booking.customer?.lastName || '')).trim().toLowerCase() || booking.customer?.name?.toLowerCase() || '';
     case 'service': return (booking.service?.name ?? '').toLowerCase();
-    case 'technician': return (booking.technician?.name ?? '').toLowerCase();
+    case 'technician': return booking.technician ? ((booking.technician.firstName || '') + ' ' + (booking.technician.lastName || '')).trim().toLowerCase() || (booking.technician.name || '').toLowerCase() : '';
     case 'scheduledAt': return new Date(booking.scheduledAt).getTime();
     case 'totalAmount': return parseFloat(booking.totalAmount ?? '0');
-    case 'status': return booking.status.toLowerCase();
+    case 'status': return (booking.status || '').toLowerCase();
     case 'paymentStatus': return (booking.paymentStatus ?? '').toLowerCase();
     default: return '';
   }
@@ -134,13 +125,12 @@ function HeadCell({ field, label, sortField, sortDir, onSort, align = 'left' }: 
   }
   return (
     <TableCell align={align} sx={{ fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', whiteSpace: 'nowrap' }}>
-      <TableSortLabel
-        active={sortField === field}
-        direction={sortField === field ? sortDir : 'asc'}
+      <div
         onClick={() => onSort(field)}
+        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
       >
         {label}
-      </TableSortLabel>
+      </div>
     </TableCell>
   );
 }
@@ -166,6 +156,7 @@ function EmptyState({ message }: { message: string }) {
 
 const BookingsTable = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const { bookings, pagination, isLoading, error } = useAppSelector((state) => state.adminBookings);
 
   const [activeTab, setActiveTab] = useState<BookingTab>('all');
@@ -175,7 +166,7 @@ const BookingsTable = () => {
   // Backend pagination is 1-indexed, MUI is 0-indexed
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [drawerBooking, setDrawerBooking] = useState<AdminBooking | null>(null);
+  const [assignModalBooking, setAssignModalBooking] = useState<AdminBooking | null>(null);
 
   useEffect(() => {
     let statusFilter: string | undefined = activeTab.toUpperCase();
@@ -254,32 +245,32 @@ const BookingsTable = () => {
               )}
 
               {/* Rows */}
-              {!isLoading && !error && sorted.map((booking) => {
-                const status = STATUS_CHIP[booking.status] ?? { label: booking.status, color: 'default' as const };
-                const payment = PAYMENT_CHIP[booking.paymentStatus?.toUpperCase?.()] ?? { label: booking.paymentStatus ?? '—', color: 'default' as const };
+              {!isLoading && !error && sorted.map((booking, index) => {
+                const status = STATUS_CHIP[booking.status] ?? { label: booking.status, bg: '#f8fafc', text: '#64748b' };
+                const payment = PAYMENT_CHIP[booking.paymentStatus?.toUpperCase?.()] ?? { label: booking.paymentStatus ?? '—', bg: '#f8fafc', text: '#64748b' };
                 const needsAssign = booking.technician === null && booking.status !== BOOKING_STATUS.COMPLETED && booking.status !== BOOKING_STATUS.CANCELLED;
 
                 return (
                   <TableRow
-                    key={booking.bookingId}
+                    key={booking.bookingId || (booking as any).id || index}
                     hover
                     sx={{ cursor: 'pointer' }}
-                    onClick={() => setDrawerBooking(booking)}
+                    onClick={() => router.push(`/admin/bookings/${booking.bookingId || (booking as any).id}`)}
                   >
                     {/* Booking ID */}
                     <TableCell sx={{ fontSize: 13 }}>
                       <Typography variant="caption" sx={{ fontWeight: 700, color: '#059669', letterSpacing: '0.04em' }}>
-                        #{booking.bookingId}
+                        #{booking.bookingId || booking.id}
                       </Typography>
                     </TableCell>
 
                     {/* Customer */}
                     <TableCell sx={{ fontSize: 13 }}>
                       <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                        {booking.customer.name}
+                        {((booking.customer?.firstName || '') + ' ' + (booking.customer?.lastName || '')).trim() || booking.customer?.name}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {booking.customer.phone}
+                        {booking.customer?.phone}
                       </Typography>
                     </TableCell>
 
@@ -295,7 +286,7 @@ const BookingsTable = () => {
                       {booking.technician ? (
                         <Box>
                           <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {booking.technician.name}
+                            {((booking.technician.firstName || '') + ' ' + (booking.technician.lastName || '')).trim() || booking.technician.name}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {booking.technician.phone}
@@ -310,12 +301,7 @@ const BookingsTable = () => {
 
                     {/* Date */}
                     <TableCell sx={{ fontSize: 13, whiteSpace: 'nowrap' }}>
-                      {formatDate(booking.scheduledAtIst || booking.scheduledAt)}
-                    </TableCell>
-
-                    {/* Time */}
-                    <TableCell sx={{ fontSize: 13, whiteSpace: 'nowrap', color: '#64748b' }}>
-                      {formatTime(booking.scheduledAtIst || booking.scheduledAt)}
+                      {formatDateTime(booking.scheduledAt)}
                     </TableCell>
 
                     {/* Amount */}
@@ -327,9 +313,15 @@ const BookingsTable = () => {
                     <TableCell>
                       <Chip
                         label={status.label}
-                        color={status.color}
                         size="small"
-                        sx={{ fontWeight: 600, fontSize: 11 }}
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: 11,
+                          bgcolor: status.bg,
+                          color: status.text,
+                          border: 'none',
+                          borderRadius: '6px'
+                        }}
                       />
                     </TableCell>
 
@@ -340,7 +332,7 @@ const BookingsTable = () => {
                         <Tooltip title="View details">
                           <IconButton
                             size="small"
-                            onClick={() => setDrawerBooking(booking)}
+                            onClick={() => router.push(`/admin/bookings/${booking.bookingId || (booking as any).id}`)}
                             sx={{ color: '#059669', '&:hover': { backgroundColor: '#f0fdf4' } }}
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -354,7 +346,7 @@ const BookingsTable = () => {
                         <Tooltip title={needsAssign ? "Assign technician" : ""}>
                           <IconButton
                             size="small"
-                            onClick={() => needsAssign && setDrawerBooking(booking)}
+                            onClick={() => needsAssign && setAssignModalBooking(booking)}
                             sx={{
                               color: '#f59e0b',
                               '&:hover': { backgroundColor: '#fffbeb' },
@@ -395,12 +387,15 @@ const BookingsTable = () => {
         )}
       </Card>
 
-      {/* Details drawer */}
-      {drawerBooking && (
-        <BookingDetailsDrawer
-          open
-          booking={drawerBooking}
-          onClose={() => setDrawerBooking(null)}
+      {/* Assign Technician Modal */}
+      {assignModalBooking && (
+        <AssignTechnicianModal
+          open={!!assignModalBooking}
+          booking={assignModalBooking}
+          onClose={() => setAssignModalBooking(null)}
+          onAssign={() => {
+            dispatch(fetchAdminBookings({ page: page + 1, limit: rowsPerPage, status: activeTab === 'all' ? undefined : activeTab.toUpperCase() }));
+          }}
         />
       )}
     </>

@@ -40,3 +40,9 @@ export interface ServiceAreaFooterProps {
   onPrevious: () => void;
   onSubmit: () => void;
 }
+
+export interface PreferredAreasInputProps {
+  selectedAreas: string[];
+  onAddArea: (area: string) => void;
+  onRemoveArea: (area: string) => void;
+}

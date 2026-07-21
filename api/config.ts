@@ -83,13 +83,14 @@ const setupResponseInterceptor = (instance: AxiosInstance) => {
     (response: AxiosResponse) => {
       // Auto-show success messages for mutations
       const method = response.config.method?.toLowerCase() || '';
-      if (['post', 'put', 'patch', 'delete'].includes(method)) {
+      const url = response.config.url || '';
+      
+      if (['post', 'put', 'patch', 'delete'].includes(method) && !url.includes('/auth/refresh-token')) {
         const msg = response.data?.message;
         if (msg) {
           let severity: 'success' | 'info' | 'warning' | 'error' = 'success';
           if (method === 'delete') severity = 'error'; // Red
-          else if (method === 'put' || method === 'patch') severity = 'info'; // Blue
-          else severity = 'success'; // Green for POST
+          else severity = 'success'; // Green for POST, PUT, PATCH
           
           getAppStore().dispatch(showSnackbar({ message: msg, severity }));
         }

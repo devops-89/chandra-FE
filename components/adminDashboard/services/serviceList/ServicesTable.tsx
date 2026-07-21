@@ -11,9 +11,11 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
   Typography,
+  IconButton
 } from '@mui/material';
+import { Edit as EditIcon, Delete as DeleteIcon, Visibility as ViewIcon } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import DeleteServiceModal from '@/components/adminDashboard/services/manageService/DeleteServiceModal';
@@ -102,18 +104,18 @@ function HeadCell({
         whiteSpace: 'nowrap',
       }}
     >
-      <TableSortLabel
-        active={sortField === field}
-        direction={sortField === field ? sortDir : 'asc'}
-        onClick={() => onSort(field)}
+      <div 
+        onClick={() => onSort(field)} 
+        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
       >
         {label}
-      </TableSortLabel>
+      </div>
     </TableCell>
   );
 }
 
 const ServicesTable = () => {
+  const router = useRouter();
   const {
     services,
     editTarget,   openEdit,   closeEdit,   saveEdit,
@@ -232,21 +234,29 @@ const ServicesTable = () => {
                     {/* Actions */}
                     <TableCell>
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <button
-                          type="button"
-                          onClick={() => openEdit(service)}
-                          className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition-colors cursor-pointer"
+                        <IconButton
+                          onClick={() => router.push(`/admin/services/${service.id}`)}
+                          sx={{ color: '#64748b', '&:hover': { bgcolor: 'rgba(100, 116, 139, 0.1)' } }}
+                          title="View Details"
                         >
-                          Edit
-                        </button>
+                          <ViewIcon fontSize="small" />
+                        </IconButton>
 
-                        <button
-                          type="button"
-                          onClick={() => openDelete(service)}
-                          className="rounded-xl bg-red-500 px-4 py-2 text-xs font-semibold text-white hover:bg-red-600 transition-colors cursor-pointer"
+                        <IconButton
+                          onClick={() => router.push(`/admin/services/edit/${service.id}`)}
+                          sx={{ color: '#0ea5e9', '&:hover': { bgcolor: 'rgba(14, 165, 233, 0.1)' } }}
+                          title="Edit Service"
                         >
-                          Delete
-                        </button>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+
+                        <IconButton
+                          onClick={() => openDelete(service)}
+                          sx={{ color: '#ef4444', '&:hover': { bgcolor: 'rgba(239, 68, 68, 0.1)' } }}
+                          title="Delete"
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -273,13 +283,6 @@ const ServicesTable = () => {
           />
         )}
       </Paper>
-
-      {/* Edit drawer */}
-      <EditServiceForm
-        service={editTarget}
-        onClose={closeEdit}
-        onSave={saveEdit}
-      />
 
       {/* Delete confirmation modal */}
       <DeleteServiceModal

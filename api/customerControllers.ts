@@ -12,6 +12,7 @@ import type {
   UpdateCustomerProfileRequest,
   UpdateCustomerProfileResponse,
 } from '@/types/customer/profile.types';
+import type { CustomerDashboardStats } from '@/types/customer/dashboard.types';
 
 import { userSecuredApi } from './config';
 
@@ -47,7 +48,7 @@ export const CustomerControllers = {
     return id;
   },
 
-  getCustomerDashboardStats: async (): Promise<unknown> => {
+  getCustomerDashboardStats: async (): Promise<CustomerDashboardStats> => {
     const response = await userSecuredApi.get('/users/customer/dashboard-stats');
     return response.data.data.data;
   },

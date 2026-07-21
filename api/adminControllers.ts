@@ -43,17 +43,24 @@ export const AdminControllers = {
 
   getAdminBookings: async (page = 1, limit = 10, status?: string, search?: string): Promise<{ bookings: AdminBooking[]; pagination: BookingPagination }> => {
     let url = `/bookings/all?page=${page}&limit=${limit}`;
-    if (status && status !== 'all') {
+
+    if (status) {
       url += `&status=${status}`;
     }
     if (search) {
-      url += `&search=${search}`;
+      url += `&search=${encodeURIComponent(search)}`;
     }
+
     const response = await userSecuredApi.get<GetAdminBookingsResponse>(url);
     return {
       bookings: response.data.data.data,
       pagination: response.data.data.pagination,
     };
+  },
+
+  getAdminBookingById: async (id: number | string): Promise<AdminBooking> => {
+    const response = await userSecuredApi.get(`/bookings/${id}`);
+    return response.data.data.data;
   },
 
   updateProfile: async (payload: UpdateProfileRequest) => {
@@ -68,6 +75,46 @@ export const AdminControllers = {
     }
 
     const response = await userSecuredApi.patch('/users/profile', formData);
+    return response.data;
+  },
+
+  getAllCustomers: async () => {
+    const response = await userSecuredApi.get('/users/all?status=ACTIVE&page=1&limit=1000');
+    return response.data?.data?.data || response.data?.data || [];
+  },
+
+  getAllTechnicians: async () => {
+    const response = await userSecuredApi.get('/users/all?role=TECHNICIAN&technicianProfileStatus=APPROVED');
+    return response.data?.data?.data || response.data?.data || [];
+  },
+
+  getTechniciansByService: async (serviceId: number) => {
+    const response = await userSecuredApi.get(`/users/all?role=TECHNICIAN&serviceId=${serviceId}&technicianProfileStatus=APPROVED&page=1&limit=1000`);
+    return response.data?.data?.data || response.data?.data || [];
+  },
+
+  getAllServicesForAdmin: async () => {
+    const response = await userSecuredApi.get('/users/service/all');
+    return response.data?.data?.data || response.data?.data || [];
+  },
+
+  getServiceByIdForAdmin: async (id: number) => {
+    const response = await userSecuredApi.get(`/users/service/${id}`);
+
+    // Attempt to extract the actual service object regardless of how deeply nested it is
+    let raw = response.data?.data?.data || response.data?.data || response.data;
+    if (Array.isArray(raw)) raw = raw[0];
+
+    return raw;
+  },
+
+  createAdminBooking: async (payload: any) => {
+    const response = await userSecuredApi.post('/bookings/admin/create', payload);
+    return response.data?.data?.data || response.data?.data || response.data;
+  },
+
+  assignTechnicianToBooking: async (payload: { bookingId: number, technicianId: number, adminId?: number }) => {
+    const response = await userSecuredApi.post('/bookings/admin/assign-booking', payload);
     return response.data;
   },
 };

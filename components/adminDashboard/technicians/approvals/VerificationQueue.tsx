@@ -123,13 +123,12 @@ function HeadCell({
         whiteSpace: "nowrap",
       }}
     >
-      <TableSortLabel
-        active={sortField === field}
-        direction={sortField === field ? sortDir : "asc"}
-        onClick={() => onSort(field)}
+      <div 
+        onClick={() => onSort(field)} 
+        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
       >
         {label}
-      </TableSortLabel>
+      </div>
     </TableCell>
   );
 }

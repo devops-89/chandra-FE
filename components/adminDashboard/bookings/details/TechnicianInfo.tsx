@@ -15,7 +15,7 @@ const TechnicianInfo = ({ technician }: Props) => {
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm shrink-0">
-              {technician?.name
+              {(technician?.name || '')
                 .split(' ')
                 .map((n) => n[0])
                 .join('')

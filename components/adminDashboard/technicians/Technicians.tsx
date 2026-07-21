@@ -2,6 +2,8 @@
 import { AnimatePresence } from "framer-motion";
 import { ClipboardList, UserCog } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { userSecuredApi } from "@/api/config";
 import { ServiceControllers } from '@/api/serviceControllers';
@@ -9,8 +11,9 @@ import type { Technician, VerificationDocument } from "@/constants/admin/technic
 
 import DocumentViewerModal from "./approvals/DocumentViewerModal";
 import VerificationDrawer from "./approvals/VerificationDrawer";
-import VerificationQueue from "./approvals/VerificationQueue";
 import TechniciansTable from "./list/TechniciansTable";
+import { useAppDispatch } from '@/redux/hooks';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 type TechnicianStatus = "APPROVED" | "PENDING_APPROVAL" | "REJECTED";
 
@@ -49,36 +52,20 @@ type RawUser = {
 
 type RawUsersResponsePayload = RawUser[] | { data?: RawUser[] | { data?: RawUser[] } };
 
-// Pre-fetched data keyed by status (plus "All Status" for the unfiltered list)
-export type PrefetchedData = {
-  "All Status": Technician[];
-  APPROVED: Technician[];
-  PENDING_APPROVAL: Technician[];
-  REJECTED: Technician[];
-};
-
-const EMPTY_PREFETCH: PrefetchedData = {
-  "All Status": [],
-  APPROVED: [],
-  PENDING_APPROVAL: [],
-  REJECTED: [],
-};
-
 const Technicians = () => {
-  const [prefetchedData, setPrefetchedData] = useState<PrefetchedData>(EMPTY_PREFETCH);
-
-  const [pendingTechnicians, setPendingTechnicians] = useState<Technician[]>([]);
+  const dispatch = useAppDispatch();
+  const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All Status" | TechnicianStatus>("All Status");
-  const [activeTab, setActiveTab] = useState<"all" | "pending">("all");
 
   // State for All Technicians detail drawer
   const [selectedTech, setSelectedTech] = useState<Technician | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const router = useRouter();
   const [viewingDoc, setViewingDoc] = useState<{ name: string; techName: string; url?: string } | null>(null);
 
   const fetchTechnicians = useCallback(async () => {
@@ -97,14 +84,12 @@ const Technicians = () => {
         console.error("Failed to fetch services", err);
       }
 
-
-      // ── Fire all 4 requests in parallel ──────────────────────────────────
-      const [allRes, approvedRes, pendingRes, rejectedRes] = await Promise.all([
-        userSecuredApi.get("/users/all?role=TECHNICIAN"),
-        userSecuredApi.get("/users/all?role=TECHNICIAN&technicianProfileStatus=APPROVED"),
-        userSecuredApi.get("/users/all?role=TECHNICIAN&technicianProfileStatus=PENDING_APPROVAL"),
-        userSecuredApi.get("/users/all?role=TECHNICIAN&technicianProfileStatus=REJECTED"),
-      ]);
+      let url = "/users/all?role=TECHNICIAN&page=1&limit=10000";
+      if (statusFilter !== "All Status") {
+        url += `&technicianProfileStatus=${statusFilter}`;
+      }
+      
+      const res = await userSecuredApi.get(url);
 
       const extract = (res: { data?: RawUsersResponsePayload }): RawUser[] => {
         const root = res.data;
@@ -200,17 +185,8 @@ const Technicians = () => {
         };
       };
 
-
-      // ── Populate the pre-fetched map ──────────────────────────────────────
-      const mapped: PrefetchedData = {
-        "All Status": extract(allRes).map(mapUserToTechnician),
-        APPROVED: extract(approvedRes).map(mapUserToTechnician),
-        PENDING_APPROVAL: extract(pendingRes).map(mapUserToTechnician),
-        REJECTED: extract(rejectedRes).map(mapUserToTechnician),
-      };
-
-      setPrefetchedData(mapped);
-      setPendingTechnicians(mapped.PENDING_APPROVAL);
+      const mappedTechnicians = extract(res).map(mapUserToTechnician);
+      setTechnicians(mappedTechnicians);
     } catch (err) {
       console.error("Error fetching technicians", err);
       const e = err as Error;
@@ -218,35 +194,21 @@ const Technicians = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [statusFilter]);
 
   useEffect(() => {
-    (async () => {
-      await fetchTechnicians();
-    })();
+    fetchTechnicians();
   }, [fetchTechnicians]);
 
   // ── Instant lookup — no extra filtering needed ────────────────────────────
-  const filteredTechnicians = prefetchedData[statusFilter];
-
-  // Pending technicians for the approvals queue filtered by search
-  const pendingTechniciansFiltered = pendingTechnicians.filter(
-    (tech) =>
-      tech.status === "PENDING_APPROVAL" &&
-      (tech.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tech.email.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-
-  const pendingCount = pendingTechnicians.length;
+  const filteredTechnicians = technicians;
 
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
 
   const setLoading = (id: string, val: boolean) =>
     setActionLoading((prev) => ({ ...prev, [id]: val }));
 
-  const findTechnician = (id: string) =>
-    pendingTechnicians.find((t) => t.id === id) ??
-    prefetchedData["All Status"].find((t) => t.id === id);
+  const findTechnician = (id: string) => technicians.find((t) => t.id === id);
 
   const getProfileUserIdForAction = (id: string, action: string) => {
     const technician = findTechnician(id);
@@ -278,20 +240,8 @@ const Technicians = () => {
     try {
       await userSecuredApi.patch(`/users/admin/technician/status/${profileUserId}`, { status: 'APPROVED' });
       setActionError(null);
-      // Move from PENDING → APPROVED in all relevant buckets
-      const approvedEntry = pendingTechnicians.find((t) => t.id === id) ??
-        prefetchedData["All Status"].find((t) => t.id === id);
-      setPrefetchedData((prev) => ({
-        "All Status": prev["All Status"].map((t) =>
-          t.id === id ? { ...t, status: "APPROVED" as TechnicianStatus } : t
-        ),
-        APPROVED: approvedEntry
-          ? [...prev.APPROVED, { ...approvedEntry, status: "APPROVED" as TechnicianStatus }]
-          : prev.APPROVED,
-        PENDING_APPROVAL: prev.PENDING_APPROVAL.filter((t) => t.id !== id),
-        REJECTED: prev.REJECTED,
-      }));
-      setPendingTechnicians((prev) => prev.filter((tech) => tech.id !== id));
+      setTechnicians((prev) => prev.map((t) => t.id === id ? { ...t, status: "APPROVED" as TechnicianStatus } : t));
+      dispatch(showSnackbar({ message: 'Technician status changed to Approved', severity: 'success' }));
     } catch (err) {
       console.error('Failed to approve technician', err);
       setActionError("Failed to approve technician. Please try again.");
@@ -308,19 +258,8 @@ const Technicians = () => {
     try {
       await userSecuredApi.patch(`/users/admin/technician/status/${profileUserId}`, { status: 'REJECTED' });
       setActionError(null);
-      const rejectedEntry = pendingTechnicians.find((t) => t.id === id) ??
-        prefetchedData["All Status"].find((t) => t.id === id);
-      setPrefetchedData((prev) => ({
-        "All Status": prev["All Status"].map((t) =>
-          t.id === id ? { ...t, status: "REJECTED" as TechnicianStatus, rejectionReason: reason, rejectionNotes: notes } : t
-        ),
-        APPROVED: prev.APPROVED.filter((t) => t.id !== id),
-        PENDING_APPROVAL: prev.PENDING_APPROVAL.filter((t) => t.id !== id),
-        REJECTED: rejectedEntry
-          ? [...prev.REJECTED, { ...rejectedEntry, status: "REJECTED" as TechnicianStatus, rejectionReason: reason, rejectionNotes: notes }]
-          : prev.REJECTED,
-      }));
-      setPendingTechnicians((prev) => prev.filter((tech) => tech.id !== id));
+      setTechnicians((prev) => prev.map((t) => t.id === id ? { ...t, status: "REJECTED" as TechnicianStatus, rejectionReason: reason, rejectionNotes: notes } : t));
+      dispatch(showSnackbar({ message: 'Technician status changed to Rejected', severity: 'success' }));
     } catch (err) {
       console.error('Failed to reject technician', err);
       setActionError("Failed to reject technician. Please try again.");
@@ -329,47 +268,36 @@ const Technicians = () => {
     }
   };
 
-  const handleToggleSuspend = async (id: string) => {
-    const target = prefetchedData["All Status"].find((t) => t.id === id);
-    if (!target) {
-      setActionError("Unable to update technician status. Technician record was not found.");
-      return;
-    }
-    const isCurrentlyRejected = target.status === "REJECTED";
-    const newStatus: TechnicianStatus = isCurrentlyRejected ? "PENDING_APPROVAL" : "REJECTED";
-    const profileUserId = getProfileUserIdForAction(id, isCurrentlyRejected ? "reactivate" : "reject");
-    if (!profileUserId) return;
+  const handleChangeStatus = async (id: string, newStatus: TechnicianStatus) => {
+    if (newStatus === "APPROVED") {
+      await handleApprove(id);
+    } else if (newStatus === "REJECTED") {
+      await handleReject(id, "Administrative Rejection", "Status changed from table dropdown.");
+    } else if (newStatus === "PENDING_APPROVAL") {
+      // Toggle back to pending
+      const target = technicians.find((t) => t.id === id);
+      if (!target) return;
+      const profileUserId = getProfileUserIdForAction(id, "reactivate");
+      if (!profileUserId) return;
 
-    setLoading(id, true);
-    try {
-      await userSecuredApi.patch(`/users/admin/technician/status/${profileUserId}`, { status: newStatus });
-      setActionError(null);
-      const updatedTarget = {
-        ...target,
-        status: newStatus,
-        rejectionReason: isCurrentlyRejected ? undefined : "Administrative Rejection",
-        rejectionNotes: isCurrentlyRejected ? undefined : "Rejected by Administrator",
-      };
-      setPrefetchedData((prev) => ({
-        "All Status": prev["All Status"].map((t) => (t.id === id ? updatedTarget : t)),
-        APPROVED: prev.APPROVED.filter((t) => t.id !== id),
-        PENDING_APPROVAL: isCurrentlyRejected
-          ? [...prev.PENDING_APPROVAL, updatedTarget]
-          : prev.PENDING_APPROVAL.filter((t) => t.id !== id),
-        REJECTED: isCurrentlyRejected
-          ? prev.REJECTED.filter((t) => t.id !== id)
-          : [...prev.REJECTED, updatedTarget],
-      }));
-      setPendingTechnicians((prev) =>
-        isCurrentlyRejected
-          ? [...prev, updatedTarget]
-          : prev.filter((tech) => tech.id !== id)
-      );
-    } catch (err) {
-      console.error('Failed to toggle technician status', err);
-      setActionError("Failed to update technician status. Please try again.");
-    } finally {
-      setLoading(id, false);
+      setLoading(id, true);
+      try {
+        await userSecuredApi.patch(`/users/admin/technician/status/${profileUserId}`, { status: newStatus });
+        setActionError(null);
+        const updatedTarget = {
+          ...target,
+          status: newStatus,
+          rejectionReason: undefined,
+          rejectionNotes: undefined,
+        };
+        setTechnicians((prev) => prev.map((t) => t.id === id ? updatedTarget : t));
+        dispatch(showSnackbar({ message: 'Technician status changed to Pending', severity: 'success' }));
+      } catch (err) {
+        console.error('Failed to change technician status', err);
+        setActionError("Failed to update technician status. Please try again.");
+      } finally {
+        setLoading(id, false);
+      }
     }
   };
 
@@ -384,48 +312,17 @@ const Technicians = () => {
             Verify profiles, view documents, and manage approval status
           </p>
         </div>
+        <div>
+          <Link href="/admin/technicians/add">
+            <button className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors">
+              <UserCog size={18} />
+              Add Technician
+            </button>
+          </Link>
+        </div>
       </div>
 
-      {/* Tabs Layout */}
-      <div className="flex border-b border-slate-200">
-        <button
-          onClick={() => {
-            setActiveTab("all");
-            setSearchQuery("");
-          }}
-          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 cursor-pointer ${activeTab === "all"
-            ? "border-emerald-600 text-emerald-600 bg-emerald-50/30"
-            : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-            }`}
-        >
-          <UserCog size={16} />
-          All Technicians
-          {!isLoading && (
-            <span className="ml-1 rounded-full bg-emerald-600 px-2 py-0.5 text-xs text-white">
-              {prefetchedData["All Status"].length}
-            </span>
-          )}
-        </button>
 
-        <button
-          onClick={() => {
-            setActiveTab("pending");
-            setSearchQuery("");
-          }}
-          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all duration-200 relative cursor-pointer ${activeTab === "pending"
-            ? "border-emerald-600 text-emerald-600 bg-emerald-50/30"
-            : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-            }`}
-        >
-          <ClipboardList size={16} />
-          Pending Approvals
-          {!isLoading && pendingCount > 0 && (
-            <span className="ml-1 rounded-full bg-amber-500 px-2.5 py-0.5 text-xs text-white animate-pulse">
-              {pendingCount}
-            </span>
-          )}
-        </button>
-      </div>
 
       {/* Loading state */}
       {isLoading && (
@@ -456,45 +353,18 @@ const Technicians = () => {
       )}
 
       {!isLoading && !error && (
-        <>
-          {activeTab === "all" ? (
-            <div className="space-y-6">
-              <TechniciansTable
-                technicians={filteredTechnicians}
-                allTechnicians={prefetchedData["All Status"]}
-                approvedCount={prefetchedData.APPROVED.length}
-                pendingCount={prefetchedData.PENDING_APPROVAL.length}
-                rejectedCount={prefetchedData.REJECTED.length}
-                statusFilter={statusFilter}
-                setStatusFilter={(val) => setStatusFilter(val as "All Status" | TechnicianStatus)}
-                actionLoading={actionLoading}
-                onToggleSuspend={handleToggleSuspend}
-                onViewDetails={(tech) => {
-                  setSelectedTech(tech);
-                  setIsDrawerOpen(true);
-                }}
-              />
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* Search bar on approvals queue for quick searching */}
-              <div className="rounded-2xl bg-white p-4 border border-slate-200">
-                <input
-                  placeholder="Search pending applications..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-11 w-full rounded-xl border border-slate-300 px-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-sm"
-                />
-              </div>
-              <VerificationQueue
-                pendingTechnicians={pendingTechniciansFiltered}
-                actionLoading={actionLoading}
-                onApprove={handleApprove}
-                onReject={handleReject}
-              />
-            </div>
-          )}
-        </>
+          <div className="space-y-6">
+            <TechniciansTable
+              technicians={filteredTechnicians}
+              statusFilter={statusFilter}
+              setStatusFilter={(val) => setStatusFilter(val as "All Status" | TechnicianStatus)}
+              actionLoading={actionLoading}
+              onChangeStatus={handleChangeStatus}
+              onViewDetails={(tech) => {
+                router.push(`/admin/technicians/${tech.id}`);
+              }}
+            />
+          </div>
       )}
 
       {/* Drawer and Document Viewer for All Technicians Tab */}

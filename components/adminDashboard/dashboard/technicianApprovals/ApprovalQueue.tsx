@@ -1,17 +1,16 @@
 'use client';
-import { ServiceControllers } from '@/api/serviceControllers';
-
 import { motion } from 'framer-motion';
 import { ChevronRight, ClipboardList } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { userSecuredApi } from '@/api/config';
+import { ServiceControllers } from '@/api/serviceControllers';
 import type { TechnicianApproval } from '@/types/admin.types';
 
 import TechnicianApprovalCard from './TechnicianApprovalCard';
 
-const MAX_RECENT = 3;
+const MAX_RECENT = 2;
 
 interface TechnicianProfileLocation {
   city?: string | null;

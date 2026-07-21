@@ -23,10 +23,11 @@ interface Props {
   };
   errors:   FormErrors;
   onChange: (field: keyof FormData, value: FormData[keyof FormData]) => void;
+  existingIconUrl?: string | null;
 }
 
 /* ─── Component ──────────────────────────────────────────────────── */
-export default function BasicInfoStep({ data, errors, onChange }: Props) {
+export default function BasicInfoStep({ data, errors, onChange, existingIconUrl }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,6 +116,13 @@ export default function BasicInfoStep({ data, errors, onChange }: Props) {
               alt="Service icon preview"
               className="h-12 w-12 rounded-xl object-cover ring-2 ring-emerald-100"
             />
+          ) : existingIconUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={existingIconUrl}
+              alt="Current service icon"
+              className="h-12 w-12 rounded-xl object-cover ring-2 ring-emerald-100"
+            />
           ) : (
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-400">
               <ImageIcon size={22} />
@@ -123,7 +131,7 @@ export default function BasicInfoStep({ data, errors, onChange }: Props) {
 
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-slate-700">
-              {data.icon ? data.icon.name : 'Click to upload icon'}
+              {data.icon ? data.icon.name : existingIconUrl ? 'Upload a new icon to replace' : 'Click to upload icon'}
             </p>
             <p className="mt-0.5 text-xs text-slate-400">
               PNG, JPG or SVG · max 2 MB
