@@ -5,7 +5,7 @@ import SectionHeader from '../shared/SectionHeader';
 export default function NearbyJobsHeader() {
   return (
     <SectionHeader
-      title="Nearby Jobs"
+      title="Recent Jobs"
       actionText="View All Map"
     />
   );
