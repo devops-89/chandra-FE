@@ -148,6 +148,7 @@ export default function TimeSlotSelector({
             inputMode="numeric"
             value={hour}
             onKeyDown={handleHourKeyDown}
+            onChange={() => {}}
             placeholder="HH"
             maxLength={2}
             className="
@@ -165,6 +166,7 @@ export default function TimeSlotSelector({
             inputMode="numeric"
             value={minute}
             onKeyDown={handleMinuteKeyDown}
+            onChange={() => {}}
             placeholder="MM"
             className="
               w-14 rounded-xl border-2 border-slate-300 px-2 py-3 text-center text-slate-950 text-sm font-semibold

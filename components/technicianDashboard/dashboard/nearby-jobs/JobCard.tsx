@@ -26,74 +26,87 @@ export default function JobCard({
   return (
     <div
       className="
-        bg-white
-        p-4
+        bg-surface-white
+        p-5
         md:p-6
-        rounded-xl
+        rounded-2xl
         border
-        border-slate-200
-        shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)]
-        hover:shadow-lg
-        hover:border-emerald-300
+        border-slate-200/80
+        hover:border-emerald-500/40
+        hover:shadow-md
         transition-all
+        duration-300
+        ease-in-out
+        flex
+        flex-col
+        justify-between
       "
+      role="region"
+      aria-label={`Job offer for ${customerName}`}
     >
-      <div className="flex justify-between items-start mb-4">
-        <span
-          className={`
-            px-3 py-1
-            rounded-full
-            text-xs md:text-sm
-            ${
-              variant === 'green'
-                ? 'bg-emerald-100 text-emerald-700'
-                : 'bg-blue-100 text-blue-700'
-            }
-          `}
-        >
-          {serviceType}
-        </span>
-
-        <span className="text-slate-500 text-sm flex items-center gap-1">
-          <span className="material-symbols-outlined text-base">
-            schedule
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <span
+            className={`
+              px-3
+              py-1
+              rounded-full
+              text-xs
+              font-semibold
+              tracking-wide
+              ${
+                variant === 'green'
+                  ? 'bg-emerald-100/70 text-emerald-800'
+                  : 'bg-blue-100/70 text-blue-800'
+              }
+            `}
+          >
+            {serviceType}
           </span>
-          {time}
-        </span>
+
+          <span className="text-slate-500 text-xs md:text-sm flex items-center gap-1.5 font-medium">
+            <span className="material-symbols-outlined text-base md:text-lg text-slate-400" aria-hidden="true">
+              schedule
+            </span>
+            {time}
+          </span>
+        </div>
+
+        <h5 className="font-bold text-lg text-slate-900 mb-1.5 tracking-tight">
+          {customerName}
+        </h5>
+
+        <p className="text-slate-500 text-sm mb-5 flex items-center gap-1.5 font-medium">
+          <span className="material-symbols-outlined text-lg text-slate-400" aria-hidden="true">
+            near_me
+          </span>
+          {distance}
+        </p>
       </div>
 
-      <h5 className="font-semibold text-lg mb-1">
-        {customerName}
-      </h5>
+      <div>
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            py-3.5
+            border-y
+            border-slate-150/70
+            mb-5
+          "
+        >
+          <span className="text-slate-400 uppercase text-xs font-bold tracking-wider">
+            Estimated Payout
+          </span>
 
-      <p className="text-slate-500 mb-4 flex items-center gap-1">
-        <span className="material-symbols-outlined">
-          near_me
-        </span>
-        {distance}
-      </p>
+          <span className="text-xl font-extrabold text-emerald-700">
+            {payout}
+          </span>
+        </div>
 
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-          py-4
-          border-y
-          border-slate-200
-          mb-6
-        "
-      >
-        <span className="text-slate-500 uppercase text-xs">
-          Payout
-        </span>
-
-        <span className="text-xl font-bold text-emerald-600">
-          {payout}
-        </span>
+        <JobActions onAccept={onAccept} onReject={onReject} />
       </div>
-
-      <JobActions onAccept={onAccept} onReject={onReject} />
     </div>
   );
 }

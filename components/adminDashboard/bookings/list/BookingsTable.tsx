@@ -44,44 +44,62 @@ type SortDir = 'asc' | 'desc';
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_CHIP: Record<BOOKING_STATUS | string, { label: string; color: 'warning' | 'info' | 'success' | 'error' | 'default' }> = {
-  [BOOKING_STATUS.PENDING]:     { label: 'Pending',     color: 'warning' },
-  [BOOKING_STATUS.ACCEPTED]:    { label: 'Accepted',    color: 'info' },
-  [BOOKING_STATUS.ENROUTE]:     { label: 'En Route',    color: 'info' },
-  [BOOKING_STATUS.ARRIVED]:     { label: 'Arrived',     color: 'info' },
-  [BOOKING_STATUS.ONGOING]:     { label: 'In Progress', color: 'info' },
-  [BOOKING_STATUS.COMPLETED]:   { label: 'Completed',   color: 'success' },
-  [BOOKING_STATUS.CANCELLED]:   { label: 'Cancelled',   color: 'error' },
+  [BOOKING_STATUS.PENDING]: { label: 'Pending', color: 'warning' },
+  [BOOKING_STATUS.ACCEPTED]: { label: 'Accepted', color: 'info' },
+  [BOOKING_STATUS.ENROUTE]: { label: 'En Route', color: 'info' },
+  [BOOKING_STATUS.ARRIVED]: { label: 'Arrived', color: 'info' },
+  [BOOKING_STATUS.ONGOING]: { label: 'In Progress', color: 'info' },
+  [BOOKING_STATUS.COMPLETED]: { label: 'Completed', color: 'success' },
+  [BOOKING_STATUS.CANCELLED]: { label: 'Cancelled', color: 'error' },
 };
 
 const PAYMENT_CHIP: Record<BOOKING_PAYMENT_STATUS | string, { label: string; color: 'success' | 'warning' | 'error' | 'default' }> = {
-  [BOOKING_PAYMENT_STATUS.PAID]:    { label: 'Paid',    color: 'success' },
+  [BOOKING_PAYMENT_STATUS.PAID]: { label: 'Paid', color: 'success' },
   [BOOKING_PAYMENT_STATUS.PENDING]: { label: 'Pending', color: 'warning' },
-  [BOOKING_PAYMENT_STATUS.FAILED]:  { label: 'Failed',  color: 'error' },
+  [BOOKING_PAYMENT_STATUS.FAILED]: { label: 'Failed', color: 'error' },
 };
 
 function formatDate(raw: string): string {
-  try {
-    return new Date(raw).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return raw;
+  if (!raw) return '—';
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) {
+    // Extract date portion if it contains time (e.g., "09 Aug 2026, 10:00 AM")
+    const dateMatch = raw.match(/^[^,]+/);
+    return dateMatch ? dateMatch[0].trim() : raw;
   }
+  return d.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function formatTime(raw: string): string {
+  if (!raw) return '—';
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) {
+    // Extract time portion if available
+    const timeMatch = raw.match(/\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?/);
+    return timeMatch ? timeMatch[0] : '—';
+  }
+  return d.toLocaleTimeString('en-IN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
 }
 
 function getSortValue(booking: AdminBooking, field: SortField): string | number {
   switch (field) {
-    case 'bookingId':    return booking.bookingId;
-    case 'customer':     return booking.customer.name.toLowerCase();
-    case 'service':      return (booking.service?.name ?? '').toLowerCase();
-    case 'technician':   return (booking.technician?.name ?? '').toLowerCase();
-    case 'scheduledAt':  return new Date(booking.scheduledAt).getTime();
-    case 'totalAmount':  return parseFloat(booking.totalAmount ?? '0');
-    case 'status':       return booking.status.toLowerCase();
-    case 'paymentStatus':return (booking.paymentStatus ?? '').toLowerCase();
-    default:             return '';
+    case 'bookingId': return booking.bookingId;
+    case 'customer': return booking.customer.name.toLowerCase();
+    case 'service': return (booking.service?.name ?? '').toLowerCase();
+    case 'technician': return (booking.technician?.name ?? '').toLowerCase();
+    case 'scheduledAt': return new Date(booking.scheduledAt).getTime();
+    case 'totalAmount': return parseFloat(booking.totalAmount ?? '0');
+    case 'status': return booking.status.toLowerCase();
+    case 'paymentStatus': return (booking.paymentStatus ?? '').toLowerCase();
+    default: return '';
   }
 }
 
@@ -153,7 +171,7 @@ const BookingsTable = () => {
   const [activeTab, setActiveTab] = useState<BookingTab>('all');
   const [sortField, setSortField] = useState<SortField>('scheduledAt');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
-  
+
   // Backend pagination is 1-indexed, MUI is 0-indexed
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -161,7 +179,7 @@ const BookingsTable = () => {
 
   useEffect(() => {
     let statusFilter: string | undefined = activeTab.toUpperCase();
-    
+
     if (activeTab === 'all') {
       statusFilter = undefined;
     }
@@ -200,14 +218,15 @@ const BookingsTable = () => {
           <Table size="small" sx={{ minWidth: 900 }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-                <HeadCell field="bookingId"     label="Booking ID"     {...headProps} />
-                <HeadCell field="customer"      label="Customer"       {...headProps} />
-                <HeadCell field="service"       label="Service"        {...headProps} />
-                <HeadCell field="technician"    label="Technician"     {...headProps} />
-                <HeadCell field="scheduledAt"   label="Booking Date"   {...headProps} />
-                <HeadCell field="totalAmount"   label="Amount"         {...headProps} align="right" />
-                <HeadCell field="status"        label="Status"         {...headProps} />
-                <HeadCell field={null}          label="Actions"        {...headProps} align="center" />
+                <HeadCell field="bookingId" label="Booking ID"     {...headProps} />
+                <HeadCell field="customer" label="Customer"       {...headProps} />
+                <HeadCell field="service" label="Service"        {...headProps} />
+                <HeadCell field="technician" label="Technician"     {...headProps} />
+                <HeadCell field="scheduledAt" label="Date"   {...headProps} />
+                <HeadCell field={null} label="Time"   {...headProps} />
+                <HeadCell field="totalAmount" label="Amount"         {...headProps} align="right" />
+                <HeadCell field="status" label="Status"         {...headProps} />
+                <HeadCell field={null} label="Actions"        {...headProps} align="center" />
               </TableRow>
             </TableHead>
 
@@ -294,6 +313,11 @@ const BookingsTable = () => {
                       {formatDate(booking.scheduledAtIst || booking.scheduledAt)}
                     </TableCell>
 
+                    {/* Time */}
+                    <TableCell sx={{ fontSize: 13, whiteSpace: 'nowrap', color: '#64748b' }}>
+                      {formatTime(booking.scheduledAtIst || booking.scheduledAt)}
+                    </TableCell>
+
                     {/* Amount */}
                     <TableCell align="right" sx={{ fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap' }}>
                       ₹{booking.totalAmount ?? '0'}
@@ -331,8 +355,8 @@ const BookingsTable = () => {
                           <IconButton
                             size="small"
                             onClick={() => needsAssign && setDrawerBooking(booking)}
-                            sx={{ 
-                              color: '#f59e0b', 
+                            sx={{
+                              color: '#f59e0b',
                               '&:hover': { backgroundColor: '#fffbeb' },
                               visibility: needsAssign ? 'visible' : 'hidden'
                             }}

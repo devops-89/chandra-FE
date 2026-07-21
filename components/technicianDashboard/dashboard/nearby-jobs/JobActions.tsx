@@ -16,18 +16,26 @@ export default function JobActions({
         onClick={onAccept}
         className="
           flex-1
-          py-3
-          bg-emerald-600
+          h-12
+          px-6
+          bg-emerald-700
           text-white
           text-sm
-          md:text-base
           font-bold
-          rounded-xl
+          rounded-full
           cursor-pointer
-          hover:bg-emerald-700
+          hover:bg-emerald-800
+          active:scale-[0.98]
+          focus:outline-none
+          focus:ring-2
+          focus:ring-emerald-600/40
           transition-all
-          shadow-md
-          shadow-emerald-600/10
+          duration-200
+          shadow-sm
+          hover:shadow-md
+          flex
+          items-center
+          justify-center
         "
       >
         Accept
@@ -38,19 +46,26 @@ export default function JobActions({
         onClick={onReject}
         className="
           flex-1
-          py-3
+          h-12
+          px-6
           border
-          border-slate-300
+          border-slate-200
           text-slate-700
           text-sm
-          md:text-base
           font-bold
-          rounded-xl
+          rounded-full
           cursor-pointer
-          hover:bg-red-50
-          hover:text-red-500
-          hover:border-red-300
+          hover:bg-slate-50
+          hover:border-slate-300
+          active:scale-[0.98]
+          focus:outline-none
+          focus:ring-2
+          focus:ring-slate-200
           transition-all
+          duration-200
+          flex
+          items-center
+          justify-center
         "
       >
         Reject

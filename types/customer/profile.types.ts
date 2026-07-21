@@ -21,6 +21,7 @@ export interface CustomerProfile {
   email: string;
   username: string;
   phone: string;
+  isTokenPaid?: boolean;
   emergencyContact: string | null;
   profileImage: string | null;
   role: string;
