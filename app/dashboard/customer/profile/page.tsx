@@ -23,15 +23,13 @@ export default function ProfilePage() {
             Profile
           </h1>
 
-          <p className="text-slate-500">
+          <p className="text-slate-500 mt-1">
             Manage your account information.
           </p>
         </div>
-        <div className="mx-auto w-full max-w-lg">
-          <ProfileForm />
-          {/* <ChangePasswordCard /> */}
-        </div>
+        <ProfileForm />
+        {/* <ChangePasswordCard /> */}
       </div>
     </DashboardLayout>
   );
-}
+}

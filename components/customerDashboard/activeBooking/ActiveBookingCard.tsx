@@ -1,3 +1,5 @@
+'use client';
+
 import { Calendar, Clock, RefreshCw } from "lucide-react";
 
 import BookingProgressTracker from "@/components/customerDashboard/activeBooking/BookingProgressTracker";
@@ -5,14 +7,28 @@ import { DashboardCard } from "@/components/customerDashboard/shared";
 import { useActiveBooking } from "@/hooks/useActiveBooking";
 
 import BookingTechnicianCard from "./BookingTechnicianCard";
+import EmptyBookingState from "./EmptyBookingState";
+import PendingBookingCard from "./PendingBookingCard";
 
 const ActiveBookingCard = () => {
   const { activeBooking } = useActiveBooking();
 
-  if (!activeBooking) {
-    return null;
+  // STATE 1: No active/pending booking (null or completed/cancelled)
+  if (!activeBooking || activeBooking.status === 'completed') {
+    return <EmptyBookingState />;
   }
 
+  // STATE 2: Pending booking (Booked, but technician not assigned yet)
+  const isPending =
+    activeBooking.status === 'booked' ||
+    !activeBooking.technician ||
+    !activeBooking.technician.name;
+
+  if (isPending) {
+    return <PendingBookingCard booking={activeBooking} />;
+  }
+
+  // STATE 3: Active booking (assigned, on-way, started)
   return (
     <DashboardCard className="overflow-hidden p-0">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-lg bg-emerald-600 px-4 sm:px-6 lg:px-8 py-4">
@@ -68,3 +84,4 @@ const ActiveBookingCard = () => {
 };
 
 export default ActiveBookingCard;
+
