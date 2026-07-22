@@ -1,5 +1,5 @@
 'use client';
-import { Button, CircularProgress,IconButton, InputAdornment, TextField } from '@mui/material';
+import { Button, CircularProgress, IconButton, InputAdornment, TextField } from '@mui/material';
 import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -65,11 +65,11 @@ export const AdminLoginForm = () => {
       });
 
       const { tokens } = response.data;
-      
+
       // Store tokens temporarily in memory for profile call
       localStorage.setItem('accessToken', tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
-      
+
       const profileRes = await AuthControllers.getProfile();
       const profileData = profileRes.data;
 
@@ -175,7 +175,16 @@ export const AdminLoginForm = () => {
               helperText={errors.identifier}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '8px',
+                  borderRadius: '0.5rem',
+                  '&:hover fieldset': {
+                    borderColor: '#10b981',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#059669',
+                  },
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#059669',
                 },
               }}
             />
@@ -192,7 +201,16 @@ export const AdminLoginForm = () => {
               helperText={errors.password}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '8px',
+                  borderRadius: '0.5rem',
+                  '&:hover fieldset': {
+                    borderColor: '#10b981',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#059669',
+                  },
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#059669',
                 },
               }}
               slotProps={{

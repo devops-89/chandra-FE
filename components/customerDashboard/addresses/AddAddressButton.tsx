@@ -19,12 +19,14 @@ export default function AddAddressButton() {
           rounded-xl
           bg-emerald-600
           px-5
-          py-3
-          font-medium
+          py-2.5
+          text-sm
+          font-semibold
           text-white
           cursor-pointer
           hover:bg-emerald-700
-          transition-colors
+          shadow-sm
+          transition-all
         "
       >
         <Plus size={18} />
@@ -35,4 +37,5 @@ export default function AddAddressButton() {
     </>
   );
 }
+
 

@@ -1,17 +1,23 @@
 'use client';
 
-import { Loader2, X } from 'lucide-react';
+import { Edit3, Loader2, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { deleteAddress, updateAddress } from '@/redux/slices/customerProfileSlice';
+import type { Address as BackendAddress } from '@/types/address.types';
 import type { Props } from '@/types/addressTypes/address.types';
 
+interface AddressCardProps extends Partial<Props> {
+  backendAddress?: BackendAddress;
+}
+
 export default function AddressCard({
-  address,
+  address: legacyAddress,
+  backendAddress: propBackendAddress,
   onEdit,
   onDelete,
-}: Props) {
+}: AddressCardProps) {
   const dispatch = useAppDispatch();
   const { profile } = useAppSelector((state) => state.customerProfile);
 
@@ -26,33 +32,47 @@ export default function AddressCard({
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
-  // Resolve the full backend address by matching on id
-  const backendAddress = profile?.addresses?.find(
-    (a) => a.id.toString() === address.id
-  );
+  // Resolve backend address object
+  const currentId = propBackendAddress ? propBackendAddress.id.toString() : legacyAddress?.id || '';
+  const currentBackendAddress = propBackendAddress || profile?.addresses?.find((a) => a.id.toString() === currentId);
 
-  // Form state — pre-filled from the backend address (or card fields as fallback)
-  const [label, setLabel] = useState(backendAddress?.label ?? address.label);
+  const displayLabel = currentBackendAddress?.label && currentBackendAddress.label.trim()
+    ? currentBackendAddress.label
+    : (legacyAddress?.label || 'Address');
+
+  const displayFullAddress = currentBackendAddress?.fullAddress || legacyAddress?.address || '—';
+  const displayCity = currentBackendAddress?.city || '';
+  const displayState = currentBackendAddress?.state || '';
+  const displayCityState = displayCity && displayState ? `${displayCity}, ${displayState}` : (displayCity || displayState || '—');
+  const displayPincode = currentBackendAddress?.pincode || '—';
+  const isDefaultAddress = currentBackendAddress?.isDefault ?? legacyAddress?.isDefault ?? false;
+
+  // Form state — pre-filled from backend address
+  const [label, setLabel] = useState(currentBackendAddress?.label ?? displayLabel);
   const [customLabel, setCustomLabel] = useState('');
-  const [fullAddress, setFullAddress] = useState(backendAddress?.fullAddress ?? address.address);
-  const [city, setCity] = useState(backendAddress?.city ?? '');
-  const [state, setState] = useState(backendAddress?.state ?? '');
-  const [pincode, setPincode] = useState(backendAddress?.pincode ?? '');
-  const [latitude, setLatitude] = useState(backendAddress?.latitude?.toString() ?? '28.6139');
-  const [longitude, setLongitude] = useState(backendAddress?.longitude?.toString() ?? '77.2090');
+  const [fullAddress, setFullAddress] = useState(currentBackendAddress?.fullAddress ?? displayFullAddress);
+  const [city, setCity] = useState(currentBackendAddress?.city ?? '');
+  const [state, setState] = useState(currentBackendAddress?.state ?? '');
+  const [pincode, setPincode] = useState(currentBackendAddress?.pincode ?? '');
+  const [latitude, setLatitude] = useState(currentBackendAddress?.latitude?.toString() ?? '28.6139');
+  const [longitude, setLongitude] = useState(currentBackendAddress?.longitude?.toString() ?? '77.2090');
 
   const labelOptions = ['Home', 'Office', 'Other'];
   const inputClasses =
     'mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all';
 
+  const getLabelIcon = (lbl: string) => {
+    const l = lbl.toLowerCase();
+    if (l.includes('home')) return '🏠';
+    if (l.includes('office') || l.includes('work')) return '🏢';
+    return '📍';
+  };
+
   const handleOpenEdit = () => {
-    // Re-sync form with latest backend values each time the modal opens
-    const latest = profile?.addresses?.find(
-      (a) => a.id.toString() === address.id
-    );
-    setLabel(latest?.label ?? address.label);
+    const latest = profile?.addresses?.find((a) => a.id.toString() === currentId) || currentBackendAddress;
+    setLabel(latest?.label ?? displayLabel);
     setCustomLabel('');
-    setFullAddress(latest?.fullAddress ?? address.address);
+    setFullAddress(latest?.fullAddress ?? displayFullAddress);
     setCity(latest?.city ?? '');
     setState(latest?.state ?? '');
     setPincode(latest?.pincode ?? '');
@@ -61,7 +81,7 @@ export default function AddressCard({
     setError(null);
     setSuccess(false);
     setIsEditOpen(true);
-    onEdit?.(address);
+    if (legacyAddress) onEdit?.(legacyAddress);
   };
 
   const handleClose = () => {
@@ -97,7 +117,7 @@ export default function AddressCard({
     try {
       await dispatch(
         updateAddress({
-          id: Number(address.id),
+          id: Number(currentId),
           latitude: latNum,
           longitude: lngNum,
           fullAddress: fullAddress.trim(),
@@ -119,84 +139,57 @@ export default function AddressCard({
 
   return (
     <>
-      {/* ── Address Card ── */}
-      <div
-        className="
-          rounded-3xl
-          bg-white
-          p-6
-          shadow-md
-          hover:shadow-lg
-          hover:border
-          hover:border-emerald-600
-          transition-all
-          duration-100
-        "
-      >
-        <div className="flex justify-between">
-          <h3 className="font-semibold text-slate-950">
-            {address.label}
-          </h3>
-
-          {address.isDefault && (
-            <span
-              className="
-                rounded-full
-                bg-emerald-100
-                px-3
-                py-1
-                text-xs
-                text-emerald-700
-              "
-            >
+      {/* ── Address Table Row ── */}
+      <tr className="hover:bg-slate-50/80 transition-colors text-slate-800">
+        <td className="px-6 py-4 font-semibold whitespace-nowrap text-slate-900">
+          <div className="flex items-center gap-2">
+            <span>{getLabelIcon(displayLabel)}</span>
+            <span>{displayLabel}</span>
+          </div>
+        </td>
+        <td className="px-6 py-4 text-slate-700 max-w-xs break-words">
+          {displayFullAddress}
+        </td>
+        <td className="px-6 py-4 text-slate-700 whitespace-nowrap">
+          {displayCityState}
+        </td>
+        <td className="px-6 py-4 text-slate-700 font-mono text-xs whitespace-nowrap">
+          {displayPincode}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap">
+          {isDefaultAddress ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-600"></span>
               Default
             </span>
+          ) : (
+            <span className="text-slate-400 text-xs font-medium">—</span>
           )}
-        </div>
-
-        <p className="mt-4 text-slate-700">
-          {address.address}
-        </p>
-
-        <div className="mt-6 flex gap-3">
-          <button
-            onClick={handleOpenEdit}
-            className="
-              rounded-xl
-              border
-              px-4
-              py-2
-              bg-emerald-600
-              text-slate-50
-              cursor-pointer
-              hover:bg-emerald-700
-            "
-          >
-            Edit
-          </button>
-
-          <button
-            onClick={() => {
-              setDeleteError(null);
-              setDeleteSuccess(false);
-              setIsDeleteOpen(true);
-              onDelete?.(address);
-            }}
-            className="
-              rounded-xl
-              border
-              bg-red-500
-              px-4
-              py-2
-              text-slate-50
-              hover:bg-red-700
-              cursor-pointer
-            "
-          >
-            Delete
-          </button>
-        </div>
-      </div>
+        </td>
+        <td className="px-6 py-4 text-right whitespace-nowrap">
+          <div className="flex items-center justify-end gap-1">
+            <button
+              onClick={handleOpenEdit}
+              title="Edit Address"
+              className="p-2 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all cursor-pointer"
+            >
+              <Edit3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => {
+                setDeleteError(null);
+                setDeleteSuccess(false);
+                setIsDeleteOpen(true);
+                if (legacyAddress) onDelete?.(legacyAddress);
+              }}
+              title="Delete Address"
+              className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </td>
+      </tr>
 
       {/* ── Edit Modal ── */}
       {isEditOpen && (
@@ -445,7 +438,7 @@ export default function AddressCard({
               {!deleteSuccess && (
                 <p className="text-sm text-slate-700">
                   Are you sure you want to delete{' '}
-                  <span className="font-semibold text-slate-900">&ldquo;{address.label}&rdquo;</span>?
+                  <span className="font-semibold text-slate-900">&ldquo;{displayLabel}&rdquo;</span>?
                 </p>
               )}
             </div>
@@ -467,7 +460,7 @@ export default function AddressCard({
                   setDeleteError(null);
                   setIsDeleting(true);
                   try {
-                    await dispatch(deleteAddress(Number(address.id))).unwrap();
+                    await dispatch(deleteAddress(Number(currentId))).unwrap();
                     setDeleteSuccess(true);
                     setTimeout(() => setIsDeleteOpen(false), 1500);
                   } catch (err) {
@@ -495,4 +488,4 @@ export default function AddressCard({
       )}
     </>
   );
-}
+}

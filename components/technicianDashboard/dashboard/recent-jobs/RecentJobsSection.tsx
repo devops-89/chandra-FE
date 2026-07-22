@@ -1,7 +1,7 @@
 'use client';
 
-import RecentJobsGrid from './RecentJobsGrid';
 import RecentJob from './RecentJob';
+import RecentJobsGrid from './RecentJobsGrid';
 
 export default function NearbyJobsSection() {
   return (

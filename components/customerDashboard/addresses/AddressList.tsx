@@ -1,15 +1,15 @@
 'use client';
 
-import { useAppSelector } from '@/redux/hooks';
-
 import AddressCard from './AddressCard';
+import { DashboardCard, EmptyState } from '@/components/customerDashboard/shared';
+import { useAppSelector } from '@/redux/hooks';
 
 export default function AddressList() {
   const { profile, isLoading } = useAppSelector((state) => state.customerProfile);
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="flex items-center justify-center py-16">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
       </div>
     );
@@ -19,26 +19,37 @@ export default function AddressList() {
 
   if (backendAddresses.length === 0) {
     return (
-      <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-slate-200">
-        <p className="text-slate-500 font-medium">No saved addresses found.</p>
-        <p className="text-slate-400 text-sm mt-1">Click &quot;Add Address&quot; above to save one.</p>
-      </div>
+      <DashboardCard className="p-0 overflow-hidden">
+        <EmptyState
+          title="No saved addresses found"
+          description="Click &quot;Add Address&quot; above to save your first location."
+        />
+      </DashboardCard>
     );
   }
 
-  // Map backend Address model to the fields expected by AddressCard component
-  const addresses = backendAddresses.map((addr) => ({
-    id: addr.id.toString(),
-    label: addr.label && addr.label.trim() ? addr.label : (addr.isDefault ? 'Default Address' : `${addr.city}, ${addr.state}`),
-    address: addr.fullAddress,
-    isDefault: addr.isDefault,
-  }));
-
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      {addresses.map((address) => (
-        <AddressCard key={address.id} address={address} />
-      ))}
-    </div>
+    <DashboardCard className="overflow-hidden p-0">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead className="border-b border-slate-200 bg-slate-100 text-emerald-600">
+            <tr>
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Label</th>
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Address</th>
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">City / State</th>
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Pincode</th>
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Default</th>
+              <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200 text-sm">
+            {backendAddresses.map((addr) => (
+              <AddressCard key={addr.id} backendAddress={addr} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </DashboardCard>
   );
 }
+

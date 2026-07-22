@@ -59,16 +59,25 @@ const PAYMENT_CHIP: Record<BOOKING_PAYMENT_STATUS | string, { label: string; bg:
   [BOOKING_PAYMENT_STATUS.FAILED]: { label: 'Failed', bg: '#fee2e2', text: '#b91c1c' },
 };
 
-function formatDateTime(raw: string): string {
+function formatDate(raw: string): string {
   try {
     return new Date(raw).toLocaleString('en-IN', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
+    });
+  } catch {
+    return raw;
+  }
+}
+
+function formatTime(raw: string): string {
+  try {
+    return new Date(raw).toLocaleString('en-IN', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
-    });
+    }).toLowerCase();
   } catch {
     return raw;
   }
@@ -293,7 +302,12 @@ const BookingsTable = () => {
 
                     {/* Date */}
                     <TableCell sx={{ fontSize: 13, whiteSpace: 'nowrap' }}>
-                      {formatDateTime(booking.scheduledAt)}
+                      {formatDate(booking.scheduledAt)}
+                    </TableCell>
+
+                    {/* Time */}
+                    <TableCell sx={{ fontSize: 13, whiteSpace: 'nowrap' }}>
+                      {formatTime(booking.scheduledAt)}
                     </TableCell>
 
                     {/* Amount */}

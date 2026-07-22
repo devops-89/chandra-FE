@@ -35,11 +35,11 @@ function StatsCard({ icon: Icon, title, value, isHighlighted = false }: StatsCar
       <p className="text-sm text-slate-600 font-medium mb-1">
         {title}
       </p>
-      
+
       <h3 className={`
         text-3xl font-bold transition-colors duration-200
-        ${isHighlighted 
-          ? 'text-emerald-600 group-hover:text-emerald-700' 
+        ${isHighlighted
+          ? 'text-emerald-600 group-hover:text-emerald-700'
           : 'text-slate-900 group-hover:text-slate-800'
         }
       `}>
@@ -81,9 +81,6 @@ export default function HeroBookingCard() {
 
   return (
     <section className="space-y-6">
-      <h3 className="text-lg font-semibold text-slate-800 uppercase tracking-wide">
-        DASHBOARD OVERVIEW
-      </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
         {dashboardStats.map((stat, index) => (

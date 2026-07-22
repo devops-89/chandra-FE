@@ -65,16 +65,7 @@ export default function CustomerDashboardContent() {
       className="
         space-y-6
         rounded-2xl
-        border
-        border-dashed
-        border-slate-300
-        bg-white
-        p-4
         text-center
-        sm:rounded-3xl
-        sm:p-6
-        lg:space-y-8
-        lg:p-10
       "
     >
       <HeroBookingCard />

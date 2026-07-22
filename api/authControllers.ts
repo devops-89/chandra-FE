@@ -105,7 +105,7 @@ export const AuthControllers = {
       if (files.policeCertUrl) formData.append('policeCertUrl', files.policeCertUrl);
       if (files.tradeLicenseUrl) formData.append('tradeLicenseUrl', files.tradeLicenseUrl);
 
-      const response = await userPublicApi.post<RegisterTechnicianResponse>('/technician/auth/register-technician', formData, {
+      const response = await userPublicApi.post<RegisterTechnicianResponse>('/users/register', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -127,7 +127,7 @@ export const AuthControllers = {
     try {
       const refreshToken =
         (typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null) || '';
-      
+
       const response = await authSecuredApi.post('/auth/logout', { refreshToken });
       return response.data;
     } catch (error) {

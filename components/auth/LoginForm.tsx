@@ -102,7 +102,7 @@ export const LoginForm = () => {
       }
 
       // Persist tokens — survives page refresh and tab close
-      localStorage.setItem('accessToken',  tokens.accessToken);
+      localStorage.setItem('accessToken', tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
 
       dispatch(
@@ -285,7 +285,7 @@ export const LoginForm = () => {
             {/* Submit */}
             <button
               disabled={isLoading}
-              className="mt-2 h-11 rounded-lg bg-emerald-600 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
+              className="mt-2 h-11 cursor-pointer rounded-lg bg-emerald-600 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
               type="submit"
             >
               {isLoading ? 'Logging in...' : 'Login'}
