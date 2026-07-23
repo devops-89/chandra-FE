@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 
 export interface TechnicianHeaderProps {
@@ -38,14 +37,14 @@ export default function TechnicianHeader({
   });
 
   return (
-    <header className="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 py-3 px-4 md:py-4 md:px-8 bg-surface-white h-16 flex justify-between items-center border-b border-slate-150/70">
+    <header className="flex h-16 sm:h-20 items-center sticky top-0 z-30 justify-between bg-[#F8FAFC] border-b border-slate-200 px-4 sm:px-8 gap-3">
       {/* Left: Hamburger + Welcome Message */}
       <div className="flex items-center gap-3 md:gap-4">
         {/* Mobile Hamburger Menu */}
         <button
           type="button"
           onClick={onMenuToggle}
-          className="md:hidden p-2 text-slate-600 hover:bg-slate-100/80 active:bg-slate-200/80 rounded-full transition-colors shrink-0"
+          className="lg:hidden p-2 text-secondary hover:bg-surface-container rounded-lg transition-colors shrink-0"
           aria-label="Toggle sidebar menu"
         >
           <span className="material-symbols-outlined text-2xl">
@@ -53,20 +52,7 @@ export default function TechnicianHeader({
           </span>
         </button>
 
-        {/* Welcome Message */}
-        <div className="hidden sm:block">
-          <h2 className="text-base md:text-lg font-bold text-slate-900 tracking-tight">
-            Technician Dashboard
-          </h2>
-          <p className="text-[10px] md:text-xs font-semibold text-slate-400 uppercase tracking-wider">{currentDate}</p>
-        </div>
-
-        {/* Mobile Welcome (Shortened) */}
-        <div className="sm:hidden">
-          <h2 className="text-sm font-extrabold text-slate-900 tracking-tight">
-            Technician Portal
-          </h2>
-        </div>
+        {/* Welcome Message (Removed as requested) */}
       </div>
 
       {/* Right: Controls */}
@@ -116,17 +102,6 @@ export default function TechnicianHeader({
             )}
           </button>
 
-          {/* Profile Avatar */}
-          <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-slate-100 overflow-hidden border border-slate-200/70 shadow-xs cursor-pointer">
-            <Image
-              alt="Technician profile avatar"
-              className="w-full h-full object-cover"
-              src={userImage}
-              width={36}
-              height={36}
-              priority
-            />
-          </div>
         </div>
       </div>
     </header>

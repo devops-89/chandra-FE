@@ -55,6 +55,12 @@ export interface AdminBooking {
   customer: BookingCustomer;
 
   technician: BookingTechnician | null;
+
+  customerRating?: number | null;
+  customerReview?: string | null;
+  technicianRating?: number | null;
+  technicianReview?: string | null;
+  reviewStatus?: string;
 }
 
 export interface BookingPagination {

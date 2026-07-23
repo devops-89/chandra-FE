@@ -38,8 +38,21 @@ function normalizeService(raw: ApiService): AdminService {
 }
 
 export const ServiceControllers = {
-  getAllServices: async (): Promise<AdminService[]> => {
-    const response = await userSecuredApi.get<GetAllServicesResponse>('/users/service/all?page=1&limit=10');
+  getAllServices: async (params?: { search?: string; status?: boolean }): Promise<AdminService[]> => {
+    let token = null;
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('adminAccessToken') || localStorage.getItem('accessToken');
+    }
+    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+    
+    let url = '/users/service/all?page=1&limit=1000';
+    if (params?.search) {
+      url += `&search=${encodeURIComponent(params.search)}`;
+    }
+    if (params?.status !== undefined) {
+      url += `&status=${params.status}`;
+    }
+    const response = await userSecuredApi.get<GetAllServicesResponse>(url, config);
     const outer = response.data.data;
     let raw: ApiService[];
 

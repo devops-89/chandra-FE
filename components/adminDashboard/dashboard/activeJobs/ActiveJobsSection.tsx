@@ -16,7 +16,7 @@ export default function ActiveJobsSection() {
       {/* Header */}
       <div className="px-5 py-4 flex items-center justify-between border-b border-slate-100">
         <div>
-          <h2 className="text-base font-bold text-slate-800">Active Jobs</h2>
+          <h2 className="text-base font-bold text-slate-800">Active Bookings</h2>
           <p className="text-xs text-slate-400 mt-0.5">Live booking statuses</p>
         </div>
 

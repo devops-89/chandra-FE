@@ -30,33 +30,37 @@ export default function ContactInfo() {
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <Phone className="text-emerald-500" />
+      {technician?.phone && (
+        <div className="flex gap-4">
+          <Phone className="text-emerald-500" />
 
-        <div>
-          <p className="text-sm text-slate-500">
-            Phone Number
-          </p>
+          <div>
+            <p className="text-sm text-slate-500">
+              Phone Number
+            </p>
 
-          <p className="font-semibold text-slate-900">
-            {technician?.phone ?? 'Loading...'}
-          </p>
+            <p className="font-semibold text-slate-900">
+              {technician.phone}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="flex gap-4">
-        <Email className="text-emerald-500" />
+      {technician?.email && (
+        <div className="flex gap-4">
+          <Email className="text-emerald-500" />
 
-        <div>
-          <p className="text-sm text-slate-500">
-            Email Address
-          </p>
+          <div>
+            <p className="text-sm text-slate-500">
+              Email Address
+            </p>
 
-          <p className="font-semibold text-slate-900">
-            {technician?.email ?? 'Loading...'}
-          </p>
+            <p className="font-semibold text-slate-900">
+              {technician.email}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

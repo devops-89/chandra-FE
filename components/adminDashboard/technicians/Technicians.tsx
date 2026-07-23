@@ -57,7 +57,7 @@ const Technicians = () => {
   const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
+
 
   const [statusFilter, setStatusFilter] = useState<"All Status" | TechnicianStatus>("All Status");
 
@@ -70,7 +70,7 @@ const Technicians = () => {
   const fetchTechnicians = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    setActionError(null);
+
     try {
       // Build service map first
       const serviceMap: Record<number, string> = {};
@@ -214,21 +214,14 @@ const Technicians = () => {
     const technician = findTechnician(id);
 
     if (!technician) {
-      setActionError(`Unable to ${action}. Technician record was not found.`);
       return null;
     }
 
     if (!technician.profileUserId) {
-      setActionError(`Unable to ${action} ${technician.name}. Technician profile userId is not available yet.`);
-      console.warn("Technician status action skipped because technicianProfile.userId is missing", {
-        action,
-        technicianUserId: technician.id,
-        technicianProfileId: technician.profileId,
-      });
       return null;
     }
 
-    setActionError(null);
+
     return technician.profileUserId;
   };
 
@@ -239,12 +232,12 @@ const Technicians = () => {
     setLoading(id, true);
     try {
       await userSecuredApi.patch(`/users/admin/technician/status/${profileUserId}`, { status: 'APPROVED' });
-      setActionError(null);
+
       setTechnicians((prev) => prev.map((t) => t.id === id ? { ...t, status: "APPROVED" as TechnicianStatus } : t));
       dispatch(showSnackbar({ message: 'Technician status changed to Approved', severity: 'success' }));
     } catch (err) {
       console.error('Failed to approve technician', err);
-      setActionError("Failed to approve technician. Please try again.");
+
     } finally {
       setLoading(id, false);
     }
@@ -257,12 +250,12 @@ const Technicians = () => {
     setLoading(id, true);
     try {
       await userSecuredApi.patch(`/users/admin/technician/status/${profileUserId}`, { status: 'REJECTED' });
-      setActionError(null);
+
       setTechnicians((prev) => prev.map((t) => t.id === id ? { ...t, status: "REJECTED" as TechnicianStatus, rejectionReason: reason, rejectionNotes: notes } : t));
       dispatch(showSnackbar({ message: 'Technician status changed to Rejected', severity: 'success' }));
     } catch (err) {
       console.error('Failed to reject technician', err);
-      setActionError("Failed to reject technician. Please try again.");
+
     } finally {
       setLoading(id, false);
     }
@@ -283,7 +276,7 @@ const Technicians = () => {
       setLoading(id, true);
       try {
         await userSecuredApi.patch(`/users/admin/technician/status/${profileUserId}`, { status: newStatus });
-        setActionError(null);
+
         const updatedTarget = {
           ...target,
           status: newStatus,
@@ -294,7 +287,7 @@ const Technicians = () => {
         dispatch(showSnackbar({ message: 'Technician status changed to Pending', severity: 'success' }));
       } catch (err) {
         console.error('Failed to change technician status', err);
-        setActionError("Failed to update technician status. Please try again.");
+
       } finally {
         setLoading(id, false);
       }
@@ -346,11 +339,7 @@ const Technicians = () => {
         </div>
       )}
 
-      {!isLoading && !error && actionError && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
-          {actionError}
-        </div>
-      )}
+
 
       {!isLoading && !error && (
           <div className="space-y-6">

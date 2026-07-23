@@ -1,18 +1,19 @@
 'use client';
 
 import { Briefcase, Check, CheckCircle, Clock, Eye, MapPin, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { userSecuredApi } from '@/api/config';
 import type { TechnicianApproval } from '@/types/admin.types';
-
-import TechnicianDetailsModal from './TechnicianDetailsModal';
 
 interface Props {
   technician: TechnicianApproval;
 }
 
 export default function TechnicianApprovalCard({ technician }: Props) {
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const initials = technician.name
     .split(' ')
@@ -83,15 +84,35 @@ export default function TechnicianApprovalCard({ technician }: Props) {
         <div className="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
             <button
-              onClick={() => {}}
-              className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 cursor-pointer sm:h-auto sm:py-1.5 sm:text-xs"
+              onClick={async () => {
+                try {
+                  setIsProcessing(true);
+                  await userSecuredApi.patch(`/users/admin/technician/status/${technician.id}`, { status: 'APPROVED' });
+                  window.location.reload();
+                } catch (err) {
+                  console.error(err);
+                  setIsProcessing(false);
+                }
+              }}
+              disabled={isProcessing}
+              className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 cursor-pointer sm:h-auto sm:py-1.5 sm:text-xs disabled:opacity-50"
             >
               <Check size={14} />
               Approve
             </button>
             <button
-              onClick={() => {}}
-              className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 cursor-pointer sm:h-auto sm:py-1.5 sm:text-xs"
+              onClick={async () => {
+                try {
+                  setIsProcessing(true);
+                  await userSecuredApi.patch(`/users/admin/technician/status/${technician.id}`, { status: 'REJECTED' });
+                  window.location.reload();
+                } catch (err) {
+                  console.error(err);
+                  setIsProcessing(false);
+                }
+              }}
+              disabled={isProcessing}
+              className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 cursor-pointer sm:h-auto sm:py-1.5 sm:text-xs disabled:opacity-50"
             >
               <X size={14} />
               Reject
@@ -99,7 +120,7 @@ export default function TechnicianApprovalCard({ technician }: Props) {
           </div>
 
           <button
-            onClick={() => setOpen(true)}
+            onClick={() => router.push(`/admin/technicians/${technician.id}`)}
             className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-emerald-100 bg-emerald-50 text-sm font-semibold text-emerald-700 transition-colors hover:border-emerald-200 hover:bg-emerald-100 hover:text-emerald-800 cursor-pointer sm:h-auto sm:border-0 sm:bg-transparent sm:text-xs sm:hover:bg-transparent sm:hover:underline"
           >
             <Eye size={15} />
@@ -108,11 +129,7 @@ export default function TechnicianApprovalCard({ technician }: Props) {
         </div>
       </div>
 
-      <TechnicianDetailsModal
-        open={open}
-        onClose={() => setOpen(false)}
-        technician={technician}
-      />
+
     </>
   );
 }

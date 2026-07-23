@@ -18,12 +18,16 @@ import { userSecuredApi } from './config';
 
 export const AdminControllers = {
   getAdminComplaintById: async (id: number): Promise<AdminComplaint> => {
-    const response = await userSecuredApi.get<GetAdminComplaintResponse>(`/bookings/admin/complaints/${id}`);
+    const response = await userSecuredApi.get<GetAdminComplaintResponse>(`/bookings/complaint/${id}`);
     return response.data.data.data;
   },
 
-  getAdminComplaints: async (): Promise<{ complaints: AdminComplaintListItem[]; pagination: ComplaintPagination }> => {
-    const response = await userSecuredApi.get<GetAdminComplaintsResponse>('/bookings/complaints');
+  getAdminComplaints: async (status?: string): Promise<{ complaints: AdminComplaintListItem[]; pagination: ComplaintPagination }> => {
+    let url = '/bookings/complaints';
+    if (status && status !== 'All Status') {
+      url += `?status=${status}`;
+    }
+    const response = await userSecuredApi.get<GetAdminComplaintsResponse>(url);
     return {
       complaints: response.data.data.data,
       pagination: response.data.data.pagination,
@@ -41,7 +45,7 @@ export const AdminControllers = {
     return response.data.data.data;
   },
 
-  getAdminBookings: async (page = 1, limit = 10, status?: string, search?: string): Promise<{ bookings: AdminBooking[]; pagination: BookingPagination }> => {
+  getAdminBookings: async (page = 1, limit = 10, status?: string, search?: string, reviewStatus?: string): Promise<{ bookings: AdminBooking[]; pagination: BookingPagination }> => {
     let url = `/bookings/all?page=${page}&limit=${limit}`;
 
     if (status) {
@@ -49,6 +53,9 @@ export const AdminControllers = {
     }
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
+    }
+    if (reviewStatus) {
+      url += `&reviewStatus=${reviewStatus}`;
     }
 
     const response = await userSecuredApi.get<GetAdminBookingsResponse>(url);
@@ -88,6 +95,11 @@ export const AdminControllers = {
     return response.data?.data?.data || response.data?.data || [];
   },
 
+  getPendingTechnicians: async () => {
+    const response = await userSecuredApi.get('/users/all?role=TECHNICIAN&technicianProfileStatus=PENDING_APPROVAL');
+    return response.data?.data?.data || response.data?.data || [];
+  },
+
   getTechniciansByService: async (serviceId: number) => {
     const response = await userSecuredApi.get(`/users/all?role=TECHNICIAN&serviceId=${serviceId}&technicianProfileStatus=APPROVED&page=1&limit=1000`);
     return response.data?.data?.data || response.data?.data || [];
@@ -115,6 +127,11 @@ export const AdminControllers = {
 
   assignTechnicianToBooking: async (payload: { bookingId: number, technicianId: number, adminId?: number }) => {
     const response = await userSecuredApi.post('/bookings/admin/assign-booking', payload);
+    return response.data;
+  },
+
+  updateReviewStatus: async (bookingId: number, reviewStatus: string) => {
+    const response = await userSecuredApi.patch(`/bookings/admin/review/${bookingId}`, { reviewStatus });
     return response.data;
   },
 };

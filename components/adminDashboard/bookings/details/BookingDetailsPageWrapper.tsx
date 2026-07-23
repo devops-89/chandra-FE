@@ -9,7 +9,8 @@ import {
   CircularProgress,
   Grid,
   Paper,
-  Typography
+  Typography,
+  Rating
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -260,6 +261,53 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <InfoItem label="Total Amount" value={`₹${booking.totalAmount || 0}`} />
                   </Grid>
+                </Grid>
+              </>
+            )}
+            {/* Reviews Section */}
+            {(booking.customerReview || booking.technicianReview) && (
+              <>
+                <Typography variant="h6" sx={{ fontWeight: 800, mb: 3, mt: 5, color: '#0f172a', display: 'flex', alignItems: 'center' }}>
+                  <Box component="span" sx={{ width: 8, height: 24, bgcolor: '#059669', borderRadius: 4, mr: 2 }} />
+                  Reviews
+                </Typography>
+                <Grid container spacing={3}>
+                  {booking.customerReview && (
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#f8fafc', height: '100%' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: '#475569', mb: 1, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+                          Customer Review
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                          <Rating value={booking.customerRating || 0} readOnly size="small" sx={{ color: '#f59e0b' }} />
+                          <Typography variant="body2" sx={{ ml: 1, fontWeight: 600, color: '#334155' }}>
+                            {booking.customerRating || 0}/5
+                          </Typography>
+                        </Box>
+                        <Typography variant="body1" sx={{ color: '#1e293b', fontStyle: 'italic' }}>
+                          "{booking.customerReview}"
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+                  {booking.technicianReview && (
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ p: 3, borderRadius: 3, border: '1px solid #e2e8f0', bgcolor: '#f8fafc', height: '100%' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: '#475569', mb: 1, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+                          Technician Review
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                          <Rating value={booking.technicianRating || 0} readOnly size="small" sx={{ color: '#f59e0b' }} />
+                          <Typography variant="body2" sx={{ ml: 1, fontWeight: 600, color: '#334155' }}>
+                            {booking.technicianRating || 0}/5
+                          </Typography>
+                        </Box>
+                        <Typography variant="body1" sx={{ color: '#1e293b', fontStyle: 'italic' }}>
+                          "{booking.technicianReview}"
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
                 </Grid>
               </>
             )}

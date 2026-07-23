@@ -27,9 +27,9 @@ export interface TechnicianProfile {
   createdAt: string;
   updatedAt: string;
 
-  services: unknown[];
-  brandExpertise: unknown[];
-  locations: unknown[];
+  services: { service: { name: string } }[];
+  brandExpertise: { brandName: string }[];
+  locations: { city: string; state: string; pincode: string; fullAddress: string }[];
 }
 
 export interface TechnicianUser {
@@ -41,6 +41,7 @@ export interface TechnicianUser {
   phone: string;
   emergencyContact: string | null;
   profileImage: string | null;
+  overallRating: string;
 
   role: string;
   status: string;

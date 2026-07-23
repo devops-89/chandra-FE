@@ -13,12 +13,27 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography} from '@mui/material';
+  Typography,
+  IconButton,
+  Select,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  Tabs,
+  Tab
+} from '@mui/material';
+import { Edit as EditIcon, Delete as DeleteIcon, Visibility as ViewIcon } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import DeleteServiceModal from '@/components/adminDashboard/services/manageService/DeleteServiceModal';
 import { useServiceManager } from '@/hooks/useServiceManager';
+import { useAppDispatch } from '@/redux/hooks';
+import { updateService } from '@/redux/slices/servicesSlice';
 import type { AdminService } from '@/types/admin/service.types';
 
 // Inline SVG data URI — no network request, never 404s
@@ -32,11 +47,11 @@ type SortDir = 'asc' | 'desc';
 
 function getSortValue(service: AdminService, field: SortField): string | number {
   switch (field) {
-    case 'name':     return service.name.toLowerCase();
-    case 'price':    return service.price;
-    case 'status':   return service.status.toLowerCase();
+    case 'name': return service.name.toLowerCase();
+    case 'price': return service.price;
+    case 'status': return service.status.toLowerCase();
     case 'bookings': return service.bookings;
-    default:         return '';
+    default: return '';
   }
 }
 
@@ -98,8 +113,8 @@ function HeadCell({
         whiteSpace: 'nowrap',
       }}
     >
-      <div 
-        onClick={() => onSort(field)} 
+      <div
+        onClick={() => onSort(field)}
         style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
       >
         {label}
@@ -108,18 +123,111 @@ function HeadCell({
   );
 }
 
-const ServicesTable = () => {
+const STATUS_TABS = [
+  { id: 'All Status', label: 'All' },
+  { id: 'Active', label: 'Active' },
+  { id: 'Inactive', label: 'Inactive' },
+];
+
+function TabsBar({ statusFilter, onChange }: { statusFilter: string; onChange: (val: any) => void }) {
+  return (
+    <Tabs
+      value={statusFilter}
+      onChange={(_, newValue) => onChange(newValue)}
+      sx={{
+        minHeight: 48,
+        '& .MuiTabs-indicator': {
+          backgroundColor: '#059669',
+          height: 3,
+          borderRadius: '3px 3px 0 0',
+        },
+        borderBottom: '1px solid #e2e8f0',
+        mb: 2,
+        px: 2,
+      }}
+    >
+      {STATUS_TABS.map((tab) => (
+        <Tab
+          key={tab.id}
+          value={tab.id}
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: statusFilter === tab.id ? 700 : 500 }}
+              >
+                {tab.label}
+              </Typography>
+            </Box>
+          }
+          sx={{
+            textTransform: 'none',
+            minWidth: 'auto',
+            px: 3,
+            color: '#64748b',
+            '&.Mui-selected': { color: '#059669' },
+          }}
+        />
+      ))}
+    </Tabs>
+  );
+}
+
+interface ServicesTableProps {
+  statusFilter: 'All Status' | 'Active' | 'Inactive';
+  onStatusChange: (val: 'All Status' | 'Active' | 'Inactive') => void;
+}
+
+const ServicesTable = ({ statusFilter, onStatusChange }: ServicesTableProps) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const {
     services,
     deleteTarget, openDelete, closeDelete, confirmDelete,
   } = useServiceManager();
+
+  const [statusChangeTarget, setStatusChangeTarget] = useState<{ service: AdminService, isActive: boolean } | null>(null);
+
+  const confirmStatusChange = async () => {
+    if (!statusChangeTarget) return;
+    const { service, isActive } = statusChangeTarget;
+    try {
+      await dispatch(updateService({
+        id: service.id,
+        name: service.name,
+        description: service.description,
+        isActive: isActive,
+        serviceBasePrice: service.price,
+        perHourRate: service.perHourRate,
+        perKmRate: service.perKmRate,
+        platformFee: service.platformFee,
+        gst: service.gst,
+        emergencyCharge: service.emergencyCharge,
+        specifications: service.specifications?.map(s => ({
+          name: s.name,
+          type: s.type,
+          isRequired: s.isRequired,
+          isActive: true,
+          values: s.values
+        }))
+      })).unwrap();
+    } catch (error) {
+      console.error('Failed to update status', error);
+    } finally {
+      setStatusChangeTarget(null);
+    }
+  };
 
   // Sorting & Pagination state
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleTabChange = (val: 'All Status' | 'Active' | 'Inactive') => {
+    onStatusChange(val);
+    setPage(0);
+  };
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -141,6 +249,8 @@ const ServicesTable = () => {
 
   return (
     <>
+      <TabsBar statusFilter={statusFilter} onChange={handleTabChange} />
+
       <Paper
         elevation={0}
         sx={{ border: '1px solid #e2e8f0', borderRadius: 3, overflow: 'hidden' }}
@@ -149,12 +259,12 @@ const ServicesTable = () => {
           <Table size="small" sx={{ minWidth: 800 }}>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-                <HeadCell field={null}       label="Image"      {...headProps} />
-                <HeadCell field="name"       label="Service"    {...headProps} />
-                <HeadCell field="price"      label="Price"      {...headProps} />
-                <HeadCell field="status"     label="Status"     {...headProps} />
-                <HeadCell field="bookings"   label="Bookings"   {...headProps} />
-                <HeadCell field={null}       label="Actions"    {...headProps} />
+                <HeadCell field={null} label="Image"      {...headProps} />
+                <HeadCell field="name" label="Service"    {...headProps} />
+                <HeadCell field="price" label="Price"      {...headProps} />
+                <HeadCell field="status" label="Status"     {...headProps} />
+                <HeadCell field="bookings" label="Bookings"   {...headProps} />
+                <HeadCell field={null} label="Actions"    {...headProps} />
               </TableRow>
             </TableHead>
 
@@ -206,17 +316,25 @@ const ServicesTable = () => {
 
                     {/* Status */}
                     <TableCell>
-                      <Chip
-                        label={service.status}
-                        color={service.status === 'Active' ? 'success' : 'default'}
+                      <Select
                         size="small"
+                        value={service.isActive ? 'Active' : 'Inactive'}
+                        onChange={(e) => setStatusChangeTarget({ service, isActive: e.target.value === 'Active' })}
                         sx={{
+                          fontSize: 12,
                           fontWeight: 600,
-                          fontSize: 11,
-                          backgroundColor: service.status === 'Active' ? '#d1fae5' : '#f1f5f9',
-                          color: service.status === 'Active' ? '#065f46' : '#475569',
+                          height: 32,
+                          backgroundColor: service.isActive ? '#d1fae5' : '#fee2e2',
+                          color: service.isActive ? '#065f46' : '#b91c1c',
+                          '.MuiOutlinedInput-notchedOutline': { border: 'none' },
+                          '&:hover .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                          '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                          '.MuiSelect-icon': { color: service.isActive ? '#065f46' : '#b91c1c' },
                         }}
-                      />
+                      >
+                        <MenuItem value="Active" sx={{ fontSize: 13 }}>Active</MenuItem>
+                        <MenuItem value="Inactive" sx={{ fontSize: 13 }}>Inactive</MenuItem>
+                      </Select>
                     </TableCell>
 
                     {/* Bookings */}
@@ -283,6 +401,27 @@ const ServicesTable = () => {
         onClose={closeDelete}
         onDelete={confirmDelete}
       />
+
+      {/* Status change confirmation modal */}
+      <Dialog
+        open={!!statusChangeTarget}
+        onClose={() => setStatusChangeTarget(null)}
+      >
+        <DialogTitle>Confirm Status Change</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to change the status of <b>{statusChangeTarget?.service.name}</b> to <b>{statusChangeTarget?.isActive ? 'Active' : 'Inactive'}</b>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setStatusChangeTarget(null)} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={confirmStatusChange} color="primary" variant="contained">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
