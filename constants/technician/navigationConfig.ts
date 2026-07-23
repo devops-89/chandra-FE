@@ -15,17 +15,10 @@ export const technicianNavigationConfig: NavigationItem[] = [
     section: 'main',
   },
   {
-    id: 'nearby-jobs',
-    label: 'Jobs',
-    href: '/dashboard/technician/jobs',
+    id: 'bookings',
+    label: 'Bookings',
+    href: '/dashboard/technician/bookings',
     icon: 'location_on',
-    section: 'main',
-  },
-  {
-    id: 'active-jobs',
-    label: 'Active Jobs',
-    href: '/dashboard/technician/active-jobs',
-    icon: 'work_history',
     section: 'main',
   },
   {
@@ -35,13 +28,7 @@ export const technicianNavigationConfig: NavigationItem[] = [
     icon: 'payments',
     section: 'main',
   },
-  {
-    id: 'profile',
-    label: 'Profile',
-    href: '/dashboard/technician/profile',
-    icon: 'person',
-    section: 'main',
-  },
+
   {
     id: 'support',
     label: 'Get Support',

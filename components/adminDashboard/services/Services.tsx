@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchServices } from "@/redux/slices/servicesSlice";
@@ -16,12 +16,21 @@ const Services = () => {
   const isLoading = useAppSelector((state) => state.services.isLoading);
   const error     = useAppSelector((state) => state.services.error);
 
-  // Dispatch fetch every time this page mounts so a page refresh
-  // always pulls the latest data from the backend.
+  const [searchValue, setSearchValue] = useState("");
+  const [statusFilter, setStatusFilter] = useState<'All Status' | 'Active' | 'Inactive'>('All Status');
+
   useEffect(() => {
-    dispatch(fetchServices());
+    let statusParam: boolean | undefined = undefined;
+    if (statusFilter === 'Active') statusParam = true;
+    if (statusFilter === 'Inactive') statusParam = false;
+    
+    dispatch(fetchServices({ search: searchValue, status: statusParam }));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchValue, statusFilter]);
+
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+  };
 
   return (
     <div className="space-y-6">
@@ -43,7 +52,7 @@ const Services = () => {
         </button>
       </div>
 
-      <ServiceFilters />
+      <ServiceFilters onSearch={handleSearch} />
 
       {/* Loading state */}
       {isLoading && (
@@ -67,8 +76,13 @@ const Services = () => {
         </div>
       )}
 
-      {/* Table â€” only rendered once loading is done and there is no error */}
-      {!isLoading && !error && <ServicesTable />}
+      {/* Table — only rendered once loading is done and there is no error */}
+      {!isLoading && !error && (
+        <ServicesTable 
+          statusFilter={statusFilter} 
+          onStatusChange={setStatusFilter} 
+        />
+      )}
     </div>
   );
 };

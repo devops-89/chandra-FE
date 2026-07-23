@@ -44,10 +44,6 @@ export const adminSidebarItems = [
         href: "/admin/finance/transactions",
       },
       {
-        label: "Service Commission",
-        href: "/admin/finance/commission",
-      },
-      {
         label: "Technician Payouts",
         href: "/admin/finance/payouts",
       },

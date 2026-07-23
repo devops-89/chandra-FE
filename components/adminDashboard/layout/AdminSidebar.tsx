@@ -16,11 +16,15 @@ import {
   Box,
   Divider,
   IconButton,
+  Menu,
+  MenuItem
 } from "@mui/material";
 
 import { adminSidebarItems } from "@/constants/admin/adminSidebar";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { logoutUser } from "@/redux/slices/authSlice";
+import type { User } from "@/types/auth.types";
+import { useEffect } from "react";
 
 interface AdminSidebarProps {
   isOpen: boolean;
@@ -33,11 +37,47 @@ const SidebarContent = ({ onLinkClick }: { onLinkClick?: () => void }) => {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const reduxUser = useAppSelector((state) => state.auth.user);
+  
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
     "/admin/finance": pathname.startsWith("/admin/finance"),
   });
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (reduxUser) {
+      const id = setTimeout(() => setUser(reduxUser), 0);
+      return () => clearTimeout(id);
+    }
+    try {
+      const str = localStorage.getItem('user');
+      if (str) {
+        const parsed = JSON.parse(str);
+        const id = setTimeout(() => setUser(parsed), 0);
+        return () => clearTimeout(id);
+      }
+    } catch {
+      // ignore
+    }
+  }, [reduxUser]);
+
+  const firstName = user?.firstName ?? 'Admin';
+  const lastName  = user?.lastName  ?? '';
+  const initials  = `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase() || 'A';
+  const fullName  = `${firstName}${lastName ? ' ' + lastName[0] + '.' : ''}`.trim();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const openMenu = Boolean(anchorEl);
+
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleProfileClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = async () => {
+    handleProfileClose();
     await dispatch(logoutUser());
     router.push('/');
   };
@@ -165,33 +205,88 @@ const SidebarContent = ({ onLinkClick }: { onLinkClick?: () => void }) => {
         </List>
       </Box>
 
-      <Box sx={{ p: 2 }}>
-        <List sx={{ p: 0 }}>
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={handleLogout}
-              sx={{
-                borderRadius: '12px',
-                color: '#dc2626',
-                '&:hover': {
-                  backgroundColor: '#fef2f2',
-                },
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
-                <LogOut size={20} />
-              </ListItemIcon>
-              <ListItemText 
-                disableTypography 
-                primary={
-                  <Typography sx={{ fontWeight: 500, fontSize: '0.95rem' }}>
-                    Logout
-                  </Typography>
-                } 
-              />
-            </ListItemButton>
-          </ListItem>
-        </List>
+      <Box sx={{ p: 2, borderTop: '1px solid #e2e8f0' }}>
+        <Box 
+          onClick={handleProfileClick}
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1.5, 
+            px: 1, 
+            py: 1,
+            borderRadius: '12px',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s',
+            '&:hover': {
+              backgroundColor: '#f1f5f9'
+            }
+          }}
+        >
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              width: 40, 
+              height: 40, 
+              borderRadius: '50%', 
+              backgroundColor: '#059669', 
+              color: 'white', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              fontWeight: 600,
+              fontSize: '1rem',
+              flexShrink: 0
+            }}
+          >
+            {initials}
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#1e293b' }} noWrap>
+              {fullName}
+            </Typography>
+            <Typography sx={{ fontSize: '0.75rem', color: '#64748b' }}>
+              Admin
+            </Typography>
+          </Box>
+          <ChevronRight size={18} className="text-slate-400" />
+        </Box>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={openMenu}
+          onClose={handleProfileClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          sx={{
+            '& .MuiPaper-root': {
+              borderRadius: '12px',
+              mt: -1,
+              width: anchorEl ? anchorEl.clientWidth : 240,
+              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+              border: '1px solid #e2e8f0'
+            }
+          }}
+        >
+          <MenuItem 
+            onClick={handleLogout}
+            sx={{ 
+              color: '#dc2626',
+              fontWeight: 500,
+              fontSize: '0.95rem',
+              display: 'flex',
+              gap: 1.5,
+              py: 1.5
+            }}
+          >
+            <LogOut size={18} />
+            Logout
+          </MenuItem>
+        </Menu>
       </Box>
     </Box>
   );

@@ -1,4 +1,4 @@
-import axios, { type AxiosError, type AxiosInstance, type AxiosResponse,type InternalAxiosRequestConfig } from 'axios';
+import axios, { type AxiosError, type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 
 import { logout, updateTokens } from '@/redux/slices/authSlice';
 import { getAppStore } from '@/redux/storeAccessor';
@@ -49,7 +49,7 @@ const userPublicApi = axios.create({
   baseURL: SERVER_ENDPOINTS.USER_BASEURL,
 });
 
-export { authPublicApi, authSecuredApi, userPublicApi,userSecuredApi };
+export { authPublicApi, authSecuredApi, userPublicApi, userSecuredApi };
 
 let isRefreshing = false;
 
@@ -84,14 +84,18 @@ const setupResponseInterceptor = (instance: AxiosInstance) => {
       // Auto-show success messages for mutations
       const method = response.config.method?.toLowerCase() || '';
       const url = response.config.url || '';
-      
+
       if (['post', 'put', 'patch', 'delete'].includes(method) && !url.includes('/auth/refresh-token')) {
-        const msg = response.data?.message;
+        let msg = response.data?.message;
+        if (typeof msg === 'string' && msg.toLowerCase().includes('complaint deleted permanently')) {
+          msg = 'Complaint Deleted Successfully';
+        }
+
         if (msg) {
           let severity: 'success' | 'info' | 'warning' | 'error' = 'success';
           if (method === 'delete') severity = 'error'; // Red
           else severity = 'success'; // Green for POST, PUT, PATCH
-          
+
           getAppStore().dispatch(showSnackbar({ message: msg, severity }));
         }
       }
@@ -105,7 +109,7 @@ const setupResponseInterceptor = (instance: AxiosInstance) => {
       if (error.response?.status !== 401) {
         // Don't show toast for 401s if we are just refreshing the token
         if (!originalRequest || !originalRequest._retry) {
-           getAppStore().dispatch(showSnackbar({ message: errMsg, severity: 'error' }));
+          getAppStore().dispatch(showSnackbar({ message: errMsg, severity: 'error' }));
         }
       }
 
@@ -161,7 +165,7 @@ const setupResponseInterceptor = (instance: AxiosInstance) => {
         }
 
         getAppStore().dispatch(updateTokens({ accessToken: newAccessToken, refreshToken: newRefreshToken }));
-        
+
         instance.defaults.headers.common.Authorization = 'Bearer ' + newAccessToken;
         originalRequest.headers.Authorization = 'Bearer ' + newAccessToken;
 

@@ -6,14 +6,11 @@ import { useAppDispatch } from '@/redux/hooks';
 import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
 
 import AvailabilityCard from './availability/AvailabilityCard';
-import BankDetailsCard from './bank-details/BankDetailsCard';
-import UpiCard from './bank-details/UpiCard';
 import DocumentsCard from './documents/DocumentsCard';
 import ProfileHero from './overview/ProfileHero';
 import ProfileStats from './overview/ProfileStats';
 import PersonalInfoCard from './personal-info/PersonalInfoCard';
 import ProfessionalInfoCard from './professional-info/ProfessionalInfoCard';
-import NotificationSettings from './settings/NotificationSettings';
 
 export default function ProfileContent() {
   const dispatch = useAppDispatch();
@@ -45,17 +42,6 @@ export default function ProfileContent() {
           <AvailabilityCard />
         </div>
 
-        <div className="col-span-12 xl:col-span-4">
-          <BankDetailsCard />
-        </div>
-
-        <div className="col-span-12 xl:col-span-4">
-          <UpiCard />
-        </div>
-
-        <div className="col-span-12 xl:col-span-4">
-          <NotificationSettings />
-        </div>
       </div>
     </div>
   );

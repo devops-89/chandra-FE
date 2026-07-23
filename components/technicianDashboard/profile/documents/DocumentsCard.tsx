@@ -1,10 +1,21 @@
-'use client';
-
+import React, { useState } from 'react';
 import AadhaarCard from './AadhaarCard';
 import PanCard from './PanCard';
+import PoliceCertCard from './PoliceCertCard';
 import DrivingLicenseCard from './TradeLicenseCard';
+import DocumentModal from './DocumentModal';
 
 export default function DocumentsCard() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalUrl, setModalUrl] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
+
+  const handleView = (url: string, title: string) => {
+    setModalUrl(url);
+    setModalTitle(title);
+    setModalOpen(true);
+  };
+
   return (
     <div
       className="
@@ -28,10 +39,18 @@ export default function DocumentsCard() {
       </h3>
 
       <div className="space-y-4">
-        <AadhaarCard />
-        <PanCard />
-        <DrivingLicenseCard />
+        <AadhaarCard onView={handleView} />
+        <PanCard onView={handleView} />
+        <DrivingLicenseCard onView={handleView} />
+        <PoliceCertCard onView={handleView} />
       </div>
+
+      <DocumentModal 
+        open={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        url={modalUrl} 
+        title={modalTitle} 
+      />
     </div>
   );
 }

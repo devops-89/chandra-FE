@@ -34,7 +34,7 @@ export default function JobList() {
     };
     dispatch(setCurrentJob(activeJob));
     dispatch(setJobs(jobs.filter((j) => j.id !== job.id)));
-    router.push('/dashboard/technician/active-jobs');
+    router.push('/dashboard/technician/bookings');
   };
 
   const handleReject = (jobId: number) => {

@@ -26,7 +26,7 @@ export default function StatsGrid() {
       icon: 'pending_actions',
       title: 'Active Jobs',
       value: activeJob ? '1' : '0',
-      onClick: () => router.push('/dashboard/technician/active-jobs'),
+      onClick: () => router.push('/dashboard/technician/bookings'),
     },
     {
       icon: 'payments',

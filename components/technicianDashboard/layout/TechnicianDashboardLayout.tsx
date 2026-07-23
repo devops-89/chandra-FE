@@ -22,41 +22,31 @@ export default function TechnicianDashboardLayout({
   };
 
   return (
-    <div className="relative flex min-h-screen">
-      {/* Desktop Sidebar - Always visible on desktop */}
-      <div className="sticky top-0 z-50 hidden h-screen w-64 shrink-0 md:block">
-        <TechnicianSidebar />
-      </div>
+    <div className="min-h-screen bg-[#F8FAFC] flex">
+      <TechnicianSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
-      {/* Mobile Sidebar Drawer */}
-      <div
-        className={`fixed left-0 top-0 h-screen w-64 z-50 transform transition-transform duration-300 md:hidden ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <TechnicianSidebar onClose={() => setIsSidebarOpen(false)} />
-      </div>
-
-      {/* Main Content Area */}
-      <main className="min-h-screen min-w-0 flex-1">
-        {/* Header */}
+      <div className="flex-1 flex flex-col lg:ml-0 min-w-0">
         <TechnicianHeader
           {...headerProps}
           onMenuToggle={toggleSidebar}
           isSidebarOpen={isSidebarOpen}
         />
 
-        {/* Content Canvas */}
-        <div className="pt-20 pb-6 px-4 md:px-8">{children}</div>
-      </main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
