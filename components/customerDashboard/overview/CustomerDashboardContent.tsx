@@ -1,13 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 
-import TokenPaymentModal from '@/components/booking/TokenPaymentModal';
 import CustomerDashboard from '@/components/customerDashboard/CustomerDashboard';
 import HeroBookingCard from '@/components/customerDashboard/overview/HeroBookingCard';
-import LifetimeBookingAccess from '@/components/customerDashboard/overview/LifetimeBookingAccess';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
+import { useAppSelector } from '@/redux/hooks';
 
 function DashboardSkeleton() {
   return (
@@ -30,34 +26,13 @@ function DashboardSkeleton() {
 }
 
 export default function CustomerDashboardContent() {
-  const dispatch = useAppDispatch();
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const { profile, isLoading } = useAppSelector(
     (state) => state.customerProfile,
   );
 
-  const handlePaymentSuccess = () => {
-    setIsPaymentModalOpen(false);
-    void dispatch(fetchCustomerProfile());
-  };
-
   if (isLoading || !profile) {
     return <DashboardSkeleton />;
-  }
-
-  if (profile.isTokenPaid === false) {
-    return (
-      <>
-        <LifetimeBookingAccess onUnlock={() => setIsPaymentModalOpen(true)} />
-        <TokenPaymentModal
-          open={isPaymentModalOpen}
-          onClose={() => setIsPaymentModalOpen(false)}
-          onSuccess={handlePaymentSuccess}
-          mode="lifetime"
-        />
-      </>
-    );
   }
 
   return (

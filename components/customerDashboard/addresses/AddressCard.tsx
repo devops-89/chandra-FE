@@ -96,9 +96,9 @@ export default function AddressCard({
     setSuccess(false);
 
     if (!fullAddress.trim()) { setError('Street address is required'); return; }
-    if (!city.trim())        { setError('City is required'); return; }
-    if (!state.trim())       { setError('State is required'); return; }
-    if (!pincode.trim())     { setError('Pincode is required'); return; }
+    if (!city.trim()) { setError('City is required'); return; }
+    if (!state.trim()) { setError('State is required'); return; }
+    if (!pincode.trim()) { setError('Pincode is required'); return; }
     if (!/^\d{6}$/.test(pincode.trim())) {
       setError('Pincode must be exactly 6 digits');
       return;
@@ -155,16 +155,6 @@ export default function AddressCard({
         </td>
         <td className="px-6 py-4 text-slate-700 font-mono text-xs whitespace-nowrap">
           {displayPincode}
-        </td>
-        <td className="px-6 py-4 whitespace-nowrap">
-          {isDefaultAddress ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-600"></span>
-              Default
-            </span>
-          ) : (
-            <span className="text-slate-400 text-xs font-medium">—</span>
-          )}
         </td>
         <td className="px-6 py-4 text-right whitespace-nowrap">
           <div className="flex items-center justify-end gap-1">
@@ -245,11 +235,10 @@ export default function AddressCard({
                         key={opt}
                         type="button"
                         onClick={() => setLabel(opt)}
-                        className={`flex-1 py-2.5 px-3 text-sm font-medium rounded-xl border transition-all cursor-pointer ${
-                          label === opt
-                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-100'
-                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                        }`}
+                        className={`flex-1 py-2.5 px-3 text-sm font-medium rounded-xl border transition-all cursor-pointer ${label === opt
+                          ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-100'
+                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                          }`}
                       >
                         {opt}
                       </button>
@@ -488,4 +477,4 @@ export default function AddressCard({
       )}
     </>
   );
-}
+}

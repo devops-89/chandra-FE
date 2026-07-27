@@ -1,8 +1,9 @@
 'use client';
 
-import AddressCard from './AddressCard';
 import { DashboardCard, EmptyState } from '@/components/customerDashboard/shared';
 import { useAppSelector } from '@/redux/hooks';
+
+import AddressCard from './AddressCard';
 
 export default function AddressList() {
   const { profile, isLoading } = useAppSelector((state) => state.customerProfile);
@@ -38,7 +39,6 @@ export default function AddressList() {
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Address</th>
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">City / State</th>
               <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Pincode</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Default</th>
               <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider">Actions</th>
             </tr>
           </thead>

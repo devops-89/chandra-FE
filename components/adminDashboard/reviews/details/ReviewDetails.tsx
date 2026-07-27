@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CircularProgress } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 import { ReviewControllers } from '@/api/reviewControllers';
-import { ReviewData } from '../list/ReviewsTable';
+
+import type { ReviewData } from '../list/ReviewsTable';
 
 const ReviewDetails = ({ id }: { id: string }) => {
   const router = useRouter();

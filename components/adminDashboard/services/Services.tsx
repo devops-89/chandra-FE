@@ -58,7 +58,6 @@ const Services = () => {
       {isLoading && (
         <div className="flex items-center justify-center py-16">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600" />
-          <span className="ml-3 text-sm text-slate-500">Loading servicesâ€¦</span>
         </div>
       )}
 

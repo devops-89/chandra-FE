@@ -72,8 +72,8 @@ export default function TechnicianHeader({
           >
             <span
               className={`
-                pointer-events-none relative inline-block h-[22px] w-[22px] top-[1px] transform rounded-full bg-white shadow-sm ring-0 transition duration-300 ease-out flex items-center justify-center
-                ${isOnline ? 'translate-x-5' : 'translate-x-[2px]'}
+                pointer-events-none relative h-5.5 w-5.5 top-px transform rounded-full bg-white shadow-sm ring-0 transition duration-300 ease-out flex items-center justify-center
+                ${isOnline ? 'translate-x-5' : 'translate-x-0.5'}
               `}
             >
               {isOnline ? (

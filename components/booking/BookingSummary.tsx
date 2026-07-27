@@ -117,7 +117,7 @@ export function BookingSummaryContent({
     const booking = await dispatch(createBooking(payload)).unwrap();
 
     if (process.env.NODE_ENV !== 'production') {
-      console.warn('API Response:', booking);
+      console.warn('API Response:', booking); 
     }
 
     router.push(confirmationPath);

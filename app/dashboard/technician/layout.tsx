@@ -6,9 +6,12 @@ import { AuthControllers } from '@/api/authControllers';
 import TechnicianDashboardLayout from '@/components/technicianDashboard/layout/TechnicianDashboardLayout';
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { getTechnicianRedirectPath } from '@/lib/authApi/redirectUtils';
+import { useAppDispatch } from '@/redux/hooks';
+import { socketService } from '@/redux/services/socket.service';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [checkingStatus, setCheckingStatus] = useState(true);
 
   useOnboardingGuard({ stepIndex: -1 });
@@ -47,6 +50,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         if (!cancelled) {
           setCheckingStatus(false);
+          const userId = res.data?.id;
+          if (userId) {
+            socketService.connect(dispatch, userId);
+          }
         }
       } catch (e) {
         console.error('[DEBUG dashboard layout] Error in layout auth checks:', e);
@@ -58,8 +65,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     return () => {
       cancelled = true;
+      socketService.disconnect();
     };
-  }, [router]);
+  }, [router, dispatch]);
 
   if (checkingStatus) {
     return (

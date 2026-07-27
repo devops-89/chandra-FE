@@ -15,17 +15,17 @@ export const customerDashboardSidebarLinks = [
   },
   {
     label: 'Services',
-    href: '/dashboard/customer/services',
+    href: '/dashboard/services',
     icon: Sparkles,
   },
   {
     label: 'My Bookings',
-    href: '/dashboard/customer/bookings',
+    href: '/dashboard/bookings',
     icon: CalendarDays,
   },
   {
     label: 'Addresses',
-    href: '/dashboard/customer/addresses',
+    href: '/dashboard/addresses',
     icon: MapPin,
   },
   // {
@@ -35,12 +35,12 @@ export const customerDashboardSidebarLinks = [
   // },
   {
     label: 'Profile',
-    href: '/dashboard/customer/profile',
+    href: '/dashboard/profile',
     icon: User,
   },
   {
     label: 'Invoices',
-    href: '/dashboard/customer/invoices',
+    href: '/dashboard/invoices',
     icon: Receipt,
   },
 ] as const;

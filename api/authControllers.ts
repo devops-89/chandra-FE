@@ -75,7 +75,7 @@ export const AuthControllers = {
       formData.append('password', payload.password);
       formData.append('customerAddress', JSON.stringify(payload.customerAddress));
 
-      const response = await userPublicApi.post<RegisterCustomerResponse>('/customer/auth/register-customer', formData, {
+      const response = await userPublicApi.post<RegisterCustomerResponse>('/users/register', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;

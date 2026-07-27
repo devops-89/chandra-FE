@@ -2,8 +2,19 @@
 
 import {
   Box,
+  Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  IconButton,
+  Menu,
+  MenuItem,
   Paper,
+  Tab,
   Table,
   TableBody,
   TableCell,
@@ -11,29 +22,17 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
-  Typography,
   Tabs,
-  Tab,
-  Menu,
-  MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-  IconButton,
   Tooltip,
-  Divider,
+  Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { AdminControllers } from '@/api/adminControllers';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { deleteAdminComplaint, fetchAdminComplaints, resolveAdminComplaint } from '@/redux/slices/adminComplaintSlice';
 import type { AdminComplaintListItem } from '@/types/admin/complaints.types';
-import { AdminControllers } from '@/api/adminControllers';
 
 // ─── Types & Sorting helpers ──────────────────────────────────────────────────
 

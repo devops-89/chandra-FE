@@ -9,9 +9,8 @@ import {
   CircularProgress,
   Grid,
   Paper,
-  Typography,
-  Rating
-} from '@mui/material';
+  Rating,
+  Typography} from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

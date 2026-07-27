@@ -2,6 +2,7 @@
 
 
 import { Avatar } from '@mui/material';
+
 import { useAppSelector } from '@/redux/hooks';
 
 import VerificationBadge from './VerificationBadge';

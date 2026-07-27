@@ -1,7 +1,8 @@
 'use client';
 
-import { Sparkles, ArrowRight, Wrench, ShieldCheck, Clock } from 'lucide-react';
+import { ArrowRight, Clock,ShieldCheck, Sparkles, Wrench } from 'lucide-react';
 import Link from 'next/link';
+
 import { DashboardCard } from '@/components/customerDashboard/shared';
 
 const POPULAR_SERVICES = [

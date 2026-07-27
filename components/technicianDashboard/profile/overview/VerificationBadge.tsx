@@ -1,8 +1,8 @@
 'use client';
 
-import VerifiedIcon from '@mui/icons-material/Verified';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import VerifiedIcon from '@mui/icons-material/Verified';
 
 export default function VerificationBadge({ status }: { status?: string }) {
   if (!status) return null;

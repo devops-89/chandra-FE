@@ -1,14 +1,36 @@
-import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
-import { ServiceGrid } from '@/components/servicesSection/ServiceGrid';
+'use client';
 
-/**
- * Customer Dashboard → Services
- *
- * Renders the same service grid used on the public /services page,
- * wrapped inside the dashboard layout (no navbar/footer duplication).
- * Clicking a card navigates to /dashboard/customer/services/[slug].
- */
+import { useState } from 'react';
+
+import TokenPaymentModal from '@/components/booking/TokenPaymentModal';
+import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
+import LifetimeBookingAccess from '@/components/customerDashboard/overview/LifetimeBookingAccess';
+import { ServiceGrid } from '@/components/servicesSection/ServiceGrid';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
+
 export default function DashboardServicesPage() {
+  const dispatch = useAppDispatch();
+
+  const { profile } = useAppSelector((state) => state.customerProfile);
+
+  const [showAccessModal, setShowAccessModal] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+  const hasAccess = profile?.isTokenPaid === true;
+
+  const handleCardClick = () => {
+    if (!hasAccess) {
+      setShowAccessModal(true);
+    }
+  };
+
+  const handlePaymentSuccess = () => {
+    setIsPaymentModalOpen(false);
+    setShowAccessModal(false);
+    void dispatch(fetchCustomerProfile());
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -18,8 +40,34 @@ export default function DashboardServicesPage() {
             Browse and book available services
           </p>
         </div>
-        <ServiceGrid linkPrefix="/dashboard/customer/services" />
+
+        <ServiceGrid
+          linkPrefix="/dashboard/customer/services"
+          onCardClick={hasAccess ? undefined : handleCardClick}
+        />
       </div>
+
+      {/* Lifetime Access popup — shown when a locked user clicks a service card */}
+      {showAccessModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
+          onClick={() => setShowAccessModal(false)}
+        >
+          <div
+            className="w-full max-w-4xl animate-fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <LifetimeBookingAccess onUnlock={() => setIsPaymentModalOpen(true)} />
+          </div>
+        </div>
+      )}
+
+      <TokenPaymentModal
+        open={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSuccess={handlePaymentSuccess}
+        mode="lifetime"
+      />
     </DashboardLayout>
   );
 }

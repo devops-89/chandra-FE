@@ -2,6 +2,7 @@
 
 import { Calendar, Clock, Hourglass, UserCheck } from 'lucide-react';
 import Link from 'next/link';
+
 import { DashboardCard } from '@/components/customerDashboard/shared';
 import type { ActiveBooking } from '@/types/dashboardTypes/customerDashboard/customerDashboard.types';
 

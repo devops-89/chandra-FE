@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+
 import AadhaarCard from './AadhaarCard';
+import DocumentModal from './DocumentModal';
 import PanCard from './PanCard';
 import PoliceCertCard from './PoliceCertCard';
 import DrivingLicenseCard from './TradeLicenseCard';
-import DocumentModal from './DocumentModal';
 
 export default function DocumentsCard() {
   const [modalOpen, setModalOpen] = useState(false);

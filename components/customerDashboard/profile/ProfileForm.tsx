@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, AlertCircle, Loader2, ShieldCheck, User } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2, ShieldCheck, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { DashboardCard } from '@/components/customerDashboard/shared';

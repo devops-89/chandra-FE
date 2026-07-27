@@ -3,17 +3,20 @@
 interface JobActionsProps {
   onAccept?: () => void;
   onReject?: () => void;
+  isAccepting?: boolean;
 }
 
 export default function JobActions({
   onAccept,
   onReject,
+  isAccepting,
 }: JobActionsProps) {
   return (
     <div className="flex gap-3">
       <button
         type="button"
         onClick={onAccept}
+        disabled={isAccepting}
         className="
           flex-1
           h-12
@@ -36,9 +39,11 @@ export default function JobActions({
           flex
           items-center
           justify-center
+          disabled:opacity-60
+          disabled:cursor-not-allowed
         "
       >
-        Accept
+        {isAccepting ? 'Accepting...' : 'Accept'}
       </button>
 
       <button

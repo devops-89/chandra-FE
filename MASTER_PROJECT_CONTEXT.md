@@ -1,6 +1,6 @@
 # HiChandra Frontend — Master Project Context
 
-> **Last updated:** July 20, 2026
+> **Last updated:** July 23, 2026
 > **Purpose:** Permanent handoff document. Paste this file into any new chat to restore full project context instantly.
 
 ---
@@ -47,8 +47,8 @@ Config notes:
 ### Base URLs (`api/serverConstant.ts`)
 ```ts
 export const SERVER_ENDPOINTS = {
-  AUTH_BASEURL: 'http://192.168.1.16:8000/api',
-  USER_BASEURL: 'http://192.168.1.16:8001/api',
+  AUTH_BASEURL: 'http://10.196.22.3:8000/api',
+  USER_BASEURL: 'http://10.196.22.3:8001/api',
 };
 ```
 

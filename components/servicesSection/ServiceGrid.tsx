@@ -16,9 +16,15 @@ interface ServiceGridProps {
    * Pass '/dashboard/customer/services' to link into the dashboard.
    */
   linkPrefix?: string;
+  /**
+   * Optional click interceptor forwarded to every ServiceCard.
+   * When provided, cards render as buttons and navigation is delegated
+   * to the caller (e.g. to gate access before navigating).
+   */
+  onCardClick?: () => void;
 }
 
-export function ServiceGrid({ linkPrefix = '/services' }: ServiceGridProps) {
+export function ServiceGrid({ linkPrefix = '/services', onCardClick }: ServiceGridProps) {
   const dispatch = useAppDispatch();
   const { items: services, isLoading, error } = useAppSelector((state) => state.services);
 
@@ -117,7 +123,7 @@ export function ServiceGrid({ linkPrefix = '/services' }: ServiceGridProps) {
           lg: 3,
         }}
         >
-          <ServiceCard service={service} linkPrefix={linkPrefix} />
+          <ServiceCard service={service} linkPrefix={linkPrefix} onCardClick={onCardClick} />
         </Grid>
       ))}
     </Grid>

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 import type { BookingFormData } from '@/types/services.types';
 
@@ -18,7 +19,7 @@ export interface BookingAddressSnapshot {
 
 interface BookingStore {
   service: string;
-  serviceId: number | null; // Backend service ID
+  serviceId: number | null;
   serviceSlug: string;
   servicePrice: number;
 
@@ -27,7 +28,6 @@ interface BookingStore {
   name: string;
   phone: string;
 
-  // New
   customerAddressId: number | null;
   customerAddress: BookingAddressSnapshot | null;
 
@@ -35,59 +35,59 @@ interface BookingStore {
   slot: string;
   instructions: string;
 
-  // New
   serviceSpecifications: BookingSpecification[];
 
   setBooking: (data: Partial<BookingStore>) => void;
   clearBooking: () => void;
 }
 
-export const useBookingStore = create<BookingStore>((set) => ({
+const EMPTY_STATE = {
   service: '',
   serviceId: null,
   serviceSlug: '',
   servicePrice: 0,
-
-  serviceSpecificData: {},
-
+  serviceSpecificData: {} as BookingFormData,
   name: '',
   phone: '',
-
   customerAddressId: null,
   customerAddress: null,
-
   date: '',
   slot: '',
   instructions: '',
+  serviceSpecifications: [] as BookingSpecification[],
+};
 
-  serviceSpecifications: [],
+export const useBookingStore = create<BookingStore>()(
+  persist(
+    (set) => ({
+      ...EMPTY_STATE,
 
-  setBooking: (data) =>
-    set((state) => ({
-      ...state,
-      ...data,
-    })),
+      setBooking: (data) =>
+        set((state) => ({
+          ...state,
+          ...data,
+        })),
 
-  clearBooking: () =>
-    set({
-      service: '',
-      serviceId: null,
-      serviceSlug: '',
-      servicePrice: 0,
-
-      serviceSpecificData: {},
-
-      name: '',
-      phone: '',
-
-      customerAddressId: null,
-      customerAddress: null,
-
-      date: '',
-      slot: '',
-      instructions: '',
-
-      serviceSpecifications: [],
+      clearBooking: () => set(EMPTY_STATE),
     }),
-}));
-
+    {
+      name: 'hichandra-booking',
+      // Only persist the data fields — not the action functions
+      partialize: (state) => ({
+        service: state.service,
+        serviceId: state.serviceId,
+        serviceSlug: state.serviceSlug,
+        servicePrice: state.servicePrice,
+        serviceSpecificData: state.serviceSpecificData,
+        name: state.name,
+        phone: state.phone,
+        customerAddressId: state.customerAddressId,
+        customerAddress: state.customerAddress,
+        date: state.date,
+        slot: state.slot,
+        instructions: state.instructions,
+        serviceSpecifications: state.serviceSpecifications,
+      }),
+    },
+  ),
+);

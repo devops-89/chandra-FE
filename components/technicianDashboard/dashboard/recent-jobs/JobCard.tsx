@@ -11,6 +11,7 @@ interface JobCardProps {
   variant?: 'green' | 'blue';
   onAccept?: () => void;
   onReject?: () => void;
+  isAccepting?: boolean;
 }
 
 export default function JobCard({
@@ -22,6 +23,7 @@ export default function JobCard({
   variant = 'green',
   onAccept,
   onReject,
+  isAccepting,
 }: JobCardProps) {
   return (
     <div
@@ -105,7 +107,7 @@ export default function JobCard({
           </span>
         </div>
 
-        <JobActions onAccept={onAccept} onReject={onReject} />
+        <JobActions onAccept={onAccept} onReject={onReject} isAccepting={isAccepting} />
       </div>
     </div>
   );

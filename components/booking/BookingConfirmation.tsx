@@ -17,8 +17,7 @@ export function BookingConfirmationContent() {
   const bookingId = createTemporaryBookingId(service, date, slot);
 
   React.useEffect(() => {
-    const timer = setTimeout(() => clearBooking(), 20000);
-    return () => clearTimeout(timer);
+    return () => clearBooking();
   }, [clearBooking]);
 
   const handleDashboardRedirect = () => {
@@ -52,12 +51,6 @@ export function BookingConfirmationContent() {
           </div>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href="/"
-              className="rounded-full bg-emerald-600 px-8 py-4 text-center font-semibold text-white transition-all duration-300 hover:bg-emerald-700"
-            >
-              Back To Home
-            </Link>
             <Link
               href="/dashboard/customer"
               onClick={handleDashboardRedirect}

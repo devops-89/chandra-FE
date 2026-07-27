@@ -1,31 +1,27 @@
 'use client';
 
-import { LogOut, X } from 'lucide-react';
+import { ChevronRight, LogOut, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/sidebar/customerDashboardSidebarLinks';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logoutUser } from '@/redux/slices/authSlice';
+import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
 
 interface DashboardSidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-/**
- * Returns true when the current pathname should highlight this sidebar link.
- * - Exact match for dashboard root (avoids highlighting Dashboard on every page).
- * - Prefix match for /dashboard/customer/services/* and /booking/* (booking flow).
- * - Prefix match for all other dashboard sub-routes.
- */
 function isActive(href: string, pathname: string): boolean {
   if (href === '/dashboard/customer') {
     return pathname === '/dashboard/customer';
   }
-  // Services link covers service detail and the downstream booking flow
-  if (href === '/dashboard/customer/services') {
+  if (href === '/dashboard/services') {
     return (
+      pathname.startsWith('/dashboard/services') ||
       pathname.startsWith('/dashboard/customer/services') ||
       pathname.startsWith('/booking')
     );
@@ -33,11 +29,96 @@ function isActive(href: string, pathname: string): boolean {
   return pathname.startsWith(href);
 }
 
-const activeLinkClass =
-  'bg-emerald-50 text-emerald-700 font-semibold';
+const activeLinkClass = 'bg-emerald-50 text-emerald-700 font-semibold';
+const inactiveLinkClass = 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700';
 
-const inactiveLinkClass =
-  'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700';
+// ─── Profile + Logout section (shared between desktop and mobile) ─────────────
+
+function ProfileSection({ onLogout }: { onLogout: () => void }) {
+  const dispatch = useAppDispatch();
+  const reduxUser = useAppSelector((state) => state.auth.user);
+  const customerProfile = useAppSelector((state) => state.customerProfile.profile);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const anchorRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!customerProfile) {
+      dispatch(fetchCustomerProfile());
+    }
+  }, [customerProfile, dispatch]);
+
+  // Close menu on outside click
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target as Node) &&
+        anchorRef.current &&
+        !anchorRef.current.contains(e.target as Node)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
+
+  const user = customerProfile ?? reduxUser ?? (() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = localStorage.getItem('user');
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const firstName = user?.firstName ?? 'User';
+  const lastName = user?.lastName ?? '';
+  const initials = `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase() || 'U';
+  const fullName = `${firstName}${lastName ? ' ' + lastName[0] + '.' : ''}`.trim();
+
+  return (
+    <div className="p-2 border-t border-slate-200 relative">
+      <button
+        ref={anchorRef}
+        type="button"
+        onClick={() => setMenuOpen((v) => !v)}
+        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 cursor-pointer transition-colors hover:bg-slate-100"
+      >
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white font-semibold text-base">
+          {initials}
+        </div>
+        <div className="flex-1 min-w-0 text-left">
+          <p className="text-sm font-semibold text-slate-900 truncate">{fullName}</p>
+          <p className="text-xs text-slate-500">Customer</p>
+        </div>
+        <ChevronRight size={18} className="text-slate-400 shrink-0" />
+      </button>
+
+      {/* Popover menu — opens upward */}
+      {menuOpen && (
+        <div
+          ref={menuRef}
+          className="absolute left-2 right-2 bottom-full mb-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-50"
+        >
+          <button
+            type="button"
+            onClick={() => { setMenuOpen(false); onLogout(); }}
+            className="flex w-full items-center gap-3 px-4 py-3 text-red-600 font-medium text-sm hover:bg-red-50 transition-colors cursor-pointer"
+          >
+            <LogOut size={18} />
+            Logout
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
   const router = useRouter();
@@ -78,16 +159,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           })}
         </nav>
 
-        <div className="p-4">
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 cursor-pointer text-red-600 transition hover:bg-red-50"
-          >
-            <LogOut size={20} />
-            <span className="text-sm sm:text-base">Logout</span>
-          </button>
-        </div>
+        <ProfileSection onLogout={handleLogout} />
       </aside>
 
       {/* ── Mobile Sidebar ── */}
@@ -133,16 +205,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           })}
         </nav>
 
-        <div className="p-4">
-          <button
-            type="button"
-            onClick={() => { onClose(); handleLogout(); }}
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-600 transition hover:bg-red-50"
-          >
-            <LogOut size={20} />
-            Logout
-          </button>
-        </div>
+        <ProfileSection onLogout={() => { onClose(); handleLogout(); }} />
       </aside>
     </>
   );
