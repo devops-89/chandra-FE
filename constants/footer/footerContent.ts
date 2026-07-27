@@ -13,21 +13,6 @@ export const footerContent = {
     },
   ],
 
-  legal: [
-    {
-      label: 'Privacy Policy',
-      href: '/privacy-policy',
-    },
-    {
-      label: 'Terms of Service',
-      href: '/terms-of-service',
-    },
-    {
-      label: 'Cookies Policy',
-      href: '/cookies-policy',
-    },
-  ],
-
   contact: {
     address: 'Lucknow, Uttar Pradesh, India',
     phone: '+91 XXXXX XXXXX',

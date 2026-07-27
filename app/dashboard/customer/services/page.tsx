@@ -1,35 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+// ── LIFETIME BOOKING ACCESS GATE — temporarily disabled ──────────────────────
+// To re-enable: uncomment the imports, state, handlers, modal, and onCardClick
+// import { useState } from 'react';
+// import TokenPaymentModal from '@/components/booking/TokenPaymentModal';
+// import LifetimeBookingAccess from '@/components/customerDashboard/overview/LifetimeBookingAccess';
+// import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+// import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
+// ─────────────────────────────────────────────────────────────────────────────
 
-import TokenPaymentModal from '@/components/booking/TokenPaymentModal';
 import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
-import LifetimeBookingAccess from '@/components/customerDashboard/overview/LifetimeBookingAccess';
 import { ServiceGrid } from '@/components/servicesSection/ServiceGrid';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
 
 export default function DashboardServicesPage() {
-  const dispatch = useAppDispatch();
-
-  const { profile } = useAppSelector((state) => state.customerProfile);
-
-  const [showAccessModal, setShowAccessModal] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-
-  const hasAccess = profile?.isTokenPaid === true;
-
-  const handleCardClick = () => {
-    if (!hasAccess) {
-      setShowAccessModal(true);
-    }
-  };
-
-  const handlePaymentSuccess = () => {
-    setIsPaymentModalOpen(false);
-    setShowAccessModal(false);
-    void dispatch(fetchCustomerProfile());
-  };
+  // ── LIFETIME BOOKING ACCESS GATE — temporarily disabled ────────────────────
+  // const dispatch = useAppDispatch();
+  // const { profile } = useAppSelector((state) => state.customerProfile);
+  // const [showAccessModal, setShowAccessModal] = useState(false);
+  // const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  // const hasAccess = profile?.isTokenPaid === true;
+  // const handleCardClick = () => { if (!hasAccess) setShowAccessModal(true); };
+  // const handlePaymentSuccess = () => {
+  //   setIsPaymentModalOpen(false);
+  //   setShowAccessModal(false);
+  //   void dispatch(fetchCustomerProfile());
+  // };
+  // ───────────────────────────────────────────────────────────────────────────
 
   return (
     <DashboardLayout>
@@ -41,13 +37,11 @@ export default function DashboardServicesPage() {
           </p>
         </div>
 
-        <ServiceGrid
-          linkPrefix="/dashboard/customer/services"
-          onCardClick={hasAccess ? undefined : handleCardClick}
-        />
+        {/* onCardClick not passed — all cards navigate freely as Links */}
+        <ServiceGrid linkPrefix="/dashboard/customer/services" />
       </div>
 
-      {/* Lifetime Access popup — shown when a locked user clicks a service card */}
+      {/* ── LIFETIME BOOKING ACCESS GATE — temporarily disabled ────────────────
       {showAccessModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
@@ -68,6 +62,7 @@ export default function DashboardServicesPage() {
         onSuccess={handlePaymentSuccess}
         mode="lifetime"
       />
+      ─────────────────────────────────────────────────────────────────────── */}
     </DashboardLayout>
   );
 }

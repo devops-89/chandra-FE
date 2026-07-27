@@ -51,6 +51,7 @@ export function BookingSummaryContent({
     date,
     slot,
     instructions,
+    setBooking,
   } = useBookingStore();
 
   const profile = useAppSelector(
@@ -119,6 +120,10 @@ export function BookingSummaryContent({
     if (process.env.NODE_ENV !== 'production') {
       console.warn('API Response:', booking); 
     }
+
+    // Explicitly re-persist all fields so localStorage is definitely up-to-date
+    // before the confirmation page mounts and reads from the store.
+    setBooking({ service, serviceId, servicePrice, name, phone, date, slot, instructions });
 
     router.push(confirmationPath);
   } catch (error) {

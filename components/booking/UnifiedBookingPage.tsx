@@ -336,7 +336,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   const isLastStep = currentStep === STEP_DETAILS;
 
   return (
-    <section className="bg-white py-4 md:py-2">
+    <section className="py-4 md:py-2">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="sticky top-0 z-30 bg-white py-4">

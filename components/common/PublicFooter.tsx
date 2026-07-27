@@ -8,7 +8,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#fff8ed]">
       <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8 lg:px-10">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
           <FooterBrand />
           <FooterLinks />
           <FooterContact />

@@ -10,7 +10,7 @@ import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayo
 export default function DashboardBookingConfirmationPage() {
   return (
     <DashboardLayout>
-      <BookingConfirmationContent />
+      <BookingConfirmationContent layout="dashboard" />
     </DashboardLayout>
   );
 }

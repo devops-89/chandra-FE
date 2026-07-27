@@ -61,11 +61,53 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
     setIsLocating(true);
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setCoords({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        setCoords({ latitude: lat, longitude: lng });
+
+        // Reverse geocode using Nominatim (no API key required)
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
+            { headers: { 'Accept-Language': 'en' } }
+          );
+          const data = await res.json();
+          const addr = data?.address ?? {};
+
+          // Build street address from available components
+          const streetParts = [
+            addr.house_number,
+            addr.road || addr.pedestrian || addr.street,
+            addr.neighbourhood || addr.suburb || addr.quarter,
+          ].filter(Boolean);
+          const derivedFullAddress = streetParts.join(', ');
+
+          // City: try multiple Nominatim keys
+          const derivedCity =
+            addr.city ||
+            addr.town ||
+            addr.village ||
+            addr.county ||
+            addr.district ||
+            '';
+
+          // State
+          const derivedState = addr.state || '';
+
+          // Pincode
+          const derivedPincode = (addr.postcode || '').replace(/\D/g, '').slice(0, 6);
+
+          // Only pre-fill if currently empty so we don't overwrite manual edits
+          if (derivedFullAddress) setFullAddress(derivedFullAddress);
+          if (derivedCity)        setCity(derivedCity);
+          if (derivedState)       setState(derivedState);
+          if (derivedPincode)     setPincode(derivedPincode);
+        } catch {
+          // Reverse geocode failed — coords are still set, user fills manually
+        }
+
         setIsLocating(false);
         setLocationSuccess(true);
       },
@@ -233,7 +275,7 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
               {locationSuccess && (
                 <p className="mt-2 text-xs font-medium text-emerald-600 flex items-center gap-1">
                   <Check className="w-3.5 h-3.5" />
-                  ✓ Current location detected
+                  ✓ Location detected — fields pre-filled, you can edit them before saving.
                 </p>
               )}
 
