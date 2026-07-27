@@ -16,17 +16,17 @@ interface DashboardSidebarProps {
 }
 
 function isActive(href: string, pathname: string): boolean {
-  if (href === '/dashboard/customer') {
-    return pathname === '/dashboard/customer';
+  if (href === '/customer/dashboard') {
+    return pathname === '/customer/dashboard' || pathname === '/dashboard/customer';
   }
-  if (href === '/dashboard/services') {
+  if (href === '/customer/dashboard/services') {
     return (
-      pathname.startsWith('/dashboard/services') ||
+      pathname.startsWith('/customer/dashboard/services') ||
       pathname.startsWith('/dashboard/customer/services') ||
       pathname.startsWith('/booking')
     );
   }
-  return pathname.startsWith(href);
+  return pathname.startsWith(href) || pathname.startsWith(href.replace('/customer/dashboard', '/dashboard/customer'));
 }
 
 const activeLinkClass = 'bg-emerald-50 text-emerald-700 font-semibold';
