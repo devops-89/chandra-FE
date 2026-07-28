@@ -1,4 +1,5 @@
 import PayoutTable from "@/components/adminDashboard/finance/payouts/PayoutTable";
+import FinanceOverview from "@/components/adminDashboard/finance/overview/FinanceOverview";
 
 export default function PayoutsPage() {
   return (
@@ -10,6 +11,7 @@ export default function PayoutsPage() {
         <p className="text-slate-500">Manage and view technician payouts</p>
       </div>
 
+      <FinanceOverview />
       <PayoutTable />
     </div>
   );

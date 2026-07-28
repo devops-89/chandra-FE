@@ -224,8 +224,13 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
                 </Typography>
                 <Grid container spacing={2}>
                   {booking.serviceSpecifications.map((spec: any, idx: number) => {
-                    const specDef = booking.service?.specifications?.find((s: any) => s.id === spec.specificationId);
-                    const label = specDef ? specDef.name : `Specification #${spec.specificationId}`;
+                    const specDef = booking.service?.specifications?.find((s: any) => 
+                      s.id === spec.specificationId || 
+                      (s.type === 'select' && Array.isArray(s.values) && s.values.includes(spec.value))
+                    );
+                    if (!specDef) return null;
+
+                    const label = specDef.name;
                     return (
                       <Grid size={{ xs: 12, sm: 6 }} key={idx}>
                         <InfoItem label={label} value={spec.value} />
@@ -244,21 +249,46 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
                   Price Breakdown
                 </Typography>
                 <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="Base Price" value={`₹${booking.priceBreakdown.serviceBasePrice || 0}`} />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="Surge Charge" value={`₹${booking.priceBreakdown.surgeCharge || 0}`} />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="Emergency Charge" value={`₹${booking.priceBreakdown.emergencyCharge || 0}`} />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="Platform Fee" value={`₹${booking.priceBreakdown.platformFee || 0}`} />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="GST" value={`₹${booking.priceBreakdown.gst || 0}`} />
-                  </Grid>
+                  {booking.service?.pricingRule?.isServiceBasePriceApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Base Price" value={`₹${booking.priceBreakdown.serviceBasePrice || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isSurgeEnabled && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Surge Charge" value={`₹${booking.priceBreakdown.surgeCharge || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isDistanceKmApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Distance Charge" value={`₹${booking.priceBreakdown.distanceCharge || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isWeekendApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Weekend Charge" value={`₹${booking.priceBreakdown.weekendCharge || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isPeakHourApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Peak Hour Charge" value={`₹${booking.priceBreakdown.peakHourCharge || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isEmergencyApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Emergency Charge" value={`₹${booking.priceBreakdown.emergencyCharge || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isPlatformFeeApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Platform Fee" value={`₹${booking.priceBreakdown.platformFee || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isGstApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="GST" value={`₹${booking.priceBreakdown.gst || 0}`} />
+                    </Grid>
+                  )}
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <InfoItem label="Total Amount" value={`₹${booking.totalAmount || 0}`} />
                   </Grid>

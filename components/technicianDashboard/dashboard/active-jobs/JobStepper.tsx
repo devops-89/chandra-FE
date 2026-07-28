@@ -2,11 +2,19 @@
 
 import { useAppSelector } from '@/redux/hooks';
 
-export default function JobStepper() {
-  const currentJob = useAppSelector((state) => state.activeJobs.currentJob);
-  const status = currentJob?.status || 'assigned';
+export default function JobStepper({ status: initialStatus }: { status?: string }) {
+  const status = initialStatus || 'assigned';
   const statusOrder = ['assigned', 'accepted', 'travelling', 'started', 'completed'];
-  const currentIndex = statusOrder.indexOf(status.toLowerCase());
+  let currentIndex = statusOrder.indexOf(status.toLowerCase());
+  
+  // fallback mapping if backend gives different statuses
+  if (currentIndex === -1) {
+    if (status.toLowerCase() === 'pending') currentIndex = 0;
+    if (status.toLowerCase() === 'in_progress') currentIndex = 3;
+    if (status.toLowerCase() === 'en_route') currentIndex = 2;
+  }
+  
+  if (currentIndex < 0) currentIndex = 0;
 
   const steps = [
     {

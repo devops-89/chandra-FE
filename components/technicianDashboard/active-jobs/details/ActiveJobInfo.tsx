@@ -6,8 +6,13 @@ import {
   DirectionsCar,
   Schedule,
 } from '@mui/icons-material';
+import { useJobContext } from '../JobContext';
 
 export default function ActiveJobInfo() {
+  const currentJob = useJobContext();
+
+  if (!currentJob) return null;
+
   return (
     <div
       className="
@@ -36,7 +41,7 @@ export default function ActiveJobInfo() {
           </p>
 
           <p className="font-semibold">
-            AC Deep Cleaning
+            {currentJob.serviceType}
           </p>
         </div>
       </div>
@@ -60,58 +65,62 @@ export default function ActiveJobInfo() {
           </p>
 
           <p className="font-semibold">
-            ₹2,500
+            ₹{currentJob.payout}
           </p>
         </div>
       </div>
 
-      <div
-        className="
-          flex
-          items-center
-          gap-4
-          p-5
-          rounded-2xl
-          border
-          border-slate-200
-        "
-      >
-        <Schedule className="text-emerald-500" />
+      {currentJob.duration ? (
+        <div
+          className="
+            flex
+            items-center
+            gap-4
+            p-5
+            rounded-2xl
+            border
+            border-slate-200
+          "
+        >
+          <Schedule className="text-emerald-500" />
 
-        <div>
-          <p className="text-slate-500 text-sm">
-            Duration
-          </p>
+          <div>
+            <p className="text-slate-500 text-sm">
+              Duration
+            </p>
 
-          <p className="font-semibold">
-            2 Hours
-          </p>
+            <p className="font-semibold">
+              {currentJob.duration}
+            </p>
+          </div>
         </div>
-      </div>
+      ) : null}
 
-      <div
-        className="
-          flex
-          items-center
-          gap-4
-          p-5
-          rounded-2xl
-          border
-          border-slate-200
-        "
-      >
-        <DirectionsCar className="text-emerald-500" />
+      {currentJob.distance ? (
+        <div
+          className="
+            flex
+            items-center
+            gap-4
+            p-5
+            rounded-2xl
+            border
+            border-slate-200
+          "
+        >
+          <DirectionsCar className="text-emerald-500" />
 
-        <div>
-          <p className="text-slate-500 text-sm">
-            Distance
-          </p>
+          <div>
+            <p className="text-slate-500 text-sm">
+              Distance
+            </p>
 
-          <p className="font-semibold">
-            2.4 Km Away
-          </p>
+            <p className="font-semibold">
+              {currentJob.distance}
+            </p>
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }

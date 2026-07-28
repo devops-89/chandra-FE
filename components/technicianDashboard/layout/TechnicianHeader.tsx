@@ -1,6 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { io, Socket } from 'socket.io-client';
+import { SERVER_ENDPOINTS } from '@/api/serverConstant';
+import { AuthControllers } from '@/api/authControllers';
 
 export interface TechnicianHeaderProps {
   userName?: string;
@@ -22,6 +25,46 @@ export default function TechnicianHeader({
   isSidebarOpen = false,
 }: TechnicianHeaderProps) {
   const [isOnline, setIsOnline] = useState(initialIsOnline);
+  const [popupNotification, setPopupNotification] = useState<{ open: boolean, message: string }>({ open: false, message: '' });
+
+  useEffect(() => {
+    let socket: Socket | null = null;
+    
+    const initSocket = async () => {
+      try {
+        const profileRes = await AuthControllers.getProfile();
+        if (profileRes?.data?.id) {
+          const socketUrl = SERVER_ENDPOINTS.USER_BASEURL.replace('/api', '');
+          socket = io(socketUrl, {
+            auth: { userId: profileRes.data.id },
+            transports: ['websocket', 'polling']
+          });
+
+          socket.on('new_booking', (booking) => {
+            setPopupNotification({ open: true, message: `New booking request received for ${booking?.serviceInfo?.name || 'a service'}!` });
+            
+            // Dispatch custom event to trigger a refetch in dashboard components
+            window.dispatchEvent(new Event('refresh_bookings'));
+            
+            // Auto close after 5 seconds
+            setTimeout(() => {
+              setPopupNotification(prev => ({ ...prev, open: false }));
+            }, 5000);
+          });
+        }
+      } catch (e) {
+        console.error('Socket initialization failed', e);
+      }
+    };
+    
+    initSocket();
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, []);
 
   const handleToggleOnline = () => {
     const newState = !isOnline;
@@ -79,18 +122,33 @@ export default function TechnicianHeader({
         </button>
 
         {/* Notifications & Profile */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 relative">
           {/* Notification Bell */}
           <button
             type="button"
             className="p-2 text-secondary cursor-pointer hover:bg-surface-container-high rounded-full transition-all relative"
+            onClick={() => setPopupNotification(prev => ({ ...prev, open: false }))}
           >
             <span className="material-symbols-outlined text-xl">notifications</span>
-            {unreadNotifications > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full" />
+            {(unreadNotifications > 0 || popupNotification.open) && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full animate-pulse" />
             )}
           </button>
 
+          {/* Realtime Notification Popup */}
+          {popupNotification.open && (
+            <div className="absolute top-full right-0 mt-3 w-72 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 z-50 transition-all duration-300 transform origin-top-right">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-blue-50 rounded-full text-blue-600 shrink-0">
+                  <span className="material-symbols-outlined text-sm">notifications_active</span>
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">New Notification</h4>
+                  <p className="text-xs font-medium text-slate-500 mt-1 leading-relaxed">{popupNotification.message}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>

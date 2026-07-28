@@ -14,11 +14,11 @@ const inputBase = `
 interface Props {
   data: {
     serviceBasePrice:        string;
-    perHourRate:     string;
-    perKmRate:       string;
+    isServiceBasePriceApplied: boolean;
     platformFee:     string;
+    isPlatformFeeApplied: boolean;
     gst:             string;
-    emergencyCharge: string;
+    isGstApplied:    boolean;
   };
   errors:   FormErrors;
   onChange: (field: keyof FormData, value: FormData[keyof FormData]) => void;
@@ -35,6 +35,9 @@ function PriceField({
   value,
   error,
   onChange,
+  toggleLabel,
+  isToggled,
+  onToggle,
 }: {
   id:          string;
   label:       string;
@@ -45,15 +48,34 @@ function PriceField({
   value:       string;
   error?:      string;
   onChange:    (v: string) => void;
+  toggleLabel?: string;
+  isToggled?:   boolean;
+  onToggle?:    (v: boolean) => void;
 }) {
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-slate-700">
-        {label}{' '}
-        {required
-          ? <span className="text-red-500">*</span>
-          : <span className="text-xs font-normal text-slate-400">(optional)</span>}
-      </label>
+      <div className="flex justify-between items-center mb-1.5">
+        <label htmlFor={id} className="block text-sm font-medium text-slate-700">
+          {label}{' '}
+          {required
+            ? <span className="text-red-500">*</span>
+            : <span className="text-xs font-normal text-slate-400">(optional)</span>}
+        </label>
+        {onToggle && (
+          <label className="flex items-center cursor-pointer">
+            <div className="relative">
+              <input 
+                type="checkbox" 
+                className="sr-only peer"
+                checked={isToggled}
+                onChange={(e) => onToggle(e.target.checked)}
+              />
+              <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+            </div>
+            {toggleLabel && <span className="ml-2 text-xs font-medium text-slate-600">{toggleLabel}</span>}
+          </label>
+        )}
+      </div>
       <div className="relative">
         {prefix && (
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-medium text-slate-400">
@@ -95,7 +117,7 @@ export default function PricingStep({ data, errors, onChange }: Props) {
         <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
           Core Fares
         </h3>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-1">
           <PriceField
             id="serviceBasePrice"
             label="Service Base Price"
@@ -105,26 +127,9 @@ export default function PricingStep({ data, errors, onChange }: Props) {
             value={data.serviceBasePrice}
             error={errors.serviceBasePrice}
             onChange={(v) => onChange('serviceBasePrice', v)}
-          />
-          <PriceField
-            id="perHourRate"
-            label="Per Hour Rate"
-            prefix="₹"
-            suffix="/hr"
-            placeholder="0"
-            value={data.perHourRate}
-            error={errors.perHourRate}
-            onChange={(v) => onChange('perHourRate', v)}
-          />
-          <PriceField
-            id="perKmRate"
-            label="Per KM Rate"
-            prefix="₹"
-            suffix="/km"
-            placeholder="0"
-            value={data.perKmRate}
-            error={errors.perKmRate}
-            onChange={(v) => onChange('perKmRate', v)}
+            toggleLabel="Apply?"
+            isToggled={data.isServiceBasePriceApplied}
+            onToggle={(v) => onChange('isServiceBasePriceApplied', v as any)}
           />
         </div>
       </div>
@@ -134,7 +139,7 @@ export default function PricingStep({ data, errors, onChange }: Props) {
         <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
           Platform Charges
         </h3>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           <PriceField
             id="platformFee"
             label="Platform Fee"
@@ -143,6 +148,9 @@ export default function PricingStep({ data, errors, onChange }: Props) {
             value={data.platformFee}
             error={errors.platformFee}
             onChange={(v) => onChange('platformFee', v)}
+            toggleLabel="Apply?"
+            isToggled={data.isPlatformFeeApplied}
+            onToggle={(v) => onChange('isPlatformFeeApplied', v as any)}
           />
           <PriceField
             id="gst"
@@ -152,15 +160,9 @@ export default function PricingStep({ data, errors, onChange }: Props) {
             value={data.gst}
             error={errors.gst}
             onChange={(v) => onChange('gst', v)}
-          />
-          <PriceField
-            id="emergencyCharge"
-            label="Emergency Charge"
-            prefix="₹"
-            placeholder="0"
-            value={data.emergencyCharge}
-            error={errors.emergencyCharge}
-            onChange={(v) => onChange('emergencyCharge', v)}
+            toggleLabel="Apply?"
+            isToggled={data.isGstApplied}
+            onToggle={(v) => onChange('isGstApplied', v as any)}
           />
         </div>
       </div>
@@ -170,12 +172,9 @@ export default function PricingStep({ data, errors, onChange }: Props) {
         <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-800 space-y-1">
           <p className="font-semibold text-emerald-900">Pricing Summary</p>
           <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2 mt-2 text-emerald-700">
-            <span>Service Base Price: <strong>₹{data.serviceBasePrice}</strong></span>
-            {data.perHourRate && <span>Per Hour: <strong>₹{data.perHourRate}/hr</strong></span>}
-            {data.perKmRate   && <span>Per KM: <strong>₹{data.perKmRate}/km</strong></span>}
-            {data.platformFee && <span>Platform Fee: <strong>₹{data.platformFee}</strong></span>}
-            {data.gst         && <span>GST: <strong>{data.gst}%</strong></span>}
-            {data.emergencyCharge && <span>Emergency: <strong>₹{data.emergencyCharge}</strong></span>}
+            <span className={data.isServiceBasePriceApplied ? '' : 'line-through opacity-50'}>Service Base Price: <strong>₹{data.serviceBasePrice}</strong></span>
+            {data.platformFee && <span className={data.isPlatformFeeApplied ? '' : 'line-through opacity-50'}>Platform Fee: <strong>₹{data.platformFee}</strong></span>}
+            {data.gst         && <span className={data.isGstApplied ? '' : 'line-through opacity-50'}>GST: <strong>{data.gst}%</strong></span>}
           </div>
         </div>
       )}

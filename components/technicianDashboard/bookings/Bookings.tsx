@@ -1,12 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BookingsHeader from './header/BookingsHeader';
 import NearbyJobsContent from '../jobs/NearbyJobsContent';
 import ActiveJobsContent from '../active-jobs/ActiveJobsContent';
 
 export default function Bookings() {
   const [activeTab, setActiveTab] = useState<'new' | 'active'>('new');
+
+  useEffect(() => {
+    const savedTab = localStorage.getItem('technicianBookingsTab');
+    if (savedTab === 'new' || savedTab === 'active') {
+      setActiveTab(savedTab);
+    }
+  }, []);
+
+  const handleTabChange = (tab: 'new' | 'active') => {
+    setActiveTab(tab);
+    localStorage.setItem('technicianBookingsTab', tab);
+  };
 
   return (
     <div className="space-y-6">
@@ -20,7 +32,7 @@ export default function Bookings() {
               ? 'text-emerald-600'
               : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
           }`}
-          onClick={() => setActiveTab('new')}
+          onClick={() => handleTabChange('new')}
         >
           New Requests
           {activeTab === 'new' && (
@@ -33,7 +45,7 @@ export default function Bookings() {
               ? 'text-emerald-600'
               : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
           }`}
-          onClick={() => setActiveTab('active')}
+          onClick={() => handleTabChange('active')}
         >
           Active Bookings
           {activeTab === 'active' && (

@@ -1,15 +1,19 @@
 'use client';
 
-import { useAppSelector } from '@/redux/hooks';
-
+import { useJobContext } from '../JobContext';
 import JobStepper from './JobStepper';
 
 export default function ProgressTracker() {
-  const currentJob = useAppSelector((state) => state.activeJobs.currentJob);
-  const status = currentJob?.status || 'assigned';
-  const statusOrder = ['assigned', 'accepted', 'travelling', 'started', 'completed'];
+  const currentJob = useJobContext();
+  const status = currentJob?.status || 'accepted';
+  const statusOrder = ['accepted', 'enroute', 'arrived', 'ongoing', 'completed'];
   const currentIndex = statusOrder.indexOf(status.toLowerCase());
-  const stepNumber = currentIndex >= 0 ? currentIndex + 1 : 1;
+  const isCancelled = status.toLowerCase() === 'cancelled';
+  
+  let stepNumber = currentIndex >= 0 ? currentIndex + 1 : 1;
+  if (isCancelled) {
+    stepNumber = 0;
+  }
 
   return (
     <div className="mt-8">
@@ -19,17 +23,16 @@ export default function ProgressTracker() {
         </h3>
 
         <span
-          className="
-            bg-emerald-100
-            text-emerald-700
+          className={`
             px-3
             py-1
             rounded-full
             text-sm
             font-medium
-          "
+            ${isCancelled ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}
+          `}
         >
-          Step {stepNumber} of 5
+          {isCancelled ? 'Cancelled' : `Step ${stepNumber} of 5`}
         </span>
       </div>
 

@@ -1,17 +1,18 @@
 export const OVERVIEW_STATS = [
   {
-    id: 'available-jobs',
-    icon: 'search',
-    title: 'Available Jobs',
-    value: '12',
-    badge: '+2 new',
+    id: 'available-services',
+    icon: 'assignment',
+    title: 'Available Services',
+    value: '0',
+    color: 'emerald',
   },
 
   {
-    id: 'active-jobs',
-    icon: 'pending_actions',
-    title: 'Active Jobs',
-    value: '2',
+    id: 'active-services',
+    icon: 'engineering',
+    title: 'Active Services',
+    value: '0',
+    color: 'blue',
   },
 
   {

@@ -1,6 +1,6 @@
 'use client';
 
-
+import Link from 'next/link';
 import { Avatar } from '@mui/material';
 import { useAppSelector } from '@/redux/hooks';
 
@@ -10,6 +10,7 @@ export default function ProfileHero() {
   const technician = useAppSelector(
     (state) => state.technicianProfile.profile
   );
+  
   return (
     <div
       className="
@@ -77,7 +78,8 @@ export default function ProfileHero() {
           </p>
         </div>
 
-        <button
+        <Link
+          href="/dashboard/technician/profile/edit"
           className="
             px-6
             py-3
@@ -88,10 +90,11 @@ export default function ProfileHero() {
             cursor-pointer
             hover:bg-emerald-700
             transition-all
+            inline-block
           "
         >
           Edit Profile
-        </button>
+        </Link>
       </div>
     </div>
   );

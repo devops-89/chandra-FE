@@ -3,17 +3,21 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
-import { useAppSelector } from '@/redux/hooks';
-
+import { JobContext } from '../JobContext';
 import QuickActions from '../actions/QuickActions';
 import ProgressTracker from '../tracker/ProgressTracker';
 import ActiveJobInfo from './ActiveJobInfo';
 import ActiveJobStatus from './ActiveJobStatus';
 import CustomerDetails from './CustomerDetails';
+import type { ActiveJob } from '@/types/technicianDashboard/activeJobs.types';
 
-export default function ActiveJobCard() {
-  const currentJob = useAppSelector((state) => state.activeJobs.currentJob);
-
+export default function ActiveJobCard({ 
+  currentJob, 
+  onStatusUpdate 
+}: { 
+  currentJob?: ActiveJob | null;
+  onStatusUpdate?: (status: string) => void;
+}) {
   if (!currentJob) {
     return (
       <motion.div
@@ -45,19 +49,21 @@ export default function ActiveJobCard() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="
-        bg-white
-        rounded-3xl
-        border
-        border-slate-200
-        shadow-sm
-        p-6
-        lg:p-8
-      "
-    >
+    <JobContext.Provider value={currentJob}>
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="
+          bg-white
+          rounded-3xl
+          border
+          border-slate-200
+          shadow-sm
+          p-6
+          lg:p-8
+          w-full
+        "
+      >
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between h-full gap-6">
         <div>
           <div className="flex items-center gap-3 mb-4 flex-wrap">
@@ -75,7 +81,7 @@ export default function ActiveJobCard() {
               {currentJob.serviceType}
             </span>
 
-            <ActiveJobStatus />
+            <ActiveJobStatus onStatusUpdate={onStatusUpdate} />
           </div>
 
           <h2
@@ -88,29 +94,13 @@ export default function ActiveJobCard() {
             {currentJob.title}
           </h2>
         </div>
-
-        <div className="text-left lg:text-right">
-          <p className="text-slate-500">
-            ETA
-          </p>
-
-          <h3
-            className="
-              text-3xl
-              font-bold
-              text-emerald-600
-            "
-          >
-            {currentJob.status === 'completed' ? 'Done' : currentJob.eta}
-          </h3>
-        </div>
       </div>
+        <CustomerDetails />
 
-      <CustomerDetails />
-
-      <ActiveJobInfo />
-      <ProgressTracker />
-      <QuickActions />
-    </motion.div>
+        <ActiveJobInfo />
+        <ProgressTracker />
+        <QuickActions onStatusUpdate={onStatusUpdate} />
+      </motion.div>
+    </JobContext.Provider>
   );
 }

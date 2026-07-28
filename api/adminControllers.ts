@@ -22,6 +22,11 @@ export const AdminControllers = {
     return response.data.data.data;
   },
 
+  getPayments: async (page = 1, limit = 10): Promise<any> => {
+    const response = await userSecuredApi.get(`/bookings/payments/all?page=${page}&limit=${limit}&paymentType=TECHNICIAN_PAYOUT&status=SUCCESS`);
+    return response.data;
+  },
+
   getAdminComplaints: async (status?: string): Promise<{ complaints: AdminComplaintListItem[]; pagination: ComplaintPagination }> => {
     let url = '/bookings/complaints';
     if (status && status !== 'All Status') {
@@ -133,5 +138,15 @@ export const AdminControllers = {
   updateReviewStatus: async (bookingId: number, reviewStatus: string) => {
     const response = await userSecuredApi.patch(`/bookings/admin/review/${bookingId}`, { reviewStatus });
     return response.data;
+  },
+
+  initiateManualPayout: async (payload: { amount: number, bookingId: number, technicianId: number }) => {
+    const response = await userSecuredApi.post('/bookings/admin/payout/manual', payload);
+    return response.data;
+  },
+
+  getDashboardStats: async () => {
+    const response = await userSecuredApi.get('/users/admin/dashboard-stats');
+    return response.data?.data || null;
   },
 };

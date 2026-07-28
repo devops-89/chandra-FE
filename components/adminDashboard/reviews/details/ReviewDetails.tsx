@@ -4,7 +4,17 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CircularProgress } from '@mui/material';
 import { ReviewControllers } from '@/api/reviewControllers';
-import { ReviewData } from '../list/ReviewsTable';
+export interface ReviewData {
+  id: string;
+  reviewerName: string;
+  reviewForName: string;
+  serviceName: string;
+  rating: number;
+  comment: string;
+  date: string;
+  status: 'Published' | 'Hidden';
+  type: 'Customer' | 'Technician';
+}
 
 const ReviewDetails = ({ id }: { id: string }) => {
   const router = useRouter();

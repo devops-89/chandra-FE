@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
 
 import AvailabilityCard from './availability/AvailabilityCard';
@@ -14,10 +14,19 @@ import ProfessionalInfoCard from './professional-info/ProfessionalInfoCard';
 
 export default function ProfileContent() {
   const dispatch = useAppDispatch();
+  const isLoading = useAppSelector((state) => state.technicianProfile.isLoading);
 
   useEffect(() => {
     dispatch(fetchTechnicianProfile());
   }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

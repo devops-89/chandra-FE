@@ -29,7 +29,8 @@ export interface TechnicianProfile {
 
   services: { service: { name: string } }[];
   brandExpertise: { brandName: string }[];
-  locations: { city: string; state: string; pincode: string; fullAddress: string }[];
+  locations: { city: string; state: string; pincode: string; fullAddress: string; latitude?: string; longitude?: string; }[];
+  payoutAccounts?: { accountType?: string; upiId?: string; accountHolderName?: string; bankName?: string; accountNumber?: string; ifscCode?: string; }[];
 }
 
 export interface TechnicianUser {

@@ -2,6 +2,7 @@ import type { ActiveJob } from '@/types/technicianDashboard/activeJobs.types';
 
 export const MOCK_ACTIVE_JOB: ActiveJob = {
   id: 'JOB-1001',
+  rawId: 1001,
 
   serviceType: 'AC Deep Cleaning',
 
