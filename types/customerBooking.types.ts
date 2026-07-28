@@ -18,6 +18,7 @@ export interface BookingTechnician {
 }
 
 export interface CustomerBooking {
+  id?: number;        // raw backend field — normalized to bookingId by the controller
   bookingId: number;
   status: string;
   paymentStatus: string;

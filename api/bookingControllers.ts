@@ -69,6 +69,11 @@ export const BookingControllers = {
 
   getCustomerBookings: async (): Promise<CustomerBooking[]> => {
     const response = await userSecuredApi.get<CustomerBookingsResponse>('/bookings/all');
-    return response.data.data.data;
+    const raw = response.data.data.data;
+    // Normalize: backend sends `id` but our type uses `bookingId`
+    return raw.map((item: CustomerBooking & { id?: number }) => ({
+      ...item,
+      bookingId: item.bookingId ?? item.id ?? 0,
+    }));
   },
 };

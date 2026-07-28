@@ -1,11 +1,11 @@
 'use client';
 
-import { AlertCircle, CheckCircle2, Loader2, ShieldCheck, User } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { AlertCircle, ShieldCheck, User } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 import { DashboardCard } from '@/components/customerDashboard/shared';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerProfile, updateCustomerProfile } from '@/redux/slices/customerProfileSlice';
+import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
 
 function formatDate(dateStr?: string): string {
   if (!dateStr) return '—';
@@ -45,21 +45,9 @@ export default function ProfileForm() {
     (state) => state.customerProfile
   );
 
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    emergencyContact: '',
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [updateSuccess, setUpdateSuccess] = useState(false);
-  const [updateError, setUpdateError] = useState<string | null>(null);
-
   const hasFetched = useRef(false);
 
-  // Fetch profile on mount (only once)
+  // Fetch profile on mount (only once if missing)
   useEffect(() => {
     if (!hasFetched.current && !profile) {
       hasFetched.current = true;
@@ -67,57 +55,12 @@ export default function ProfileForm() {
     }
   }, [dispatch, profile]);
 
-  // Update form when profile data loads
-  useEffect(() => {
-    if (profile) {
-      setFormData({
-        firstName: profile.firstName ?? '',
-        lastName: profile.lastName ?? '',
-        email: profile.email ?? '',
-        phone: profile.phone ?? '',
-        emergencyContact: profile.emergencyContact ?? '',
-      });
-    }
-  }, [profile]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    setUpdateError(null);
-    setUpdateSuccess(false);
-    setIsSubmitting(true);
-
-    try {
-      await dispatch(
-        updateCustomerProfile({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phone: formData.phone,
-          emergencyContact: formData.emergencyContact || null,
-        })
-      ).unwrap();
-
-      setUpdateSuccess(true);
-      setTimeout(() => {
-        setUpdateSuccess(false);
-      }, 4000);
-    } catch (err) {
-      setUpdateError(
-        typeof err === 'string'
-          ? err
-          : 'Failed to update profile.'
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  // Derived field values directly from Redux state (no internal state needed for view-only component)
+  const firstName = profile?.firstName ?? '';
+  const lastName = profile?.lastName ?? '';
+  const email = profile?.email ?? '';
+  const phone = profile?.phone ?? '';
+  const emergencyContact = profile?.emergencyContact ?? '';
 
   // ── Skeleton Loader ──
   if (isLoading && !profile) {
@@ -162,25 +105,15 @@ export default function ProfileForm() {
     );
   }
 
-  const inputClasses =
-    'mt-1.5 block w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all bg-white';
   const readOnlyClasses =
     'mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-100/70 px-4 py-2.5 text-sm text-slate-600 cursor-not-allowed select-none font-medium';
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* ── Top Feedback Banner ── */}
-      {updateSuccess && (
-        <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-700 font-medium flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          <span>Profile updated successfully!</span>
-        </div>
-      )}
-
-      {(updateError || error) && (
+    <div className="space-y-6">
+      {error && (
         <div className="rounded-2xl bg-red-50 border border-red-200 p-4 text-sm text-red-600 font-medium flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
-          <span>{updateError || error}</span>
+          <span>{error}</span>
         </div>
       )}
 
@@ -195,7 +128,7 @@ export default function ProfileForm() {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-slate-950">Personal Information</h2>
-                <p className="text-xs text-slate-500">Update your personal and contact details.</p>
+                <p className="text-xs text-slate-500">Your account and contact details.</p>
               </div>
             </div>
 
@@ -206,61 +139,41 @@ export default function ProfileForm() {
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
                     First Name
                   </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="Enter first name"
-                    className={inputClasses}
-                  />
+                  <div className={readOnlyClasses}>
+                    {firstName || '—'}
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
                     Last Name
                   </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Enter last name"
-                    className={inputClasses}
-                  />
+                  <div className={readOnlyClasses}>
+                    {lastName || <span className="text-slate-400 font-normal italic">Not Provided</span>}
+                  </div>
                 </div>
               </div>
 
               {/* Row 2: Email & Phone */}
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
+                  <label className="flex text-xs font-semibold uppercase tracking-wider text-slate-500 items-center justify-between">
                     <span>Email Address</span>
                     <span className="text-[10px] lowercase text-slate-400 font-normal">(Read-only)</span>
                   </label>
-                  <input
-                    type="email"
-                    name="email"
-                    readOnly
-                    value={formData.email}
-                    placeholder="email@example.com"
-                    className={readOnlyClasses}
-                  />
+                  <div className={readOnlyClasses}>
+                    {email || <span className="text-slate-400 font-normal italic">Not Provided</span>}
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
+                  <label className="flex text-xs font-semibold uppercase tracking-wider text-slate-500 items-center justify-between">
                     <span>Phone Number</span>
                     <span className="text-[10px] lowercase text-slate-400 font-normal">(Read-only)</span>
                   </label>
-                  <input
-                    type="text"
-                    name="phone"
-                    readOnly
-                    value={formData.phone}
-                    placeholder="+91 0000000000"
-                    className={readOnlyClasses}
-                  />
+                  <div className={readOnlyClasses}>
+                    {phone || <span className="text-slate-400 font-normal italic">Not Provided</span>}
+                  </div>
                 </div>
               </div>
 
@@ -269,34 +182,11 @@ export default function ProfileForm() {
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
                   Emergency Contact
                 </label>
-                <input
-                  type="text"
-                  name="emergencyContact"
-                  value={formData.emergencyContact}
-                  onChange={handleChange}
-                  placeholder="e.g. +91 9876543210 (Relative / Guardian)"
-                  className={inputClasses}
-                />
+                <div className={readOnlyClasses}>
+                  {emergencyContact || <span className="text-slate-400 font-normal italic">Not Provided</span>}
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* Action Footer */}
-          <div className="pt-6 mt-8 border-t border-slate-100 flex justify-end">
-            <button
-              type="submit"
-              disabled={isSubmitting || isLoading}
-              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all cursor-pointer"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                'Save Changes'
-              )}
-            </button>
           </div>
         </DashboardCard>
 
@@ -357,6 +247,6 @@ export default function ProfileForm() {
           </div>
         </DashboardCard>
       </div>
-    </form>
+    </div>
   );
 }

@@ -5,15 +5,19 @@ import { useEffect } from 'react';
 import AddAddressButton from '@/components/customerDashboard/addresses/AddAddressButton';
 import AddressList from '@/components/customerDashboard/addresses/AddressList';
 import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayout';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
 
 export default function AddressesPage() {
   const dispatch = useAppDispatch();
+  const addresses = useAppSelector((state) => state.customerProfile.profile?.addresses);
 
   useEffect(() => {
-    dispatch(fetchCustomerAddresses());
-  }, [dispatch]);
+    // Only fetch if no addresses are loaded yet — avoids duplicate API call.
+    if (!addresses || addresses.length === 0) {
+      dispatch(fetchCustomerAddresses());
+    }
+  }, [dispatch, addresses]);
 
   return (
     <DashboardLayout>

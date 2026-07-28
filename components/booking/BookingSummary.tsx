@@ -93,7 +93,7 @@ export function BookingSummaryContent({
       : null;
 
   const currentCustomerName = profile
-    ? `${profile.firstName} ${profile.lastName}`.trim()
+    ? `${profile.firstName ?? ''} ${profile.lastName ?? ''}`.trim()
     : `${authUser?.firstName ?? ''} ${authUser?.lastName ?? ''}`.trim() || name;
   const currentCustomerPhone = profile?.phone ?? authUser?.phone ?? phone;
 

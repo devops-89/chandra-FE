@@ -141,7 +141,7 @@ export default function UnifiedBookingPage({
 
   // ── Step 3: Personal details (auto-filled from logged-in profile) ──────────
   const profileFullName = profile
-    ? `${profile.firstName} ${profile.lastName}`.trim()
+    ? `${profile.firstName ?? ''} ${profile.lastName ?? ''}`.trim()
     : `${authUser?.firstName ?? ''} ${authUser?.lastName ?? ''}`.trim();
   const profilePhone = profile?.phone ?? authUser?.phone ?? '';
 
