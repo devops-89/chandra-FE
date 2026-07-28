@@ -9,26 +9,30 @@ import type {
 
 interface CustomerBookingsState {
   bookings: CustomerBooking[];
+  pagination: any;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: CustomerBookingsState = {
   bookings: [],
+  pagination: null,
   isLoading: false,
   error: null,
 };
 
 export const fetchCustomerBookings = createAsyncThunk<
-  CustomerBooking[],
-  void,
+  { bookings: CustomerBooking[]; pagination: any },
+  { page?: number; limit?: number } | undefined,
   { rejectValue: string }
 >(
   'customerBookings/fetch',
 
-  async (_, { rejectWithValue }) => {
+  async (params, { rejectWithValue }) => {
     try {
-      return await BookingControllers.getCustomerBookings();
+      const page = params?.page || 1;
+      const limit = params?.limit || 10;
+      return await BookingControllers.getCustomerBookings(page, limit);
     } catch (err) {
       return rejectWithValue(
         err instanceof Error
@@ -81,7 +85,8 @@ const customerBookingsSlice = createSlice({
 
       .addCase(fetchCustomerBookings.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.bookings = action.payload;
+        state.bookings = action.payload.bookings;
+        state.pagination = action.payload.pagination;
       })
 
       .addCase(fetchCustomerBookings.rejected, (state, action) => {

@@ -73,5 +73,11 @@ export interface GetCustomerAddressesResponse {
     success: boolean;
     message: string;
     data: CustomerAddress[];
+    pagination?: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
   };
 }

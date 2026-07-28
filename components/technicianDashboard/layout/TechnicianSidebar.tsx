@@ -199,7 +199,7 @@ const SidebarContent = ({ onLinkClick }: { onLinkClick?: () => void }) => {
         >
           <MenuItem 
             component={Link}
-            href="/dashboard/technician/profile"
+            href="/technician/profile"
             onClick={handleProfileClose}
             sx={{ 
               color: '#334155',

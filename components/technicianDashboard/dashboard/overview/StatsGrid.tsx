@@ -80,25 +80,25 @@ export default function StatsGrid() {
       icon: 'search',
       title: 'Available Bookings',
       value: String(apiStats.availableServices),
-      onClick: () => router.push('/dashboard/technician/nearby-jobs'),
+      onClick: () => router.push('/technician/dashboard'),
     },
     {
       icon: 'pending_actions',
       title: 'Active Bookings',
       value: String(apiStats.activeServices),
-      onClick: () => router.push('/dashboard/technician/bookings'),
+      onClick: () => router.push('/technician/bookings'),
     },
     {
       icon: 'payments',
       title: "This Week's Earnings",
       value: `₹${earnings.todayEarnings.toLocaleString('en-IN')}`,
-      onClick: () => router.push('/dashboard/technician/earnings'),
+      onClick: () => router.push('/technician/earnings'),
     },
     {
       icon: 'account_balance_wallet',
       title: 'Total Earnings',
       value: `₹${earnings.walletBalance.toLocaleString('en-IN')}`,
-      onClick: () => router.push('/dashboard/technician/earnings'),
+      onClick: () => router.push('/technician/earnings'),
     },
   ];
 

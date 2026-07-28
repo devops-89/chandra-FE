@@ -1,6 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Paper, 
+  TablePagination 
+} from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchCustomerBookings } from '@/redux/slices/customerBookingSlice';
@@ -9,9 +19,12 @@ import BookingRow from './BookingRow';
 
 export default function BookingTable() {
   const dispatch = useAppDispatch();
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
 
   const {
     bookings,
+    pagination,
     isLoading,
     error,
   } = useAppSelector(
@@ -19,10 +32,10 @@ export default function BookingTable() {
   );
 
   useEffect(() => {
-    dispatch(fetchCustomerBookings());
-  }, [dispatch]);
+    dispatch(fetchCustomerBookings({ page, limit: itemsPerPage }));
+  }, [dispatch, page, itemsPerPage]);
 
-  if (isLoading) {
+  if (isLoading && bookings.length === 0) {
     return (
       <div className="flex justify-center py-12">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent" />
@@ -52,53 +65,73 @@ export default function BookingTable() {
     );
   }
 
+  const totalItems = pagination?.total || 0;
+
   return (
-    <div
-      className="
-        overflow-x-auto
-        rounded-3xl
-        bg-white
-        shadow-sm
-      "
-    >
-      <table className="w-full min-width-720px">
-        <thead>
-          <tr className="bg-emerald-600">
-            <th className="px-4 py-4 text-left text-white">
-              Booking ID
-            </th>
+    <div className="flex flex-col gap-6">
+      <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 4, boxShadow: 'none', border: '1px solid #e2e8f0' }}>
+        <TableContainer>
+          <Table sx={{ minWidth: 720 }}>
+            <TableHead sx={{ bgcolor: '#f8fafc' }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Booking ID
+                </TableCell>
 
-            <th className="px-4 py-4 text-left text-white">
-              Service
-            </th>
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Technician
+                </TableCell>
 
-            <th className="px-4 py-4 text-left text-white">
-              Date
-            </th>
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Service
+                </TableCell>
 
-            <th className="px-4 py-4 text-left text-white">
-              Amount
-            </th>
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Date
+                </TableCell>
 
-            <th className="px-4 py-4 text-left text-white">
-              Status
-            </th>
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Amount
+                </TableCell>
 
-            <th className="px-4 py-4 text-left text-white">
-              Action
-            </th>
-          </tr>
-        </thead>
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Status
+                </TableCell>
 
-        <tbody className="text-slate-500">
-          {bookings.map((booking) => (
-            <BookingRow
-              key={booking.bookingId}
-              booking={booking}
-            />
-          ))}
-        </tbody>
-      </table>
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }} align="right">
+                  Action
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+          <TableBody>
+            {bookings.map((booking) => (
+              <BookingRow
+                key={booking.id || booking.bookingId}
+                booking={booking}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {totalItems > 0 && (
+        <TablePagination
+          component="div"
+          count={totalItems}
+          page={page - 1}
+          onPageChange={(_, newPage) => setPage(newPage + 1)}
+          rowsPerPage={itemsPerPage}
+          rowsPerPageOptions={[10]}
+          sx={{
+            borderTop: '1px solid #f1f5f9',
+            '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
+              margin: 0,
+            }
+          }}
+        />
+      )}
+    </Paper>
     </div>
   );
 }

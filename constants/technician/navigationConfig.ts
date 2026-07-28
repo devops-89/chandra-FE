@@ -10,21 +10,21 @@ export const technicianNavigationConfig: NavigationItem[] = [
   {
     id: 'dashboard',
     label: 'Dashboard',
-    href: '/dashboard/technician',
+    href: '/technician/dashboard',
     icon: 'dashboard',
     section: 'main',
   },
   {
     id: 'bookings',
     label: 'Bookings',
-    href: '/dashboard/technician/bookings',
+    href: '/technician/bookings',
     icon: 'location_on',
     section: 'main',
   },
   {
     id: 'earnings',
     label: 'Earnings',
-    href: '/dashboard/technician/earnings',
+    href: '/technician/earnings',
     icon: 'payments',
     section: 'main',
   },
@@ -32,7 +32,7 @@ export const technicianNavigationConfig: NavigationItem[] = [
   {
     id: 'support',
     label: 'Get Support',
-    href: '/dashboard/technician/support',
+    href: '/technician/support',
     icon: 'help',
     section: 'main',
   },

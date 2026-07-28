@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import RevenueCards from "./RevenueCards";
 import { AdminControllers } from "@/api/adminControllers";
-import { CircularProgress, Box } from "@mui/material";
+import { Box } from "@mui/material";
+import PageLoader from "@/components/adminDashboard/shared/PageLoader";
 
 const FinanceOverview = () => {
   const [stats, setStats] = useState<any>(null);
@@ -24,11 +25,7 @@ const FinanceOverview = () => {
   }, []);
 
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-        <CircularProgress size={30} sx={{ color: '#059669' }} />
-      </Box>
-    );
+    return <PageLoader />;
   }
 
   const data = stats || {};
@@ -38,7 +35,7 @@ const FinanceOverview = () => {
       <RevenueCards title="Total Revenue" value={`₹${data.totalRevenue?.toLocaleString('en-IN') || 0}`} />
       <RevenueCards title="Technician Payouts" value={`₹${data.totalTechnicianPayout?.toLocaleString('en-IN') || 0}`} />
       <RevenueCards title="Pending Transactions" value={`${data.pendingTransactionCount?.toLocaleString('en-IN') || 0}`} />
-      <RevenueCards title="Total Transactions" value={`${data.successTransactionCount?.toLocaleString('en-IN') || 0}`} />
+      <RevenueCards title="Successful Payouts" value={`${data.successTechnicianPayoutCount?.toLocaleString('en-IN') || 0}`} />
     </div>
   );
 };

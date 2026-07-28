@@ -8,7 +8,8 @@ export default function BankDetailsCard() {
     (state) => state.technicianProfile.profile
   );
 
-  const profile = technician?.technicianProfile;
+  const payoutAccount = technician?.payoutAccounts?.find(acc => acc.accountType === 'BANK_ACCOUNT');
+
   return (
     <div
       className="
@@ -36,8 +37,8 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            {profile
-            ? `${profile.accountHolderName}`
+            {payoutAccount
+            ? `${payoutAccount.accountHolderName}`
             : 'Loading...'}
           </p>
         </div>
@@ -48,8 +49,8 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            {profile
-            ? `${profile.accountNumber}`
+            {payoutAccount
+            ? `${payoutAccount.accountNumber}`
             : 'Loading...'}
           </p>
         </div>
@@ -60,8 +61,8 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            {profile
-            ? `${profile.ifscCode}`
+            {payoutAccount
+            ? `${payoutAccount.ifscCode}`
             : 'Loading...'}
           </p>
         </div>
@@ -71,8 +72,8 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            {profile
-            ? `${profile.bankName}`
+            {payoutAccount
+            ? `${payoutAccount.bankName}`
             : 'Loading...'}
           </p>
         </div>

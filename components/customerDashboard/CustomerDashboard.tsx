@@ -1,26 +1,69 @@
-import ActiveBookingCard from "@/components/customerDashboard/activeBooking/ActiveBookingCard";
-import FavoriteTechnicians from "@/components/customerDashboard/favoriteTechnicians/FavoriteTechnicians";
-import RecentInvoices from "@/components/customerDashboard/invoices/RecentInvoices";
-import QuickRebook from "@/components/customerDashboard/quickRebook/QuickRebook";
-import RecentBookings from "@/components/customerDashboard/recentBookings/RecentBookings";
-import LatestReview from "@/components/customerDashboard/reviews/LatestReview";
+'use client';
+
+import { Box, CircularProgress, Typography } from '@mui/material';
+import { useEffect } from 'react';
+import HeroBookingCard from '@/components/customerDashboard/overview/HeroBookingCard';
+import ActiveBookingCard from '@/components/customerDashboard/activeBooking/ActiveBookingCard';
+import ProfileSummaryWidget from '@/components/customerDashboard/profile/ProfileSummaryWidget';
+import SavedAddressesWidget from '@/components/customerDashboard/addresses/SavedAddressesWidget';
+import ServicesWidget from '@/components/customerDashboard/services/ServicesWidget';
+
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { fetchCustomerDashboardStats } from '@/redux/slices/customerDashboardSlice';
+import { fetchCustomerProfile, fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
+import { fetchServices } from '@/redux/slices/servicesSlice';
+import { useActiveBooking } from "@/hooks/useActiveBooking";
 
 export default function CustomerDashboard() {
-  return (
-    <div className="grid grid-cols-1 gap-gutter lg:grid-cols-3">
-      {/* Left Column: Active Booking & Recent History */}
-      <div className="space-y-12 lg:col-span-2">
-        <ActiveBookingCard />
-        <RecentBookings />
-      </div>
+  const dispatch = useAppDispatch();
+  
+  useEffect(() => {
+    dispatch(fetchCustomerDashboardStats());
+    dispatch(fetchCustomerProfile());
+    dispatch(fetchCustomerAddresses());
+    dispatch(fetchServices({ status: true }));
+  }, [dispatch]);
 
-      {/* Right Column: Sidebar Widgets */}
-      <div className="space-y-12">
-        <FavoriteTechnicians />
-        <QuickRebook />
-        <RecentInvoices />
-        <LatestReview />
-      </div>
-    </div>
+  const { isLoading: statsLoading } = useAppSelector((state) => state.customerDashboard);
+  const { isLoading: profileLoading } = useAppSelector((state) => state.customerProfile);
+  const { isLoading: servicesLoading } = useAppSelector((state) => state.services);
+  
+  const { activeBooking, loading: activeBookingLoading } = useActiveBooking();
+
+  const isAnyLoading = statsLoading || profileLoading || servicesLoading || activeBookingLoading;
+
+  if (isAnyLoading) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '60vh', gap: 2 }}>
+        <CircularProgress color="success" size={40} />
+        <Typography variant="subtitle1" color="text.secondary">
+          Loading dashboard...
+        </Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 3, md: 4 } }}>
+      <HeroBookingCard />
+
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 3, md: 4 }, alignItems: 'stretch' }}>
+        {/* Main Column - Active Booking */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 3, md: 4 }, width: { xs: '100%', md: '58.333%', lg: '66.666%' } }}>
+          <ServicesWidget />
+          <ActiveBookingCard activeBooking={activeBooking} />
+        </Box>
+
+        {/* Side Column - Profile, Addresses */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 3, md: 4 }, width: { xs: '100%', md: '41.666%', lg: '33.333%' } }}>
+          <Box sx={{ flex: 1 }}>
+            <ProfileSummaryWidget />
+          </Box>
+          <Box sx={{ flex: 1 }}>
+            <SavedAddressesWidget />
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }

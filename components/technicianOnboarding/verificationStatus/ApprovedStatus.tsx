@@ -43,12 +43,12 @@ export default function ApprovedStatus({
 
   const handleGoDashboard = () => {
     onGoDashboard?.();
-    router.push('/dashboard/technician');
+    router.push('/technician/dashboard');
   };
 
   const handleViewProfile = () => {
     onViewProfile?.();
-    router.push('/dashboard/technician/profile');
+    router.push('/technician/profile');
   };
 
   return (

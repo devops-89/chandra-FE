@@ -34,7 +34,7 @@ export default function NearbyJobsGrid() {
   const handleAccept = async (job: any) => {
     try {
       await BookingControllers.acceptBooking(job.id);
-      router.push('/dashboard/technician/bookings');
+      router.push('/technician/bookings');
     } catch (error) {
       console.error('Error accepting booking', error);
     }

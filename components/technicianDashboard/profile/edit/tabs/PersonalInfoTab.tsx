@@ -16,6 +16,7 @@ export default function PersonalInfoTab() {
     firstName: '',
     lastName: '',
     username: '',
+    phone: '',
     emergencyContact: '',
   });
 
@@ -25,6 +26,7 @@ export default function PersonalInfoTab() {
         firstName: technician.firstName || '',
         lastName: technician.lastName || '',
         username: technician.username || '',
+        phone: technician.phone || '',
         emergencyContact: technician.emergencyContact || '',
       });
     }
@@ -42,6 +44,7 @@ export default function PersonalInfoTab() {
       formData.firstName !== (technician?.firstName || '') ||
       formData.lastName !== (technician?.lastName || '') ||
       formData.username !== (technician?.username || '') ||
+      formData.phone !== (technician?.phone || '') ||
       formData.emergencyContact !== (technician?.emergencyContact || '');
       
     if (!hasChanged) {
@@ -90,7 +93,8 @@ export default function PersonalInfoTab() {
           value={formData.username}
           onChange={handleChange}
           fullWidth
-          required
+          disabled
+          helperText="Username cannot be changed"
         />
         <TextField
           label="Emergency Contact"
@@ -109,6 +113,7 @@ export default function PersonalInfoTab() {
         />
         <TextField
           label="Phone Number"
+          name="phone"
           value={technician?.phone || ''}
           fullWidth
           disabled

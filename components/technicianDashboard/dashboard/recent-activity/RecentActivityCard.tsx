@@ -26,7 +26,7 @@ export default function RecentActivityCard() {
 
       <button
         type="button"
-        onClick={() => router.push('/dashboard/technician/earnings')}
+        onClick={() => router.push('/technician/earnings')}
         className="
           w-full
           mt-6

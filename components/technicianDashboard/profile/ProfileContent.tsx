@@ -11,10 +11,14 @@ import ProfileHero from './overview/ProfileHero';
 import ProfileStats from './overview/ProfileStats';
 import PersonalInfoCard from './personal-info/PersonalInfoCard';
 import ProfessionalInfoCard from './professional-info/ProfessionalInfoCard';
+import BankDetailsCard from './bank-details/BankDetailsCard';
+import UpiCard from './bank-details/UpiCard';
 
 export default function ProfileContent() {
   const dispatch = useAppDispatch();
-  const isLoading = useAppSelector((state) => state.technicianProfile.isLoading);
+  const { isLoading, profile: technician } = useAppSelector((state) => state.technicianProfile);
+  const upiAccount = technician?.payoutAccounts?.find(acc => acc.accountType === 'VPA');
+  const bankAccount = technician?.payoutAccounts?.find(acc => acc.accountType === 'BANK_ACCOUNT');
 
   useEffect(() => {
     dispatch(fetchTechnicianProfile());
@@ -50,6 +54,13 @@ export default function ProfileContent() {
         <div className="col-span-12 xl:col-span-6">
           <AvailabilityCard />
         </div>
+        
+        {/* Render either BankDetails or UPI card based on what exists */}
+        {(upiAccount || bankAccount) && (
+          <div className="col-span-12 xl:col-span-6">
+            {upiAccount ? <UpiCard /> : <BankDetailsCard />}
+          </div>
+        )}
 
       </div>
     </div>

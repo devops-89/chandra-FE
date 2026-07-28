@@ -1,10 +1,11 @@
 'use client';
 
-import { Loader2,X } from 'lucide-react';
+import { Loader2, X, MapPin } from 'lucide-react';
 import { useState } from 'react';
 
 import { useAppDispatch } from '@/redux/hooks';
 import { createAddress, fetchCustomerAddresses, } from '@/redux/slices/customerProfileSlice';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 interface AddAddressModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -46,55 +48,56 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
 
-  setError(null);
-  setSuccess(false);
 
-  // Validation
-  if (!fullAddress.trim()) {
-    setError('Street address is required');
-    return;
-  }
+    e.preventDefault();
 
-  if (!city.trim()) {
-    setError('City is required');
-    return;
-  }
+    setError(null);
+    setSuccess(false);
 
-  if (!state.trim()) {
-    setError('State is required');
-    return;
-  }
+    // Validation
+    if (!fullAddress.trim()) {
+      setError('Street address is required');
+      return;
+    }
 
-  if (!pincode.trim()) {
-    setError('Pincode is required');
-    return;
-  }
+    if (!city.trim()) {
+      setError('City is required');
+      return;
+    }
 
-  if (!/^\d{6}$/.test(pincode.trim())) {
-    setError('Pincode must be exactly a 6-digit number');
-    return;
-  }
+    if (!state.trim()) {
+      setError('State is required');
+      return;
+    }
 
-  const latNum = parseFloat(latitude);
-  const lngNum = parseFloat(longitude);
+    if (!pincode.trim()) {
+      setError('Pincode is required');
+      return;
+    }
 
-  if (isNaN(latNum) || isNaN(lngNum)) {
-    setError('Latitude and Longitude must be valid numbers');
-    return;
-  }
+    if (!/^\d{6}$/.test(pincode.trim())) {
+      setError('Pincode must be exactly a 6-digit number');
+      return;
+    }
 
-  setIsSubmitting(true);
+    const latNum = parseFloat(latitude);
+    const lngNum = parseFloat(longitude);
 
-  try {
-    const finalLabel =
-      label === 'Other'
-        ? customLabel.trim() || 'Other'
-        : label;
+    if (isNaN(latNum) || isNaN(lngNum)) {
+      setError('Latitude and Longitude must be valid numbers');
+      return;
+    }
 
-    await dispatch(
-      createAddress({
+    setIsSubmitting(true);
+
+    try {
+      const finalLabel =
+        label === 'Other'
+          ? customLabel.trim() || 'Other'
+          : label;
+
+      const finalPayload = {
         latitude: latNum,
         longitude: lngNum,
         fullAddress: fullAddress.trim(),
@@ -103,8 +106,9 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
         pincode: pincode.trim(),
         label: finalLabel,
         isDefault,
-      })
-    ).unwrap();
+      };
+
+      await dispatch(createAddress(finalPayload)).unwrap();
 
     // Re-fetch the profile so the list always reflects the latest backend state
     dispatch(fetchCustomerAddresses());
@@ -128,6 +132,53 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
   const labelOptions = ['Home', 'Office', 'Other'];
 
   const inputClasses = "mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all";
+
+  const handleFetchLocation = () => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser');
+      return;
+    }
+    
+    setIsFetchingLocation(true);
+    setError(null);
+    
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      setLatitude(lat.toString());
+      setLongitude(lng.toString());
+      
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        if (!response.ok) throw new Error('Failed to fetch address');
+        const data = await response.json();
+        
+        if (data.address) {
+          if (data.address.city || data.address.town || data.address.village) {
+            setCity(data.address.city || data.address.town || data.address.village);
+          }
+          if (data.address.state) {
+            setState(data.address.state);
+          }
+          if (data.address.postcode) {
+            setPincode(data.address.postcode);
+          }
+          if (data.display_name) {
+            setFullAddress(data.display_name);
+          }
+          dispatch(showSnackbar({ message: 'Location details automatically filled!', severity: 'success' }));
+        }
+      } catch (err) {
+        console.error("Geocoding failed:", err);
+        setError('Failed to auto-detect address details. Please fill them manually.');
+      } finally {
+        setIsFetchingLocation(false);
+      }
+    }, (err) => {
+      setError(`Location error: ${err.message}`);
+      setIsFetchingLocation(false);
+    });
+  };
 
   return (
     <div
@@ -169,6 +220,17 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
                 Address saved successfully! Closing...
               </div>
             )}
+
+            {/* Fetch Location Full Width Button */}
+            <button
+              type="button"
+              onClick={handleFetchLocation}
+              disabled={isFetchingLocation}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border border-emerald-200"
+            >
+              {isFetchingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+              {isFetchingLocation ? 'Locating...' : 'Use Current Location'}
+            </button>
 
             {/* Label Selection */}
             <div>

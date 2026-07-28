@@ -103,7 +103,7 @@ export default function JobList() {
       // Optionally route after a short delay so user sees snackbar, or just don't route.
       // We will remove router.push so the snackbar can be seen, or we navigate after delay.
       setTimeout(() => {
-        router.push('/dashboard/technician/bookings');
+        router.push('/technician/bookings');
       }, 1500);
       
     } catch (error) {

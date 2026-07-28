@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { useAppDispatch } from '@/redux/hooks';
 import { cancelBooking } from '@/redux/slices/customerBookingSlice';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 import type { CancelledBooking, CustomerBooking } from '@/types/customerBooking.types';
 
 interface Props {
@@ -28,7 +29,7 @@ export default function CancelBookingModal({
 
   const handleCancel = async () => {
     if (!cancelReason.trim()) {
-      alert('Please enter a cancellation reason.');
+      dispatch(showSnackbar({ message: 'Please enter a cancellation reason.', severity: 'error' }));
       return;
     }
 
@@ -37,7 +38,7 @@ export default function CancelBookingModal({
 
       const cancelledBooking = await dispatch(
         cancelBooking({
-          bookingId: booking.bookingId,
+          bookingId: (booking.id || booking.bookingId)!,
           cancellationReason: cancelReason,
         })
       ).unwrap();
@@ -45,11 +46,12 @@ export default function CancelBookingModal({
       onSuccess(cancelledBooking);
       setCancelReason('');
       onClose();
-      alert('Booking cancelled successfully.');
+      dispatch(showSnackbar({ message: 'Booking cancelled successfully.', severity: 'success' }));
     } catch (err) {
-      alert(
-        typeof err === 'string' ? err : 'Failed to cancel booking.'
-      );
+      dispatch(showSnackbar({ 
+        message: typeof err === 'string' ? err : 'Failed to cancel booking.', 
+        severity: 'error' 
+      }));
     } finally {
       setIsCancelling(false);
     }

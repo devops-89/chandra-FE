@@ -1,12 +1,15 @@
 'use client';
 
-import { LogOut, X } from 'lucide-react';
+import { LogOut, X, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { Menu, MenuItem, Box, Typography } from '@mui/material';
 
 import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/sidebar/customerDashboardSidebarLinks';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logoutUser } from '@/redux/slices/authSlice';
+import type { User } from '@/types/auth.types';
 
 interface DashboardSidebarProps {
   isOpen: boolean;
@@ -16,17 +19,17 @@ interface DashboardSidebarProps {
 /**
  * Returns true when the current pathname should highlight this sidebar link.
  * - Exact match for dashboard root (avoids highlighting Dashboard on every page).
- * - Prefix match for /dashboard/customer/services/* and /booking/* (booking flow).
+ * - Prefix match for /customer/services/* and /booking/* (booking flow).
  * - Prefix match for all other dashboard sub-routes.
  */
 function isActive(href: string, pathname: string): boolean {
-  if (href === '/dashboard/customer') {
-    return pathname === '/dashboard/customer';
+  if (href === '/customer/dashboard') {
+    return pathname === '/customer/dashboard';
   }
   // Services link covers service detail and the downstream booking flow
-  if (href === '/dashboard/customer/services') {
+  if (href === '/customer/services') {
     return (
-      pathname.startsWith('/dashboard/customer/services') ||
+      pathname.startsWith('/customer/services') ||
       pathname.startsWith('/booking')
     );
   }
@@ -43,8 +46,43 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
+  const reduxUser = useAppSelector((state) => state.auth.user);
+  const customerProfile = useAppSelector((state) => state.customerProfile.profile);
+
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (reduxUser) {
+      setUser(reduxUser);
+      return;
+    }
+    try {
+      const str = localStorage.getItem('user');
+      if (str) {
+        setUser(JSON.parse(str));
+      }
+    } catch {
+      // ignore
+    }
+  }, [reduxUser]);
+
+  const firstName = customerProfile?.firstName ?? user?.firstName ?? 'Customer';
+  const lastName  = customerProfile?.lastName ?? user?.lastName ?? '';
+  const initials  = `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase() || 'C';
+  const fullName  = `${firstName} ${lastName}`.trim();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const openMenu = Boolean(anchorEl);
+
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleProfileClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = async () => {
+    handleProfileClose();
     await dispatch(logoutUser());
     router.push('/');
   };
@@ -52,9 +90,10 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
   return (
     <>
       {/* ── Desktop Sidebar ── */}
-      <aside className="fixed left-0 top-0 z-50 h-screen flex-col border-r border-slate-200 hidden lg:flex">
-        <div className="px-8 py-8 border-b border-b-slate-200">
-          <h2 className="text-2xl sm:text-3xl font-bold text-emerald-700">HiChandra</h2>
+      <aside className="fixed left-0 top-0 z-50 h-screen w-72 flex-col border-r border-slate-200 hidden lg:flex">
+        <div className="px-8 py-8 border-b border-b-slate-200 flex flex-col justify-center h-20">
+          <h2 className="text-2xl sm:text-2xl font-bold text-emerald-700 leading-tight">HiChandra</h2>
+          <p className="text-sm text-slate-500">Customer Portal</p>
         </div>
 
         <nav className="flex-1 space-y-1 px-4 py-6 overflow-y-auto">
@@ -78,16 +117,104 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           })}
         </nav>
 
-        <div className="p-4">
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 cursor-pointer text-red-600 transition hover:bg-red-50"
+        <Box sx={{ p: 2, borderTop: '1px solid #e2e8f0' }}>
+          <Box 
+            onClick={handleProfileClick}
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 1.5, 
+              px: 1, 
+              py: 1,
+              borderRadius: '12px',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s',
+              '&:hover': {
+                backgroundColor: '#f1f5f9'
+              }
+            }}
           >
-            <LogOut size={20} />
-            <span className="text-sm sm:text-base">Logout</span>
-          </button>
-        </div>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                width: 40, 
+                height: 40, 
+                borderRadius: '50%', 
+                backgroundColor: '#059669', 
+                color: 'white', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                fontWeight: 600,
+                fontSize: '1rem',
+                flexShrink: 0
+              }}
+            >
+              {initials}
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#1e293b' }} noWrap>
+                {fullName}
+              </Typography>
+            </Box>
+            <ChevronRight size={18} className="text-slate-400" />
+          </Box>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleProfileClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            sx={{
+              '& .MuiPaper-root': {
+                borderRadius: '12px',
+                mt: -1,
+                width: anchorEl ? anchorEl.clientWidth : 240,
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                border: '1px solid #e2e8f0'
+              }
+            }}
+          >
+            <MenuItem 
+              component={Link}
+              href="/customer/profile"
+              onClick={handleProfileClose}
+              sx={{ 
+                color: '#334155',
+                fontWeight: 500,
+                fontSize: '0.95rem',
+                display: 'flex',
+                gap: 1.5,
+                py: 1.5,
+                borderBottom: '1px solid #f1f5f9'
+              }}
+            >
+              <span className="material-symbols-outlined text-[18px]">person</span>
+              View Profile
+            </MenuItem>
+
+            <MenuItem 
+              onClick={handleLogout}
+              sx={{ 
+                color: '#dc2626',
+                fontWeight: 500,
+                fontSize: '0.95rem',
+                display: 'flex',
+                gap: 1.5,
+                py: 1.5
+              }}
+            >
+              <LogOut size={18} />
+              Logout
+            </MenuItem>
+          </Menu>
+        </Box>
       </aside>
 
       {/* ── Mobile Sidebar ── */}
@@ -99,8 +226,11 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <div className="flex items-center justify-between px-6 py-6 border-b border-b-slate-200">
-          <h2 className="text-2xl font-bold text-emerald-700">HiChandra</h2>
+        <div className="flex items-center justify-between px-6 py-6 border-b border-b-slate-200 h-20">
+          <div className="flex flex-col justify-center">
+            <h2 className="text-2xl font-bold text-emerald-700 leading-tight">HiChandra</h2>
+            <p className="text-sm text-slate-500">Customer Portal</p>
+          </div>
           <button
             type="button"
             onClick={onClose}
@@ -133,16 +263,104 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           })}
         </nav>
 
-        <div className="p-4">
-          <button
-            type="button"
-            onClick={() => { onClose(); handleLogout(); }}
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-600 transition hover:bg-red-50"
+        <Box sx={{ p: 2, borderTop: '1px solid #e2e8f0' }}>
+          <Box 
+            onClick={handleProfileClick}
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 1.5, 
+              px: 1, 
+              py: 1,
+              borderRadius: '12px',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s',
+              '&:hover': {
+                backgroundColor: '#f1f5f9'
+              }
+            }}
           >
-            <LogOut size={20} />
-            Logout
-          </button>
-        </div>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                width: 40, 
+                height: 40, 
+                borderRadius: '50%', 
+                backgroundColor: '#059669', 
+                color: 'white', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                fontWeight: 600,
+                fontSize: '1rem',
+                flexShrink: 0
+              }}
+            >
+              {initials}
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#1e293b' }} noWrap>
+                {fullName}
+              </Typography>
+            </Box>
+            <ChevronRight size={18} className="text-slate-400" />
+          </Box>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleProfileClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            sx={{
+              '& .MuiPaper-root': {
+                borderRadius: '12px',
+                mt: -1,
+                width: anchorEl ? anchorEl.clientWidth : 240,
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                border: '1px solid #e2e8f0'
+              }
+            }}
+          >
+            <MenuItem 
+              component={Link}
+              href="/customer/profile"
+              onClick={() => { handleProfileClose(); onClose(); }}
+              sx={{ 
+                color: '#334155',
+                fontWeight: 500,
+                fontSize: '0.95rem',
+                display: 'flex',
+                gap: 1.5,
+                py: 1.5,
+                borderBottom: '1px solid #f1f5f9'
+              }}
+            >
+              <span className="material-symbols-outlined text-[18px]">person</span>
+              View Profile
+            </MenuItem>
+
+            <MenuItem 
+              onClick={() => { onClose(); handleLogout(); }}
+              sx={{ 
+                color: '#dc2626',
+                fontWeight: 500,
+                fontSize: '0.95rem',
+                display: 'flex',
+                gap: 1.5,
+                py: 1.5
+              }}
+            >
+              <LogOut size={18} />
+              Logout
+            </MenuItem>
+          </Menu>
+        </Box>
       </aside>
     </>
   );

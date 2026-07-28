@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Card, Chip, CircularProgress, Divider, Grid, Typography, Button, Paper, Snackbar, Alert } from "@mui/material";
+import { Box, Card, Chip, CircularProgress, Divider, Grid, Typography, Button, Paper } from "@mui/material";
 import { ArrowLeft, User, Wrench, Wallet, MapPin, Phone, Mail, CalendarDays, Star, LayoutGrid, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import PageLoader from "@/components/adminDashboard/shared/PageLoader";
 
 import { AdminControllers } from "@/api/adminControllers";
 
@@ -11,7 +12,6 @@ export default function FinanceBookingDetails({ bookingId }: { bookingId: string
   const [booking, setBooking] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isPaying, setIsPaying] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" as "success" | "error" });
   const router = useRouter();
 
   useEffect(() => {
@@ -39,29 +39,18 @@ export default function FinanceBookingDetails({ bookingId }: { bookingId: string
       };
       await AdminControllers.initiateManualPayout(payload);
       
-      setSnackbar({ open: true, message: "Payout initiated successfully!", severity: "success" });
-      
       // Refresh booking details to reflect new status
       const data = await AdminControllers.getAdminBookingById(bookingId);
       setBooking(data);
     } catch (error) {
       console.error("Failed to initiate payout:", error);
-      setSnackbar({ open: true, message: "Failed to initiate payout. Please try again.", severity: "error" });
     } finally {
       setIsPaying(false);
     }
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbar((prev) => ({ ...prev, open: false }));
-  };
-
   if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
-        <CircularProgress sx={{ color: "#059669" }} />
-      </Box>
-    );
+    return <PageLoader />;
   }
 
   if (!booking) {
@@ -383,13 +372,13 @@ export default function FinanceBookingDetails({ bookingId }: { bookingId: string
               
               {/* Technician Payout */}
               <Grid size={{ xs: 12, md: 4 }}>
-                <Paper sx={{ p: 3, borderRadius: 3, border: "2px solid", borderColor: booking.technicianPayoutStatus === 'SUCCESS' ? '#10b981' : '#e2e8f0', height: '100%', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+                <Paper sx={{ p: 3, borderRadius: 3, border: "2px solid", borderColor: booking.technicianPayoutStatus === 'PAID' ? '#10b981' : '#e2e8f0', height: '100%', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
                   <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700, letterSpacing: '0.05em' }}>Technician Payout</Typography>
                   <Box sx={{ my: 2 }}>
                     <Chip 
                       label={booking.technicianPayoutStatus || "N/A"} 
                       size="medium" 
-                      sx={{ fontWeight: 700, px: 1, backgroundColor: booking.technicianPayoutStatus === 'SUCCESS' ? "#d1fae5" : "#fef3c7", color: booking.technicianPayoutStatus === 'SUCCESS' ? "#065f46" : "#d97706" }} 
+                      sx={{ fontWeight: 700, px: 1, backgroundColor: booking.technicianPayoutStatus === 'PAID' ? "#d1fae5" : "#fef3c7", color: booking.technicianPayoutStatus === 'PAID' ? "#065f46" : "#d97706" }} 
                     />
                   </Box>
                   <Divider sx={{ my: 1.5 }} />
@@ -409,12 +398,12 @@ export default function FinanceBookingDetails({ bookingId }: { bookingId: string
                         fontSize: '1rem',
                         py: 1.2,
                         borderRadius: 2,
-                        boxShadow: booking.technicianPayoutStatus !== 'SUCCESS' ? '0 8px 20px -6px rgba(5,150,105,0.4)' : 'none'
+                        boxShadow: booking.technicianPayoutStatus !== 'PAID' ? '0 8px 20px -6px rgba(5,150,105,0.4)' : 'none'
                       }}
-                      disabled={isPaying || booking.technicianPayoutStatus === 'SUCCESS' || booking.bookingPaymentStatus !== 'PAID'}
+                      disabled={isPaying || booking.technicianPayoutStatus === 'PAID' || booking.bookingPaymentStatus !== 'PAID'}
                       onClick={handleInitiatePayout}
                     >
-                      {isPaying ? <CircularProgress size={24} color="inherit" /> : (booking.technicianPayoutStatus === 'SUCCESS' ? 'Payout Completed' : 'Initiate Payout')}
+                      {isPaying ? <CircularProgress size={24} color="inherit" /> : (booking.technicianPayoutStatus === 'PAID' ? 'Payout Completed' : 'Initiate Payout')}
                     </Button>
                   </Box>
                 </Paper>
@@ -423,12 +412,6 @@ export default function FinanceBookingDetails({ bookingId }: { bookingId: string
           </Card>
         </Grid>
       </Grid>
-
-      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%', fontWeight: 500 }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }

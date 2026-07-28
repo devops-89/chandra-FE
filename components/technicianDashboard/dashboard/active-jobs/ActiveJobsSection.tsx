@@ -16,8 +16,8 @@ export default function ActiveJobsSection() {
         const res = await BookingControllers.getAssignedBookings(1, 10);
         if (res?.data?.data) {
           const allBookings = res.data.data;
-          // Filter out CANCELLED
-          let active = allBookings.filter((b: any) => b.status !== 'CANCELLED');
+          // Only show active bookings (exclude COMPLETED and CANCELLED)
+          const active = allBookings.filter((b: any) => b.status !== 'COMPLETED' && b.status !== 'CANCELLED' && b.status !== 'REJECTED');
           
           if (active.length > 0) {
              setJobs(active.slice(0, 2).map((booking: any) => ({
