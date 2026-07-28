@@ -34,6 +34,7 @@ export interface User {
   id: number;
   email: string | null;
   username: string;
+  phone?: string | null;
   firstName: string;
   lastName: string | null;
   role: string;

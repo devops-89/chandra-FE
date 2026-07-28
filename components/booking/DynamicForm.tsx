@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronDown } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 
 // Sub-component for handling file object preview with cleanup to prevent memory leaks
@@ -37,6 +38,7 @@ export interface DynamicFormProps {
   formData: Record<number, SpecFormValue>;
   onChange: (specificationId: number, value: SpecFormValue) => void;
   errors: Record<string, string>;
+  layout?: 'default' | 'dashboard';
 }
 
 export default function DynamicForm({
@@ -44,6 +46,7 @@ export default function DynamicForm({
   formData,
   onChange,
   errors,
+  layout = 'default',
 }: DynamicFormProps) {
   const handleImageChange = (specificationId: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -62,6 +65,8 @@ export default function DynamicForm({
     onChange(specificationId, null);
   };
 
+  const isDashboardLayout = layout === 'dashboard';
+
   if (!specifications || specifications.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10 text-center">
@@ -72,18 +77,31 @@ export default function DynamicForm({
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-slate-900">Configure Service</h2>
-      <p className="mt-2 text-sm text-slate-500">Please provide the details below to customize your service</p>
+    <div className={isDashboardLayout ? 'w-full' : 'space-y-6'}>
+      {!isDashboardLayout && (
+        <h2 className="text-xl font-semibold text-slate-900">Configure Service</h2>
+      )}
+      <p className={isDashboardLayout ? 'text-center text-sm font-medium text-slate-600' : 'mt-2 text-sm text-slate-500'}>
+        Please provide the details below to customize your service
+      </p>
 
-      <div className="mt-6 space-y-6 max-w-xl mx-auto">
+      <div className={isDashboardLayout ? 'mx-auto mt-6 grid w-full max-w-5xl grid-cols-1 gap-x-16 gap-y-6 lg:grid-cols-2' : 'mt-6 space-y-6 max-w-xl mx-auto'}>
         {specifications.map((spec) => {
           const value = formData[spec.id];
           const hasError = !!errors[spec.name];
           const fieldId = `spec-${spec.name.replace(/\s+/g, '-').toLowerCase()}`;
+          const fieldClass = `
+            w-full rounded-xl border p-4 text-slate-950 outline-none bg-white transition-colors
+            focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200
+            ${isDashboardLayout ? 'h-14' : 'border-2'}
+            ${hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-slate-300'}
+          `;
 
           return (
-            <div key={spec.id} className="flex flex-col">
+            <div
+              key={spec.id}
+              className={`flex flex-col ${isDashboardLayout && spec.type === 'image' ? 'lg:col-span-2' : ''}`}
+            >
               <label htmlFor={fieldId} className="mb-2 text-sm font-medium text-slate-700 flex items-center justify-between">
                 <span>
                   {spec.name} {spec.isRequired && <span className="text-red-500">*</span>}
@@ -91,20 +109,24 @@ export default function DynamicForm({
               </label>
 
               {spec.type === 'select' && (
-                <select
-                  id={fieldId}
-                  value={value as string || ''}
-                  onChange={(e) => onChange(spec.id, e.target.value)}
-                  className={`w-full rounded-xl border-2 p-4 text-slate-950 outline-none bg-white transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 ${hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-slate-300'
-                    }`}
-                >
-                  <option value="">Select an option</option>
-                  {spec.values?.map((val) => (
-                    <option key={val} value={val}>
-                      {val}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative w-full">
+                  <select
+                    id={fieldId}
+                    value={value as string || ''}
+                    onChange={(e) => onChange(spec.id, e.target.value)}
+                    className={`${fieldClass} appearance-none pr-10 cursor-pointer`}
+                  >
+                    <option value="">Select an option</option>
+                    {spec.values?.map((val) => (
+                      <option key={val} value={val}>
+                        {val}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
+                    <ChevronDown className="h-5 w-5" />
+                  </div>
+                </div>
               )}
 
               {spec.type === 'number' && (
@@ -117,8 +139,7 @@ export default function DynamicForm({
                     onChange(spec.id, val === '' ? '' : Number(val));
                   }}
                   placeholder={`Enter number...`}
-                  className={`w-full rounded-xl border-2 p-4 text-slate-950 outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 ${hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-slate-300'
-                    }`}
+                  className={fieldClass}
                 />
               )}
 
@@ -129,8 +150,7 @@ export default function DynamicForm({
                   value={value as string || ''}
                   onChange={(e) => onChange(spec.id, e.target.value)}
                   placeholder={`Enter text...`}
-                  className={`w-full rounded-xl border-2 p-4 text-slate-950 outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 ${hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-slate-300'
-                    }`}
+                  className={fieldClass}
                 />
               )}
 

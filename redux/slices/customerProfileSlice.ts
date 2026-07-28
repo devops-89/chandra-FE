@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { CustomerControllers } from '@/api/customerControllers';
+import { logout, setCredentials } from '@/redux/slices/authSlice';
 import type {Address, CreateAddressRequest, UpdateAddressRequest,} from '@/types/address.types';
 import type { CustomerProfile, UpdateCustomerProfileRequest } from '@/types/customer/profile.types';
 
@@ -332,6 +333,19 @@ const customerProfileSlice = createSlice({
     .addCase(deleteAddress.rejected, (state, action) => {
       state.isLoading = false;
       state.error = action.payload ?? 'Unknown error';
+    })
+
+    .addCase(setCredentials, (state, action) => {
+      if (state.profile && state.profile.id !== action.payload.user.id) {
+        state.profile = null;
+      }
+      state.error = null;
+    })
+
+    .addCase(logout, (state) => {
+      state.profile = null;
+      state.isLoading = false;
+      state.error = null;
     });
   },
 });

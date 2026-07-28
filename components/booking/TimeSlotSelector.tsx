@@ -7,6 +7,7 @@ interface TimeSlotSelectorProps {
   slot: string;
   onDateChange: (date: string) => void;
   onSlotSelect: (slot: string) => void;
+  layout?: 'default' | 'dashboard';
 }
 
 function parseSlot(slot: string) {
@@ -25,6 +26,7 @@ export default function TimeSlotSelector({
   slot,
   onDateChange,
   onSlotSelect,
+  layout = 'default',
 }: TimeSlotSelectorProps) {
   const parsed = parseSlot(slot);
   const [hour, setHour] = useState(parsed.hour);
@@ -106,15 +108,20 @@ export default function TimeSlotSelector({
     onDateChange(e.target.value);
   };
 
+  const isDashboardLayout = layout === 'dashboard';
+
   return (
-    <div className="border-t border-slate-200 pt-8 lg:border-t-0 lg:pt-0">
-      <h2 className="text-xl font-semibold text-slate-900">Select Date &amp; Time</h2>
-      <p className="mt-2 text-sm text-slate-500">
+    <div className={isDashboardLayout ? 'w-full' : 'border-t border-slate-200 pt-8 lg:border-t-0 lg:pt-0'}>
+      {!isDashboardLayout && (
+        <h2 className="text-xl font-semibold text-slate-900">Select Date &amp; Time</h2>
+      )}
+      <p className={isDashboardLayout ? 'text-center text-sm font-medium text-slate-600' : 'mt-2 text-sm text-slate-500'}>
         Choose your preferred service date and time
       </p>
 
+      <div className={isDashboardLayout ? 'mx-auto mt-6 grid w-full max-w-5xl grid-cols-1 gap-x-16 gap-y-6 lg:grid-cols-2' : ''}>
       {/* Date picker */}
-      <div className="mt-6">
+      <div className={isDashboardLayout ? '' : 'mt-6'}>
         <label
           htmlFor="booking-date"
           className="mb-3 block text-sm font-medium text-slate-700"
@@ -136,7 +143,7 @@ export default function TimeSlotSelector({
       </div>
 
       {/* Time input */}
-      <div className="mt-6">
+      <div className={isDashboardLayout ? '' : 'mt-6'}>
         <label className="mb-3 block text-sm font-medium text-slate-700">
           Service Time
         </label>
@@ -209,6 +216,7 @@ export default function TimeSlotSelector({
         <p className="mt-2 text-xs text-slate-400">
           Enter hour (1–12) and minute (00–59)
         </p>
+      </div>
       </div>
     </div>
   );

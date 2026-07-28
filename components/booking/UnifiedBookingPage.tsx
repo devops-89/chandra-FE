@@ -1,5 +1,6 @@
 'use client';
 
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -15,20 +16,25 @@ import { BOOKING_STEPS } from '@/constants/booking/timeSlots';
 import { validateBookingForm, validateDateTime } from '@/lib/validation/bookingValidation';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
-import {  fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
+import { fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
 import { fetchServiceById, fetchServices } from '@/redux/slices/servicesSlice';
 import type { UnifiedBookingPageProps } from '@/types/bookingTypes/bookingForm.types';
 import type { Address } from '@/types/customer/profile.types';
 import type { BookingFormData } from '@/types/services.types';
 
 // ─── Step indices ─────────────────────────────────────────────────────────────
-const STEP_DYNAMIC_FORM  = 0;
-const STEP_ADDRESS       = 1;
-const STEP_DATETIME      = 2;
-const STEP_DETAILS       = 3;
+const STEP_DYNAMIC_FORM = 0;
+const STEP_ADDRESS = 1;
+const STEP_DATETIME = 2;
+const STEP_DETAILS = 3;
 
-export default function UnifiedBookingPage({ service, serviceId, summaryPath = '/booking/summary' }: UnifiedBookingPageProps) {
-  const router   = useRouter();
+export default function UnifiedBookingPage({
+  service,
+  serviceId,
+  summaryPath = '/booking/summary',
+  variant = 'public',
+}: UnifiedBookingPageProps) {
+  const router = useRouter();
   const dispatch = useAppDispatch();
 
   // ── Booking store ─────────────────────────────────────────────────────────
@@ -39,20 +45,22 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
     servicePrice: savedServicePrice,
     serviceSpecificData: savedServiceSpecificData,
     customerAddressId: savedCustomerAddressId,
-    customerAddress: savedCustomerAddress,
-    name: savedName,
-    phone: savedPhone,
     date: savedDate,
     slot: savedSlot,
     setBooking,
   } = useBookingStore();
 
-  const currentService      = savedService    || service;
+  const currentService = savedService || service;
 
   // ── Redux: service specs ──────────────────────────────────────────────────
   // Reuse already loaded service if available; fetch only when missing.
   const { items: allServices, selectedService } = useAppSelector((s) => s.services);
-  const profile = useAppSelector((s) => s.customerProfile.profile);
+  const rawProfile = useAppSelector((s) => s.customerProfile.profile);
+  const authUser = useAppSelector((s) => s.auth.user);
+  const profile =
+    rawProfile && (!authUser?.id || rawProfile.id === authUser.id)
+      ? rawProfile
+      : null;
 
   // Slugify helper to match url/prop slug to backend service name
   const slugify = (str: string) =>
@@ -65,7 +73,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
     (s) => slugify(s.name) === slugify(currentService)
   );
 
-  const currentServiceId    = savedServiceId  ?? serviceId ?? matchedService?.id ?? null;
+  const currentServiceId = savedServiceId ?? serviceId ?? matchedService?.id ?? null;
 
   const serviceFromItems = currentServiceId
     ? allServices.find((s) => s.id === currentServiceId) ?? null
@@ -74,7 +82,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   const resolvedService = selectedService?.id === currentServiceId
     ? selectedService
     : serviceFromItems;
-  const specifications  = resolvedService?.specifications ?? [];
+  const specifications = resolvedService?.specifications ?? [];
   const currentServicePrice = savedServicePrice || resolvedService?.price || 0;
 
   // Fetch all services on mount if list is empty to resolve currentServiceId via name/slug
@@ -90,12 +98,12 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
     if (!resolvedService || resolvedService.id !== currentServiceId) {
       dispatch(fetchServiceById(currentServiceId));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentServiceId, resolvedService]);
 
   // ── Fetch customer profile (needed for address list in step 1) ────────────
   useEffect(() => {
-  dispatch(fetchCustomerAddresses());
+    dispatch(fetchCustomerAddresses());
   }, [dispatch]);
 
   // ── Step state ────────────────────────────────────────────────────────────
@@ -125,7 +133,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
 
   // ── Step 1: Address ───────────────────────────────────────────────────────
   const [selectedAddressId, setSelectedAddressId] =
-  useState<number | null>(savedCustomerAddressId);
+    useState<number | null>(savedCustomerAddressId);
 
   // ── Step 2: Date & time ───────────────────────────────────────────────────
   const [date, setDate] = useState(savedDate || '');
@@ -134,22 +142,12 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   // ── Step 3: Personal details (auto-filled from logged-in profile) ──────────
   const profileFullName = profile
     ? `${profile.firstName} ${profile.lastName}`.trim()
-    : '';
-  const profilePhone = profile?.phone ?? '';
+    : `${authUser?.firstName ?? ''} ${authUser?.lastName ?? ''}`.trim();
+  const profilePhone = profile?.phone ?? authUser?.phone ?? '';
 
-  const [name, setName]                 = useState(savedName || profileFullName);
-  const [phone, setPhone]               = useState(savedPhone || profilePhone);
+  const name = profileFullName;
+  const phone = profilePhone;
   const [instructions, setInstructions] = useState('');
-
-  // Keep name/phone in sync when profile arrives (first load)
-  useEffect(() => {
-    if (profile) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (!name) setName(`${profile.firstName} ${profile.lastName}`.trim());
-      if (!phone) setPhone(profile.phone);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile]);
 
   // ── Global error ──────────────────────────────────────────────────────────
   const [error, setError] = useState('');
@@ -186,7 +184,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
       }
 
       // Validate text / textarea: must not be blank
-      if ((spec.type === 'text' ) && typeof value === 'string' && !value.trim()) {
+      if ((spec.type === 'text') && typeof value === 'string' && !value.trim()) {
         newErrors[spec.name] = `${spec.name} is required`;
       }
     }
@@ -215,7 +213,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
       customerAddressId: addressId,
       customerAddress: selectedAddress
         ? buildAddressSnapshot(selectedAddress)
-        : savedCustomerAddress,
+        : null,
     });
   };
 
@@ -238,24 +236,18 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
         setError('Please select an address.');
         return;
       }
-      const addressBelongsToCustomer =
-        profile?.addresses.some(
-          (address) => address.id === selectedAddressId
-        ) || savedCustomerAddress?.id === selectedAddressId;
-
-      if (!addressBelongsToCustomer) {
-        setError('Please select a valid address for this customer.');
-        return;
-      }
       const selectedAddress = profile?.addresses.find(
         (address) => address.id === selectedAddressId
       );
 
+      if (!selectedAddress) {
+        setError('Please select a valid address for this customer.');
+        return;
+      }
+
       setBooking({
         customerAddressId: selectedAddressId,
-        customerAddress: selectedAddress
-          ? buildAddressSnapshot(selectedAddress)
-          : savedCustomerAddress,
+        customerAddress: buildAddressSnapshot(selectedAddress),
       });
       setCurrentStep(STEP_DATETIME);
       return;
@@ -286,12 +278,11 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
       setError(validation.error || 'Please check all fields');
       return;
     }
-    const addressBelongsToCustomer =
-      profile?.addresses.some(
-        (address) => address.id === selectedAddressId
-      ) || savedCustomerAddress?.id === selectedAddressId;
+    const selectedAddress = profile?.addresses.find(
+      (address) => address.id === selectedAddressId
+    );
 
-    if (!selectedAddressId || !addressBelongsToCustomer) {
+    if (!selectedAddressId || !selectedAddress) {
       setError('Please select a valid address for this customer.');
       return;
     }
@@ -316,24 +307,135 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
         }];
       });
     setBooking({
-      service:             currentService,
-      serviceId:           currentServiceId,
-      serviceSlug:         savedServiceSlug,
-      servicePrice:        currentServicePrice,
+      service: currentService,
+      serviceId: currentServiceId,
+      serviceSlug: savedServiceSlug,
+      servicePrice: currentServicePrice,
       serviceSpecificData: specFormData as BookingFormData,
-      name:                name.trim(),
-      phone:               phone.trim(),
-      customerAddressId:   selectedAddressId,
-      customerAddress:     savedCustomerAddress,
+      name: name.trim(),
+      phone: phone.trim(),
+      customerAddressId: selectedAddressId,
+      customerAddress: buildAddressSnapshot(selectedAddress),
       serviceSpecifications,
       date,
       slot,
-      instructions:        instructions.trim(),
+      instructions: instructions.trim(),
     });
     router.push(summaryPath);
   };
 
   const isLastStep = currentStep === STEP_DETAILS;
+  const useDashboardBookingLayout = variant === 'dashboard';
+  const activeStepLabel = BOOKING_STEPS[currentStep] ?? '';
+
+  if (useDashboardBookingLayout) {
+    return (
+      <section className="w-full py-4 md:py-2">
+        <div className="w-full">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
+                Complete Your Booking
+              </h1>
+              {currentService && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-sm font-medium text-slate-500">
+                    Selected Service:
+                  </span>
+                  <span className="text-sm font-semibold text-slate-900 capitalize">
+                    {currentService.replace(/-/g, ' ')}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="mx-auto inline-flex h-10 w-fit items-center justify-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold text-slate-900 shadow-xs sm:mx-0">
+              {activeStepLabel}
+            </div>
+          </div>
+
+          <div className="mt-8 w-full">
+            {currentStep === STEP_DYNAMIC_FORM && (
+              <DynamicForm
+                specifications={specifications}
+                formData={specFormData}
+                onChange={handleSpecChange}
+                errors={specErrors}
+                layout="dashboard"
+              />
+            )}
+
+            {currentStep === STEP_ADDRESS && (
+              <AddressSelector
+                selectedAddressId={selectedAddressId}
+                onAddressSelect={handleAddressSelect}
+                layout="dashboard"
+              />
+            )}
+
+            {currentStep === STEP_DATETIME && (
+              <TimeSlotSelector
+                date={date}
+                slot={slot}
+                onDateChange={setDate}
+                onSlotSelect={setSlot}
+                layout="dashboard"
+              />
+            )}
+
+            {currentStep === STEP_DETAILS && (
+              <BookingDetailsForm
+                service={currentService}
+                servicePrice={currentServicePrice}
+                serviceSpecificData={specFormData as BookingFormData}
+                specifications={specifications}
+                name={name}
+                phone={phone}
+                instructions={instructions}
+                onInstructionsChange={setInstructions}
+                layout="dashboard"
+              />
+            )}
+
+            <ErrorMessage message={error} />
+
+            <div className={`mt-10 flex items-center ${currentStep > 0 ? 'justify-between' : 'justify-end'}`}>
+              {currentStep > 0 && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-300 px-6 text-base font-semibold text-slate-700 transition-all duration-300 hover:border-emerald-500 hover:text-emerald-700 cursor-pointer active:scale-95"
+                >
+                  <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+                  Back
+                </button>
+              )}
+
+              {isLastStep ? (
+                <button
+                  type="button"
+                  onClick={handleConfirm}
+                  className="inline-flex h-12 min-w-32 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-7 text-base font-semibold text-white transition-all duration-300 hover:bg-emerald-700 hover:shadow-lg cursor-pointer active:scale-95"
+                >
+                  Confirm Booking
+                  <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="inline-flex h-12 min-w-32 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-7 text-base font-semibold text-white transition-all duration-300 hover:bg-emerald-700 hover:shadow-lg cursor-pointer active:scale-95"
+                >
+                  Next
+                  <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-4 md:py-2">
@@ -393,8 +495,6 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
                 name={name}
                 phone={phone}
                 instructions={instructions}
-                onNameChange={setName}
-                onPhoneChange={setPhone}
                 onInstructionsChange={setInstructions}
               />
             )}

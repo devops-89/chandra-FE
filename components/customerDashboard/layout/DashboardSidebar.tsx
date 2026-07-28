@@ -133,7 +133,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
   return (
     <>
       {/* ── Desktop Sidebar ── */}
-      <aside className="fixed left-0 top-0 z-50 h-screen flex-col border-r border-slate-200 hidden lg:flex">
+      <aside className="fixed left-0 top-0 z-50 h-screen w-64 flex-col border-r border-slate-200 bg-white hidden lg:flex">
         <div className="px-8 py-8 border-b border-b-slate-200">
           <h2 className="text-2xl sm:text-3xl font-bold text-emerald-700">HiChandra</h2>
         </div>

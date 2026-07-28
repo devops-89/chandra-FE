@@ -16,6 +16,7 @@ function BookingContent() {
       serviceId={serviceId ? Number(serviceId) : undefined}
       service={service}
       summaryPath="/dashboard/customer/booking/summary"
+      variant="dashboard"
     />
   );
 }

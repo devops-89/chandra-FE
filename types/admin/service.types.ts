@@ -14,6 +14,7 @@ export interface AdminService {
   emergencyCharge: number;
   status: ServiceStatus;
   bookings: number;
+  pricingRule?: ApiPricingRule;
   specifications?: {
     id: number;
     name: string;
@@ -75,6 +76,13 @@ export interface ApiPricingRule {
   freeDistanceKm?: number;
   distanceChargePerKm?: string | number;
   peakHours?: unknown[];
+  isGstApplied?: boolean;
+  isDistanceKmApplied?: boolean;
+  isWeekendApplied?: boolean;
+  isPeakHourApplied?: boolean;
+  isEmergencyApplied?: boolean;
+  isPlatformFeeApplied?: boolean;
+  isPerHourRateApplied?: boolean;
 }
 
 /**

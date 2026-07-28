@@ -34,6 +34,7 @@ function normalizeService(raw: ApiService): AdminService {
     status,
     bookings: raw.totalBookings ?? raw.bookings ?? 0,
     specifications: raw.specifications,
+    pricingRule: raw.pricingRule,
   };
 }
 

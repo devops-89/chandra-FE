@@ -44,12 +44,17 @@ const authSlice = createSlice({
       state,
       action: PayloadAction<{ user: User; accessToken: string; refreshToken?: string }>,
     ) => {
+      const previousUserId = state.user?.id;
+
       state.user            = action.payload.user;
       state.accessToken     = action.payload.accessToken;
       state.refreshToken    = action.payload.refreshToken ?? null;
       state.isAuthenticated = true;
 
       if (typeof window !== 'undefined') {
+        if (previousUserId && previousUserId !== action.payload.user.id) {
+          localStorage.removeItem('hichandra-booking');
+        }
         localStorage.setItem('user',        JSON.stringify(action.payload.user));
         localStorage.setItem('accessToken', action.payload.accessToken);
         if (action.payload.refreshToken) {
@@ -82,6 +87,7 @@ const authSlice = createSlice({
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('hichandra-booking');
       }
     },
 

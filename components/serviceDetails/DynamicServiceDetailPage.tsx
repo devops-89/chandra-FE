@@ -102,15 +102,15 @@ export default function DynamicServiceDetailPage({
   const slug = service.name.toLowerCase().replace(/\s+/g, '-');
 
   const mappedService: Service = {
-    id:          String(service.id),
-    title:       service.name,
+    id: String(service.id),
+    title: service.name,
     description: service.description,
-    image:       service.image || '/images/service-placeholder.png',
+    image: service.image || '/images/service-placeholder.png',
     slug,
-    badge:       service.isActive ? 'Available Now' : 'Unavailable',
-    price:       service.price,
-    gridSize:    { md: 6 },
-    overview:    service.description,
+    badge: service.isActive ? 'Available Now' : 'Unavailable',
+    price: service.price,
+    gridSize: { md: 6 },
+    overview: service.description,
     includes: [
       'Professional certified technicians',
       'All tools and equipment included',
@@ -119,10 +119,10 @@ export default function DynamicServiceDetailPage({
       'Post-service support',
       'Transparent pricing',
     ],
-    ctaTitle:       `Ready to book ${service.name}?`,
+    ctaTitle: `Ready to book ${service.name}?`,
     ctaDescription: 'Get professional service at your doorstep. Book now and secure your slot.',
-    bookingForm:    [],
-    formConfig:     { showPriceSummary: true, pricingEngine: 'fixed' },
+    bookingForm: [],
+    formConfig: { showPriceSummary: true, pricingEngine: 'fixed' },
   };
 
   // ── Booking handler (runs only when user IS authenticated) ────────────
@@ -131,9 +131,9 @@ export default function DynamicServiceDetailPage({
   const handleBookingClick = () => {
     // Pre-seed the booking store so UnifiedBookingPage has service context.
     setBooking({
-      service:      mappedService.title,
-      serviceId:    service.id,
-      serviceSlug:  mappedService.slug,
+      service: mappedService.title,
+      serviceId: service.id,
+      serviceSlug: mappedService.slug,
       servicePrice: mappedService.price,
     });
     router.push(`${bookingBasePath}?service=${encodeURIComponent(mappedService.slug)}`);
