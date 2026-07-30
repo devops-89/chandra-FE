@@ -22,7 +22,7 @@ export default function BookingSummaryCard({ booking }: Props) {
         <div className="flex items-center justify-between border-b border-slate-100 pb-2">
           <span>Payment Status</span>
           <span className="font-medium text-slate-900">
-            {booking.paymentStatus}
+            {booking.paymentStatus || booking.bookingPaymentStatus || 'N/A'}
           </span>
         </div>
         <div className="flex items-center justify-between border-b border-slate-100 pb-2">

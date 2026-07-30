@@ -1,85 +1,119 @@
-'use client';
+"use client";
 
-import { Calendar, Clock, RefreshCw } from "lucide-react";
+import { CalendarMonth, AccessTime, Refresh, ChevronRight } from '@mui/icons-material';
+import { Box, Button, Card, CardContent, Typography, Chip, IconButton } from '@mui/material';
+import Link from "next/link";
 
-import BookingProgressTracker from "@/components/customerDashboard/activeBooking/BookingProgressTracker";
-import { DashboardCard } from "@/components/customerDashboard/shared";
-import { useActiveBooking } from "@/hooks/useActiveBooking";
+interface ActiveBookingCardProps {
+  activeBooking: any;
+}
 
-import BookingTechnicianCard from "./BookingTechnicianCard";
-import EmptyBookingState from "./EmptyBookingState";
-import PendingBookingCard from "./PendingBookingCard";
-
-const ActiveBookingCard = () => {
-  const { activeBooking } = useActiveBooking();
-
-  // STATE 1: No active/pending booking (null or completed/cancelled)
-  if (!activeBooking || activeBooking.status === 'completed') {
-    return <EmptyBookingState />;
+const ActiveBookingCard = ({ activeBooking }: ActiveBookingCardProps) => {
+  if (!activeBooking) {
+    return (
+      <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', p: 4, bgcolor: 'grey.50' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+          <Typography color="text.secondary" sx={{ fontWeight: 500 }}>No Active Bookings</Typography>
+          <Typography variant="body2" color="text.disabled">You don't have any upcoming services right now.</Typography>
+          <Button component={Link} href="/customer/services" variant="outlined" color="success" sx={{ mt: 1, borderRadius: 2 }}>
+            Book a Service
+          </Button>
+        </Box>
+      </Card>
+    );
   }
 
-  // STATE 2: Pending booking (Booked, but technician not assigned yet)
-  const isPending =
-    activeBooking.status === 'booked' ||
-    !activeBooking.technician ||
-    !activeBooking.technician.name;
-
-  if (isPending) {
-    return <PendingBookingCard booking={activeBooking} />;
-  }
-
-  // STATE 3: Active booking (assigned, on-way, started)
   return (
-    <DashboardCard className="overflow-hidden p-0">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-lg bg-emerald-600 px-4 sm:px-6 lg:px-8 py-4">
-        <h4 className="flex items-center gap-2 text-sm font-bold text-white">
-          <RefreshCw className="h-5 w-5" />
-          IN PROGRESS
-        </h4>
-        <span className="text-sm text-left text-white opacity-80">
-          Booking ID #{activeBooking.id}
-        </span>
-      </div>
+    <Card
+      elevation={0}
+      sx={{
+        borderRadius: 3,
+        border: '1px solid',
+        borderColor: 'divider',
+        overflow: 'hidden',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '4px',
+          background: 'linear-gradient(90deg, #10b981 0%, #34d399 100%)',
+        }
+      }}
+    >
+      <Box sx={{
+        bgcolor: 'success.main',
+        px: { xs: 2, sm: 4 },
+        py: 2,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 2
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Refresh fontSize="small" sx={{ color: 'white', animation: 'spin 3s linear infinite' }} />
+          <Typography variant="subtitle2" sx={{ color: 'white', fontWeight: 700, textTransform: 'uppercase' }}>
+            {activeBooking.status}
+          </Typography>
+        </Box>
+        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>
+          Booking ID: B-{String(activeBooking.id).replace(/\D/g, '')}
+        </Typography>
+      </Box>
 
-      <div className="p-4 sm:p-6 lg:p-8">
-        <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div className="min-w-0 flex-1">
-            <h3 className="mb-2 text-left sm:text-2xl lg:text-3xl font-bold wrap-break-words">
-              {activeBooking.serviceName}
-            </h3>
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-6 text-sm text-slate-600">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-emerald-600" />
-                {activeBooking.bookingDate}
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-emerald-600" />
-                {activeBooking.bookingTime}
-              </div>
-            </div>
-          </div>
+      <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 3 }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+              {(activeBooking as any).service?.name || (activeBooking as any).serviceName || "Service Booking"}
+            </Typography>
 
-          <BookingTechnicianCard technician={activeBooking.technician} />
-        </div>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ p: 1, bgcolor: 'success.50', borderRadius: 2, display: 'flex' }}>
+                  <CalendarMonth sx={{ fontSize: 20, color: 'success.main' }} />
+                </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  {(activeBooking as any).scheduledAt || (activeBooking as any).bookingDate ? new Date((activeBooking as any).scheduledAt || (activeBooking as any).bookingDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "-"}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ p: 1, bgcolor: 'success.50', borderRadius: 2, display: 'flex' }}>
+                  <AccessTime sx={{ fontSize: 20, color: 'success.main' }} />
+                </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  {(activeBooking as any).scheduledAt || (activeBooking as any).bookingDate ? new Date((activeBooking as any).scheduledAt || (activeBooking as any).bookingDate).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) : "-"}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
 
-        <BookingProgressTracker status={activeBooking.status} />
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-          <button
-            type="button"
-            className="flex-1 rounded-xl cursor-pointer bg-emerald-600 py-4 text-sm font-bold text-white transition-all hover:bg-emerald-700"
+          <Button
+            component={Link}
+            href={`/customer/bookings/${activeBooking.id}`}
+            variant="contained"
+            color="success"
+            endIcon={<ChevronRight />}
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              py: 1.5,
+              fontWeight: 600,
+              boxShadow: 'none',
+              '&:hover': {
+                boxShadow: 2,
+              },
+              width: { xs: '100%', md: 'auto' }
+            }}
           >
             View Booking
-          </button>
-          <button
-            type="button"
-            className="flex-1 cursor-pointer rounded-xl border-2 border-slate-300 py-4 text-sm font-bold text-slate-700 transition-all hover:bg-slate-100"
-          >
-            Contact Technician
-          </button>
-        </div>
-      </div>
-    </DashboardCard>
+          </Button>
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 

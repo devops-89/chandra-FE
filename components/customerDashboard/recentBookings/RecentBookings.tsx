@@ -1,63 +1,116 @@
-import RecentBookingRow from "@/components/customerDashboard/recentBookings/RecentBookingRow";
-import {
-  DashboardCard,
-  EmptyState,
-} from "@/components/customerDashboard/shared";
+"use client";
+
+import Link from 'next/link';
+import { 
+  Box, Card, CardHeader, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Button, Chip, CircularProgress 
+} from '@mui/material';
+import { ChevronRight } from '@mui/icons-material';
+
 import { useRecentBookings } from "@/hooks/useRecentBookings";
 
 const RecentBookings = () => {
   const { bookings } = useRecentBookings();
 
-  return (
-    <div className="space-y-6 text-black">
-      <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-bold">Recent Bookings</h3>
-        <button
-          type="button"
-          className="text-sm cursor-pointer font-bold text-emerald-600 hover:underline"
-        >
-          View All
-        </button>
-      </div>
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed': return 'success';
+      case 'cancelled': return 'error';
+      case 'pending': return 'warning';
+      case 'active': return 'info';
+      default: return 'default';
+    }
+  };
 
-      <DashboardCard className="overflow-hidden p-0">
-        {bookings.length === 0 ? (
-          <EmptyState
-            title="No Bookings Found"
-            description="Your recent bookings will appear here."
-          />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-175 text-left">
-              <thead className="border-b border-slate-200 bg-slate-100 text-emerald-600">
-                <tr>
-                  <th className="px-8 py-4 text-sm font-bold">
-                    ID
-                  </th>
-                  <th className="px-8 py-4 text-sm font-bold">
-                    Service
-                  </th>
-                  <th className="px-8 py-4 text-sm font-bold">
-                    Date
-                  </th>
-                  <th className="px-8 py-4 text-sm font-bold">
-                    Status
-                  </th>
-                  <th className="px-8 py-4 text-right text-sm font-bold">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200">
-                {bookings.map((booking) => (
-                  <RecentBookingRow key={booking.id} booking={booking} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </DashboardCard>
-    </div>
+  return (
+    <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+      <CardHeader 
+        title={
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Recent Bookings</Typography>
+        }
+        action={
+          <Button 
+            component={Link} 
+            href="/customer/bookings" 
+            endIcon={<ChevronRight />}
+            color="success"
+            sx={{ fontWeight: 600 }}
+          >
+            View All
+          </Button>
+        }
+        sx={{ borderBottom: '1px solid', borderColor: 'divider', px: 3, py: 2.5 }}
+      />
+      
+      {!bookings ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}>
+          <CircularProgress color="success" />
+        </Box>
+      ) : bookings.length === 0 ? (
+        <Box sx={{ p: 6, textAlign: 'center' }}>
+          <Typography color="text.secondary" sx={{ fontWeight: 500 }} gutterBottom>No Bookings Found</Typography>
+          <Typography variant="body2" color="text.disabled">Your recent bookings will appear here.</Typography>
+        </Box>
+      ) : (
+        <TableContainer>
+          <Table sx={{ minWidth: 650 }}>
+            <TableHead sx={{ bgcolor: 'grey.50' }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Service</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Date</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Status</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600, color: 'text.secondary' }}>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {bookings.map((booking: any) => (
+                <TableRow 
+                  key={booking.id}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: 'grey.50' } }}
+                >
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                      #{booking.id || booking.bookingId}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {booking.service?.name || booking.serviceName || "Service"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {booking.scheduledAt 
+                        ? new Date(booking.scheduledAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : booking.bookingDate || "-"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip 
+                      label={booking.status} 
+                      size="small"
+                      color={getStatusColor(booking.status) as any}
+                      sx={{ fontWeight: 600, borderRadius: 1 }}
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button 
+                      component={Link}
+                      href={`/customer/bookings/${booking.id || booking.bookingId}`}
+                      size="small"
+                      color="success"
+                      sx={{ fontWeight: 600 }}
+                    >
+                      View
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </Card>
   );
 };
 

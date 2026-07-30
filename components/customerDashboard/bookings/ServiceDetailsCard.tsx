@@ -12,7 +12,10 @@ export default function ServiceDetailsCard({ booking }: Props) {
         <div className="flex items-center justify-between border-b border-slate-100 pb-2">
           <span>Technician</span>
           <span className="font-medium text-slate-900">
-            {booking.technician?.name ?? 'Not assigned'}
+            {booking.technician?.name || 
+             [booking.technician?.firstName, booking.technician?.lastName].filter(Boolean).join(' ') || 
+             booking.technician?.username || 
+             'Not assigned'}
           </span>
         </div>
         <div className="flex items-center justify-between border-b border-slate-100 pb-2">

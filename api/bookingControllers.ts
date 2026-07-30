@@ -67,14 +67,27 @@ export const BookingControllers = {
     return response.data.data.data;
   },
 
-  getCustomerBookings: async (): Promise<CustomerBooking[]> => {
-    const response = await userSecuredApi.get<CustomerBookingsResponse>('/bookings/all');
-    const raw = response.data.data.data;
-    // Normalize: backend sends `id` but our type uses `bookingId`
-    return raw.map((item: CustomerBooking & { id?: number }) => ({
-      ...item,
-      bookingId: item.bookingId ?? item.id ?? 0,
-    }));
+  getCustomerBookings: async (page = 1, limit = 10): Promise<{ bookings: CustomerBooking[], pagination: any }> => {
+    const response = await userSecuredApi.get<any>(`/bookings/all?page=${page}&limit=${limit}`);
+    return {
+      bookings: response.data?.data?.data || [],
+      pagination: response.data?.data?.pagination || null,
+    };
+  },
+
+  getCustomerBookingById: async (id: number): Promise<CustomerBooking> => {
+    const response = await userSecuredApi.get(`/bookings/${id}`);
+
+    // Extract the booking data from the response structure
+    let raw = response.data?.data?.data || response.data?.data || response.data;
+    if (Array.isArray(raw)) raw = raw[0];
+
+    return raw;
+  },
+
+  getBookingPaymentUrl: async (bookingId: number): Promise<string> => {
+    const response = await userSecuredApi.get(`/bookings/${bookingId}/payment`);
+    return response.data?.data?.data?.paymentUrl || response.data?.data?.paymentUrl;
   },
 
   getTechnicianActiveBookings: async (page = 1, limit = 10, search?: string) => {
@@ -137,6 +150,11 @@ export const BookingControllers = {
 
   getPayoutStats: async () => {
     const response = await userSecuredApi.get('/bookings/technician/payout-stats');
+    return response.data;
+  },
+
+  submitReview: async (payload: { bookingId: number; rating: number; review: string }) => {
+    const response = await userSecuredApi.patch('/bookings/review', payload);
     return response.data;
   },
 };

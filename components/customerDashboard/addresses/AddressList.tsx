@@ -1,12 +1,30 @@
 'use client';
 
-import { DashboardCard, EmptyState } from '@/components/customerDashboard/shared';
-import { useAppSelector } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { useState, useEffect } from 'react';
+import { fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TablePagination,
+} from '@mui/material';
 
-import AddressCard from './AddressCard';
+import AddressTableRow from './AddressTableRow';
 
 export default function AddressList() {
-  const { profile, isLoading } = useAppSelector((state) => state.customerProfile);
+  const dispatch = useAppDispatch();
+  const { profile, addressesPagination, isLoading } = useAppSelector((state) => state.customerProfile);
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 10;
+
+  useEffect(() => {
+    dispatch(fetchCustomerAddresses({ page: page + 1, limit: rowsPerPage }));
+  }, [dispatch, page]);
 
   if (isLoading) {
     return (
@@ -20,36 +38,52 @@ export default function AddressList() {
 
   if (backendAddresses.length === 0) {
     return (
-      <DashboardCard className="p-0 overflow-hidden">
-        <EmptyState
-          title="No saved addresses found"
-          description="Click &quot;Add Address&quot; above to save your first location."
-        />
-      </DashboardCard>
+      <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-slate-200">
+        <p className="text-slate-500 font-medium">No saved addresses found.</p>
+        <p className="text-slate-400 text-sm mt-1">Click &quot;Add Address&quot; above to save one.</p>
+      </div>
     );
   }
 
+  const addresses = backendAddresses;
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const totalItems = addressesPagination?.total || addresses.length;
+
   return (
-    <DashboardCard className="overflow-hidden p-0">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead className="border-b border-slate-200 bg-slate-100 text-emerald-600">
-            <tr>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Label</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Address</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">City / State</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Pincode</th>
-              <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200 text-sm">
-            {backendAddresses.map((addr) => (
-              <AddressCard key={addr.id} backendAddress={addr} />
+    <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 4, boxShadow: 'none', border: '1px solid #e2e8f0' }}>
+      <TableContainer>
+        <Table sx={{ minWidth: 650 }} aria-label="addresses table">
+          <TableHead sx={{ bgcolor: '#f8fafc' }}>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>ID</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>Address</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>City</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>State</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>Pincode</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>Date</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, color: '#475569' }}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {addresses.map((address) => (
+              <AddressTableRow key={address.id} address={address} />
             ))}
-          </tbody>
-        </table>
-      </div>
-    </DashboardCard>
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[10]}
+        component="div"
+        count={totalItems}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+      />
+    </Paper>
   );
 }
 

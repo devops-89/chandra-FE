@@ -9,6 +9,12 @@ interface CustomerProfileState {
   profile: CustomerProfile | null;
   isLoading: boolean;
   error: string | null;
+  addressesPagination?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
 
 const initialState: CustomerProfileState = {
@@ -89,14 +95,17 @@ export const updateCustomerProfile = createAsyncThunk<
 // ─── Fetch Customer Addresses ───────────────────────────────────────
 
 export const fetchCustomerAddresses = createAsyncThunk<
-  { profile: CustomerProfile | null; addresses: Address[] },
-  void,
+  { profile: CustomerProfile | null; addresses: Address[], pagination?: any },
+  { page?: number; limit?: number } | void,
   { rejectValue: string }
 >(
   'customerProfile/fetchAddresses',
-  async (_, { rejectWithValue }) => {
+  async (params, { rejectWithValue }) => {
     try {
-      const addresses = await CustomerControllers.getCustomerAddresses();
+      const { data: addresses, pagination } = await CustomerControllers.getCustomerAddresses({
+        page: params?.page ?? 1,
+        limit: params?.limit ?? 10
+      });
       
       let profile: CustomerProfile | null = null;
       try {
@@ -127,7 +136,7 @@ export const fetchCustomerAddresses = createAsyncThunk<
         profile.addresses = convertedAddresses;
       }
 
-      return { profile, addresses: convertedAddresses };
+      return { profile, addresses: convertedAddresses, pagination };
     } catch (err: unknown) {
       const message =
         err instanceof Error

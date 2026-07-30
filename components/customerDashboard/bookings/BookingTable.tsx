@@ -1,23 +1,16 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import {
-  Box,
-  Card,
-  Chip,
-  CircularProgress,
-  IconButton,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
-  Tooltip,
-  Typography,
+  Paper,
+  TablePagination
 } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchCustomerBookings } from '@/redux/slices/customerBookingSlice';
@@ -101,157 +94,119 @@ function formatTime(raw: string): string {
 
 export default function BookingTable() {
   const dispatch = useAppDispatch();
-  const router = useRouter();
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
 
-  const { bookings, isLoading, error } = useAppSelector((state) => state.customerBookings);
-
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  const {
+    bookings,
+    pagination,
+    isLoading,
+    error,
+  } = useAppSelector(
+    (state) => state.customerBookings
+  );
 
   useEffect(() => {
-    dispatch(fetchCustomerBookings());
-  }, [dispatch]);
+    dispatch(fetchCustomerBookings({ page, limit: itemsPerPage }));
+  }, [dispatch, page, itemsPerPage]);
 
-  const paginatedBookings = bookings.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  if (isLoading && bookings.length === 0) {
+    return (
+      <div className="flex justify-center py-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-3xl bg-red-50 p-6 text-red-600">
+        {error}
+      </div>
+    );
+  }
+
+  if (bookings.length === 0) {
+    return (
+      <div className="rounded-3xl bg-white p-8 text-center shadow-sm">
+        <h3 className="text-lg font-semibold text-slate-800">
+          No bookings found
+        </h3>
+
+        <p className="mt-2 text-slate-500">
+          Your bookings will appear here once you book a service.
+        </p>
+      </div>
+    );
+  }
+
+  const totalItems = pagination?.total || 0;
 
   return (
-    <Card sx={{ boxShadow: "0px 0px 1px 1px #eee", border: "1px solid #eeeeee", py: 2, mt: 2 }}>
-      <TableContainer sx={{ overflowX: 'auto' }}>
-        <Table size="small" sx={{ minWidth: 800 }}>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-              <TableCell sx={{ fontWeight: 700, fontSize: 12, color: '#64748b' }}>BOOKING ID</TableCell>
-              <TableCell sx={{ fontWeight: 700, fontSize: 12, color: '#64748b' }}>SERVICE</TableCell>
-              <TableCell sx={{ fontWeight: 700, fontSize: 12, color: '#64748b' }}>DATE</TableCell>
-              <TableCell sx={{ fontWeight: 700, fontSize: 12, color: '#64748b' }}>TIME</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, fontSize: 12, color: '#64748b' }}>AMOUNT</TableCell>
-              <TableCell sx={{ fontWeight: 700, fontSize: 12, color: '#64748b' }}>STATUS</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 700, fontSize: 12, color: '#64748b' }}>ACTIONS</TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {/* Loading */}
-            {isLoading && (
+    <div className="flex flex-col gap-6">
+      <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 4, boxShadow: 'none', border: '1px solid #e2e8f0' }}>
+        <TableContainer>
+          <Table sx={{ minWidth: 720 }}>
+            <TableHead sx={{ bgcolor: '#f8fafc' }}>
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 10 }}>
-                  <CircularProgress size={32} sx={{ color: '#059669' }} />
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Booking ID
+                </TableCell>
+
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Technician
+                </TableCell>
+
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Service
+                </TableCell>
+
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Date
+                </TableCell>
+
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Amount
+                </TableCell>
+
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }}>
+                  Status
+                </TableCell>
+
+                <TableCell sx={{ fontWeight: 600, color: '#475569' }} align="right">
+                  Action
                 </TableCell>
               </TableRow>
-            )}
+            </TableHead>
 
-            {/* Error */}
-            {!isLoading && error && (
-              <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
-                  <Typography variant="body2" color="error">{error}</Typography>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableBody>
+              {bookings.map((booking) => (
+                <BookingRow
+                  key={booking.id || booking.bookingId}
+                  booking={booking}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-            {!isLoading && !error && bookings.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h6" sx={{ color: '#1e293b', fontWeight: 600 }}>No bookings found</Typography>
-                    <Typography variant="body2" sx={{ color: '#64748b', mt: 1 }}>Your bookings will appear here once you book a service.</Typography>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            )}
-
-            {/* Rows */}
-            {!isLoading && !error && paginatedBookings.map((booking) => {
-              const status = STATUS_CHIP[booking.status] ?? { label: booking.status, bg: '#f8fafc', text: '#64748b' };
-              const dateStr = booking.scheduledAtIst || (booking as any).scheduledAt;
-              
-              return (
-                <TableRow
-                  key={booking.bookingId}
-                  hover
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => router.push(`/dashboard/customer/bookings/${booking.bookingId}`)}
-                >
-                  <TableCell sx={{ fontSize: 13 }}>
-                    <Typography variant="caption" sx={{ fontWeight: 700, color: '#059669', letterSpacing: '0.04em' }}>
-                      #{booking.bookingId}
-                    </Typography>
-                  </TableCell>
-
-                  <TableCell sx={{ fontSize: 13 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                      {booking.service?.name ?? 'N/A'}
-                    </Typography>
-                  </TableCell>
-
-                  <TableCell sx={{ fontSize: 13, whiteSpace: 'nowrap' }}>
-                    {formatDate(dateStr)}
-                  </TableCell>
-
-                  <TableCell sx={{ fontSize: 13, whiteSpace: 'nowrap' }}>
-                    {formatTime(dateStr)}
-                  </TableCell>
-
-                  <TableCell align="right" sx={{ fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap' }}>
-                    ₹{booking.totalAmount ?? '0.00'}
-                  </TableCell>
-
-                  <TableCell>
-                    <Chip
-                      label={status.label}
-                      size="small"
-                      sx={{
-                        fontWeight: 700,
-                        fontSize: 11,
-                        bgcolor: status.bg,
-                        color: status.text,
-                        border: 'none',
-                        borderRadius: '6px'
-                      }}
-                    />
-                  </TableCell>
-
-                  <TableCell align="center" onClick={(e) => e.stopPropagation()} sx={{ width: 100 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
-                      <Tooltip title="View details">
-                        <IconButton
-                          size="small"
-                          onClick={() => router.push(`/dashboard/customer/bookings/${booking.bookingId}`)}
-                          sx={{ color: '#059669', '&:hover': { backgroundColor: '#f0fdf4' } }}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle cx="12" cy="12" r="3" />
-                          </svg>
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={bookings.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Card>
+        {totalItems > 0 && (
+          <TablePagination
+            component="div"
+            count={totalItems}
+            page={page - 1}
+            onPageChange={(_, newPage) => setPage(newPage + 1)}
+            rowsPerPage={itemsPerPage}
+            rowsPerPageOptions={[10]}
+            sx={{
+              borderTop: '1px solid #f1f5f9',
+              '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
+                margin: 0,
+              }
+            }}
+          />
+        )}
+      </Paper>
+    </div>
   );
 }

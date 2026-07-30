@@ -1,7 +1,6 @@
 'use client';
 
 import ServiceRadius from './ServiceRadius';
-import WorkingHours from './WorkingHours';
 
 export default function AvailabilityCard() {
   return (
@@ -26,10 +25,6 @@ export default function AvailabilityCard() {
       >
         Availability Settings
       </h3>
-
-      <WorkingHours />
-
-      <div className="my-6 border-t border-slate-200" />
 
       <ServiceRadius />
     </div>

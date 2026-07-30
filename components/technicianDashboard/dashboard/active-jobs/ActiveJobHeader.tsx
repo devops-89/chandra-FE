@@ -8,7 +8,7 @@ export default function ActiveJobHeader() {
       <h4 className="text-lg md:text-xl font-bold text-slate-900">
         Active Booking
       </h4>
-      <Link href="/dashboard/technician/bookings" className="text-emerald-600 font-medium text-sm hover:underline">
+      <Link href="/technician/bookings" className="text-emerald-600 font-medium text-sm hover:underline">
         View All
       </Link>
     </div>

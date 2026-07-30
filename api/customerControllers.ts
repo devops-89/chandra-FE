@@ -14,16 +14,16 @@ import type {
   UpdateCustomerProfileResponse,
 } from '@/types/customer/profile.types';
 
-import { userSecuredApi } from './config';
+import { authSecuredApi, userSecuredApi } from './config';
 
 export const CustomerControllers = {
   getCustomerProfile: async (): Promise<CustomerProfile> => {
-    const response = await userSecuredApi.get<CustomerProfileResponse>('/auth/profile');
+    const response = await authSecuredApi.get<CustomerProfileResponse>('/auth/profile');
     return response.data.data;
   },
 
   updateCustomerProfile: async (payload: UpdateCustomerProfileRequest): Promise<CustomerProfile> => {
-    const response = await userSecuredApi.patch<UpdateCustomerProfileResponse>('/auth/profile', payload);
+    const response = await userSecuredApi.patch<UpdateCustomerProfileResponse>('/users/profile', payload);
     return response.data.data.data;
   },
 
@@ -32,9 +32,12 @@ export const CustomerControllers = {
     return response.data.data.data;
   },
 
-  getCustomerAddresses: async (): Promise<CustomerAddress[]> => {
-    const response = await userSecuredApi.get<GetCustomerAddressesResponse>('/users/customer/addresses');
-    return response.data.data.data;
+  getCustomerAddresses: async (params?: { page: number; limit: number }): Promise<{ data: CustomerAddress[], pagination?: any }> => {
+    const response = await userSecuredApi.get<GetCustomerAddressesResponse>('/users/customer/addresses', { params });
+    return {
+      data: response.data.data.data,
+      pagination: response.data.data.pagination
+    };
   },
 
   updateAddress: async (payload: UpdateAddressRequest): Promise<Address> => {

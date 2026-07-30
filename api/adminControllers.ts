@@ -147,6 +147,6 @@ export const AdminControllers = {
 
   getDashboardStats: async () => {
     const response = await userSecuredApi.get('/users/admin/dashboard-stats');
-    return response.data?.data || null;
+    return response.data?.data?.data || response.data?.data || null;
   },
 };

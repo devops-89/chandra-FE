@@ -26,10 +26,10 @@ export function getDashboardPathForRole(role?: string | null): string {
   }
 
   if (normalizedRole === 'TECHNICIAN') {
-    return '/dashboard/technician';
+    return '/technician/dashboard';
   }
 
-  return '/dashboard/customer';
+  return '/customer/dashboard';
 }
 
 function isSafeInternalRedirect(path: string): boolean {
@@ -47,11 +47,11 @@ function isRedirectAllowedForRole(path: string, role?: string | null): boolean {
     return normalizedRole === 'ADMIN';
   }
 
-  if (path.startsWith('/dashboard/technician')) {
+  if (path.startsWith('/technician/dashboard')) {
     return normalizedRole === 'TECHNICIAN';
   }
 
-  if (path.startsWith('/dashboard/customer') || path.startsWith('/booking')) {
+  if (path.startsWith('/customer') || path.startsWith('/booking')) {
     return normalizedRole !== 'ADMIN' && normalizedRole !== 'TECHNICIAN';
   }
 
@@ -95,9 +95,9 @@ function normalizeStatus(status?: string | null): string {
  *   1. No technicianProfile â†’ /technician/onboarding/register
  *   2. profile.status === 'PENDING_APPROVAL' â†’ pending-verification
  *   3. profile.isVerified === true OR user.status === 'ACTIVE' AND onboarding complete
- *      â†’ /dashboard/technician
+ *      â†’ /technician/dashboard
  *   4. profile.status === 'INCOMPLETE' â†’ sync bitmask from profile â†’ firstIncompleteRoute()
- *   5. Fallback â†’ /dashboard/technician
+ *   5. Fallback â†’ /technician/dashboard
  */
 export function getTechnicianRedirectPath(params: {
   userStatus: string;
@@ -138,7 +138,7 @@ export function getTechnicianRedirectPath(params: {
 
   // 3. Verified technician or active user with complete onboarding
   if (technicianProfile.isVerified || (normalizedUserStatus === 'ACTIVE' && isOnboardingComplete())) {
-    return '/dashboard/technician';
+    return '/technician/dashboard';
   }
 
   // 4. Incomplete onboarding â€” go to first gap (bitmask already synced above)
@@ -147,5 +147,5 @@ export function getTechnicianRedirectPath(params: {
   }
 
   // 5. Fallback
-  return '/dashboard/technician';
+  return '/technician/dashboard';
 }

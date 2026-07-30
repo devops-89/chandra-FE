@@ -28,7 +28,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         const user = JSON.parse(userStr);
         const roleDashboardPath = getDashboardPathForRole(user?.role);
 
-        if (roleDashboardPath !== '/dashboard/customer') {
+        if (roleDashboardPath !== '/customer/dashboard') {
           router.replace(roleDashboardPath);
           return;
         }
@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     } else if (isAuthenticated) {
       const roleDashboardPath = getDashboardPathForRole(reduxUser?.role);
 
-      if (roleDashboardPath !== '/dashboard/customer') {
+      if (roleDashboardPath !== '/customer/dashboard') {
         router.replace(roleDashboardPath);
         return;
       }
@@ -62,10 +62,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50">
       <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      <main className="flex flex-1 flex-col lg:ml-64 min-w-0 h-full overflow-hidden">
+      <main className="flex flex-1 flex-col lg:ml-72 min-w-0">
         <DashboardHeader onMenuClick={() => setSidebarOpen(true)} />
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">{children}</div>
+        <div className="flex-1 p-5 sm:pt-8 lg:p-10 overflow-y-auto scrollbar-hide">{children}</div>
       </main>
 
       {/* Mobile overlay */}

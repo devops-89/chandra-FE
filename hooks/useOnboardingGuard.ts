@@ -67,8 +67,8 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
             });
             
             const currentPath = window.location.pathname;
-            if (redirectPath === '/dashboard/technician' && currentPath.startsWith('/dashboard/technician')) {
-              // User is already on a valid dashboard sub-page, do not redirect
+            if (redirectPath === '/technician/dashboard' && currentPath.startsWith('/technician') && !currentPath.startsWith('/technician/onboarding')) {
+              // User is on a valid authenticated technician page (like profile, earnings), do not redirect
               return;
             } else if (currentPath !== redirectPath) {
               router.replace(redirectPath);

@@ -1,10 +1,11 @@
 'use client';
 
-import { Check, Loader2, MapPin, X } from 'lucide-react';
+import { Loader2, X, MapPin } from 'lucide-react';
 import { useState } from 'react';
 
 import { useAppDispatch } from '@/redux/hooks';
-import { createAddress, fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
+import { createAddress, fetchCustomerAddresses, } from '@/redux/slices/customerProfileSlice';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 interface AddAddressModalProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -101,9 +103,9 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
 
           // Only pre-fill if currently empty so we don't overwrite manual edits
           if (derivedFullAddress) setFullAddress(derivedFullAddress);
-          if (derivedCity)        setCity(derivedCity);
-          if (derivedState)       setState(derivedState);
-          if (derivedPincode)     setPincode(derivedPincode);
+          if (derivedCity) setCity(derivedCity);
+          if (derivedState) setState(derivedState);
+          if (derivedPincode) setPincode(derivedPincode);
         } catch {
           // Reverse geocode failed — coords are still set, user fills manually
         }
@@ -130,6 +132,8 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+
+
     e.preventDefault();
 
     setError(null);
@@ -161,8 +165,11 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
       return;
     }
 
-    if (!coords) {
-      setError('Please use Current Location before saving this address.');
+    const latNum = parseFloat(latitude);
+    const lngNum = parseFloat(longitude);
+
+    if (isNaN(latNum) || isNaN(lngNum)) {
+      setError('Latitude and Longitude must be valid numbers');
       return;
     }
 
@@ -174,18 +181,18 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
           ? customLabel.trim() || 'Other'
           : label;
 
-      await dispatch(
-        createAddress({
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-          fullAddress: fullAddress.trim(),
-          city: city.trim(),
-          state: state.trim(),
-          pincode: pincode.trim(),
-          label: finalLabel,
-          isDefault,
-        })
-      ).unwrap();
+      const finalPayload = {
+        latitude: latNum,
+        longitude: lngNum,
+        fullAddress: fullAddress.trim(),
+        city: city.trim(),
+        state: state.trim(),
+        pincode: pincode.trim(),
+        label: finalLabel,
+        isDefault,
+      };
+
+      await dispatch(createAddress(finalPayload)).unwrap();
 
       // Re-fetch the profile so the list always reflects the latest backend state
       dispatch(fetchCustomerAddresses());
@@ -209,6 +216,53 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
   const labelOptions = ['Home', 'Office', 'Other'];
 
   const inputClasses = "mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all";
+
+  const handleFetchLocation = () => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setIsFetchingLocation(true);
+    setError(null);
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      setLatitude(lat.toString());
+      setLongitude(lng.toString());
+
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        if (!response.ok) throw new Error('Failed to fetch address');
+        const data = await response.json();
+
+        if (data.address) {
+          if (data.address.city || data.address.town || data.address.village) {
+            setCity(data.address.city || data.address.town || data.address.village);
+          }
+          if (data.address.state) {
+            setState(data.address.state);
+          }
+          if (data.address.postcode) {
+            setPincode(data.address.postcode);
+          }
+          if (data.display_name) {
+            setFullAddress(data.display_name);
+          }
+          dispatch(showSnackbar({ message: 'Location details automatically filled!', severity: 'success' }));
+        }
+      } catch (err) {
+        console.error("Geocoding failed:", err);
+        setError('Failed to auto-detect address details. Please fill them manually.');
+      } finally {
+        setIsFetchingLocation(false);
+      }
+    }, (err) => {
+      setError(`Location error: ${err.message}`);
+      setIsFetchingLocation(false);
+    });
+  };
 
   return (
     <div
@@ -251,40 +305,16 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
               </div>
             )}
 
-            {/* Location Button & Status */}
-            <div>
-              <button
-                type="button"
-                onClick={handleGetCurrentLocation}
-                disabled={isLocating}
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-emerald-600 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium text-sm transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {isLocating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
-                    Fetching location...
-                  </>
-                ) : (
-                  <>
-                    <MapPin className="w-4 h-4 text-emerald-600" />
-                    📍 Use Current Location
-                  </>
-                )}
-              </button>
-
-              {locationSuccess && (
-                <p className="mt-2 text-xs font-medium text-emerald-600 flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5" />
-                  ✓ Location detected — fields pre-filled, you can edit them before saving.
-                </p>
-              )}
-
-              {locationError && (
-                <p className="mt-2 text-xs font-medium text-red-600">
-                  {locationError}
-                </p>
-              )}
-            </div>
+            {/* Fetch Location Full Width Button */}
+            <button
+              type="button"
+              onClick={handleFetchLocation}
+              disabled={isFetchingLocation}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border border-emerald-200"
+            >
+              {isFetchingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+              {isFetchingLocation ? 'Locating...' : 'Use Current Location'}
+            </button>
 
             {/* Label Selection */}
             <div>
@@ -297,11 +327,10 @@ export default function AddAddressModal({ isOpen, onClose }: AddAddressModalProp
                     key={opt}
                     type="button"
                     onClick={() => setLabel(opt)}
-                    className={`flex-1 py-2.5 px-3 text-sm font-medium rounded-xl border transition-all cursor-pointer ${
-                      label === opt
+                    className={`flex-1 py-2.5 px-3 text-sm font-medium rounded-xl border transition-all cursor-pointer ${label === opt
                         ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-100'
                         : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                    }`}
+                      }`}
                   >
                     {opt}
                   </button>

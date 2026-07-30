@@ -12,7 +12,7 @@ export function ServiceSection() {
     > <HeroDecorations />
       <div className="mx-auto flex flex-col gap-5 max-w-7xl px-4 py-4">
         <ServiceHeading />
-        <ServiceGrid />
+        <ServiceGrid useSwiper={true} />
       </div>
     </section>
   );

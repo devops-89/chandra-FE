@@ -140,6 +140,21 @@ export default function SkillsAndServicesTab() {
             value={formData.technicianProfile.jobStatus}
             onChange={handleProfileChange}
             label="Job Status"
+            MenuProps={{
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left',
+              },
+              transformOrigin: {
+                vertical: 'top',
+                horizontal: 'left',
+              },
+              slotProps: {
+                paper: {
+                  style: { maxHeight: 300 },
+                },
+              },
+            }}
           >
             <MenuItem value="AVAILABLE">Available</MenuItem>
             <MenuItem value="BUSY">Busy</MenuItem>
@@ -162,6 +177,21 @@ export default function SkillsAndServicesTab() {
                 ))}
               </Box>
             )}
+            MenuProps={{
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left',
+              },
+              transformOrigin: {
+                vertical: 'top',
+                horizontal: 'left',
+              },
+              slotProps: {
+                paper: {
+                  style: { maxHeight: 300 },
+                },
+              },
+            }}
           >
             {LANGUAGES.map((name) => (
               <MenuItem key={name} value={name}>
@@ -186,6 +216,21 @@ export default function SkillsAndServicesTab() {
                 ))}
               </Box>
             )}
+            MenuProps={{
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left',
+              },
+              transformOrigin: {
+                vertical: 'top',
+                horizontal: 'left',
+              },
+              slotProps: {
+                paper: {
+                  style: { maxHeight: 300 },
+                },
+              },
+            }}
           >
             {BRANDS.map((name) => (
               <MenuItem key={name} value={name}>

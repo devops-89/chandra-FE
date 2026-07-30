@@ -99,10 +99,10 @@ export default function ServiceDetailsPageWrapper({ serviceId }: { serviceId: nu
               {/* Image Preview & Status */}
               <div className="shrink-0 flex flex-col items-center gap-3">
                 <div className="h-32 w-32 rounded-xl border border-slate-200 bg-slate-50 p-2 flex items-center justify-center overflow-hidden">
-                  {service.image ? (
+                  {(service as any).iconDownloadUrl || (service as any).iconUrl || service.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img 
-                      src={service.image} 
+                      src={(service as any).iconDownloadUrl || (service as any).iconUrl || service.image} 
                       alt={service.name} 
                       className="h-full w-full object-contain"
                       onError={(e) => {
@@ -198,59 +198,90 @@ export default function ServiceDetailsPageWrapper({ serviceId }: { serviceId: nu
             </div>
 
             <div className="space-y-4">
-              <div className="flex justify-between items-center py-3 border-b border-slate-100">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Tag size={16} />
-                  <span className="text-sm font-medium">Base Price</span>
+              {pricing.isServiceBasePriceApplied && (
+                <div className="flex justify-between items-center py-3 border-b border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <Tag size={16} />
+                    <span className="text-sm font-medium">Base Price</span>
+                  </div>
+                  <span className="text-lg font-bold text-slate-800">₹{pricing.serviceBasePrice || '0.00'}</span>
                 </div>
-                <span className="text-lg font-bold text-slate-800">₹{pricing.serviceBasePrice || '0.00'}</span>
-              </div>
+              )}
               
-              <div className="flex justify-between items-center py-3 border-b border-slate-100">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Clock size={16} />
-                  <span className="text-sm font-medium">Per Hour Rate</span>
+              {pricing.isPerHourRateApplied && (
+                <div className="flex justify-between items-center py-3 border-b border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <Clock size={16} />
+                    <span className="text-sm font-medium">Per Hour Rate</span>
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700">
+                    {pricing.perHourRate ? `₹${pricing.perHourRate}/hr` : '-'}
+                  </span>
                 </div>
-                <span className="text-sm font-semibold text-slate-700">
-                  {pricing.perHourRate ? `₹${pricing.perHourRate}/hr` : '-'}
-                </span>
-              </div>
+              )}
 
-              <div className="flex justify-between items-center py-3 border-b border-slate-100">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Truck size={16} />
-                  <span className="text-sm font-medium">Per KM Rate</span>
+              {pricing.isDistanceKmApplied && (
+                <div className="flex justify-between items-center py-3 border-b border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <Truck size={16} />
+                    <span className="text-sm font-medium">Per KM Rate</span>
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700">
+                    {pricing.perKmRate ? `₹${pricing.perKmRate}/km` : '-'}
+                  </span>
                 </div>
-                <span className="text-sm font-semibold text-slate-700">
-                  {pricing.perKmRate ? `₹${pricing.perKmRate}/km` : '-'}
-                </span>
-              </div>
+              )}
 
-              <div className="flex justify-between items-center py-3 border-b border-slate-100">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <span className="text-sm font-medium">Platform Fee</span>
+              {pricing.isPlatformFeeApplied && (
+                <div className="flex justify-between items-center py-3 border-b border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <span className="text-sm font-medium">Platform Fee</span>
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700">
+                    {pricing.platformFee ? `₹${pricing.platformFee}` : '-'}
+                  </span>
                 </div>
-                <span className="text-sm font-semibold text-slate-700">
-                  {pricing.platformFee ? `₹${pricing.platformFee}` : '-'}
-                </span>
-              </div>
+              )}
 
-              <div className="flex justify-between items-center py-3 border-b border-slate-100">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <span className="text-sm font-medium">GST</span>
+              {pricing.isGstApplied && (
+                <div className="flex justify-between items-center py-3 border-b border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <span className="text-sm font-medium">GST</span>
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700">
+                    {pricing.gst ? `${pricing.gst}%` : '-'}
+                  </span>
                 </div>
-                <span className="text-sm font-semibold text-slate-700">
-                  {pricing.gst ? `${pricing.gst}%` : '-'}
-                </span>
-              </div>
+              )}
 
-              <div className="flex justify-between items-center py-3">
-                <div className="flex items-center gap-2 text-red-600">
-                  <ShieldAlert size={16} />
-                  <span className="text-sm font-medium">Emergency Charge</span>
+              {pricing.isEmergencyApplied && (
+                <div className="flex justify-between items-center py-3">
+                  <div className="flex items-center gap-2 text-red-600">
+                    <ShieldAlert size={16} />
+                    <span className="text-sm font-medium">Emergency Charge</span>
+                  </div>
+                  <span className="text-sm font-semibold text-red-600">
+                    {pricing.emergencyCharge ? `₹${pricing.emergencyCharge}` : '-'}
+                  </span>
                 </div>
-                <span className="text-sm font-semibold text-red-600">
-                  {pricing.emergencyCharge ? `₹${pricing.emergencyCharge}` : '-'}
+              )}
+
+              <div className="flex justify-between items-center py-4 mt-2 border-t border-slate-200 gap-2">
+                <span className="text-sm font-bold text-slate-800">Total Estimated Amount:</span>
+                <span className="text-lg font-extrabold text-emerald-600">
+                  ₹{(
+                    (pricing.isServiceBasePriceApplied ? parseFloat(pricing.serviceBasePrice || '0') : 0) +
+                    (pricing.isPlatformFeeApplied ? parseFloat(pricing.platformFee || '0') : 0) +
+                    (pricing.isEmergencyApplied ? parseFloat(pricing.emergencyCharge || '0') : 0)
+                  ) * (1 + (pricing.isGstApplied ? parseFloat(pricing.gst || '0') / 100 : 0)) === 0 
+                    ? '0.00' 
+                    : ((
+                        (pricing.isServiceBasePriceApplied ? parseFloat(pricing.serviceBasePrice || '0') : 0) +
+                        (pricing.isPlatformFeeApplied ? parseFloat(pricing.platformFee || '0') : 0) +
+                        (pricing.isEmergencyApplied ? parseFloat(pricing.emergencyCharge || '0') : 0)
+                      ) * (1 + (pricing.isGstApplied ? parseFloat(pricing.gst || '0') / 100 : 0))).toFixed(2)
+                  }
+                  { (pricing.isPerHourRateApplied || pricing.isDistanceKmApplied) && <span className="text-sm font-normal text-slate-500 ml-1">+ variables</span> }
                 </span>
               </div>
             </div>

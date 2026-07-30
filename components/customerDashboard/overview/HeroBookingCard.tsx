@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { Box, Card, CardContent, CircularProgress, Typography, Grid } from '@mui/material';
 import { useEffect } from 'react';
 
 import { DASHBOARD_STATS_DATA } from '@/constants/customerDashboard/sidebar/dashboardStats';
@@ -10,55 +10,58 @@ import type { StatsCardProps } from '@/types/dashboardTypes/dashboardOverview.ty
 
 function StatsCard({ icon: Icon, title, value, isHighlighted = false }: StatsCardProps) {
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2, ease: 'easeOut' as any }} // eslint-disable-line @typescript-eslint/no-explicit-any
-      className="
-        bg-white
-        p-8
-        rounded-xl
-        shadow-lg
-        border
-        border-slate-200
-        cursor-pointer
-        group
-      "
+    <Card
+      elevation={0}
+      sx={{
+        borderRadius: 3,
+        border: '1px solid',
+        borderColor: 'divider',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        height: '100%',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: 3,
+        },
+      }}
     >
-      {/* Icon */}
-      <div className="flex justify-between items-start mb-4">
-        <div className="bg-emerald-50 p-3 rounded-lg">
-          <Icon className="w-6 h-6 text-emerald-600" />
-        </div>
-      </div>
+      <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          <Box
+            sx={{
+              backgroundColor: isHighlighted ? 'success.50' : 'grey.50',
+              p: 1.5,
+              borderRadius: 2,
+              display: 'flex',
+            }}
+          >
+            <Icon className={`w-6 h-6 ${isHighlighted ? 'text-emerald-600' : 'text-slate-600'}`} />
+          </Box>
+        </Box>
 
-      {/* Content */}
-      <p className="text-sm text-slate-600 font-medium mb-1">
-        {title}
-      </p>
+        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'medium' }} gutterBottom>
+          {title}
+        </Typography>
 
-      <h3 className={`
-        text-3xl font-bold transition-colors duration-200
-        ${isHighlighted
-          ? 'text-emerald-600 group-hover:text-emerald-700'
-          : 'text-slate-900 group-hover:text-slate-800'
-        }
-      `}>
-        {value}
-      </h3>
-    </motion.div>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 'bold',
+            color: isHighlighted ? 'success.main' : 'text.primary',
+          }}
+        >
+          {value}
+        </Typography>
+      </CardContent>
+    </Card>
   );
 }
 
 export default function HeroBookingCard() {
   const dispatch = useAppDispatch();
 
-  const { stats } = useAppSelector(
+  const { stats, isLoading } = useAppSelector(
     (state) => state.customerDashboard,
   );
-
-  useEffect(() => {
-    dispatch(fetchCustomerDashboardStats());
-  }, [dispatch]);
 
   const dashboardStats = [
     {
@@ -80,19 +83,29 @@ export default function HeroBookingCard() {
   ];
 
   return (
-    <section className="space-y-6">
+    <Box component="section" sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Typography variant="h6" color="text.primary" sx={{ fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' }}>
+        Dashboard Overview
+      </Typography>
 
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-        {dashboardStats.map((stat, index) => (
-          <StatsCard
-            key={index}
-            icon={stat.icon}
-            title={stat.title}
-            value={stat.value}
-            isHighlighted={stat.isHighlighted}
-          />
-        ))}
-      </div>
-    </section>
+      {isLoading && !stats ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
+          <CircularProgress color="success" />
+        </Box>
+      ) : (
+        <Grid container spacing={3}>
+          {dashboardStats.map((stat, index) => (
+            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+              <StatsCard
+                icon={stat.icon}
+                title={stat.title}
+                value={stat.value}
+                isHighlighted={stat.isHighlighted}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      )}
+    </Box>
   );
 }

@@ -80,7 +80,7 @@ export default function ProfileHero() {
         </div>
 
         <Link
-          href="/dashboard/technician/profile/edit"
+          href="/technician/profile/edit"
           className="
             px-6
             py-3

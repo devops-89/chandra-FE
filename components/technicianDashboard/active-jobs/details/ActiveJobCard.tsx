@@ -39,7 +39,7 @@ export default function ActiveJobCard({
           You currently don&apost have any accepted jobs. Go to the Nearby Jobs section, find an available task that fits your schedule, and accept it to begin!
         </p>
         <Link
-          href="/dashboard/technician/nearby-jobs"
+          href="/technician/dashboard"
           className="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors text-sm cursor-pointer"
         >
           View Nearby Jobs

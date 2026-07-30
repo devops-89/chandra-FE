@@ -54,7 +54,7 @@ export default function ActiveJobCard() {
           You don&apost have any active bookings currently assigned. Browse nearby requests to start earning!
         </p>
         <Link
-          href="/dashboard/technician/nearby-jobs"
+          href="/technician/dashboard"
           className="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors text-sm cursor-pointer"
         >
           Browse Nearby Bookings

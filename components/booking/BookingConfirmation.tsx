@@ -29,7 +29,7 @@ export function BookingConfirmationContent({
 
   const handleDashboardRedirect = () => {
     clearBooking();
-    router.push('/dashboard/customer');
+    router.push('/customer/dashboard');
   };
 
   if (layout === 'dashboard') {
@@ -92,17 +92,23 @@ export function BookingConfirmationContent({
 
           <div className="mt-10 rounded-3xl border border-slate-200 bg-slate-50 p-6 text-left">
             <InfoRow label="Booking ID" value={bookingId} />
-            <InfoRow label="Service"    value={service} />
+            <InfoRow label="Service" value={service} />
             {servicePrice && servicePrice > 0 && (
               <InfoRow label="Service Price" value={`₹${servicePrice}`} />
             )}
-            <InfoRow label="Date"      value={date} />
+            <InfoRow label="Date" value={date} />
             <InfoRow label="Time Slot" value={slot} />
           </div>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Link
-              href="/dashboard/customer"
+              href="/"
+              className="rounded-full bg-emerald-600 px-8 py-4 text-center font-semibold text-white transition-all duration-300 hover:bg-emerald-700"
+            >
+              Back To Home
+            </Link>
+            <Link
+              href="/customer/dashboard"
               onClick={handleDashboardRedirect}
               className="rounded-full border border-slate-300 px-8 py-4 text-center font-semibold text-slate-700 transition-all duration-300 hover:bg-slate-100"
             >
