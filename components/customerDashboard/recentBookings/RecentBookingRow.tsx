@@ -5,7 +5,6 @@ import { StatusBadge } from "../shared";
 type RecentBookingRowProps = {
   booking: RecentBooking;
 };
-
 const RecentBookingRow = ({ booking }: RecentBookingRowProps) => {
   return (
     <tr className="group transition-colors hover:bg-slate-50">

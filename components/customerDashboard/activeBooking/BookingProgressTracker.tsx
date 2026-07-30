@@ -5,6 +5,7 @@ import { Bike, Check, Home, Play } from 'lucide-react';
 
 import type { BookingProgressStatus } from '@/types/dashboardTypes/customerDashboard/customerDashboard.types';
 
+//
 type ProgressStep = {
   id: BookingProgressStatus;
   label: string;

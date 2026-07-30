@@ -1,8 +1,8 @@
 'use client';
 
+import { Alert, Snackbar } from '@mui/material';
 import { LifeBuoy, X } from 'lucide-react';
 import { useState } from 'react';
-import { Snackbar, Alert } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { createComplaint } from '@/redux/slices/complaintSlice';
@@ -142,7 +142,6 @@ export default function RaiseTicketModal({
               className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
             />
           </div>
-
         </div>
 
         {/* Footer */}

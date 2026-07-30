@@ -1,12 +1,15 @@
 "use client";
 
-import Link from 'next/link';
-import { 
-  Box, Card, CardHeader, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Button, Chip, CircularProgress 
-} from '@mui/material';
-import { ChevronRight } from '@mui/icons-material';
-
 import { useRecentBookings } from "@/hooks/useRecentBookings";
+import { ChevronRight } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  Card, CardHeader,
+  Chip, CircularProgress,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography
+} from '@mui/material';
+import Link from 'next/link';
 
 const RecentBookings = () => {
   const { bookings } = useRecentBookings();

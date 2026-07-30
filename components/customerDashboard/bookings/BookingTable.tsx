@@ -1,96 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { fetchCustomerBookings } from '@/redux/slices/customerBookingSlice';
 import {
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
-  Paper,
-  TablePagination
+  TablePagination,
+  TableRow
 } from '@mui/material';
+import { useEffect, useState } from 'react';
 
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerBookings } from '@/redux/slices/customerBookingSlice';
-import { BOOKING_STATUS } from '@/types/enums';
-
-const STATUS_CHIP: Record<BOOKING_STATUS | string, { label: string; bg: string; text: string }> = {
-  [BOOKING_STATUS.PENDING]: { label: 'Pending', bg: '#fef3c7', text: '#b45309' },
-  [BOOKING_STATUS.ACCEPTED]: { label: 'Accepted', bg: '#e0f2fe', text: '#0369a1' },
-  [BOOKING_STATUS.ENROUTE]: { label: 'En Route', bg: '#e0f2fe', text: '#0369a1' },
-  [BOOKING_STATUS.ARRIVED]: { label: 'Arrived', bg: '#e0f2fe', text: '#0369a1' },
-  [BOOKING_STATUS.ONGOING]: { label: 'In Progress', bg: '#f3e8ff', text: '#6b21a8' },
-  [BOOKING_STATUS.COMPLETED]: { label: 'Completed', bg: '#d1fae5', text: '#047857' },
-  [BOOKING_STATUS.CANCELLED]: { label: 'Cancelled', bg: '#fee2e2', text: '#b91c1c' },
-};
-
-function parseIstDate(dateStr: string): Date {
-  if (!dateStr) return new Date(NaN);
-  const cleanStr = dateStr.trim();
-  let date = new Date(cleanStr);
-  if (!isNaN(date.getTime())) {
-    return date;
-  }
-
-  const match = cleanStr.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})(?:[\s,]+(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s+(AM|PM))?)?$/i);
-  if (match) {
-    const [_, day, month, year, hoursStr, minutesStr, secondsStr, period] = match;
-    let hours = hoursStr ? Number(hoursStr) : 0;
-    const minutes = minutesStr ? Number(minutesStr) : 0;
-    const seconds = secondsStr ? Number(secondsStr) : 0;
-
-    if (period) {
-      if (period.toUpperCase() === 'PM' && hours !== 12) {
-        hours += 12;
-      } else if (period.toUpperCase() === 'AM' && hours === 12) {
-        hours = 0;
-      }
-    }
-
-    date = new Date(Number(year), Number(month) - 1, Number(day), hours, minutes, seconds);
-    if (!isNaN(date.getTime())) {
-      return date;
-    }
-  }
-
-  const isoFormat = cleanStr.replace(' ', 'T');
-  date = new Date(isoFormat);
-  if (!isNaN(date.getTime())) {
-    return date;
-  }
-
-  return new Date(NaN);
-}
-
-function formatDate(raw: string): string {
-  try {
-    const date = parseIstDate(raw);
-    if (isNaN(date.getTime())) return raw;
-    return date.toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return raw;
-  }
-}
-
-function formatTime(raw: string): string {
-  try {
-    const date = parseIstDate(raw);
-    if (isNaN(date.getTime())) return '';
-    return date.toLocaleString('en-IN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    }).toLowerCase();
-  } catch {
-    return raw;
-  }
-}
+import BookingRow from './BookingRow';
 
 export default function BookingTable() {
   const dispatch = useAppDispatch();

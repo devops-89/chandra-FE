@@ -7,7 +7,6 @@ import TimeSlotSelector from '@/components/booking/TimeSlotSelector';
 import { useAppDispatch } from '@/redux/hooks';
 import { rescheduleBooking } from '@/redux/slices/bookingSlice';
 import type { Booking } from '@/types/booking.types';
-
 interface Props {
   open: boolean;
   onClose: () => void;
