@@ -5,7 +5,7 @@ import type { BookingTechnician } from "@/types/dashboardTypes/customerDashboard
 type BookingTechnicianCardProps = {
   technician: BookingTechnician;
 };
-
+//
 const BookingTechnicianCard = ({ technician }: BookingTechnicianCardProps) => {
   return (
     <div className="flex items-start gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">

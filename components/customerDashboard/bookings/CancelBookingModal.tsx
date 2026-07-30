@@ -1,12 +1,11 @@
 'use client';
 
-import { AlertTriangle, X } from 'lucide-react';
-import { useState } from 'react';
-
 import { useAppDispatch } from '@/redux/hooks';
 import { cancelBooking } from '@/redux/slices/customerBookingSlice';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
 import type { CancelledBooking, CustomerBooking } from '@/types/customerBooking.types';
+import { AlertTriangle, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface Props {
   open: boolean;

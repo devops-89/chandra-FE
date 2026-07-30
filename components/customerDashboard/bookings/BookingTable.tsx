@@ -1,19 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  TablePagination 
-} from '@mui/material';
-
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchCustomerBookings } from '@/redux/slices/customerBookingSlice';
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow
+} from '@mui/material';
+import { useEffect, useState } from 'react';
 
 import BookingRow from './BookingRow';
 

@@ -3,7 +3,7 @@ import type { CustomerBooking } from '@/types/customerBooking.types';
 interface Props {
   booking: CustomerBooking;
 }
-
+//
 export default function BookingSummaryCard({ booking }: Props) {
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">

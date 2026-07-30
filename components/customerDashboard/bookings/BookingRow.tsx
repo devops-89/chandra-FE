@@ -1,6 +1,6 @@
-import Link from 'next/link';
+import { IconButton, TableCell, TableRow } from '@mui/material';
 import { Eye } from 'lucide-react';
-import { TableRow, TableCell, IconButton } from '@mui/material';
+import Link from 'next/link';
 
 import type { CustomerBooking } from '@/types/customerBooking.types';
 
@@ -9,7 +9,7 @@ import StatusBadge from './StatusBadge';
 interface Props {
   booking: CustomerBooking;
 }
-
+//
 function parseIstDate(dateStr: string): Date {
   if (!dateStr) return new Date(NaN);
   const cleanStr = dateStr.trim();
