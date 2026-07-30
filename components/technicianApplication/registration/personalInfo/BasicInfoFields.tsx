@@ -88,6 +88,8 @@ export default function BasicInfoFields({
           <label className="mb-2 block text-xs font-medium md:text-sm">Phone Number</label>
           <MuiTelInput
             defaultCountry="IN"
+            forceCallingCode
+            placeholder=""
             value={phoneNumber}
             onChange={(val) => onPhoneNumberChange(val)}
             onBlur={onPhoneNumberBlur}

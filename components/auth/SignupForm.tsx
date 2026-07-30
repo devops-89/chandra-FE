@@ -179,6 +179,8 @@ export const SignupForm = () => {
                 variant="outlined"
                 fullWidth
                 defaultCountry="IN"
+                forceCallingCode
+                placeholder=""
                 name="phone"
                 autoComplete="tel"
                 value={form.phone}

@@ -80,7 +80,13 @@ export const AdminControllers = {
     formData.append('firstName', payload.firstName);
     formData.append('lastName', payload.lastName);
     formData.append('username', payload.username);
-    formData.append('phone', payload.phone);
+    const phoneParts = payload.phone.split(' ');
+    if (phoneParts.length >= 2) {
+      formData.append('countryCode', phoneParts[0]);
+      formData.append('phone', phoneParts.slice(1).join('').replace(/\s/g, ''));
+    } else {
+      formData.append('phone', payload.phone);
+    }
 
     if (payload.profileImage) {
       formData.append('profileImage', payload.profileImage);

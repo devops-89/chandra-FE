@@ -76,7 +76,13 @@ export default function PersonalInfoTab() {
         data.append('email', formData.email);
       }
       if (formData.phone) {
-        data.append('phone', formData.phone);
+        const phoneParts = formData.phone.split(' ');
+        if (phoneParts.length >= 2) {
+          data.append('countryCode', phoneParts[0]);
+          data.append('phone', phoneParts.slice(1).join('').replace(/\s/g, ''));
+        } else {
+          data.append('phone', formData.phone);
+        }
       }
       if (formData.emergencyContact) {
         data.append('emergencyContact', formData.emergencyContact);

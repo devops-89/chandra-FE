@@ -1,4 +1,7 @@
+'use client';
+
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 import type { ServiceImageProps } from '@/types/services.types';
 
@@ -7,19 +10,26 @@ export function ServiceImage({
   alt,
   alignRight,
 }: ServiceImageProps) {
+  const [imgSrc, setImgSrc] = useState(src || '/images/service-placeholder.png');
+
+  useEffect(() => {
+    setImgSrc(src || '/images/service-placeholder.png');
+  }, [src]);
+
   // S3 presigned URLs are slow for Next.js server-side optimization.
   // Pass them through unoptimized so the browser fetches directly.
-  const isExternalUrl = src.startsWith('http://') || src.startsWith('https://');
+  const isExternalUrl = imgSrc.startsWith('http://') || imgSrc.startsWith('https://');
 
   return (
-    <div className={`relative bg-amber-30 h-56 w-full object-fill flex ${alignRight ? 'justify-end' : ''}`}>
+    <div className={`relative bg-slate-100 h-56 w-full flex overflow-hidden ${alignRight ? 'justify-end' : ''}`}>
       <Image
-        src={src}
+        src={imgSrc}
         alt={alt}
         width={500}
         height={320}
-        className="object-cover object-top"
+        className="object-cover object-top w-full h-full"
         unoptimized={isExternalUrl}
+        onError={() => setImgSrc('/images/service-placeholder.png')}
       />
     </div>
   );

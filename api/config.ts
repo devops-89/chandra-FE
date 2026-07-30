@@ -8,6 +8,36 @@ import { SERVER_ENDPOINTS } from './serverConstant';
 
 export const globalApiCache = buildMemoryStorage();
 
+const serializePhoneNumbers = (data: any): any => {
+  if (Array.isArray(data)) {
+    data.forEach(serializePhoneNumbers);
+  } else if (data !== null && typeof data === 'object') {
+    if (typeof data.phone === 'string' && data.phone.startsWith('+')) {
+      const parts = data.phone.split(' ');
+      if (parts.length >= 2) {
+        data.countryCode = parts[0];
+        data.phone = parts.slice(1).join('').replace(/\s/g, '');
+      }
+    }
+    Object.values(data).forEach(serializePhoneNumbers);
+  }
+  return data;
+};
+
+const deserializePhoneNumbers = (data: any): any => {
+  if (Array.isArray(data)) {
+    data.forEach(deserializePhoneNumbers);
+  } else if (data !== null && typeof data === 'object') {
+    if (typeof data.countryCode === 'string' && typeof data.phone === 'string') {
+      if (!data.phone.startsWith(data.countryCode)) {
+        data.phone = `${data.countryCode} ${data.phone}`;
+      }
+    }
+    Object.values(data).forEach(deserializePhoneNumbers);
+  }
+  return data;
+};
+
 const authSecuredApi = setupCache(axios.create({
   baseURL: SERVER_ENDPOINTS.AUTH_BASEURL,
 }), { storage: globalApiCache, methods: ['get'], interpretHeader: false, ttl: 1000 * 60 * 5 });
@@ -20,6 +50,9 @@ authSecuredApi.interceptors.request.use(
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (config.data && typeof config.data === 'object' && typeof FormData !== 'undefined' && !(config.data instanceof FormData)) {
+      serializePhoneNumbers(config.data);
     }
     return config;
   },
@@ -43,6 +76,9 @@ userSecuredApi.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    if (config.data && typeof config.data === 'object' && typeof FormData !== 'undefined' && !(config.data instanceof FormData)) {
+      serializePhoneNumbers(config.data);
+    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -53,6 +89,20 @@ const userPublicApi = setupCache(axios.create({
 }), { storage: globalApiCache, methods: ['get'], interpretHeader: false, ttl: 1000 * 60 * 5 });
 
 export { authPublicApi, authSecuredApi, userPublicApi, userSecuredApi };
+
+const setupPublicRequestInterceptor = (instance: AxiosInstance) => {
+  instance.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      if (config.data && typeof config.data === 'object' && typeof FormData !== 'undefined' && !(config.data instanceof FormData)) {
+        serializePhoneNumbers(config.data);
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+};
+setupPublicRequestInterceptor(authPublicApi);
+setupPublicRequestInterceptor(userPublicApi);
 
 let isRefreshing = false;
 
@@ -105,6 +155,11 @@ const setupResponseInterceptor = (instance: AxiosInstance) => {
           getAppStore().dispatch(showSnackbar({ message: msg, severity }));
         }
       }
+
+      if (response.data && typeof response.data === 'object') {
+        deserializePhoneNumbers(response.data);
+      }
+
       return response;
     },
     async (error: AxiosError) => {

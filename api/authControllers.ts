@@ -69,7 +69,13 @@ export const AuthControllers = {
   registerCustomer: async (payload: RegisterCustomerRequest): Promise<RegisterCustomerResponse> => {
     try {
       const formData = new FormData();
-      formData.append('phone', payload.phone);
+      const phoneParts = payload.phone.split(' ');
+      if (phoneParts.length >= 2) {
+        formData.append('countryCode', phoneParts[0]);
+        formData.append('phone', phoneParts.slice(1).join('').replace(/\s/g, ''));
+      } else {
+        formData.append('phone', payload.phone);
+      }
       if (payload.email) formData.append('email', payload.email);
       formData.append('username', payload.username);
       formData.append('firstName', payload.firstName);
@@ -95,7 +101,13 @@ export const AuthControllers = {
       const formData = new FormData();
       if (payload.email) formData.append('email', payload.email);
       formData.append('username', payload.username);
-      formData.append('phone', payload.phone);
+      const phoneParts = payload.phone.split(' ');
+      if (phoneParts.length >= 2) {
+        formData.append('countryCode', phoneParts[0]);
+        formData.append('phone', phoneParts.slice(1).join('').replace(/\s/g, ''));
+      } else {
+        formData.append('phone', payload.phone);
+      }
       formData.append('firstName', payload.firstName);
       if (payload.lastName) formData.append('lastName', payload.lastName);
       formData.append('password', payload.password);

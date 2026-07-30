@@ -69,7 +69,15 @@ export default function ProfileContent() {
         formData.append('firstName', values.firstName);
         formData.append('lastName', values.lastName);
         if (values.email) formData.append('email', values.email);
-        if (values.phone) formData.append('phone', values.phone);
+        if (values.phone) {
+          const phoneParts = values.phone.split(' ');
+          if (phoneParts.length >= 2) {
+            formData.append('countryCode', phoneParts[0]);
+            formData.append('phone', phoneParts.slice(1).join('').replace(/\s/g, ''));
+          } else {
+            formData.append('phone', values.phone);
+          }
+        }
         if (values.emergencyContact) formData.append('emergencyContact', values.emergencyContact);
         if (values.profileImage) formData.append('profileImage', values.profileImage);
 
@@ -348,6 +356,8 @@ export default function ProfileContent() {
                 <MuiTelInput
                   fullWidth
                   defaultCountry="IN"
+                  forceCallingCode
+                  placeholder=""
                   id="emergencyContact"
                   name="emergencyContact"
                   label="Emergency Contact (Optional)"

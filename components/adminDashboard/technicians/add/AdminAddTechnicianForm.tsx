@@ -111,6 +111,8 @@ export default function AdminAddTechnicianForm() {
           <MuiTelInput
             fullWidth
             defaultCountry="IN"
+            forceCallingCode
+            placeholder=""
             label="Phone Number"
             name="phone"
             value={formik.values.phone}

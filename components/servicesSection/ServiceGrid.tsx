@@ -166,8 +166,11 @@ export function ServiceGrid({ linkPrefix = '/services', useSwiper = false }: Ser
           <Grid
             key={service.id}
             size={getGridSize(currentItems.length)}
+            sx={{ display: 'flex' }}
           >
-            <ServiceCard service={service} linkPrefix={linkPrefix} />
+            <div className="w-full flex">
+              <ServiceCard service={service} linkPrefix={linkPrefix} />
+            </div>
           </Grid>
         ))}
       </Grid>
