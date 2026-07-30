@@ -59,7 +59,7 @@ export function ServiceGrid({ linkPrefix = '/services', onCardClick }: ServiceGr
           <button
             type="button"
             onClick={() => dispatch(fetchServices())}
-            className="mt-2 rounded-xl bg-red-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700"
+            className="mt-2 rounded-xl cursor-pointer bg-red-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700"
           >
             Try Again
           </button>
@@ -117,11 +117,11 @@ export function ServiceGrid({ linkPrefix = '/services', onCardClick }: ServiceGr
         <Grid
           key={service.id}
           size={{
-          xs: 12,
-          sm: 6,
-          md: 4,
-          lg: 3,
-        }}
+            xs: 12,
+            sm: 6,
+            md: 4,
+            lg: 3,
+          }}
         >
           <ServiceCard service={service} linkPrefix={linkPrefix} onCardClick={onCardClick} />
         </Grid>

@@ -64,7 +64,7 @@ export default function DynamicServiceDetailPage({
           <button
             type="button"
             onClick={onRetry}
-            className="mt-2 rounded-xl bg-red-600 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-700"
+            className="mt-2 rounded-xl cursor-pointer bg-red-600 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-700"
           >
             Try Again
           </button>
