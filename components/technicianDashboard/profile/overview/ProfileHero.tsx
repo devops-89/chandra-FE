@@ -36,7 +36,6 @@ export default function ProfileHero() {
         >
           <Avatar
             src={
-              technician?.technicianProfile?.selfieUrl ??
               technician?.profileImage ??
               undefined
             }

@@ -74,7 +74,7 @@ export default function EditProfileContent() {
 
         {/* Tab Content Area */}
         <div className="flex-1 min-w-0">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 min-h-[700px]">
             {renderTabContent()}
           </div>
         </div>

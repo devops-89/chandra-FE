@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
 
 import type { AvailabilityFormData } from '@/types/serviceAvailability.types';
 
@@ -26,8 +27,8 @@ export function AvailabilityForm({ onSubmit }: AvailabilityFormProps) {
 
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
-    } else if (!/^\d{10}$/.test(formData.phone.trim())) {
-      newErrors.phone = 'Enter a valid 10-digit phone number';
+    } else if (!matchIsValidTel(formData.phone)) {
+      newErrors.phone = 'Enter a valid phone number';
     }
 
     if (!formData.pincode.trim()) {
@@ -86,15 +87,20 @@ export function AvailabilityForm({ onSubmit }: AvailabilityFormProps) {
         <label htmlFor="av-phone" className="mb-1.5 block text-sm font-medium text-slate-700">
           Phone Number
         </label>
-        <input
+        <MuiTelInput
           id="av-phone"
-          type="tel"
-          inputMode="numeric"
-          maxLength={10}
+          defaultCountry="IN"
           value={formData.phone}
-          onChange={(e) => handleChange('phone', e.target.value.replace(/\D/g, ''))}
-          placeholder="10-digit mobile number"
-          className={`${inputClasses} ${errors.phone ? 'border-red-400 focus:border-red-400 focus:ring-red-100' : ''}`}
+          onChange={(val) => handleChange('phone', val)}
+          error={!!errors.phone}
+          sx={{
+            width: '100%',
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '0.75rem',
+              backgroundColor: '#fff',
+              border: errors.phone ? '1px solid #f87171' : '1px solid transparent',
+            }
+          }}
         />
         {errors.phone && <p className={errorClasses}>{errors.phone}</p>}
       </div>

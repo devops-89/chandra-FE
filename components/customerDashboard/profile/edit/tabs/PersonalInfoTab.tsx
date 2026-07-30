@@ -1,23 +1,30 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Avatar, IconButton, CircularProgress } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerProfile, updateCustomerProfile } from '@/redux/slices/customerProfileSlice';
+import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
+import { CustomerControllers } from '@/api/customerControllers';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 export default function PersonalInfoTab() {
   const dispatch = useAppDispatch();
-  const { profile, isLoading, error } = useAppSelector(
+  const { profile, isLoading: isFetching, error } = useAppSelector(
     (state) => state.customerProfile
   );
 
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
     emergencyContact: '',
+    profileImage: null as File | null,
   });
-
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const hasFetched = useRef(false);
 
   useEffect(() => {
@@ -35,7 +42,11 @@ export default function PersonalInfoTab() {
         email: profile.email ?? '',
         phone: profile.phone ?? '',
         emergencyContact: profile.emergencyContact ?? '',
+        profileImage: null,
       });
+      if (profile.profileImage) {
+        setPreviewImage(profile.profileImage);
+      }
     }
   }, [profile]);
 
@@ -47,22 +58,46 @@ export default function PersonalInfoTab() {
     }));
   };
 
-  const handleSubmit = async () => {
-    try {
-      await dispatch(
-        updateCustomerProfile({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phone: formData.phone,
-          emergencyContact: formData.emergencyContact,
-        })
-      ).unwrap();
-    } catch (err) {
-      console.error('Failed to update profile:', err);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setFormData((prev) => ({ ...prev, profileImage: file }));
+      setPreviewImage(URL.createObjectURL(file));
     }
   };
 
-  if (isLoading && !profile) {
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const data = new FormData();
+      data.append('firstName', formData.firstName);
+      data.append('lastName', formData.lastName);
+      if (formData.email) {
+        data.append('email', formData.email);
+      }
+      if (formData.phone) {
+        data.append('phone', formData.phone);
+      }
+      if (formData.emergencyContact) {
+        data.append('emergencyContact', formData.emergencyContact);
+      }
+      if (formData.profileImage) {
+        data.append('profileImage', formData.profileImage);
+      }
+
+      await CustomerControllers.updateCustomerProfileWithFiles(data);
+      dispatch(fetchCustomerProfile());
+      dispatch(showSnackbar({ message: 'Profile updated successfully', severity: 'success' }));
+      setFormData(prev => ({ ...prev, profileImage: null }));
+    } catch (err: any) {
+      console.error('Failed to update profile:', err);
+      dispatch(showSnackbar({ message: 'Failed to update profile', severity: 'error' }));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (isFetching && !profile) {
     return <div className="text-slate-500">Loading personal information...</div>;
   }
 
@@ -75,6 +110,38 @@ export default function PersonalInfoTab() {
       <div>
         <h3 className="text-lg font-bold text-slate-900">Personal Details</h3>
         <p className="text-sm text-slate-500 mt-1">Update your personal information here.</p>
+      </div>
+
+      <div className="flex flex-col items-center sm:items-start mb-8">
+        <div className="relative">
+          <Avatar
+            src={previewImage || ''}
+            alt="Profile Image"
+            sx={{ width: 120, height: 120, border: '4px solid white', boxShadow: '0 4px 10px -1px rgb(0 0 0 / 0.1)' }}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+          />
+          <IconButton
+            onClick={() => fileInputRef.current?.click()}
+            size="small"
+            sx={{
+              position: 'absolute',
+              bottom: 4,
+              right: 4,
+              backgroundColor: '#059669',
+              color: 'white',
+              '&:hover': { backgroundColor: '#047857' },
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            }}
+          >
+            <span className="material-symbols-outlined text-sm">file_upload</span>
+          </IconButton>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -116,7 +183,7 @@ export default function PersonalInfoTab() {
           />
         </div>
 
-        {/* Email - Disabled */}
+        {/* Email */}
         <div>
           <label
             htmlFor="email"
@@ -129,8 +196,9 @@ export default function PersonalInfoTab() {
             id="email"
             name="email"
             value={formData.email}
-            disabled
-            className="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-slate-500 cursor-not-allowed"
+            onChange={handleChange}
+            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            placeholder="Enter email"
           />
         </div>
 
@@ -156,12 +224,13 @@ export default function PersonalInfoTab() {
       <div className="pt-4 flex justify-end">
         <button
           onClick={handleSubmit}
-          disabled={isLoading}
+          disabled={loading || isFetching}
           className="
-            rounded-xl bg-emerald-600 px-8 py-3 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 transition-all
+            flex justify-center items-center rounded-xl bg-emerald-600 px-8 py-3 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 transition-all
           "
         >
-          {isLoading ? 'Saving...' : 'Save Changes'}
+          {loading ? <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} /> : null}
+          {loading ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
     </div>

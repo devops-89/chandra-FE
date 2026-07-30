@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Button, Card, TextField, Typography } from '@mui/material';
-import { useFormik } from 'formik';
+import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import * as Yup from 'yup';
@@ -27,7 +27,10 @@ export default function AdminAddTechnicianForm() {
       firstName: Yup.string().required('First name is required'),
       lastName: Yup.string().required('Last name is required'),
       email: Yup.string().email('Invalid email address').required('Email is required'),
-      phone: Yup.string().required('Phone number is required'),
+      phone: Yup.string().test('is-valid-phone', 'Invalid phone number', (value) => {
+        if (!value) return false;
+        return matchIsValidTel(value);
+      }).required('Phone number is required'),
       password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
     }),
     onSubmit: async (values) => {
@@ -53,8 +56,8 @@ export default function AdminAddTechnicianForm() {
         <Typography variant="h5" sx={{ fontWeight: 700, color: '#0f172a' }}>
           Add New Technician
         </Typography>
-        <Button 
-          onClick={() => router.back()} 
+        <Button
+          onClick={() => router.back()}
           startIcon={
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="19" y1="12" x2="5" y2="12" />
@@ -105,16 +108,16 @@ export default function AdminAddTechnicianForm() {
             fullWidth
             variant="outlined"
           />
-          <TextField
+          <MuiTelInput
+            fullWidth
+            defaultCountry="IN"
             label="Phone Number"
             name="phone"
             value={formik.values.phone}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
+            onChange={(val) => formik.setFieldValue('phone', val)}
+            onBlur={() => formik.setFieldTouched('phone', true)}
             error={formik.touched.phone && Boolean(formik.errors.phone)}
             helperText={formik.touched.phone && formik.errors.phone}
-            fullWidth
-            variant="outlined"
           />
           <TextField
             label="Password"
@@ -128,7 +131,7 @@ export default function AdminAddTechnicianForm() {
             fullWidth
             variant="outlined"
           />
-          
+
           <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
             <Button
               type="button"
@@ -144,8 +147,8 @@ export default function AdminAddTechnicianForm() {
               type="submit"
               variant="contained"
               disabled={loading}
-              sx={{ 
-                bgcolor: '#059669', 
+              sx={{
+                bgcolor: '#059669',
                 '&:hover': { bgcolor: '#047857' },
                 textTransform: 'none',
                 fontWeight: 600,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -13,22 +13,35 @@ import {
   Paper,
   TextField,
   Typography,
-  CircularProgress
+  CircularProgress,
+  IconButton
 } from '@mui/material';
 import { Edit as EditIcon, Save as SaveIcon } from '@mui/icons-material';
+import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerProfile, updateCustomerProfile } from '@/redux/slices/customerProfileSlice';
+import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
+import { CustomerControllers } from '@/api/customerControllers';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 export default function ProfileContent() {
   const dispatch = useAppDispatch();
   const { profile, isLoading } = useAppSelector((state) => state.customerProfile);
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchCustomerProfile());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (profile?.profileImage) {
+      setPreviewImage(profile.profileImage);
+    }
+  }, [profile]);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -38,25 +51,49 @@ export default function ProfileContent() {
       phone: profile?.phone || '',
       email: profile?.email || '',
       emergencyContact: profile?.emergencyContact || '',
+      profileImage: null as File | null,
     },
     validationSchema: Yup.object({
       firstName: Yup.string().required('First Name is required'),
       lastName: Yup.string(),
-      emergencyContact: Yup.string(),
+      email: Yup.string().email('Invalid email format'),
+      emergencyContact: Yup.string().test('is-valid-phone', 'Invalid phone number format', (value) => {
+        if (!value) return true; // optional
+        return matchIsValidTel(value);
+      }),
     }),
     onSubmit: async (values) => {
       setIsUpdating(true);
       try {
-        const { email, phone, ...payload } = values;
-        await dispatch(updateCustomerProfile(payload as any)).unwrap();
+        const formData = new FormData();
+        formData.append('firstName', values.firstName);
+        formData.append('lastName', values.lastName);
+        if (values.email) formData.append('email', values.email);
+        if (values.phone) formData.append('phone', values.phone);
+        if (values.emergencyContact) formData.append('emergencyContact', values.emergencyContact);
+        if (values.profileImage) formData.append('profileImage', values.profileImage);
+
+        await CustomerControllers.updateCustomerProfileWithFiles(formData);
+        dispatch(fetchCustomerProfile());
+        dispatch(showSnackbar({ message: 'Profile updated successfully', severity: 'success' }));
         setIsEditing(false);
+        formik.setFieldValue('profileImage', null);
       } catch (error) {
         console.error('Failed to update profile:', error);
+        dispatch(showSnackbar({ message: 'Failed to update profile', severity: 'error' }));
       } finally {
         setIsUpdating(false);
       }
     },
   });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      formik.setFieldValue('profileImage', file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
 
   if (isLoading && !profile) {
     return (
@@ -69,7 +106,7 @@ export default function ProfileContent() {
   const userName = profile 
     ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || 'Customer'
     : 'Customer';
-  const foundAvatar = profile?.profileImage || '';
+  const foundAvatar = previewImage || profile?.profileImage || '';
 
   return (
     <Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto', pb: 8 }}>
@@ -110,20 +147,49 @@ export default function ProfileContent() {
           {/* Left Column: Avatar & Contact Info */}
           <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: { xs: 2, md: 0 }, pb: 4, px: 2, height: '100%', justifyContent: 'flex-start' }}>
-              <Avatar
-                src={foundAvatar || undefined}
-                sx={{
-                  width: 140,
-                  height: 140,
-                  mb: 3,
-                  border: '4px solid #fff',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.1)',
-                  bgcolor: 'success.main',
-                  fontSize: '3rem'
-                }}
-              >
-                {!foundAvatar && userName && userName !== 'Customer' ? userName.charAt(0).toUpperCase() : null}
-              </Avatar>
+              <Box sx={{ position: 'relative' }}>
+                <Avatar
+                  src={foundAvatar || undefined}
+                  sx={{
+                    width: 140,
+                    height: 140,
+                    mb: 3,
+                    border: '4px solid #fff',
+                    boxShadow: '0 4px 14px rgba(0,0,0,0.1)',
+                    bgcolor: 'success.main',
+                    fontSize: '3rem'
+                  }}
+                >
+                  {!foundAvatar && userName && userName !== 'Customer' ? userName.charAt(0).toUpperCase() : null}
+                </Avatar>
+                {isEditing && (
+                  <>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      ref={fileInputRef}
+                      onChange={handleImageChange}
+                      style={{ display: 'none' }}
+                    />
+                    <IconButton
+                      onClick={() => fileInputRef.current?.click()}
+                      size="small"
+                      sx={{
+                        position: 'absolute',
+                        bottom: 28,
+                        right: 4,
+                        backgroundColor: '#059669',
+                        color: 'white',
+                        '&:hover': { backgroundColor: '#047857' },
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-sm">file_upload</span>
+                    </IconButton>
+                  </>
+                )}
+              </Box>
               
               <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', textAlign: 'center' }}>
                 {userName}
@@ -261,19 +327,39 @@ export default function ProfileContent() {
                   color="success"
                 />
               </Grid>
-
+              
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
+                  id="email"
+                  name="email"
+                  label="Email Address"
+                  type="email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email as string}
+                  color="success"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <MuiTelInput
+                  fullWidth
+                  defaultCountry="IN"
                   id="emergencyContact"
                   name="emergencyContact"
                   label="Emergency Contact (Optional)"
                   value={formik.values.emergencyContact}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
+                  onChange={(val) => formik.setFieldValue('emergencyContact', val)}
+                  onBlur={() => formik.setFieldTouched('emergencyContact', true)}
                   error={formik.touched.emergencyContact && Boolean(formik.errors.emergencyContact)}
                   helperText={formik.touched.emergencyContact && formik.errors.emergencyContact as string}
                   color="success"
+                  sx={{
+                    '& .MuiOutlinedInput-root': { borderRadius: '12px', backgroundColor: '#fff' }
+                  }}
                 />
               </Grid>
 
@@ -285,6 +371,7 @@ export default function ProfileContent() {
                     onClick={() => {
                       formik.resetForm();
                       setIsEditing(false);
+                      setPreviewImage(profile?.profileImage || null);
                     }}
                     disabled={isUpdating}
                   >

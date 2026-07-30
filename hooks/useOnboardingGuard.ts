@@ -60,10 +60,10 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
           const res = await AuthControllers.getProfile();
           const technicianProfile = res.data?.technicianProfile;
 
-          if (technicianProfile) {
+          if (res.data?.role === 'TECHNICIAN') {
             const redirectPath = getTechnicianRedirectPath({
               userStatus: res.data.status,
-              technicianProfile,
+              technicianProfile: technicianProfile || null,
             });
             
             const currentPath = window.location.pathname;
@@ -106,6 +106,8 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
               ifscCode:          p.ifscCode,
               status:            p.status,
             });
+          } else if (res.data?.role === 'TECHNICIAN') {
+            syncProgressFromProfile({ id: -1 }); // Dummy ID to mark step 0 complete
           }
         } catch {
           // Profile fetch failed — bitmask stays as-is, guard uses existing value

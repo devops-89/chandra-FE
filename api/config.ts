@@ -1,13 +1,16 @@
 import axios, { type AxiosError, type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import { setupCache, buildMemoryStorage } from 'axios-cache-interceptor';
 
 import { logout, updateTokens } from '@/redux/slices/authSlice';
 import { getAppStore } from '@/redux/storeAccessor';
 
 import { SERVER_ENDPOINTS } from './serverConstant';
 
-const authSecuredApi = axios.create({
+export const globalApiCache = buildMemoryStorage();
+
+const authSecuredApi = setupCache(axios.create({
   baseURL: SERVER_ENDPOINTS.AUTH_BASEURL,
-});
+}), { storage: globalApiCache, methods: ['get'], interpretHeader: false, ttl: 1000 * 60 * 5 });
 
 authSecuredApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -23,13 +26,13 @@ authSecuredApi.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-const authPublicApi = axios.create({
+const authPublicApi = setupCache(axios.create({
   baseURL: SERVER_ENDPOINTS.AUTH_BASEURL,
-});
+}), { storage: globalApiCache, methods: ['get'], interpretHeader: false, ttl: 1000 * 60 * 5 });
 
-const userSecuredApi = axios.create({
+const userSecuredApi = setupCache(axios.create({
   baseURL: SERVER_ENDPOINTS.USER_BASEURL,
-});
+}), { storage: globalApiCache, methods: ['get'], interpretHeader: false, ttl: 1000 * 60 * 5 });
 
 userSecuredApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -45,9 +48,9 @@ userSecuredApi.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-const userPublicApi = axios.create({
+const userPublicApi = setupCache(axios.create({
   baseURL: SERVER_ENDPOINTS.USER_BASEURL,
-});
+}), { storage: globalApiCache, methods: ['get'], interpretHeader: false, ttl: 1000 * 60 * 5 });
 
 export { authPublicApi, authSecuredApi, userPublicApi, userSecuredApi };
 
@@ -86,6 +89,9 @@ const setupResponseInterceptor = (instance: AxiosInstance) => {
       const url = response.config.url || '';
 
       if (['post', 'put', 'patch', 'delete'].includes(method) && !url.includes('/auth/refresh-token')) {
+        // Clear entire cache on any successful mutation to ensure fresh data
+        globalApiCache.clear?.();
+
         let msg = response.data?.message;
         if (typeof msg === 'string' && msg.toLowerCase().includes('complaint deleted permanently')) {
           msg = 'Complaint Deleted Successfully';

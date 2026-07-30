@@ -17,8 +17,8 @@ import UpiCard from './bank-details/UpiCard';
 export default function ProfileContent() {
   const dispatch = useAppDispatch();
   const { isLoading, profile: technician } = useAppSelector((state) => state.technicianProfile);
-  const upiAccount = technician?.payoutAccounts?.find(acc => acc.accountType === 'VPA');
-  const bankAccount = technician?.payoutAccounts?.find(acc => acc.accountType === 'BANK_ACCOUNT');
+  const upiAccount = technician?.technicianProfile?.payoutAccounts?.find((acc: any) => acc.accountType === 'VPA');
+  const bankAccount = technician?.technicianProfile?.payoutAccounts?.find((acc: any) => acc.accountType === 'BANK_ACCOUNT');
 
   useEffect(() => {
     dispatch(fetchTechnicianProfile());
@@ -55,10 +55,15 @@ export default function ProfileContent() {
           <AvailabilityCard />
         </div>
         
-        {/* Render either BankDetails or UPI card based on what exists */}
-        {(upiAccount || bankAccount) && (
-          <div className="col-span-12 xl:col-span-6">
-            {upiAccount ? <UpiCard /> : <BankDetailsCard />}
+        {upiAccount && (
+          <div className="col-span-12 xl:col-span-6 flex">
+            <UpiCard />
+          </div>
+        )}
+        
+        {bankAccount && (
+          <div className="col-span-12 xl:col-span-6 flex">
+            <BankDetailsCard />
           </div>
         )}
 

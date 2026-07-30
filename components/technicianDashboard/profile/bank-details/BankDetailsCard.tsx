@@ -1,14 +1,15 @@
 'use client';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-
 import { useAppSelector } from '@/redux/hooks';
+import { useRouter } from 'next/navigation';
 
 export default function BankDetailsCard() {
+  const router = useRouter();
   const technician = useAppSelector(
     (state) => state.technicianProfile.profile
   );
 
-  const payoutAccount = technician?.payoutAccounts?.find(acc => acc.accountType === 'BANK_ACCOUNT');
+  const payoutAccount = technician?.technicianProfile?.payoutAccounts?.find((acc: any) => acc.accountType === 'BANK_ACCOUNT');
 
   return (
     <div
@@ -80,8 +81,9 @@ export default function BankDetailsCard() {
       </div>
 
       <button
+        onClick={() => router.push('/technician/profile/edit')}
         className="
-          mt-6
+          mt-auto
           w-full
           py-3
           rounded-2xl
