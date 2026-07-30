@@ -64,7 +64,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main className="flex flex-1 flex-col lg:ml-72 min-w-0">
         <DashboardHeader onMenuClick={() => setSidebarOpen(true)} />
-        <div className="flex-1 p-5 sm:pt-8 lg:p-10 overflow-y-auto scrollbar-hide">{children}</div>
+        <div className="flex-1 p-5 sm:pt-8 lg:p-10 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">{children}</div>
       </main>
 
       {/* Mobile overlay */}
