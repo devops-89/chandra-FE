@@ -6,8 +6,13 @@ import {
   Person,
   Star,
 } from '@mui/icons-material';
+import { useJobContext } from '../JobContext';
 
 export default function CustomerDetails() {
+  const currentJob = useJobContext();
+
+  if (!currentJob) return null;
+
   return (
     <div
       className="
@@ -26,7 +31,7 @@ export default function CustomerDetails() {
 
           <div>
             <h4 className="font-semibold text-lg">
-              Robert Harrison
+              {currentJob.customerName}
             </h4>
 
             <div className="flex items-center gap-1 text-slate-500">
@@ -38,7 +43,7 @@ export default function CustomerDetails() {
               />
 
               <span>
-                4.9 (12 reviews)
+                {currentJob.customerRating} (reviews)
               </span>
             </div>
           </div>
@@ -49,40 +54,24 @@ export default function CustomerDetails() {
 
           <div>
             <h4 className="font-semibold">
-              Tomorrow, 10:00 AM
+              {currentJob.eta}
             </h4>
-
-            <p className="text-slate-500">
-              Estimated 2 Hours
-            </p>
           </div>
         </div>
       </div>
 
       <div className="space-y-6">
-        <div className="flex gap-3">
-          <LocationOn className="text-emerald-500" />
+        <div className="flex items-start gap-3">
+          <LocationOn className="text-emerald-500 mt-0.5" />
 
           <div>
-            <h4 className="font-semibold">
-              Sector 52, Gurgaon
-            </h4>
-
-            <p className="text-slate-500">
-              Apartment 402
-            </p>
+            <span className="font-semibold mr-2">
+              Service Address:
+            </span>
+            <span className="font-medium text-slate-700">
+              {currentJob.address}
+            </span>
           </div>
-        </div>
-
-        <div>
-          <p className="text-slate-500">
-            Service Address
-          </p>
-
-          <p className="font-medium">
-            Tower A, Green Valley Apartments,
-            Sector 52, Gurgaon
-          </p>
         </div>
       </div>
     </div>

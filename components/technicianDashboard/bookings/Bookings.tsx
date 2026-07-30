@@ -7,21 +7,29 @@ import NearbyJobsContent from '../jobs/NearbyJobsContent';
 import BookingsHeader from './header/BookingsHeader';
 
 export default function Bookings() {
-  const [activeTab, setActiveTab] = useState<'new' | 'active'>('new');
+  const [activeTab, setActiveTab] = useState<'new' | 'active'>(() => {
+    if (typeof window === 'undefined') return 'new';
+    const savedTab = localStorage.getItem('technicianBookingsTab');
+    return savedTab === 'new' || savedTab === 'active' ? savedTab : 'new';
+  });
+
+  const handleTabChange = (tab: 'new' | 'active') => {
+    setActiveTab(tab);
+    localStorage.setItem('technicianBookingsTab', tab);
+  };
 
   return (
     <div className="space-y-6">
       <BookingsHeader />
-      
+
       {/* Tabs */}
       <div className="flex border-b border-slate-200">
         <button
-          className={`py-3 px-6 font-medium text-sm transition-colors relative ${
-            activeTab === 'new'
-              ? 'text-emerald-600'
-              : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-          }`}
-          onClick={() => setActiveTab('new')}
+          className={`py-3 px-6 font-medium text-sm transition-colors relative ${activeTab === 'new'
+            ? 'text-emerald-600'
+            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+            }`}
+          onClick={() => handleTabChange('new')}
         >
           New Requests
           {activeTab === 'new' && (
@@ -29,12 +37,11 @@ export default function Bookings() {
           )}
         </button>
         <button
-          className={`py-3 px-6 font-medium text-sm transition-colors relative ${
-            activeTab === 'active'
-              ? 'text-emerald-600'
-              : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-          }`}
-          onClick={() => setActiveTab('active')}
+          className={`py-3 px-6 font-medium text-sm transition-colors relative ${activeTab === 'active'
+            ? 'text-emerald-600'
+            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+            }`}
+          onClick={() => handleTabChange('active')}
         >
           Active Bookings
           {activeTab === 'active' && (

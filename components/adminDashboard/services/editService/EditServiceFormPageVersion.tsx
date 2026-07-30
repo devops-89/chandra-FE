@@ -11,7 +11,7 @@ import {
   Info,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import {useState } from 'react';
+import { useState } from 'react';
 
 import { useAppDispatch } from '@/redux/hooks';
 import { updateService } from '@/redux/slices/servicesSlice';
@@ -47,11 +47,11 @@ export type FormData = {
 
   // Step 2 — Pricing
   serviceBasePrice: string;
-  perHourRate: string;
-  perKmRate: string;
+  isServiceBasePriceApplied: boolean;
   platformFee: string;
+  isPlatformFeeApplied: boolean;
   gst: string;
-  emergencyCharge: string;
+  isGstApplied: boolean;
 };
 
 export type FormErrors = Partial<Record<string, string>>;
@@ -96,11 +96,8 @@ function validateStep(step: number, data: FormData): FormErrors {
       errors.serviceBasePrice = 'Enter a valid amount.';
 
     const numericFields: Array<[keyof FormData, string]> = [
-      ['perHourRate', 'Per hour rate'],
-      ['perKmRate', 'Per KM rate'],
       ['platformFee', 'Platform fee'],
       ['gst', 'GST %'],
-      ['emergencyCharge', 'Emergency charge'],
     ];
     for (const [field, label] of numericFields) {
       const val = data[field] as string;
@@ -147,12 +144,12 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
       isRequired: s.isRequired,
       values: s.values ?? [],
     })),
-    serviceBasePrice: pricing.serviceBasePrice ? String(pricing.serviceBasePrice) : initialData.price ? String(initialData.price) : '',
-    perHourRate: pricing.perHourRate ? String(pricing.perHourRate) : '',
-    perKmRate: pricing.perKmRate ? String(pricing.perKmRate) : '',
-    platformFee: pricing.platformFee ? String(pricing.platformFee) : '',
-    gst: pricing.gst ? String(pricing.gst) : '',
-    emergencyCharge: pricing.emergencyCharge ? String(pricing.emergencyCharge) : '',
+    serviceBasePrice: pricing.serviceBasePrice?.toString() || (initialData as any).price?.toString() || '',
+    isServiceBasePriceApplied: pricing.isServiceBasePriceApplied ?? true,
+    platformFee: pricing.platformFee?.toString() || '',
+    isPlatformFeeApplied: pricing.isPlatformFeeApplied ?? false,
+    gst: pricing.gst?.toString() || '',
+    isGstApplied: pricing.isGstApplied ?? false,
   });
 
   const [initialDataState] = useState<FormData>(buildInitialData);
@@ -193,16 +190,16 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
       return;
     }
 
-    const isChanged = 
+    const isChanged =
       data.name !== initialDataState.name ||
       data.description !== initialDataState.description ||
       data.isActive !== initialDataState.isActive ||
       data.serviceBasePrice !== initialDataState.serviceBasePrice ||
-      data.perHourRate !== initialDataState.perHourRate ||
-      data.perKmRate !== initialDataState.perKmRate ||
+      data.isServiceBasePriceApplied !== initialDataState.isServiceBasePriceApplied ||
       data.platformFee !== initialDataState.platformFee ||
+      data.isPlatformFeeApplied !== initialDataState.isPlatformFeeApplied ||
       data.gst !== initialDataState.gst ||
-      data.emergencyCharge !== initialDataState.emergencyCharge ||
+      data.isGstApplied !== initialDataState.isGstApplied ||
       data.icon !== initialDataState.icon ||
       JSON.stringify(data.specifications) !== JSON.stringify(initialDataState.specifications);
 
@@ -229,14 +226,20 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
             values: s.values,
           })),
           serviceBasePrice: Number(data.serviceBasePrice),
-          perHourRate: data.perHourRate ? Number(data.perHourRate) : undefined,
-          perKmRate: data.perKmRate ? Number(data.perKmRate) : undefined,
+          isServiceBasePriceApplied: data.isServiceBasePriceApplied,
           platformFee: data.platformFee ? Number(data.platformFee) : undefined,
+          isPlatformFeeApplied: data.isPlatformFeeApplied,
           gst: data.gst ? Number(data.gst) : undefined,
-          emergencyCharge: data.emergencyCharge ? Number(data.emergencyCharge) : undefined,
+          isGstApplied: data.isGstApplied,
+          isSurgeEnabled: false,
+          isDistanceKmApplied: false,
+          isWeekendApplied: false,
+          isPeakHourApplied: false,
+          isEmergencyApplied: false,
+          isPerHourRateApplied: false,
         })
       ).unwrap();
-  
+
       // The global API interceptor will show the success toast. We just need to route.
       setTimeout(() => {
         router.push('/admin/services');
@@ -415,11 +418,11 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
                 <PricingStep
                   data={{
                     serviceBasePrice: data.serviceBasePrice,
-                    perHourRate: data.perHourRate,
-                    perKmRate: data.perKmRate,
+                    isServiceBasePriceApplied: data.isServiceBasePriceApplied,
                     platformFee: data.platformFee,
+                    isPlatformFeeApplied: data.isPlatformFeeApplied,
                     gst: data.gst,
-                    emergencyCharge: data.emergencyCharge,
+                    isGstApplied: data.isGstApplied,
                   }}
                   errors={errors}
                   onChange={update}

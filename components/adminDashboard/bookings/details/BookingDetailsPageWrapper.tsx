@@ -10,7 +10,8 @@ import {
   Grid,
   Paper,
   Rating,
-  Typography} from '@mui/material';
+  Typography
+} from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -45,7 +46,7 @@ const InfoItem = ({ label, value }: { label: string, value: React.ReactNode }) =
 
 const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
   const router = useRouter();
-  
+
   const [booking, setBooking] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [isPending, setIsPending] = useState(true);
 
@@ -106,29 +107,29 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 4 }}>
         {/* Left Card: Summary */}
         <Box sx={{ width: { xs: '100%', lg: '35%' }, flexShrink: 0 }}>
-          <Paper 
-            sx={{ 
-              borderRadius: 4, 
-              overflow: 'hidden', 
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)', 
+          <Paper
+            sx={{
+              borderRadius: 4,
+              overflow: 'hidden',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
               border: '1px solid rgba(255,255,255,0.5)',
               bgcolor: '#ffffff',
               position: 'sticky',
               top: 24
-            }} 
+            }}
           >
             <Box sx={{ height: 120, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', position: 'relative' }}>
               <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.2, background: 'radial-gradient(circle at top right, #ffffff 0%, transparent 60%)' }} />
             </Box>
-            
+
             <Box sx={{ px: 4, pb: 4, pt: 0, textAlign: 'center', position: 'relative' }}>
-              <Avatar 
-                sx={{ 
-                  width: 100, 
-                  height: 100, 
-                  mx: 'auto', 
-                  mt: '-50px', 
-                  mb: 2, 
+              <Avatar
+                sx={{
+                  width: 100,
+                  height: 100,
+                  mx: 'auto',
+                  mt: '-50px',
+                  mb: 2,
                   bgcolor: '#047857',
                   border: '6px solid #ffffff',
                   boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
@@ -138,35 +139,35 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
               >
                 {customerName[0]?.toUpperCase() || "C"}
               </Avatar>
-              
+
               <Typography variant="h5" sx={{ fontWeight: 800, mb: 1, color: '#0f172a' }}>
                 {customerName}
               </Typography>
-              
+
               <Typography variant="body2" sx={{ color: '#64748b', mb: 3, fontWeight: 500, fontSize: '0.85rem' }}>
                 {booking.customer?.email || booking.customer?.phone || 'Customer'}
               </Typography>
 
               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
-                <Chip 
+                <Chip
                   label={booking.status || "Pending"}
-                  sx={{ 
+                  sx={{
                     ...getStatusColor(booking.status),
                     fontWeight: 700,
                     borderRadius: '8px',
                     px: 1,
                     textTransform: 'capitalize'
-                  }} 
+                  }}
                 />
-                <Chip 
+                <Chip
                   label={`₹${booking.totalAmount || 0}`}
-                  sx={{ 
+                  sx={{
                     bgcolor: '#f1f5f9',
                     color: '#475569',
                     fontWeight: 700,
                     borderRadius: '8px',
                     border: '1px solid #e2e8f0'
-                  }} 
+                  }}
                 />
               </Box>
             </Box>
@@ -175,20 +176,20 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
 
         {/* Right Card: Full Details */}
         <Box sx={{ width: { xs: '100%', lg: '65%' } }}>
-          <Paper 
-            sx={{ 
-              p: { xs: 3, md: 4 }, 
-              borderRadius: 4, 
+          <Paper
+            sx={{
+              p: { xs: 3, md: 4 },
+              borderRadius: 4,
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
               border: '1px solid #f1f5f9',
               bgcolor: '#ffffff'
-            }} 
+            }}
           >
             <Typography variant="h6" sx={{ fontWeight: 800, mb: 4, color: '#0f172a', display: 'flex', alignItems: 'center' }}>
               <Box component="span" sx={{ width: 8, height: 24, bgcolor: '#059669', borderRadius: 4, mr: 2 }} />
               Service & Details
             </Typography>
-            
+
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <InfoItem label="Service Requested" value={booking.service?.name} />
@@ -202,12 +203,12 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
               <Grid size={{ xs: 12, sm: 6 }}>
                 <InfoItem label="Technician Phone" value={booking.technician?.phone || 'N/A'} />
               </Grid>
-              
+
               {booking.address && (
                 <Grid size={{ xs: 12 }}>
-                  <InfoItem 
-                    label="Service Address" 
-                    value={`${booking.address.fullAddress || ''}, ${booking.address.city || ''}, ${booking.address.state || ''} - ${booking.address.pincode || ''}`} 
+                  <InfoItem
+                    label="Service Address"
+                    value={`${booking.address.fullAddress || ''}, ${booking.address.city || ''}, ${booking.address.state || ''} - ${booking.address.pincode || ''}`}
                   />
                 </Grid>
               )}
@@ -221,9 +222,14 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
                   Service Specifications
                 </Typography>
                 <Grid container spacing={2}>
-                  {booking.serviceSpecifications.map((spec: any, idx: number) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-                    const specDef = booking.service?.specifications?.find((s: any) => s.id === spec.specificationId); // eslint-disable-line @typescript-eslint/no-explicit-any
-                    const label = specDef ? specDef.name : `Specification #${spec.specificationId}`;
+                  {booking.serviceSpecifications.map((spec: any, idx: number) => {
+                    const specDef = booking.service?.specifications?.find((s: any) =>
+                      s.id === spec.specificationId ||
+                      (s.type === 'select' && Array.isArray(s.values) && s.values.includes(spec.value))
+                    );
+                    if (!specDef) return null;
+
+                    const label = specDef.name;
                     return (
                       <Grid size={{ xs: 12, sm: 6 }} key={idx}>
                         <InfoItem label={label} value={spec.value} />
@@ -242,21 +248,46 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
                   Price Breakdown
                 </Typography>
                 <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="Base Price" value={`₹${booking.priceBreakdown.serviceBasePrice || 0}`} />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="Surge Charge" value={`₹${booking.priceBreakdown.surgeCharge || 0}`} />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="Emergency Charge" value={`₹${booking.priceBreakdown.emergencyCharge || 0}`} />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="Platform Fee" value={`₹${booking.priceBreakdown.platformFee || 0}`} />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="GST" value={`₹${booking.priceBreakdown.gst || 0}`} />
-                  </Grid>
+                  {booking.service?.pricingRule?.isServiceBasePriceApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Base Price" value={`₹${booking.priceBreakdown.serviceBasePrice || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isSurgeEnabled && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Surge Charge" value={`₹${booking.priceBreakdown.surgeCharge || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isDistanceKmApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Distance Charge" value={`₹${booking.priceBreakdown.distanceCharge || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isWeekendApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Weekend Charge" value={`₹${booking.priceBreakdown.weekendCharge || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isPeakHourApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Peak Hour Charge" value={`₹${booking.priceBreakdown.peakHourCharge || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isEmergencyApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Emergency Charge" value={`₹${booking.priceBreakdown.emergencyCharge || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isPlatformFeeApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="Platform Fee" value={`₹${booking.priceBreakdown.platformFee || 0}`} />
+                    </Grid>
+                  )}
+                  {booking.service?.pricingRule?.isGstApplied && (
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <InfoItem label="GST" value={`₹${booking.priceBreakdown.gst || 0}`} />
+                    </Grid>
+                  )}
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <InfoItem label="Total Amount" value={`₹${booking.totalAmount || 0}`} />
                   </Grid>

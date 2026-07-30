@@ -12,10 +12,9 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import type { Payout } from "@/constants/admin/financeData";
-import { payoutsData } from "@/constants/admin/financeData";
+import { AdminControllers } from "@/api/adminControllers";
 
 import ReleasePayoutModal from "./ReleasePayoutModal";
 
@@ -25,13 +24,35 @@ const STATUS_CHIP: Record<
 > = {
   Released: { label: "Released", backgroundColor: "#d1fae5", color: "#065f46" },
   Pending:  { label: "Pending",  backgroundColor: "#fef3c7", color: "#d97706" },
+  SUCCESS:  { label: "Success", backgroundColor: "#d1fae5", color: "#065f46" },
+  COMPLETED: { label: "Completed", backgroundColor: "#d1fae5", color: "#065f46" },
+  PAID: { label: "Paid", backgroundColor: "#d1fae5", color: "#065f46" },
 };
 
 const PayoutTable = () => {
   const [open, setOpen] = useState(false);
-  const [_selectedPayout, _setSelectedPayout] = useState<Payout | null>(null);
+  const [_selectedPayout, _setSelectedPayout] = useState<any>(null);
+  const [payments, setPayments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleOpenReleaseModal = (payout: Payout) => {
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        setLoading(true);
+        const res = await AdminControllers.getPayments();
+        if (res.success) {
+          setPayments(res.data.payments || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch payments:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPayments();
+  }, []);
+
+  const handleOpenReleaseModal = (payout: any) => {
     _setSelectedPayout(payout);
     setOpen(true);
   };
@@ -59,13 +80,16 @@ const PayoutTable = () => {
                   Technician
                 </TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Payout Date
+                  Date
                 </TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Payout Amount
+                  Amount
                 </TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Status
+                  Booking Status
+                </TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Payment Status
                 </TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }} align="center">
                   Actions
@@ -74,9 +98,23 @@ const PayoutTable = () => {
             </TableHead>
 
             <TableBody>
-              {payoutsData.map((payout) => {
-                const statusConfig = STATUS_CHIP[payout.status] ?? {
-                  label: payout.status,
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">Loading...</TableCell>
+                </TableRow>
+              ) : payments.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">No payouts found.</TableCell>
+                </TableRow>
+              ) : payments.map((payout) => {
+                const bookingStatusConfig = STATUS_CHIP[payout.booking?.status] ?? {
+                  label: payout.booking?.status || "Unknown",
+                  backgroundColor: "#f1f5f9",
+                  color: "#475569",
+                };
+                
+                const paymentStatusConfig = STATUS_CHIP[payout.status] ?? {
+                  label: payout.status || "Unknown",
                   backgroundColor: "#f1f5f9",
                   color: "#475569",
                 };
@@ -97,12 +135,16 @@ const PayoutTable = () => {
 
                     {/* Technician */}
                     <TableCell sx={{ fontSize: 13, fontWeight: 600, color: "#1e293b" }}>
-                      {payout.technician}
+                      {payout.technician?.firstName} {payout.technician?.lastName}
                     </TableCell>
 
                     {/* Payout Date */}
                     <TableCell sx={{ fontSize: 13, color: "#475569" }}>
-                      {payout.date}
+                      {new Date(payout.createdAt).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </TableCell>
 
                     {/* Payout Amount */}
@@ -110,16 +152,30 @@ const PayoutTable = () => {
                       ₹{payout.amount}
                     </TableCell>
 
-                    {/* Status */}
+                    {/* Booking Status */}
                     <TableCell>
                       <Chip
-                        label={statusConfig.label}
+                        label={bookingStatusConfig.label}
                         size="small"
                         sx={{
                           fontWeight: 600,
                           fontSize: 11,
-                          backgroundColor: statusConfig.backgroundColor,
-                          color: statusConfig.color,
+                          backgroundColor: bookingStatusConfig.backgroundColor,
+                          color: bookingStatusConfig.color,
+                        }}
+                      />
+                    </TableCell>
+
+                    {/* Payment Status */}
+                    <TableCell>
+                      <Chip
+                        label={paymentStatusConfig.label}
+                        size="small"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: 11,
+                          backgroundColor: paymentStatusConfig.backgroundColor,
+                          color: paymentStatusConfig.color,
                         }}
                       />
                     </TableCell>

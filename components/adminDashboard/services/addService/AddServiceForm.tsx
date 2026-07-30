@@ -50,19 +50,20 @@ export interface Specification {
 /* â”€â”€â”€ Master form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export type FormData = {
   // Step 1 â€” Service Info
+  // Step 1 — Service Info
   name: string;
   description: string;
   icon: File | null;
   isActive: boolean;
   specifications: Specification[];
 
-  // Step 2 â€” Pricing
+  // Step 2 — Pricing
   serviceBasePrice: string;
-  perHourRate: string;
-  perKmRate: string;
+  isServiceBasePriceApplied: boolean;
   platformFee: string;
+  isPlatformFeeApplied: boolean;
   gst: string;
-  emergencyCharge: string;
+  isGstApplied: boolean;
 };
 
 export type FormErrors = Partial<Record<string, string>>;
@@ -74,14 +75,14 @@ const INITIAL: FormData = {
   isActive: true,
   specifications: [],
   serviceBasePrice: '',
-  perHourRate: '',
-  perKmRate: '',
+  isServiceBasePriceApplied: true,
   platformFee: '',
+  isPlatformFeeApplied: false,
   gst: '',
-  emergencyCharge: '',
+  isGstApplied: false,
 };
 
-/* â”€â”€â”€ Per-step validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ────────────────────────────────────────────────────────────────────────── */
 function validateStep(step: number, data: FormData): FormErrors {
   const errors: FormErrors = {};
 
@@ -121,11 +122,8 @@ function validateStep(step: number, data: FormData): FormErrors {
       errors.serviceBasePrice = 'Enter a valid amount.';
 
     const numericFields: Array<[keyof FormData, string]> = [
-      ['perHourRate', 'Per hour rate'],
-      ['perKmRate', 'Per KM rate'],
       ['platformFee', 'Platform fee'],
       ['gst', 'GST %'],
-      ['emergencyCharge', 'Emergency charge'],
     ];
     for (const [field, label] of numericFields) {
       const val = data[field] as string;
@@ -218,11 +216,17 @@ export default function AddServiceForm() {
         isActive: data.isActive,
         specifications: data.specifications,
         serviceBasePrice: Number(data.serviceBasePrice),
-        perHourRate: data.perHourRate ? Number(data.perHourRate) : undefined,
-        perKmRate: data.perKmRate ? Number(data.perKmRate) : undefined,
+        isServiceBasePriceApplied: data.isServiceBasePriceApplied,
         platformFee: data.platformFee ? Number(data.platformFee) : undefined,
+        isPlatformFeeApplied: data.isPlatformFeeApplied,
         gst: data.gst ? Number(data.gst) : undefined,
-        emergencyCharge: data.emergencyCharge ? Number(data.emergencyCharge) : undefined,
+        isGstApplied: data.isGstApplied,
+        isSurgeEnabled: false,
+        isDistanceKmApplied: false,
+        isWeekendApplied: false,
+        isPeakHourApplied: false,
+        isEmergencyApplied: false,
+        isPerHourRateApplied: false,
       })
     );
 
@@ -467,11 +471,11 @@ export default function AddServiceForm() {
                 <PricingStep
                   data={{
                     serviceBasePrice: data.serviceBasePrice,
-                    perHourRate: data.perHourRate,
-                    perKmRate: data.perKmRate,
+                    isServiceBasePriceApplied: data.isServiceBasePriceApplied,
                     platformFee: data.platformFee,
+                    isPlatformFeeApplied: data.isPlatformFeeApplied,
                     gst: data.gst,
-                    emergencyCharge: data.emergencyCharge,
+                    isGstApplied: data.isGstApplied,
                   }}
                   errors={errors}
                   onChange={update}

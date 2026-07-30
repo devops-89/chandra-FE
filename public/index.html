@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HiChandra - User Gateway Test Client</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Socket.io Client CDN -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 50%, #151a30 0%, #0b0d19 100%);
+      --panel-bg: rgba(255, 255, 255, 0.03);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --color-primary: #3b82f6;
+      --color-primary-glow: rgba(59, 130, 246, 0.4);
+      --color-success: #10b981;
+      --color-success-glow: rgba(16, 185, 129, 0.4);
+      --color-error: #ef4444;
+      --color-error-glow: rgba(239, 68, 68, 0.4);
+      --color-warning: #f59e0b;
+      --font-family: 'Outfit', sans-serif;
+      --font-mono: 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeInDown 0.6s ease-out;
+    }
+
+    h1 {
+      font-weight: 800;
+      font-size: 2.5rem;
+      letter-spacing: -0.05em;
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #1d4ed8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 2rem;
+      max-width: 1200px;
+      width: 100%;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glassmorphism Panel styles */
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .panel:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .panel-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Form controls */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--panel-border);
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 10px var(--color-primary-glow);
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-family);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+      box-shadow: 0 4px 14px var(--color-primary-glow);
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: var(--color-error);
+      color: white;
+      box-shadow: 0 4px 14px var(--color-error-glow);
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .btn-disabled {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    /* Connection Status */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--panel-border);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .status-disconnected .status-dot {
+      background-color: var(--color-error);
+      box-shadow: 0 0 8px var(--color-error);
+      animation: pulse-red 2s infinite;
+    }
+
+    .status-connecting .status-dot {
+      background-color: var(--color-warning);
+      box-shadow: 0 0 8px var(--color-warning);
+      animation: pulse-yellow 1.5s infinite;
+    }
+
+    .status-connected .status-dot {
+      background-color: var(--color-success);
+      box-shadow: 0 0 8px var(--color-success);
+      animation: pulse-green 2s infinite;
+    }
+
+    /* Terminal Console */
+    .console {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      height: 250px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .console-line {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .console-time {
+      color: #60a5fa;
+      flex-shrink: 0;
+    }
+
+    .console-text {
+      word-break: break-all;
+    }
+
+    .console-info { color: #f3f4f6; }
+    .console-success { color: #34d399; }
+    .console-warning { color: #fbbf24; }
+    .console-error { color: #f87171; }
+
+    /* Booking Feed */
+    .booking-feed {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      overflow-y: auto;
+      max-height: 580px;
+      padding-right: 0.5rem;
+    }
+
+    .booking-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: relative;
+      animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.3s ease;
+    }
+
+    .booking-card:hover {
+      border-color: rgba(59, 130, 246, 0.4);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .booking-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .booking-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #60a5fa;
+    }
+
+    .booking-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-emergency {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      animation: flash-border 1.5s infinite;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 300px;
+      color: var(--text-muted);
+      border: 2px dashed rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      gap: 0.5rem;
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      stroke: rgba(255, 255, 255, 0.1);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Keyframes */
+    @keyframes pulse-red {
+      0%, 100% { box-shadow: 0 0 4px var(--color-error); }
+      50% { box-shadow: 0 0 14px var(--color-error); }
+    }
+    @keyframes pulse-yellow {
+      0%, 100% { box-shadow: 0 0 4px var(--color-warning); }
+      50% { box-shadow: 0 0 14px var(--color-warning); }
+    }
+    @keyframes pulse-green {
+      0%, 100% { box-shadow: 0 0 4px var(--color-success); }
+      50% { box-shadow: 0 0 14px var(--color-success); }
+    }
+    @keyframes flash-border {
+      0%, 100% { border-color: rgba(239, 68, 68, 0.3); box-shadow: none; }
+      50% { border-color: rgba(239, 68, 68, 0.8); box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+    }
+    @keyframes slideIn {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeInDown {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeInUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>HiChandra Booking Gateway Simulator</h1>
+    <p>Test real-time Socket.io notifications & technician job acceptances</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- LEFT PANEL: Connection & Logs -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>Connection Setup</span>
+        <div id="statusBadge" class="status-badge status-disconnected">
+          <div class="status-dot"></div>
+          <span id="statusText">Disconnected</span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="serverUrl">WebSocket Server URL</label>
+        <input type="text" id="serverUrl" value="http://localhost:8001" placeholder="http://localhost:8001">
+      </div>
+      
+      <div class="form-group">
+        <label for="userId">User ID</label>
+        <input type="number" id="userId" value="1" placeholder="Enter User ID">
+      </div>
+
+      <div class="form-group">
+        <label for="authToken">Optional Bearer Token (For Acceptance API)</label>
+        <input type="text" id="authToken" placeholder="Bearer eyJhbGciOiJIUzI1NiIsIn...">
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+        <button id="connectBtn" class="btn btn-primary" style="flex: 1;">Connect</button>
+        <button id="disconnectBtn" class="btn btn-danger btn-disabled" style="flex: 1;" disabled>Disconnect</button>
+      </div>
+
+      <div class="panel-title" style="margin-top: 1rem; font-size: 1.1rem;">
+        <span>System Log Console</span>
+        <button id="clearLogBtn" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; font-weight: 600;">Clear</button>
+      </div>
+      <div id="console" class="console">
+        <div class="console-line"><span class="console-time">[Client Initialized]</span> <span class="console-text console-info">Set parameters and click Connect to start.</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: Booking Notification Feed -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>Active Job Notifications</span>
+        <span id="badgeCount" class="status-badge">0 Job(s)</span>
+      </div>
+
+      <div id="bookingFeed" class="booking-feed">
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <span style="font-weight: 600;">No active notifications</span>
+          <span style="font-size: 0.85rem; text-align: center;">When a customer books a service matching your location radius, notifications will appear here.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const serverUrlInput = document.getElementById('serverUrl');
+    const userIdInput = document.getElementById('userId');
+    const authTokenInput = document.getElementById('authToken');
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const statusBadge = document.getElementById('statusBadge');
+    const statusText = document.getElementById('statusText');
+    const consoleDiv = document.getElementById('console');
+    const clearLogBtn = document.getElementById('clearLogBtn');
+    const bookingFeed = document.getElementById('bookingFeed');
+    const emptyState = document.getElementById('emptyState');
+    const badgeCount = document.getElementById('badgeCount');
+
+    let socket = null;
+    let activeBookings = new Map();
+
+    function log(message, type = 'info') {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
+      
+      const line = document.createElement('div');
+      line.className = 'console-line';
+      
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'console-time';
+      timeSpan.innerText = `[${timeStr}]`;
+      
+      const textSpan = document.createElement('span');
+      textSpan.className = `console-text console-${type}`;
+      textSpan.innerText = message;
+      
+      line.appendChild(timeSpan);
+      line.appendChild(textSpan);
+      consoleDiv.appendChild(line);
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    }
+
+    clearLogBtn.addEventListener('click', () => {
+      consoleDiv.innerHTML = '';
+      log('Logs cleared.', 'info');
+    });
+
+    function setStatus(status) {
+      statusBadge.className = 'status-badge';
+      if (status === 'connected') {
+        statusBadge.classList.add('status-connected');
+        statusText.innerText = 'Connected';
+        connectBtn.className = 'btn btn-primary btn-disabled';
+        connectBtn.disabled = true;
+        disconnectBtn.className = 'btn btn-danger';
+        disconnectBtn.disabled = false;
+      } else if (status === 'connecting') {
+        statusBadge.classList.add('status-connecting');
+        statusText.innerText = 'Connecting';
+        connectBtn.className = 'btn btn-primary btn-disabled';
+        connectBtn.disabled = true;
+        disconnectBtn.className = 'btn btn-danger';
+        disconnectBtn.disabled = false;
+      } else {
+        statusBadge.classList.add('status-disconnected');
+        statusText.innerText = 'Disconnected';
+        connectBtn.className = 'btn btn-primary';
+        connectBtn.disabled = false;
+        disconnectBtn.className = 'btn btn-danger btn-disabled';
+        disconnectBtn.disabled = true;
+      }
+    }
+
+    connectBtn.addEventListener('click', () => {
+      const url = serverUrlInput.value.trim();
+      const uId = parseInt(userIdInput.value);
+
+      if (!url) {
+        log('Error: Server URL cannot be empty.', 'error');
+        return;
+      }
+      if (isNaN(uId)) {
+        log('Error: Invalid User ID.', 'error');
+        return;
+      }
+
+      log(`Connecting to ${url} with auth.userId = ${uId}...`, 'info');
+      setStatus('connecting');
+
+      try {
+        socket = io(url, {
+          auth: {
+            userId: uId
+          },
+          transports: ['websocket', 'polling']
+        });
+
+        socket.on('connect', () => {
+          log(`Connected successfully! Socket ID: ${socket.id}`, 'success');
+          setStatus('connected');
+        });
+
+        socket.on('connect_error', (err) => {
+          log(`Connection error: ${err.message}`, 'error');
+          setStatus('disconnected');
+        });
+
+        socket.on('disconnect', (reason) => {
+          log(`Disconnected from server: ${reason}`, 'warning');
+          setStatus('disconnected');
+        });
+
+        // Event listener: new_booking
+        socket.on('new_booking', (booking) => {
+          log(`Received 'new_booking' event for Booking ID: ${booking.bookingId}`, 'success');
+          log(JSON.stringify(booking), 'info');
+          addBookingCard(booking);
+        });
+
+        // Event listener: booking_taken
+        socket.on('booking_taken', () => {
+          log(`Received 'booking_taken' event: Another technician took the job. Clearing notification.`, 'warning');
+          clearAllBookings();
+        });
+
+      } catch (e) {
+        log(`Error initializing socket: ${e.message}`, 'error');
+        setStatus('disconnected');
+      }
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+      if (socket) {
+        log('Disconnecting socket...', 'info');
+        socket.disconnect();
+        socket = null;
+      }
+      setStatus('disconnected');
+    });
+
+   /* function addBookingCard(booking) {
+      if (activeBookings.has(booking.bookingId)) {
+        return; // Already added
+      }
+
+      activeBookings.set(booking.bookingId, booking);
+      updateEmptyState();
+
+      const card = document.createElement('div');
+      card.id = `booking-card-${booking.bookingId}`;
+      card.className = 'booking-card';
+
+      const scheduledTime = booking.scheduledAt ? new Date(booking.scheduledAt).toLocaleString() : 'N/A';
+
+      card.innerHTML = `
+        <div class="booking-header">
+          <div class="booking-title">Booking ID: #${booking.bookingId}</div>
+          ${booking.isEmergency ? '<span class="badge badge-emergency">Emergency</span>' : ''}
+        </div>
+        <div class="booking-meta">
+          <div class="meta-item">
+            <strong>Service:</strong> <span>${booking.service || 'N/A'}</span>
+          </div>
+          <div class="meta-item">
+            <strong>Scheduled:</strong> <span>${scheduledTime}</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center; justify-content: flex-end; margin-top: 0.5rem;">
+          <button onclick="dismissCard(${booking.bookingId})" class="btn" style="background: rgba(255,255,255,0.05); color: var(--text-muted); padding: 0.5rem 1rem; font-size: 0.9rem;">Dismiss</button>
+          <button onclick="acceptBooking(${booking.bookingId}, this)" class="btn btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;">Accept Job</button>
+        </div>
+      `;
+
+      bookingFeed.appendChild(card);
+      badgeCount.innerText = `${activeBookings.size} Job(s)`;
+    }*/
+
+    function addBookingCard(booking) {
+    if (activeBookings.has(booking.bookingId)) {
+      return;
+    }
+
+    activeBookings.set(booking.bookingId, booking);
+    updateEmptyState();
+
+    const card = document.createElement('div');
+    card.id = `booking-card-${booking.bookingId}`;
+    card.className = 'booking-card';
+
+    const customerName = booking.customerInfo
+      ? `${booking.customerInfo.firstName || ''} ${booking.customerInfo.lastName || ''}`.trim()
+      : 'N/A';
+
+    const scheduledTime = booking.bookingInfo?.scheduledAt
+      ? new Date(booking.bookingInfo.scheduledAt).toLocaleString()
+      : 'N/A';
+
+    const createdAt = booking.bookingInfo?.createdAt
+      ? new Date(booking.bookingInfo.createdAt).toLocaleString()
+      : 'N/A';
+
+    const price = booking.bookingInfo?.priceBreakdown || {};
+    const pricingRule = booking.serviceInfo?.pricingRule || {};
+    const specifications = booking.serviceInfo?.specifications || [];
+    const selectedSpecs = booking.bookingInfo?.serviceSpecifications || [];
+
+    card.innerHTML = `
+      <div class="booking-header">
+        <div class="booking-title">Booking ID: #${booking.bookingId}</div>
+        ${
+          booking.bookingInfo?.isEmergency
+            ? '<span class="badge badge-emergency">Emergency</span>'
+            : ''
+        }
+      </div>
+
+      <div class="booking-meta">
+        <div class="meta-item"><strong>Service:</strong> <span>${booking.serviceInfo?.name || 'N/A'}</span></div>
+        <div class="meta-item"><strong>Customer:</strong> <span>${customerName || 'N/A'}</span></div>
+        <div class="meta-item"><strong>Phone:</strong> <span>${booking.customerInfo?.phone || 'N/A'}</span></div>
+        <div class="meta-item"><strong>Email:</strong> <span>${booking.customerInfo?.email || 'N/A'}</span></div>
+        <div class="meta-item"><strong>Address:</strong> <span>${booking.addressInfo?.fullAddress || 'N/A'}</span></div>
+        <div class="meta-item"><strong>Scheduled:</strong> <span>${scheduledTime}</span></div>
+        <div class="meta-item"><strong>Status:</strong> <span>${booking.bookingInfo?.status || 'N/A'}</span></div>
+        <div class="meta-item"><strong>Payment:</strong> <span>${booking.bookingInfo?.paymentStatus || 'N/A'}</span></div>
+        <div class="meta-item"><strong>Amount:</strong> <span>₹${booking.bookingInfo?.totalAmount || '0'}</span></div>
+      </div>
+
+      <details style="margin-top:15px;">
+        <summary style="cursor:pointer;font-weight:bold;color:#60a5fa;">View Details</summary>
+
+        <div style="margin-top:15px;display:flex;flex-direction:column;gap:15px;">
+
+          <div>
+            <h4 style="color:#60a5fa;margin-bottom:8px;">Booking Info</h4>
+            <div class="booking-meta">
+              <div class="meta-item"><strong>Customer ID:</strong> <span>${booking.bookingInfo?.customerId ?? 'N/A'}</span></div>
+              <div class="meta-item"><strong>Service ID:</strong> <span>${booking.bookingInfo?.serviceId ?? 'N/A'}</span></div>
+              <div class="meta-item"><strong>Address ID:</strong> <span>${booking.bookingInfo?.addressId ?? 'N/A'}</span></div>
+              <div class="meta-item"><strong>Technician ID:</strong> <span>${booking.bookingInfo?.technicianId ?? 'Not Assigned'}</span></div>
+              <div class="meta-item"><strong>Manual Assign:</strong> <span>${booking.bookingInfo?.isManualAssign}</span></div>
+              <div class="meta-item"><strong>Created At:</strong> <span>${createdAt}</span></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="color:#60a5fa;margin-bottom:8px;">Service Info</h4>
+            <div class="booking-meta">
+              <div class="meta-item"><strong>Name:</strong> <span>${booking.serviceInfo?.name || 'N/A'}</span></div>
+              <div class="meta-item"><strong>Description:</strong> <span>${booking.serviceInfo?.description || 'N/A'}</span></div>
+              <div class="meta-item"><strong>Active:</strong> <span>${booking.serviceInfo?.isActive}</span></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="color:#60a5fa;margin-bottom:8px;">Customer Info</h4>
+            <div class="booking-meta">
+              <div class="meta-item"><strong>User ID:</strong> <span>${booking.customerInfo?.id || 'N/A'}</span></div>
+              <div class="meta-item"><strong>Username:</strong> <span>${booking.customerInfo?.username || 'N/A'}</span></div>
+              <div class="meta-item"><strong>Role:</strong> <span>${booking.customerInfo?.role || 'N/A'}</span></div>
+              <div class="meta-item"><strong>Status:</strong> <span>${booking.customerInfo?.status || 'N/A'}</span></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="color:#60a5fa;margin-bottom:8px;">Address Info</h4>
+            <div class="booking-meta">
+              <div class="meta-item"><strong>City:</strong> <span>${booking.addressInfo?.city || 'N/A'}</span></div>
+              <div class="meta-item"><strong>State:</strong> <span>${booking.addressInfo?.state || 'N/A'}</span></div>
+              <div class="meta-item"><strong>Pincode:</strong> <span>${booking.addressInfo?.pincode || 'N/A'}</span></div>
+              <div class="meta-item"><strong>Latitude:</strong> <span>${booking.addressInfo?.latitude || 'N/A'}</span></div>
+              <div class="meta-item"><strong>Longitude:</strong> <span>${booking.addressInfo?.longitude || 'N/A'}</span></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="color:#60a5fa;margin-bottom:8px;">Price Breakdown</h4>
+            <div class="booking-meta">
+              <div class="meta-item"><strong>Base Price:</strong> <span>₹${price.serviceBasePrice ?? 0}</span></div>
+              <div class="meta-item"><strong>Distance Charge:</strong> <span>₹${price.distanceCharge ?? 0}</span></div>
+              <div class="meta-item"><strong>Emergency Charge:</strong> <span>₹${price.emergencyCharge ?? 0}</span></div>
+              <div class="meta-item"><strong>Peak Hour Charge:</strong> <span>₹${price.peakHourCharge ?? 0}</span></div>
+              <div class="meta-item"><strong>Weekend Charge:</strong> <span>₹${price.weekendCharge ?? 0}</span></div>
+              <div class="meta-item"><strong>Surge Charge:</strong> <span>₹${price.surgeCharge ?? 0}</span></div>
+              <div class="meta-item"><strong>GST:</strong> <span>₹${price.gst ?? 0}</span></div>
+              <div class="meta-item"><strong>Platform Fee:</strong> <span>₹${price.platformFee ?? 0}</span></div>
+              <div class="meta-item"><strong>Technician Earning:</strong> <span>₹${price.technicianEarning ?? 0}</span></div>
+              <div class="meta-item"><strong>Platform Earning:</strong> <span>₹${price.platformEarning ?? 0}</span></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="color:#60a5fa;margin-bottom:8px;">Selected Specifications</h4>
+            <div class="booking-meta">
+              ${
+                selectedSpecs.length
+                  ? selectedSpecs.map(spec => {
+                      const specInfo = specifications.find(s => s.id === spec.specificationId);
+                      return `
+                        <div class="meta-item">
+                          <strong>${specInfo?.name || 'Specification'}:</strong>
+                          <span>${Array.isArray(spec.value) ? spec.value.join(', ') : spec.value}</span>
+                        </div>
+                      `;
+                    }).join('')
+                  : '<div class="meta-item"><span>No specifications</span></div>'
+              }
+            </div>
+          </div>
+
+          <div>
+            <h4 style="color:#60a5fa;margin-bottom:8px;">Pricing Rule</h4>
+            <div class="booking-meta">
+              <div class="meta-item"><strong>Base Price:</strong> <span>₹${pricingRule.serviceBasePrice || '0'}</span></div>
+              <div class="meta-item"><strong>Per Hour:</strong> <span>₹${pricingRule.perHourRate || '0'}</span></div>
+              <div class="meta-item"><strong>Per KM:</strong> <span>₹${pricingRule.perKmRate || '0'}</span></div>
+              <div class="meta-item"><strong>GST:</strong> <span>${pricingRule.gst || '0'}%</span></div>
+              <div class="meta-item"><strong>Surge Enabled:</strong> <span>${pricingRule.isSurgeEnabled}</span></div>
+            </div>
+          </div>
+
+        </div>
+      </details>
+
+      <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:0.5rem;">
+        <button onclick="dismissCard(${booking.bookingId})"
+          class="btn"
+          style="background:rgba(255,255,255,0.05);color:var(--text-muted);padding:0.5rem 1rem;font-size:0.9rem;">
+          Dismiss
+        </button>
+
+        <button onclick="acceptBooking(${booking.bookingId}, this)"
+          class="btn btn-primary"
+          style="padding:0.5rem 1.2rem;font-size:0.9rem;">
+          Accept Job
+        </button>
+      </div>
+    `;
+
+    bookingFeed.appendChild(card);
+    badgeCount.innerText = `${activeBookings.size} Job(s)`;
+  }
+
+    window.dismissCard = function(bookingId) {
+      const card = document.getElementById(`booking-card-${bookingId}`);
+      if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(50px)';
+        setTimeout(() => {
+          card.remove();
+          activeBookings.delete(bookingId);
+          updateEmptyState();
+          badgeCount.innerText = `${activeBookings.size} Job(s)`;
+          log(`Dismissed card for Booking ID: ${bookingId}`, 'info');
+        }, 300);
+      }
+    };
+
+    window.clearAllBookings = function() {
+      const cards = document.querySelectorAll('.booking-card');
+      cards.forEach(card => card.remove());
+      activeBookings.clear();
+      updateEmptyState();
+      badgeCount.innerText = `0 Job(s)`;
+    };
+
+    function updateEmptyState() {
+      if (activeBookings.size > 0) {
+        emptyState.style.display = 'none';
+      } else {
+        emptyState.style.display = 'flex';
+      }
+    }
+
+    window.acceptBooking = async function(bookingId, buttonEl) {
+      const url = serverUrlInput.value.trim();
+      const originPort = url.split(':').pop() || '8001';
+      const apiUrl = `${window.location.protocol}//${window.location.hostname}:${originPort}/api/bookings/${bookingId}/accept`;
+      const token = authTokenInput.value.trim();
+
+      log(`Sending HTTP POST request to accept Booking ID ${bookingId}...`, 'info');
+      buttonEl.disabled = true;
+      buttonEl.innerText = 'Accepting...';
+
+      try {
+        const headers = {
+          'Content-Type': 'application/json'
+        };
+        if (token) {
+          headers['Authorization'] = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+        }
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: headers
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          log(`Booking accepted successfully! Response: ${JSON.stringify(data.data || data)}`, 'success');
+          // Dismiss the card
+          dismissCard(bookingId);
+        } else {
+          log(`Failed to accept booking (Status ${response.status}): ${data.message || JSON.stringify(data)}`, 'error');
+          buttonEl.disabled = false;
+          buttonEl.innerText = 'Accept Job';
+        }
+      } catch (e) {
+        log(`Network/fetch error accepting booking: ${e.message}`, 'error');
+        buttonEl.disabled = false;
+        buttonEl.innerText = 'Accept Job';
+      }
+    };
+  </script>
+</body>
+</html>

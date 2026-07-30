@@ -95,32 +95,44 @@ export const ServiceControllers = {
     formData.append('isActive', String(payload.isActive ?? true));
     formData.append('serviceBasePrice', String(payload.serviceBasePrice));
 
-    formData.append('perHourRate', String(payload.perHourRate ?? 0));
-    formData.append('perKmRate', String(payload.perKmRate ?? 0));
+    formData.append('isServiceBasePriceApplied', String(payload.isServiceBasePriceApplied ?? true));
     formData.append('platformFee', String(payload.platformFee ?? 0));
+    formData.append('isPlatformFeeApplied', String(payload.isPlatformFeeApplied ?? false));
     formData.append('gst', String(payload.gst ?? 0));
-    formData.append('emergencyCharge', String(payload.emergencyCharge ?? 0));
+    formData.append('isGstApplied', String(payload.isGstApplied ?? false));
+
     formData.append('weekendMultiplier', String(payload.weekendMultiplier ?? 1.0));
     formData.append('peakHourMultiplier', String(payload.peakHourMultiplier ?? 1.0));
     formData.append('peakHours', JSON.stringify(payload.peakHours ?? []));
     formData.append('freeDistanceKm', String(payload.freeDistanceKm ?? 0));
     formData.append('distanceChargePerKm', String(payload.distanceChargePerKm ?? 0));
     formData.append('surgeFactor', String(payload.surgeFactor ?? 1.0));
+
     formData.append('isSurgeEnabled', String(payload.isSurgeEnabled ?? false));
+    formData.append('isDistanceKmApplied', String(payload.isDistanceKmApplied ?? false));
+    formData.append('isWeekendApplied', String(payload.isWeekendApplied ?? false));
+    formData.append('isPeakHourApplied', String(payload.isPeakHourApplied ?? false));
+    formData.append('isEmergencyApplied', String(payload.isEmergencyApplied ?? false));
+    formData.append('isPerHourRateApplied', String(payload.isPerHourRateApplied ?? false));
 
     if (payload.icon) formData.append('icon', payload.icon);
     formData.append('specifications', JSON.stringify(payload.specifications || []));
 
-    await userSecuredApi.post('/users/admin/service', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    await userSecuredApi.post('/users/admin/service', formData);
   },
 
   updateService: async (payload: UpdateServiceRequest): Promise<void> => {
     const { id, ...body } = payload;
-    await userSecuredApi.patch(`/users/update/service/${id}`, body, {
-      headers: { 'Content-Type': 'application/json' },
+    const formData = new FormData();
+    Object.entries(body).forEach(([key, value]) => {
+      if (key === 'specifications') {
+        formData.append(key, JSON.stringify(value || []));
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, String(value));
+      }
     });
+
+    await userSecuredApi.patch(`/users/update/service/${id}`, formData);
   },
 
   deleteService: async (id: number | string): Promise<void> => {

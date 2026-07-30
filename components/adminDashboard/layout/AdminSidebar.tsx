@@ -171,13 +171,15 @@ const SidebarContent = ({ onLinkClick }: { onLinkClick?: () => void }) => {
                                 onClick={onLinkClick}
                                 sx={{
                                   borderRadius: '8px',
-                                  py: 0.75,
+                                  py: 1,
+                                  px: 2,
                                   mb: 0.5,
-                                  backgroundColor: childActive ? '#ecfdf5' : 'transparent',
-                                  color: childActive ? '#047857' : '#64748b',
+                                  backgroundColor: childActive ? '#10b981' : 'transparent',
+                                  color: childActive ? '#ffffff' : '#64748b',
+                                  boxShadow: childActive ? '0 4px 14px rgba(16, 185, 129, 0.2)' : 'none',
                                   '&:hover': {
-                                    backgroundColor: '#ecfdf5',
-                                    color: '#047857',
+                                    backgroundColor: childActive ? '#059669' : '#ecfdf5',
+                                    color: childActive ? '#ffffff' : '#047857',
                                   },
                                 }}
                               >

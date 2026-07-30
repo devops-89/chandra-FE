@@ -1,35 +1,160 @@
 'use client';
 
-import { useAppSelector } from '@/redux/hooks';
+import { useState } from 'react';
+import { useJobContext } from '../JobContext';
+import { BookingControllers } from '@/api/bookingControllers';
+import { Loader2, ChevronDown } from 'lucide-react';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
-const statusConfig: Record<string, { bg: string; text: string }> = {
-  assigned: { bg: 'bg-blue-100', text: 'text-blue-700' },
-  accepted: { bg: 'bg-yellow-100', text: 'text-yellow-700' },
-  travelling: { bg: 'bg-emerald-100', text: 'text-emerald-700' },
-  started: { bg: 'bg-orange-100', text: 'text-orange-700' },
-  completed: { bg: 'bg-green-100', text: 'text-green-700' },
+const statusConfig: Record<string, { bg: string; text: string; label: string }> = {
+  assigned: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Assigned' },
+  accepted: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Accepted' },
+  enroute: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Enroute' },
+  arrived: { bg: 'bg-indigo-100', text: 'text-indigo-700', label: 'Arrived' },
+  ongoing: { bg: 'bg-orange-100', text: 'text-orange-700', label: 'Ongoing' },
+  completed: { bg: 'bg-green-100', text: 'text-green-700', label: 'Completed' },
+  cancelled: { bg: 'bg-red-100', text: 'text-red-700', label: 'Cancelled' },
 };
 
-export default function ActiveJobStatus() {
-  const currentJob = useAppSelector((state) => state.activeJobs.currentJob);
-  const status = currentJob?.status || 'travelling';
-  const config = statusConfig[status] || statusConfig.travelling;
-  const label = status.charAt(0).toUpperCase() + status.slice(1);
+const getNextStatuses = (current: string) => {
+  switch (current.toLowerCase()) {
+    case 'accepted':
+      return [
+        { value: 'ENROUTE', label: 'Enroute' },
+        { value: 'CANCELLED', label: 'Cancelled' },
+      ];
+    case 'enroute':
+      return [
+        { value: 'ARRIVED', label: 'Arrived' },
+        { value: 'CANCELLED', label: 'Cancelled' },
+      ];
+    case 'arrived':
+      return [
+        { value: 'CANCELLED', label: 'Cancelled' },
+      ];
+    case 'ongoing':
+      return [
+        { value: 'COMPLETED', label: 'Completed' },
+        { value: 'CANCELLED', label: 'Cancelled' },
+      ];
+    default:
+      return [];
+  }
+};
+
+export default function ActiveJobStatus({ onStatusUpdate }: { onStatusUpdate?: (status: string) => void }) {
+  const currentJob = useJobContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  
+  const status = currentJob?.status || 'accepted';
+  const config = statusConfig[status.toLowerCase()] || statusConfig.accepted;
+  const nextStatuses = getNextStatuses(status);
+  const isInteractive = nextStatuses.length > 0;
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (isInteractive && !isLoading) {
+      setAnchorEl(event.currentTarget);
+    }
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleStatusChange = async (newStatus: string) => {
+    handleClose();
+    if (!currentJob?.rawId || newStatus.toLowerCase() === status.toLowerCase()) return;
+
+    try {
+      setIsLoading(true);
+      await BookingControllers.updateBookingStatus(currentJob.rawId, newStatus);
+      if (onStatusUpdate) {
+        onStatusUpdate(newStatus);
+      }
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      alert('Failed to update status. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <span
-      className={`
-        ${config.bg}
-        ${config.text}
-        px-4
-        py-2
-        rounded-full
-        text-sm
-        font-semibold
-        animate-pulse
-      `}
-    >
-      {label}
-    </span>
+    <>
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={!isInteractive || isLoading}
+        className={`
+          inline-flex items-center gap-1.5
+          ${config.bg}
+          ${config.text}
+          px-4
+          py-2
+          rounded-full
+          text-sm
+          font-semibold
+          outline-none
+          transition-all
+          ${isInteractive && !isLoading ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}
+          ${isLoading ? 'opacity-70' : ''}
+        `}
+      >
+        {isLoading ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <span>{config.label}</span>
+        )}
+        
+        {isInteractive && !isLoading && (
+          <ChevronDown className="w-4 h-4" />
+        )}
+      </button>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        slotProps={{
+          paper: {
+            elevation: 2,
+            sx: {
+              mt: 1,
+              minWidth: 140,
+              borderRadius: 2,
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
+            }
+          }
+        }}
+      >
+        {nextStatuses.map((opt) => (
+          <MenuItem 
+            key={opt.value} 
+            onClick={() => handleStatusChange(opt.value)}
+            sx={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: opt.value === 'CANCELLED' ? '#ef4444' : '#334155',
+              '&:hover': {
+                backgroundColor: opt.value === 'CANCELLED' ? '#fef2f2' : '#f8fafc',
+              }
+            }}
+          >
+            {opt.label}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   );
 }

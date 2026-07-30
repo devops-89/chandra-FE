@@ -42,7 +42,7 @@ type SortDir = 'asc' | 'desc';
 function getSortValue(complaint: AdminComplaintListItem, field: SortField): string | number {
   switch (field) {
     case 'id':        return complaint.id;
-    case 'customer':  return `${complaint.createdBy?.firstName || ''} ${complaint.createdBy?.lastName || ''}`.trim().toLowerCase();
+    case 'customer':  return (complaint.createdBy?.name || complaint.createdBy?.username || '').trim().toLowerCase();
     case 'title':     return complaint.title.toLowerCase();
     case 'createdAt': return complaint.createdAt;
     case 'status':    return complaint.status.toLowerCase();
@@ -458,7 +458,7 @@ const ComplaintsTable = () => {
               )}
 
               {!isLoading && !error && paginated.map((complaint) => {
-                const customerName = `${complaint.createdBy?.firstName || ''} ${complaint.createdBy?.lastName || ''}`.trim() || 'Unknown';
+                const customerName = (complaint.createdBy?.name || complaint.createdBy?.username || '').trim() || 'Unknown';
                 return (
                   <TableRow
                     key={complaint.id}

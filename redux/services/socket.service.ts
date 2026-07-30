@@ -1,7 +1,7 @@
-import { io, Socket } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 import { SERVER_ENDPOINTS } from '@/api/serverConstant';
-import { setCurrentJob } from '@/redux/slices/activeJobsSlice';
 import { addNearbyJob, removeNearbyJob } from '@/redux/slices/nearbyJobsSlice';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
 import type { AppDispatch } from '@/redux/store';

@@ -18,6 +18,8 @@ import type {
 
 import { authPublicApi, authSecuredApi, userPublicApi } from './config';
 
+let getProfilePromise: Promise<GetProfileResponse> | null = null;
+
 export const AuthControllers = {
   login: async (payload: LoginRequest): Promise<LoginResponse> => {
     try {
@@ -115,12 +117,16 @@ export const AuthControllers = {
   },
 
   getProfile: async (): Promise<GetProfileResponse> => {
-    try {
-      const response = await authSecuredApi.get<GetProfileResponse>('/auth/profile');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    if (getProfilePromise) return getProfilePromise;
+    getProfilePromise = (async () => {
+      try {
+        const response = await authSecuredApi.get<GetProfileResponse>('/auth/profile');
+        return response.data;
+      } finally {
+        getProfilePromise = null;
+      }
+    })();
+    return getProfilePromise;
   },
 
   logout: async (): Promise<{ success: boolean; message: string }> => {

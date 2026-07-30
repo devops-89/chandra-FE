@@ -1,13 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Snackbar, Alert } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectNearbyJobs, selectNearbyJobsFilters } from '@/redux/selectors/nearbyJobsSelectors';
 import { setCurrentJob } from '@/redux/slices/activeJobsSlice';
 import { setJobs } from '@/redux/slices/nearbyJobsSlice';
 import type { NearbyJob } from '@/types/technicianDashboard/nearbyJobs.types';
+import { BookingControllers } from '@/api/bookingControllers';
 
 import JobCard from './JobCard';
 
@@ -17,28 +19,110 @@ export default function JobList() {
   const jobs = useAppSelector(selectNearbyJobs);
   const filters = useAppSelector(selectNearbyJobsFilters);
   const [selectedDetailsJob, setSelectedDetailsJob] = useState<NearbyJob | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'info' | 'error'>('success');
 
-  const handleAccept = (job: NearbyJob) => {
-    const activeJob = {
-      id: `JOB-${job.id}`,
-      serviceType: job.serviceType,
-      title: job.title || `${job.serviceType} Service`,
-      customerName: job.customerName,
-      customerRating: job.rating || 4.8,
-      address: job.location || 'Sector 52, Gurgaon',
-      payout: typeof job.payout === 'string' ? parseFloat(job.payout.replace(/[^0-9.]/g, '')) || 2500 : 2500,
-      duration: job.duration || '2 Hours',
-      distance: job.distance || '2.4 Km',
-      status: 'accepted' as const,
-      eta: '12 Min',
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await BookingControllers.getTechnicianActiveBookings(1, 10, filters.serviceType);
+        if (response?.data?.data) {
+          const dismissedStr = localStorage.getItem('dismissedBookings');
+          const dismissedIds = dismissedStr ? JSON.parse(dismissedStr) : [];
+          
+          let apiJobs = response.data.data.map((b: any) => {
+            const customerName = b.customer 
+              ? `${b.customer.firstName || ''} ${b.customer.lastName || ''}`.trim() 
+              : 'Unknown Customer';
+            const serviceName = b.service?.name || 'General Service';
+            
+            // Format schedule date
+            let scheduleStr = 'Today, 10:00 AM';
+            if (b.scheduledAt) {
+              const dateObj = new Date(b.scheduledAt);
+              scheduleStr = dateObj.toLocaleString('en-US', {
+                month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+              });
+            }
+
+            return {
+              id: b.id,
+              serviceType: serviceName,
+              title: `${serviceName} Request`,
+              customerName: customerName,
+              rating: 4.8, // Fallback since it's missing in response
+              reviews: 120, // Fallback
+              location: b.address?.fullAddress || b.address?.city || 'Unknown Location',
+              distance: '2.4 Km', // Fallback distance
+              schedule: scheduleStr,
+              duration: '2 Hours', // Fallback
+              payout: `₹${b.totalAmount || 500}`,
+              urgency: 'Normal' as const,
+              lat: b.address?.latitude,
+              lng: b.address?.longitude,
+            };
+          });
+          
+          apiJobs = apiJobs.filter((job: any) => !dismissedIds.includes(job.id));
+          dispatch(setJobs(apiJobs));
+        }
+      } catch (error) {
+        console.error('Failed to fetch technician bookings:', error);
+      }
     };
-    dispatch(setCurrentJob(activeJob));
-    dispatch(setJobs(jobs.filter((j) => j.id !== job.id)));
-    router.push('/dashboard/technician/bookings');
+    fetchBookings();
+  }, [dispatch, filters.serviceType]);
+
+  const handleAccept = async (job: NearbyJob) => {
+    try {
+      await BookingControllers.acceptBooking(job.id);
+      
+      const activeJob = {
+        id: `JOB-${job.id}`,
+        rawId: job.id,
+        serviceId: undefined, // Or populate it if we add it to NearbyJob
+        serviceType: job.serviceType,
+        title: job.title || `${job.serviceType} Service`,
+        customerName: job.customerName,
+        customerRating: job.rating || 4.8,
+        address: job.location || 'Sector 52, Gurgaon',
+        payout: typeof job.payout === 'string' ? parseFloat(job.payout.replace(/[^0-9.]/g, '')) || 2500 : 2500,
+        duration: job.duration || '2 Hours',
+        distance: job.distance || '2.4 Km',
+        status: 'accepted' as const,
+        eta: '12 Min',
+      };
+      dispatch(setCurrentJob(activeJob));
+      dispatch(setJobs(jobs.filter((j) => j.id !== job.id)));
+      
+      setSnackbarMessage('Booking successfully accepted!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+      
+      // Optionally route after a short delay so user sees snackbar, or just don't route.
+      // We will remove router.push so the snackbar can be seen, or we navigate after delay.
+      setTimeout(() => {
+        router.push('/dashboard/technician/bookings');
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Failed to accept booking', error);
+      setSnackbarMessage('Failed to accept booking.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
   };
 
   const handleReject = (jobId: number) => {
+    const dismissedStr = localStorage.getItem('dismissedBookings');
+    const dismissedIds = dismissedStr ? JSON.parse(dismissedStr) : [];
+    localStorage.setItem('dismissedBookings', JSON.stringify([...dismissedIds, jobId]));
     dispatch(setJobs(jobs.filter((j) => j.id !== jobId)));
+    
+    setSnackbarMessage('Booking successfully dismissed!');
+    setSnackbarSeverity('info');
+    setSnackbarOpen(true);
   };
 
   // Filter logic
@@ -81,7 +165,7 @@ export default function JobList() {
       {filteredJobs.length === 0 ? (
         <div className="text-center py-12 bg-white border border-slate-200 rounded-3xl shadow-sm">
           <span className="material-symbols-outlined text-slate-300 text-5xl mb-3">search_off</span>
-          <p className="text-slate-500 font-medium">No nearby jobs match your active filters.</p>
+          <p className="text-slate-500 font-medium">No nearby bookings match your active filters.</p>
         </div>
       ) : (
         filteredJobs.map((job) => (
@@ -140,7 +224,7 @@ export default function JobList() {
             </div>
 
             <div className="border-t pt-4">
-              <h4 className="font-semibold text-slate-900 mb-2">Job Description</h4>
+              <h4 className="font-semibold text-slate-900 mb-2">Booking Description</h4>
               <p className="text-slate-500 text-xs leading-relaxed">
                 Provide high-quality cleaning and complete support. Make sure to inspect the equipment beforehand, perform deep cleansing processes, and verify functionality post-job completion. Ensure client satisfaction.
               </p>
@@ -154,7 +238,7 @@ export default function JobList() {
                 }}
                 className="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-colors cursor-pointer text-sm"
               >
-                Accept Job
+                Accept Booking
               </button>
               <button
                 onClick={() => {
@@ -163,12 +247,33 @@ export default function JobList() {
                 }}
                 className="py-3 px-5 border border-slate-200 rounded-xl text-red-500 font-semibold hover:bg-red-50 transition-colors cursor-pointer text-sm"
               >
-                Reject
+                Dismiss
               </button>
             </div>
           </div>
         </div>
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={() => setSnackbarOpen(false)} 
+          severity={snackbarSeverity} 
+          variant="filled" 
+          sx={{ 
+            width: '100%', 
+            borderRadius: '12px', 
+            bgcolor: snackbarSeverity === 'success' ? '#059669' : (snackbarSeverity === 'error' ? '#dc2626' : '#334155'), 
+            color: 'white' 
+          }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

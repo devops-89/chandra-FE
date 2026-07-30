@@ -65,8 +65,17 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
               userStatus: res.data.status,
               technicianProfile,
             });
-            router.replace(redirectPath);
-            return;
+            
+            const currentPath = window.location.pathname;
+            if (redirectPath === '/dashboard/technician' && currentPath.startsWith('/dashboard/technician')) {
+              // User is already on a valid dashboard sub-page, do not redirect
+              return;
+            } else if (currentPath !== redirectPath) {
+              router.replace(redirectPath);
+              return;
+            } else {
+              return; // We are exactly on the redirect path
+            }
           }
         } catch {
           // Profile fetch failed — fall through to the existing guard logic.

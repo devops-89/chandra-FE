@@ -40,8 +40,8 @@ export const adminSidebarItems = [
     icon: Wallet,
     children: [
       {
-        label: "Transactions",
-        href: "/admin/finance/transactions",
+        label: "Booking Settlements",
+        href: "/admin/finance/bookings",
       },
       {
         label: "Technician Payouts",

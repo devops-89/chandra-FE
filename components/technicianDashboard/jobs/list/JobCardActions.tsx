@@ -39,7 +39,7 @@ export default function JobCardActions({
             transition-all
           "
         >
-          Accept Job
+          Accept Booking
         </button>
 
         <button
@@ -57,7 +57,7 @@ export default function JobCardActions({
             hover:bg-slate-50
           "
         >
-          Reject
+          Dismiss
         </button>
 
         <button

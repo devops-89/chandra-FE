@@ -5,8 +5,17 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { ReviewControllers } from '@/api/reviewControllers';
-
-import type { ReviewData } from '../list/ReviewsTable';
+export interface ReviewData {
+  id: string;
+  reviewerName: string;
+  reviewForName: string;
+  serviceName: string;
+  rating: number;
+  comment: string;
+  date: string;
+  status: 'Published' | 'Hidden';
+  type: 'Customer' | 'Technician';
+}
 
 const ReviewDetails = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -21,7 +30,7 @@ const ReviewDetails = ({ id }: { id: string }) => {
         const response = await ReviewControllers.getAllReviews();
         if (response.data?.success) {
           const fetchedReviews = response.data.data.reviews || [];
-          
+
           let found: ReviewData | null = null;
           fetchedReviews.forEach((r: any) => {
             if (r.customerReview && `${r.bookingId}-customer` === id) {
@@ -98,11 +107,10 @@ const ReviewDetails = ({ id }: { id: string }) => {
           <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 border border-slate-100">
             <span className="text-sm font-medium text-slate-500">Current status</span>
             <span
-              className={`rounded-full px-3 py-0.5 text-xs font-semibold ${
-                status === 'Published'
-                  ? 'bg-emerald-100 text-emerald-700'
-                  : 'bg-red-100 text-red-700'
-              }`}
+              className={`rounded-full px-3 py-0.5 text-xs font-semibold ${status === 'Published'
+                ? 'bg-emerald-100 text-emerald-700'
+                : 'bg-red-100 text-red-700'
+                }`}
             >
               {status}
             </span>

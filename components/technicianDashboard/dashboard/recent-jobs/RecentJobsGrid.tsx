@@ -7,7 +7,7 @@ import { BookingControllers } from '@/api/bookingControllers';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectNearbyJobs } from '@/redux/selectors/nearbyJobsSelectors';
 import { setCurrentJob } from '@/redux/slices/activeJobsSlice';
-import { removeNearbyJob, setJobs } from '@/redux/slices/nearbyJobsSlice';
+import { removeNearbyJob } from '@/redux/slices/nearbyJobsSlice';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
 import type { NearbyJob } from '@/types/technicianDashboard/nearbyJobs.types';
 
@@ -30,6 +30,7 @@ export default function NearbyJobsGrid() {
 
       const activeJob = {
         id: `JOB-${job.id}`,
+        rawId: job.id,
         serviceType: job.serviceType,
         title: job.title || `${job.serviceType} Service`,
         customerName: job.customerName,
@@ -45,8 +46,8 @@ export default function NearbyJobsGrid() {
       dispatch(setCurrentJob(activeJob));
       dispatch(removeNearbyJob(job.id));
       router.push('/dashboard/technician/bookings');
-    } catch (err: any) {
-      const message = err?.message || 'Failed to accept booking';
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to accept booking';
       dispatch(showSnackbar({ message, severity: 'error' }));
     } finally {
       setAcceptingJobId(null);
