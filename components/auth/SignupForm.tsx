@@ -5,6 +5,7 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material';
+import { MuiTelInput } from 'mui-tel-input';
 import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -173,18 +174,15 @@ export const SignupForm = () => {
               />
 
               {/* Mobile Number */}
-              <TextField
+              <MuiTelInput
                 label="Mobile Number"
                 variant="outlined"
                 fullWidth
+                defaultCountry="IN"
                 name="phone"
-                type="tel"
                 autoComplete="tel"
                 value={form.phone}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, ''); // Only digits
-                  handleChange('phone', value.slice(0, 10));       // Max 10 digits
-                }}
+                onChange={(val) => handleChange('phone', val)}
                 error={!!errors.phone}
                 helperText={errors.phone}
                 sx={textFieldStyles}

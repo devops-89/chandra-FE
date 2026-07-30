@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, Button, Card, TextField, Typography } from '@mui/material';
+import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useFormik } from 'formik';
@@ -26,7 +27,10 @@ export default function AdminAddTechnicianForm() {
       firstName: Yup.string().required('First name is required'),
       lastName: Yup.string().required('Last name is required'),
       email: Yup.string().email('Invalid email address').required('Email is required'),
-      phone: Yup.string().required('Phone number is required'),
+      phone: Yup.string().test('is-valid-phone', 'Invalid phone number', (value) => {
+        if (!value) return false;
+        return matchIsValidTel(value);
+      }).required('Phone number is required'),
       password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
     }),
     onSubmit: async (values) => {
@@ -104,16 +108,16 @@ export default function AdminAddTechnicianForm() {
             fullWidth
             variant="outlined"
           />
-          <TextField
+          <MuiTelInput
+            fullWidth
+            defaultCountry="IN"
             label="Phone Number"
             name="phone"
             value={formik.values.phone}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
+            onChange={(val) => formik.setFieldValue('phone', val)}
+            onBlur={() => formik.setFieldTouched('phone', true)}
             error={formik.touched.phone && Boolean(formik.errors.phone)}
             helperText={formik.touched.phone && formik.errors.phone}
-            fullWidth
-            variant="outlined"
           />
           <TextField
             label="Password"

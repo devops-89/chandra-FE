@@ -27,6 +27,15 @@ export const CustomerControllers = {
     return response.data.data.data;
   },
 
+  updateCustomerProfileWithFiles: async (payload: FormData): Promise<CustomerProfile> => {
+    const response = await userSecuredApi.patch<UpdateCustomerProfileResponse>('/users/profile', payload, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data.data.data;
+  },
+
   createAddress: async (payload: CreateAddressRequest): Promise<Address> => {
     const response = await userSecuredApi.post<CreateAddressResponse>('/users/customer/address', payload);
     return response.data.data.data;

@@ -107,29 +107,32 @@ export function getTechnicianRedirectPath(params: {
   const normalizedUserStatus = normalizeStatus(userStatus);
   const normalizedProfileStatus = normalizeStatus(technicianProfile?.status);
 
+  // If a technician logs in but hasn't created a profile, Step 0 (account creation) is inherently complete.
+  // We pass a dummy ID to set the Step 0 bit in the local storage mask.
+  const profileToSync = technicianProfile || { id: -1 };
+
+  // Always sync bitmask from backend
+  syncProgressFromProfile({
+    id:                profileToSync.id as any,
+    services:          profileToSync.services as any,
+    yearsOfExperience: profileToSync.yearsOfExperience,
+    languages:         profileToSync.languages as any,
+    aadharUrl:         profileToSync.aadharUrl,
+    panUrl:            profileToSync.panUrl,
+    policeCertUrl:     profileToSync.policeCertUrl,
+    tradeLicenseUrl:   profileToSync.tradeLicenseUrl,
+    selfieUrl:         profileToSync.selfieUrl,
+    serviceAreas:      profileToSync.serviceAreas as any,
+    accountHolderName: profileToSync.accountHolderName,
+    accountNumber:     profileToSync.accountNumber,
+    ifscCode:          profileToSync.ifscCode,
+    status:            profileToSync.status,
+  });
+
   // 1. No profile created yet
   if (!technicianProfile) {
-    return '/technician/onboarding/register';
+    return firstIncompleteRoute();
   }
-
-  // Always sync bitmask from backend â€” overwrites any stale localStorage state.
-  // This is the key to surviving localStorage.clear() â€” every login re-syncs.
-  syncProgressFromProfile({
-    id:                technicianProfile.id,
-    services:          technicianProfile.services,
-    yearsOfExperience: technicianProfile.yearsOfExperience,
-    languages:         technicianProfile.languages,
-    aadharUrl:         technicianProfile.aadharUrl,
-    panUrl:            technicianProfile.panUrl,
-    policeCertUrl:     technicianProfile.policeCertUrl,
-    tradeLicenseUrl:   technicianProfile.tradeLicenseUrl,
-    selfieUrl:         technicianProfile.selfieUrl,
-    serviceAreas:      technicianProfile.serviceAreas,
-    accountHolderName: technicianProfile.accountHolderName,
-    accountNumber:     technicianProfile.accountNumber,
-    ifscCode:          technicianProfile.ifscCode,
-    status:            technicianProfile.status,
-  });
 
   // 2. Submitted for admin review
   if (normalizedProfileStatus === 'PENDING_APPROVAL') {

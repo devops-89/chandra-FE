@@ -1,7 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, IconButton, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
 import { TechnicianControllers } from '@/api/technicianControllers';
@@ -19,6 +24,9 @@ export default function DocumentsTab() {
     tradeLicenseUrl: null,
     selfieUrl: null,
   });
+  
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<string>('');
 
   const fileInputRefs: Record<string, React.RefObject<HTMLInputElement | null>> = {
     aadharUrl: useRef<HTMLInputElement>(null),
@@ -74,22 +82,48 @@ export default function DocumentsTab() {
 
   const renderDocumentSection = (title: string, key: string, existingUrl?: string | null) => {
     const file = files[key];
+    const isUploaded = !!existingUrl && !file;
+    const isAadharUploaded = key === 'aadharUrl' && !!existingUrl;
+
     return (
-      <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 mb-4 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div>
-          <h4 className="font-medium text-slate-800">{title}</h4>
-          {file ? (
-            <p className="text-sm text-emerald-600 mt-1 font-medium">Selected: {file.name}</p>
-          ) : existingUrl ? (
-            <a href={existingUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 mt-1 hover:underline">
-              View current document
-            </a>
-          ) : (
-            <p className="text-sm text-slate-400 mt-1">No document uploaded</p>
-          )}
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all hover:border-emerald-200 hover:shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className={`p-3 rounded-xl flex items-center justify-center ${isUploaded || file ? 'bg-emerald-50' : 'bg-slate-50'}`}>
+            <DescriptionOutlinedIcon className={isUploaded || file ? 'text-emerald-500' : 'text-slate-400'} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h4 className="font-semibold text-slate-800">{title}</h4>
+              {isUploaded && <CheckCircleIcon sx={{ fontSize: 16 }} className="text-emerald-500" />}
+            </div>
+            
+            {file ? (
+              <p className="text-sm text-emerald-600 mt-1 font-medium bg-emerald-50 px-2 py-0.5 rounded-md inline-block">
+                Ready to upload: {file.name}
+              </p>
+            ) : existingUrl ? (
+              <div className="flex items-center gap-2 mt-1.5">
+                <span className="text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                  Uploaded
+                </span>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setPreviewUrl(existingUrl);
+                    setPreviewTitle(title);
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1 hover:underline cursor-pointer bg-transparent border-none p-0 m-0"
+                >
+                  <VisibilityOutlinedIcon sx={{ fontSize: 16 }} /> View
+                </button>
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400 mt-1">Pending upload</p>
+            )}
+          </div>
         </div>
         
-        <div>
+        <div className="w-full md:w-auto flex justify-end">
           <input 
             type="file" 
             ref={fileInputRefs[key]} 
@@ -97,14 +131,24 @@ export default function DocumentsTab() {
             className="hidden" 
             accept="image/*,.pdf"
           />
-          <Button 
-            variant="outlined" 
-            size="small"
-            onClick={() => fileInputRefs[key].current?.click()}
-            sx={{ borderRadius: '8px', textTransform: 'none' }}
-          >
-            {existingUrl ? 'Replace Document' : 'Upload Document'}
-          </Button>
+          {!isAadharUploaded && (
+            <Button 
+              variant="outlined" 
+              size="small"
+              onClick={() => fileInputRefs[key].current?.click()}
+              startIcon={<FileUploadOutlinedIcon />}
+              sx={{ 
+                borderRadius: '10px', 
+                textTransform: 'none', 
+                fontWeight: 600,
+                borderColor: '#cbd5e1',
+                color: '#475569',
+                '&:hover': { borderColor: '#059669', color: '#059669', backgroundColor: '#ecfdf5' }
+              }}
+            >
+              {existingUrl ? 'Update' : 'Upload'}
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -135,6 +179,45 @@ export default function DocumentsTab() {
           {loading ? <CircularProgress size={24} color="inherit" /> : 'Upload Selected Files'}
         </Button>
       </div>
+
+      {/* Document Preview Modal */}
+      <Dialog
+        open={!!previewUrl}
+        onClose={() => setPreviewUrl(null)}
+        maxWidth="md"
+        fullWidth
+        sx={{ '& .MuiDialog-paper': { borderRadius: '16px' } }}
+      >
+        <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span className="font-bold text-slate-800">{previewTitle}</span>
+          <IconButton
+            onClick={() => setPreviewUrl(null)}
+            sx={{
+              color: '#64748b',
+              '&:hover': { backgroundColor: '#f1f5f9' },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers sx={{ p: 0, backgroundColor: '#f8fafc', display: 'flex', justifyContent: 'center' }}>
+          {previewUrl && (
+            previewUrl.toLowerCase().endsWith('.pdf') ? (
+              <iframe
+                src={previewUrl}
+                className="w-full h-[70vh] border-0"
+                title={previewTitle}
+              />
+            ) : (
+              <img
+                src={previewUrl}
+                alt={previewTitle}
+                className="max-w-full max-h-[70vh] object-contain"
+              />
+            )
+          )}
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }

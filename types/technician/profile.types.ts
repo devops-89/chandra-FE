@@ -27,7 +27,7 @@ export interface TechnicianProfile {
   createdAt: string;
   updatedAt: string;
 
-  services: { service: { name: string } }[];
+  services: { serviceId: number; service: { id: number; name: string } }[];
   brandExpertise: { brandName: string }[];
   locations: { city: string; state: string; pincode: string; fullAddress: string; latitude?: string; longitude?: string; serviceRadiusKm?: number; }[];
   payoutAccounts?: { accountType?: string; upiId?: string; accountHolderName?: string; bankName?: string; accountNumber?: string; ifscCode?: string; }[];
