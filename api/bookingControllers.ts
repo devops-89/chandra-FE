@@ -77,20 +77,17 @@ export const BookingControllers = {
 
   getCustomerBookingById: async (id: number): Promise<CustomerBooking> => {
     const response = await userSecuredApi.get(`/bookings/${id}`);
-    
+
     // Extract the booking data from the response structure
     let raw = response.data?.data?.data || response.data?.data || response.data;
     if (Array.isArray(raw)) raw = raw[0];
-    
+
     return raw;
   },
 
-  getBookingPaymentUrl: async (bookingId: number, callbackUrl?: string): Promise<string> => {
-    let url = `/bookings/${bookingId}/payment`;
-    if (callbackUrl) {
-      url += `?callbackUrl=${encodeURIComponent(callbackUrl)}&callback_url=${encodeURIComponent(callbackUrl)}`;
-    }
-    const response = await userSecuredApi.get(url);
+  getBookingPaymentUrl: async (bookingId: number): Promise<string> => {
+    const response = await userSecuredApi.get(`/bookings/${bookingId}/payment`);
+    console.log(response.data?.data?.data?.paymentUrl, 'paymentUrl')
     return response.data?.data?.data?.paymentUrl || response.data?.data?.paymentUrl;
   },
 
