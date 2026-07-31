@@ -17,7 +17,7 @@ import { validateBookingForm, validateDateTime } from '@/lib/validation/bookingV
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
 import { createBooking } from '@/redux/slices/bookingSlice';
-import {  fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
+import { fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
 import { createTokenPaymentLink } from '@/redux/slices/customerTokenPaymentSlice';
 import { fetchServiceById } from '@/redux/slices/servicesSlice';
 import type { UnifiedBookingPageProps } from '@/types/bookingTypes/bookingForm.types';
@@ -347,8 +347,8 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
           scheduledAt: scheduledAt,
           serviceSpecifications: serviceSpecifications as any,
         };
-        await dispatch(createBooking(payload)).unwrap();
-        router.push('/booking/confirmation');
+        const response = await dispatch(createBooking(payload)).unwrap();
+        router.push(`/booking/confirmation?id=${response.id}`);
       } catch (err: any) {
         setError(typeof err === 'string' ? err : err?.message || 'Booking failed. Please try again.');
       } finally {

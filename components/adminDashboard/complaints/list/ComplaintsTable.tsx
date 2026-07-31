@@ -31,7 +31,12 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { deleteAdminComplaint, fetchAdminComplaints, resolveAdminComplaint } from '@/redux/slices/adminComplaintSlice';
+import {
+  fetchAdminComplaints,
+  deleteAdminComplaint,
+  resolveAdminComplaint,
+} from '@/redux/slices/adminComplaintSlice';
+import { useTablePagination } from '@/hooks/useTablePagination';
 import type { AdminComplaintListItem } from '@/types/admin/complaints.types';
 import { AdminControllers } from '@/api/adminControllers';
 
@@ -325,8 +330,7 @@ const ComplaintsTable = () => {
   const [statusFilter, setStatusFilter] = useState<string>('All Status');
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { page, setPage, rowsPerPage, setRowsPerPage } = useTablePagination('admin_complaints', 0, 10);
   
   // Modal state
   const [selectedComplaint, setSelectedComplaint] = useState<any | null>(null);

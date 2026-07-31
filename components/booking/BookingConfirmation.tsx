@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 
 import PublicFooter from '@/components/common/PublicFooter';
@@ -12,9 +12,12 @@ import { useBookingStore } from '@/redux/legacy/bookingStore';
 
 export function BookingConfirmationContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const idQuery = searchParams.get('id');
+  
   const { service, servicePrice, date, slot, clearBooking } = useBookingStore();
 
-  const bookingId = createTemporaryBookingId(service, date, slot);
+  const bookingId = idQuery ? `B-${idQuery}` : createTemporaryBookingId(service, date, slot);
 
   React.useEffect(() => {
     const timer = setTimeout(() => clearBooking(), 20000);
@@ -78,7 +81,9 @@ export default function BookingConfirmation() {
   return (
     <>
       <PublicNavbar />
-      <BookingConfirmationContent />
+      <React.Suspense fallback={<div>Loading...</div>}>
+        <BookingConfirmationContent />
+      </React.Suspense>
       <PublicFooter />
     </>
   );

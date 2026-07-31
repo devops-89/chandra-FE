@@ -42,6 +42,8 @@ export default function BankDetailsTab() {
   const dispatch = useAppDispatch();
   const technician = useAppSelector((state) => state.technicianProfile.profile);
   const payoutAccounts = technician?.technicianProfile?.payoutAccounts || [];
+  const vpaCount = payoutAccounts.filter((acc: any) => acc.accountType === 'VPA').length;
+  const bankCount = payoutAccounts.filter((acc: any) => acc.accountType === 'BANK_ACCOUNT').length;
   
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -94,7 +96,7 @@ export default function BankDetailsTab() {
   });
 
   const handleOpenAdd = () => {
-    formik.resetForm({ values: initialFormValues });
+    formik.resetForm({ values: { ...initialFormValues, accountType: vpaCount >= 2 ? 'BANK_ACCOUNT' : 'VPA' } });
     setEditingAccId(null);
     setModalOpen(true);
   };
@@ -145,8 +147,9 @@ export default function BankDetailsTab() {
         <Button 
           variant="contained" 
           onClick={handleOpenAdd}
+          disabled={vpaCount >= 2 && bankCount >= 2}
           startIcon={<span className="material-symbols-outlined text-sm">add</span>}
-          sx={{ borderRadius: '8px', backgroundColor: '#059669', '&:hover': { backgroundColor: '#047857' }, textTransform: 'none', fontWeight: 600, boxShadow: 'none' }}
+          sx={{ borderRadius: '8px', backgroundColor: '#059669', '&:hover': { backgroundColor: '#047857' }, textTransform: 'none', fontWeight: 600, boxShadow: 'none', '&.Mui-disabled': { backgroundColor: '#e2e8f0' } }}
         >
           Add Account
         </Button>
@@ -225,8 +228,8 @@ export default function BankDetailsTab() {
                 label="Payout Method"
                 sx={{ borderRadius: '12px' }}
               >
-                <MenuItem value="VPA">UPI (VPA)</MenuItem>
-                <MenuItem value="BANK_ACCOUNT">Bank Account</MenuItem>
+                <MenuItem value="VPA" disabled={vpaCount >= 2 && formik.values.accountType !== 'VPA'}>UPI (VPA) {vpaCount >= 2 && formik.values.accountType !== 'VPA' && '(Limit Reached)'}</MenuItem>
+                <MenuItem value="BANK_ACCOUNT" disabled={bankCount >= 2 && formik.values.accountType !== 'BANK_ACCOUNT'}>Bank Account {bankCount >= 2 && formik.values.accountType !== 'BANK_ACCOUNT' && '(Limit Reached)'}</MenuItem>
               </Select>
               {formik.touched.accountType && formik.errors.accountType && (
                 <FormHelperText>{formik.errors.accountType}</FormHelperText>

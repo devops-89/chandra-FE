@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchAdminBookings } from '@/redux/slices/adminBookingSlice';
+import { useTablePagination } from '@/hooks/useTablePagination';
 import type { AdminBooking } from '@/types/admin/bookings.types';
 import { BOOKING_PAYMENT_STATUS, BOOKING_STATUS } from '@/types/enums';
 
@@ -159,8 +160,7 @@ const BookingsTable = () => {
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   
   // Backend pagination is 1-indexed, MUI is 0-indexed
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { page, setPage, rowsPerPage, setRowsPerPage } = useTablePagination('admin_bookings', 0, 10);
   const [assignModalBooking, setAssignModalBooking] = useState<AdminBooking | null>(null);
 
   useEffect(() => {

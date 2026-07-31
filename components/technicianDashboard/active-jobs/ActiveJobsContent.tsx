@@ -70,8 +70,12 @@ export default function ActiveJobsContent() {
 
     fetchBookings();
 
+    const handleRefresh = () => fetchBookings();
+    window.addEventListener('refresh_bookings', handleRefresh);
+
     return () => {
       isMounted = false;
+      window.removeEventListener('refresh_bookings', handleRefresh);
     };
   }, [dispatch, activeStatus, page]);
 
