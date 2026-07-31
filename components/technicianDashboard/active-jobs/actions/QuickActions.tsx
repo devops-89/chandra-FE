@@ -4,9 +4,12 @@ import { useJobContext } from '../JobContext';
 import CallCustomerButton from './CallCustomerButton';
 import VerifyOTPButton from './VerifyOTPButton';
 import RaiseTicketButton from './RaiseTicketButton';
+import AddReviewButton from './AddReviewButton';
+
 export default function QuickActions({ onStatusUpdate }: { onStatusUpdate?: (status: string) => void }) {
   const currentJob = useJobContext();
   const isArrived = currentJob?.status?.toLowerCase() === 'arrived';
+  const isCompleted = currentJob?.status?.toLowerCase() === 'completed';
 
   return (
     <div className="mt-10">
@@ -20,6 +23,9 @@ export default function QuickActions({ onStatusUpdate }: { onStatusUpdate?: (sta
           <VerifyOTPButton onStatusUpdate={onStatusUpdate} />
         )}
         <RaiseTicketButton />
+        {isCompleted && (
+          <AddReviewButton />
+        )}
       </div>
     </div>
   );
