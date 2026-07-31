@@ -2,7 +2,6 @@
 
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { Snackbar, Alert } from '@mui/material';
 
 import { BookingControllers } from '@/api/bookingControllers';
 import BookingDetailHero from '@/components/customerDashboard/bookings/BookingDetailHero';
@@ -30,10 +29,6 @@ export default function BookingDetailsPage() {
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [isRaiseTicketOpen, setIsRaiseTicketOpen] = useState(false);
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
-  
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMsg, setSnackbarMsg] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
   useEffect(() => {
     if (!id) {
@@ -142,25 +137,15 @@ export default function BookingDetailsPage() {
       setIsPaymentLoading(true);
       const bookingId = booking.id || booking.bookingId;
       if (!bookingId) return;
-      const paymentUrl = await BookingControllers.getBookingPaymentUrl(bookingId);
+      const callbackUrl = `${window.location.origin}/customer/bookings`;
+      const paymentUrl = await BookingControllers.getBookingPaymentUrl(bookingId, callbackUrl);
       if (paymentUrl) {
-        setSnackbarMsg('Payment URL generated successfully. Redirecting...');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
         setTimeout(() => {
           window.location.href = paymentUrl;
         }, 1000);
-      } else {
-        setSnackbarMsg('Payment URL could not be generated. Please try again.');
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
       }
     } catch (err: any) {
       console.error('Payment Error:', err);
-      const errorMessage = err.response?.data?.message || err.message || 'Failed to initiate payment. Please try again.';
-      setSnackbarMsg(errorMessage);
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
     } finally {
       setIsPaymentLoading(false);
     }
@@ -251,20 +236,6 @@ export default function BookingDetailsPage() {
         />
       )}
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity={snackbarSeverity}
-          sx={{ width: '100%' }}
-        >
-          {snackbarMsg}
-        </Alert>
-      </Snackbar>
     </DashboardLayout>
   );
 }

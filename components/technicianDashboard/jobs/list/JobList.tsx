@@ -72,6 +72,13 @@ export default function JobList() {
       }
     };
     fetchBookings();
+
+    const handleRefresh = () => fetchBookings();
+    window.addEventListener('refresh_bookings', handleRefresh);
+
+    return () => {
+      window.removeEventListener('refresh_bookings', handleRefresh);
+    };
   }, [dispatch, filters.serviceType]);
 
   const handleAccept = async (job: NearbyJob) => {

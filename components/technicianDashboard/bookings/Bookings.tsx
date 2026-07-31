@@ -18,6 +18,9 @@ export default function Bookings() {
   const handleTabChange = (tab: 'new' | 'active') => {
     setActiveTab(tab);
     localStorage.setItem('technicianBookingsTab', tab);
+    setTimeout(() => {
+      window.dispatchEvent(new Event('refresh_bookings'));
+    }, 50); // slight delay to allow component to mount
   };
 
   return (

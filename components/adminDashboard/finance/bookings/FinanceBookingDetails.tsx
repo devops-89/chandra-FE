@@ -385,6 +385,29 @@ export default function FinanceBookingDetails({ bookingId }: { bookingId: string
                   <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>Payable Amount</Typography>
                   <Typography variant="h4" sx={{ fontWeight: 800, color: "#0f172a" }}>₹{booking.priceBreakdown?.technicianEarning || "0.00"}</Typography>
                   
+                  {booking.technician?.payoutAccounts && booking.technician.payoutAccounts.length > 0 && (
+                    <Box sx={{ mt: 2, p: 2, backgroundColor: '#f8fafc', borderRadius: 2, border: '1px solid #e2e8f0' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700, color: '#475569', mb: 1 }}>Payout Details</Typography>
+                      {booking.technician.payoutAccounts.map((acc: any, index: number) => (
+                        <Box key={index} sx={{ mb: index !== booking.technician!.payoutAccounts!.length - 1 ? 1.5 : 0 }}>
+                          {acc.accountType === 'VPA' ? (
+                            <Box>
+                              <Typography variant="caption" sx={{ color: '#64748b', display: 'block' }}>UPI ID</Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>{acc.upiId || 'N/A'}</Typography>
+                            </Box>
+                          ) : (
+                            <Box>
+                              <Typography variant="caption" sx={{ color: '#64748b', display: 'block' }}>Bank Account</Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>{acc.bankName} - {acc.accountNumber}</Typography>
+                              <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5 }}>IFSC: {acc.ifscCode}</Typography>
+                              <Typography variant="caption" sx={{ color: '#64748b', display: 'block' }}>Holder: {acc.accountHolderName}</Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      ))}
+                    </Box>
+                  )}
+                  
                   <Box sx={{ mt: 'auto', pt: 3 }}>
                     <Button 
                       variant="contained" 

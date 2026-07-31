@@ -86,9 +86,6 @@ const PayoutTable = () => {
                   Amount
                 </TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Booking Status
-                </TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   Payment Status
                 </TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }} align="center">
@@ -100,19 +97,13 @@ const PayoutTable = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">Loading...</TableCell>
+                  <TableCell colSpan={6} align="center">Loading...</TableCell>
                 </TableRow>
               ) : payments.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">No payouts found.</TableCell>
+                  <TableCell colSpan={6} align="center">No payouts found.</TableCell>
                 </TableRow>
               ) : payments.map((payout) => {
-                const bookingStatusConfig = STATUS_CHIP[payout.booking?.status] ?? {
-                  label: payout.booking?.status || "Unknown",
-                  backgroundColor: "#f1f5f9",
-                  color: "#475569",
-                };
-                
                 const paymentStatusConfig = STATUS_CHIP[payout.status] ?? {
                   label: payout.status || "Unknown",
                   backgroundColor: "#f1f5f9",
@@ -150,20 +141,6 @@ const PayoutTable = () => {
                     {/* Payout Amount */}
                     <TableCell sx={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
                       ₹{payout.amount}
-                    </TableCell>
-
-                    {/* Booking Status */}
-                    <TableCell>
-                      <Chip
-                        label={bookingStatusConfig.label}
-                        size="small"
-                        sx={{
-                          fontWeight: 600,
-                          fontSize: 11,
-                          backgroundColor: bookingStatusConfig.backgroundColor,
-                          color: bookingStatusConfig.color,
-                        }}
-                      />
                     </TableCell>
 
                     {/* Payment Status */}

@@ -120,7 +120,9 @@ export function BookingSummaryContent({
       console.warn('API Response:', booking);
     }
 
-    router.push(confirmationPath);
+    const url = new URL(confirmationPath, window.location.origin);
+    url.searchParams.set('id', booking.id.toString());
+    router.push(url.pathname + url.search);
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
       console.warn('Backend Error:', error);

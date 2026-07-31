@@ -85,8 +85,12 @@ export const BookingControllers = {
     return raw;
   },
 
-  getBookingPaymentUrl: async (bookingId: number): Promise<string> => {
-    const response = await userSecuredApi.get(`/bookings/${bookingId}/payment`);
+  getBookingPaymentUrl: async (bookingId: number, callbackUrl?: string): Promise<string> => {
+    let url = `/bookings/${bookingId}/payment`;
+    if (callbackUrl) {
+      url += `?callbackUrl=${encodeURIComponent(callbackUrl)}&callback_url=${encodeURIComponent(callbackUrl)}`;
+    }
+    const response = await userSecuredApi.get(url);
     return response.data?.data?.data?.paymentUrl || response.data?.data?.paymentUrl;
   },
 
