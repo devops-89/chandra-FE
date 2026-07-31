@@ -16,6 +16,7 @@ import { BOOKING_STEPS } from '@/constants/booking/timeSlots';
 import { validateBookingForm, validateDateTime } from '@/lib/validation/bookingValidation';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
+import { createBooking } from '@/redux/slices/bookingSlice';
 import {  fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
 import { createTokenPaymentLink } from '@/redux/slices/customerTokenPaymentSlice';
 import { fetchServiceById } from '@/redux/slices/servicesSlice';
@@ -28,6 +29,26 @@ const STEP_DYNAMIC_FORM  = 0;
 const STEP_ADDRESS       = 1;
 const STEP_DATETIME      = 2;
 const STEP_DETAILS       = 3;
+
+function buildScheduledAt(date: string, slot: string) {
+  const [year, month, day] = date.split('-').map(Number);
+  const [time, modifier] = slot.trim().split(/\s+/);
+  const [hourValue, minuteValue] = time.split(':').map(Number);
+
+  let hours = hourValue;
+
+  if (modifier === 'PM' && hours !== 12) {
+    hours += 12;
+  }
+
+  if (modifier === 'AM' && hours === 12) {
+    hours = 0;
+  }
+
+  // Construct date in local browser timezone and convert to ISO UTC
+  const localDate = new Date(year, month - 1, day, hours, minuteValue);
+  return localDate.toISOString();
+}
 
 export default function UnifiedBookingPage({ service, serviceId, summaryPath = '/booking/summary' }: UnifiedBookingPageProps) {
   const router   = useRouter();
@@ -136,6 +157,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   // ── Global error ──────────────────────────────────────────────────────────
   const [error, setError] = useState('');
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ── Validation helpers ────────────────────────────────────────────────────
   const validateSpecifications = (): boolean => {
@@ -313,7 +335,29 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
       slot,
       instructions:        instructions.trim(),
     });
-    setIsPaymentModalOpen(true);
+
+    const createAndConfirmBooking = async () => {
+      setIsSubmitting(true);
+      try {
+        const scheduledAt = buildScheduledAt(date, slot);
+        const payload = {
+          serviceId: currentServiceId!,
+          customerAddressId: selectedAddressId,
+          isEmergency: false,
+          scheduledAt: scheduledAt,
+          serviceSpecifications: serviceSpecifications as any,
+        };
+        await dispatch(createBooking(payload)).unwrap();
+        router.push('/booking/confirmation');
+      } catch (err: any) {
+        setError(typeof err === 'string' ? err : err?.message || 'Booking failed. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    createAndConfirmBooking();
+    // setIsPaymentModalOpen(true);
   };
 
   const isLastStep = currentStep === STEP_DETAILS;
@@ -393,12 +437,13 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
                 <button
                   type="button"
                   onClick={handleConfirm}
-                  className="rounded-full bg-emerald-600 px-8 py-4 text-lg font-semibold text-white transition-all duration-300 hover:bg-emerald-700 hover:shadow-lg cursor-pointer active:scale-95 flex items-center gap-2"
+                  disabled={isSubmitting}
+                  className="rounded-full bg-emerald-600 px-8 py-4 text-lg font-semibold text-white transition-all duration-300 hover:bg-emerald-700 hover:shadow-lg cursor-pointer active:scale-95 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Confirm Booking
+                  {isSubmitting ? 'Confirming...' : 'Confirm Booking'}
                 </button>
               ) : (
                 <button
@@ -416,6 +461,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
           </div>
         </div>
       </div>
+      {/* 
       <TokenPaymentModal
         open={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
@@ -427,6 +473,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
         date={date}
         slot={slot}
       />
+      */}
     </section>
   );
 }
