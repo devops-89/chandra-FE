@@ -174,6 +174,8 @@ export default function PersonalInfoTab() {
         />
         <MuiTelInput
           defaultCountry="IN"
+          forceCallingCode
+          placeholder=""
           label="Emergency Contact"
           name="emergencyContact"
           value={formik.values.emergencyContact}

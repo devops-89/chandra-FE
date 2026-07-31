@@ -90,6 +90,8 @@ export function AvailabilityForm({ onSubmit }: AvailabilityFormProps) {
         <MuiTelInput
           id="av-phone"
           defaultCountry="IN"
+          forceCallingCode
+          placeholder=""
           value={formData.phone}
           onChange={(val) => handleChange('phone', val)}
           error={!!errors.phone}

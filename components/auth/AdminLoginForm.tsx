@@ -11,6 +11,7 @@ import { validateIdentifier } from '@/lib/validator/identifier.validator';
 import { validatePassword } from '@/lib/validator/password.validator';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 import type { User } from '@/types/auth.types';
 
 type LoginFormData = {
@@ -31,7 +32,6 @@ export const AdminLoginForm = () => {
   const handleChange = (name: keyof LoginFormData, value: string) => {
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
-    if (apiError) setApiError('');
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -99,17 +99,17 @@ export const AdminLoginForm = () => {
       if (err?.response) {
         const status = err.response.status;
         const backendMsg = err.response.data?.message;
+        let errorMessage = 'Server error. Please try again.';
         if (backendMsg) {
-          setApiError(backendMsg);
+          errorMessage = backendMsg;
         } else if (status === 401 || status === 403) {
-          setApiError('Invalid credentials');
-        } else {
-          setApiError('Server error. Please try again.');
+          errorMessage = 'Invalid credentials';
         }
+        dispatch(showSnackbar({ message: errorMessage, severity: 'error' }));
       } else if (err?.request !== undefined) {
-        setApiError('Unable to reach the server. Please check your connection or try again later.');
+        dispatch(showSnackbar({ message: 'Unable to reach the server. Please check your connection or try again later.', severity: 'error' }));
       } else {
-        setApiError('Something went wrong. Please try again.');
+        dispatch(showSnackbar({ message: 'Something went wrong. Please try again.', severity: 'error' }));
       }
     } finally {
       setIsLoading(false);
@@ -157,12 +157,7 @@ export const AdminLoginForm = () => {
               </p>
             </div>
 
-            {apiError && (
-              <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 mb-2">
-                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                <p className="text-sm font-medium text-red-700">{apiError}</p>
-              </div>
-            )}
+
 
             <TextField
               label="Email or Mobile Number"

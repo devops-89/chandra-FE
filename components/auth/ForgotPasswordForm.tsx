@@ -10,6 +10,7 @@ import { loginContent } from '@/constants/auth/loginContent';
 import { validatePhone } from '@/lib/validator/phone.validator';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { forgotPassword, resetForgotPasswordState } from '@/redux/slices/forgotPasswordSlice';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 const inputClassName =
   'h-11 rounded-lg border border-slate-200 pl-10 pr-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 w-full';
@@ -25,7 +26,7 @@ export default function ForgotPasswordForm() {
   const [phoneError, setPhoneError] = useState<string | undefined>(undefined);
 
   // Redux state
-  const { isLoading, error: apiError } = useAppSelector(
+  const { isLoading } = useAppSelector(
     (state) => state.forgotPassword
   );
 
@@ -52,8 +53,8 @@ export default function ForgotPasswordForm() {
       if (result) {
         router.push(`/reset-password?phone=${encodeURIComponent(phone)}`);
       }
-    } catch {
-      // Handled by Redux slice state (apiError)
+    } catch (error) {
+      dispatch(showSnackbar({ message: typeof error === 'string' ? error : 'Something went wrong. Please try again.', severity: 'error' }));
     }
   };
 
@@ -120,13 +121,7 @@ export default function ForgotPasswordForm() {
               </p>
             </div>
 
-            {/* API error banner */}
-            {apiError && (
-              <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                <p className="text-sm font-medium text-red-700">{apiError}</p>
-              </div>
-            )}
+
 
             {/* Mobile Number Input */}
             <label className="grid gap-1.5 relative">

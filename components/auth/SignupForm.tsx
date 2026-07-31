@@ -121,13 +121,7 @@ export const SignupForm = () => {
                 </p>
               </div>
 
-              {/* API error banner */}
-              {formApiError && (
-                <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                  <p className="text-sm font-medium text-red-700">{formApiError}</p>
-                </div>
-              )}
+
 
               {/* First + Last name */}
               <div className="grid gap-4 sm:grid-cols-2">
@@ -179,6 +173,8 @@ export const SignupForm = () => {
                 variant="outlined"
                 fullWidth
                 defaultCountry="IN"
+                forceCallingCode
+                placeholder=""
                 name="phone"
                 autoComplete="tel"
                 value={form.phone}

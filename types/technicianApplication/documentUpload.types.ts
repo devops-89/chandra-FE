@@ -27,15 +27,19 @@ export interface SelfieVerificationCardProps {
 export interface DocumentUploadCardProps {
   document: Document;
   isUploaded: boolean;
+  uploadedFile?: UploadedFile;
   onUpload: (file: UploadedFile, rawFile: File) => void;
+  onRemove: (documentId: string) => void;
 }
 
 export interface UploadDropzoneProps {
   documentName: string;
   acceptedFormats: string[];
   onUpload: (file: UploadedFile, rawFile: File) => void;
+  onRemove: (documentId: string) => void;
   isUploaded?: boolean;
   fileName?: string;
+  fileUrl?: string;
 }
 
 export interface UploadHelpCardProps {

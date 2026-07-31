@@ -33,7 +33,6 @@ export interface PincodeMappingProps {
 
 export interface CoverageSummaryProps {
   radius: number;
-  pincodesCount: number;
 }
 
 export interface ServiceAreaFooterProps {

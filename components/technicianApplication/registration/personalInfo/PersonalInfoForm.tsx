@@ -29,7 +29,7 @@ export default function PersonalInfoForm() {
     sendingOtp, verifyingOtp,
     setOtp,
     handleSendOtp, handleVerifyOtp,
-    isSubmitting, apiError,
+    isSubmitting,
     handleRegister,
   } = usePersonalInfoForm();
 
@@ -50,16 +50,7 @@ export default function PersonalInfoForm() {
     >
       <motion.div className="space-y-6 md:space-y-8" variants={containerVariants}>
 
-        {/* API error banner */}
-        {apiError && (
-          <motion.div
-            variants={itemVariants}
-            className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3"
-          >
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-            <p className="text-sm font-medium text-red-700">{apiError}</p>
-          </motion.div>
-        )}
+
 
         {/* Basic fields */}
         <motion.div variants={itemVariants}>

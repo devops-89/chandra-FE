@@ -1,27 +1,27 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import {
-  Avatar,
-  Box,
-  Button,
-  Collapse,
-  Divider,
-  Grid,
-  Paper,
-  TextField,
-  Typography,
-  CircularProgress,
-  IconButton
-} from '@mui/material';
 import { Edit as EditIcon, Save as SaveIcon } from '@mui/icons-material';
+import {
+    Avatar,
+    Box,
+    Button,
+    CircularProgress,
+    Collapse,
+    Divider,
+    Grid,
+    IconButton,
+    Paper,
+    TextField,
+    Typography
+} from '@mui/material';
+import { useFormik } from 'formik';
 import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
+import { useEffect, useRef, useState } from 'react';
+import * as Yup from 'yup';
 
+import { CustomerControllers } from '@/api/customerControllers';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
-import { CustomerControllers } from '@/api/customerControllers';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 export default function ProfileContent() {
@@ -69,7 +69,15 @@ export default function ProfileContent() {
         formData.append('firstName', values.firstName);
         formData.append('lastName', values.lastName);
         if (values.email) formData.append('email', values.email);
-        if (values.phone) formData.append('phone', values.phone);
+        if (values.phone) {
+          const phoneParts = values.phone.split(' ');
+          if (phoneParts.length >= 2) {
+            formData.append('countryCode', phoneParts[0]);
+            formData.append('phone', phoneParts.slice(1).join('').replace(/\s/g, ''));
+          } else {
+            formData.append('phone', values.phone);
+          }
+        }
         if (values.emergencyContact) formData.append('emergencyContact', values.emergencyContact);
         if (values.profileImage) formData.append('profileImage', values.profileImage);
 
@@ -348,6 +356,8 @@ export default function ProfileContent() {
                 <MuiTelInput
                   fullWidth
                   defaultCountry="IN"
+                  forceCallingCode
+                  placeholder=""
                   id="emergencyContact"
                   name="emergencyContact"
                   label="Emergency Contact (Optional)"

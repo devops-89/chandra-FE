@@ -53,8 +53,6 @@ export const LoginForm = () => {
   const handleChange = (name: keyof LoginFormData, value: string) => {
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
-    // clear server error as soon as user starts editing
-    if (apiError) setApiError('');
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -140,19 +138,19 @@ export const LoginForm = () => {
         // Server responded — use backend message or status-based fallback
         const status = err.response.status;
         const backendMsg = err.response.data?.message;
+        let errorMessage = 'Server error. Please try again.';
         if (backendMsg) {
-          setApiError(backendMsg);
+          errorMessage = backendMsg;
         } else if (status === 401 || status === 403) {
-          setApiError('Invalid credentials');
-        } else {
-          setApiError('Server error. Please try again.');
+          errorMessage = 'Invalid credentials';
         }
+        dispatch(showSnackbar({ message: errorMessage, severity: 'error' }));
       } else if (err?.request !== undefined) {
         // Request was made but no response received — CORS, network down, backend unreachable
-        setApiError('Unable to reach the server. Please check your connection or try again later.');
+        dispatch(showSnackbar({ message: 'Unable to reach the server. Please check your connection or try again later.', severity: 'error' }));
       } else {
         // Something else went wrong (e.g. request setup error)
-        setApiError('Something went wrong. Please try again.');
+        dispatch(showSnackbar({ message: 'Something went wrong. Please try again.', severity: 'error' }));
       }
     } finally {
       setIsLoading(false);
@@ -218,13 +216,7 @@ export const LoginForm = () => {
               </p>
             </div>
 
-            {/* ── API error banner ── */}
-            {apiError && (
-              <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                <p className="text-sm font-medium text-red-700">{apiError}</p>
-              </div>
-            )}
+
 
             {/* Email or Mobile Number */}
             <TextField

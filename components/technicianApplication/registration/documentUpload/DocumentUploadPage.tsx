@@ -6,15 +6,15 @@ import { useEffect, useState } from 'react';
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
 import { useAppDispatch } from '@/redux/hooks';
 import {
-  setAadharFile,
-  setPanFile,
-  setPoliceCertFile,
-  setSelfieFile,
-  setTradeLicenseFile,
+    setAadharFile,
+    setPanFile,
+    setPoliceCertFile,
+    setSelfieFile,
+    setTradeLicenseFile,
 } from '@/redux/slices/onboardingSlice';
 import type {
-  DocumentUploadState,
-  UploadedFile,
+    DocumentUploadState,
+    UploadedFile,
 } from '@/types/technicianApplication/documentUpload.types';
 
 import DocumentUploadFooter from './DocumentUploadFooter';
@@ -129,6 +129,32 @@ export default function DocumentUploadPage() {
     }));
   };
 
+  const handleDocumentRemove = (documentId: string) => {
+    switch (documentId) {
+      case 'aadhaar-card':
+        dispatch(setAadharFile(null));
+        break;
+      case 'pan-card':
+        dispatch(setPanFile(null));
+        break;
+      case 'police-verification':
+        dispatch(setPoliceCertFile(null));
+        break;
+      case 'trade-license':
+        dispatch(setTradeLicenseFile(null));
+        break;
+    }
+
+    setState((prev) => {
+      const newDocs = { ...prev.uploadedDocuments };
+      delete newDocs[documentId];
+      return {
+        ...prev,
+        uploadedDocuments: newDocs,
+      };
+    });
+  };
+
   // Aadhaar only is mandatory
   const isComplete =
     state.uploadedDocuments['aadhaar-card'] != null;
@@ -187,6 +213,7 @@ export default function DocumentUploadPage() {
         <DocumentUploadGrid
           uploadedDocuments={state.uploadedDocuments}
           onUpload={handleDocumentUpload}
+          onRemove={handleDocumentRemove}
         />
       </div>
 

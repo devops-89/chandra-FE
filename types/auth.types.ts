@@ -166,12 +166,13 @@ export interface RegisterCustomerResponse {
 
 /** Sent as multipart/form-data to POST /users/register (TECHNICIAN role) */
 export interface RegisterTechnicianRequest {
+  technicianId?: number;
   email?: string;
-  username: string;
-  phone: string;
-  firstName: string;
+  username?: string;
+  phone?: string;
+  firstName?: string;
   lastName?: string;
-  password: string;
+  password?: string;
 }
 
 export interface TechnicianProfile {
