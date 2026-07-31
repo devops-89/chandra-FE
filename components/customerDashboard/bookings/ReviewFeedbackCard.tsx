@@ -19,8 +19,8 @@ export default function ReviewFeedbackCard({ booking }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Local state to immediately reflect the submitted review
-  const [localRating, setLocalRating] = useState<number | null>(booking.myRating ?? null);
-  const [localReview, setLocalReview] = useState<string | null>(booking.myReview ?? null);
+  const [localRating, setLocalRating] = useState<number | null>(booking.customerRating ?? booking.myRating ?? null);
+  const [localReview, setLocalReview] = useState<string | null>(booking.customerReview ?? booking.myReview ?? null);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
