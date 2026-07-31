@@ -39,8 +39,11 @@ export interface CustomerBooking {
 
   technician: BookingTechnician | null;
 
-  myRating: number | null;
-  myReview: string | null;
+  myRating?: number | null;
+  myReview?: string | null;
+
+  customerRating?: number | null;
+  customerReview?: string | null;
 
   technicianRating: number | null;
   technicianReview: string | null;
