@@ -10,6 +10,7 @@ import { loginContent } from '@/constants/auth/loginContent';
 import { validatePassword } from '@/lib/validator/password.validator';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { resetForgotPasswordState,resetPassword } from '@/redux/slices/forgotPasswordSlice';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 const inputClassName =
   'h-11 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 w-full disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed';
@@ -34,7 +35,7 @@ export default function ResetPasswordForm() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Redux state
-  const { isResetting, resetError } = useAppSelector(
+  const { isResetting } = useAppSelector(
     (state) => state.forgotPassword
   );
 
@@ -105,8 +106,8 @@ export default function ResetPasswordForm() {
       setTimeout(() => {
         router.replace('/login');
       }, 1000);
-    } catch (err) {
-      // Handled by Redux state
+    } catch (error) {
+      dispatch(showSnackbar({ message: typeof error === 'string' ? error : 'Something went wrong. Please try again.', severity: 'error' }));
     }
   };
 
@@ -179,13 +180,7 @@ export default function ResetPasswordForm() {
               </div>
             )}
 
-            {/* API error banner */}
-            {resetError && (
-              <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                <p className="text-sm font-medium text-red-700">{resetError}</p>
-              </div>
-            )}
+
 
             {/* Registered Mobile Number (Read Only) */}
             <label className="grid gap-1.5 relative">

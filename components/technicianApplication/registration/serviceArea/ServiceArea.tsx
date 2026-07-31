@@ -9,8 +9,6 @@ import type { ServiceAreaState } from '@/types/technicianOnboarding/serviceArea.
 import AreaSelector from './AreaSelector';
 import CoverageSummary from './CoverageSummary';
 import { useServiceArea } from './hooks/useServiceArea';
-import PincodeMapping from './PincodeMapping';
-import PreferredAreasInput from './PreferredAreasInput';
 import ServiceAreaFooter from './ServiceAreaFooter';
 import ServiceAreaHeader from './ServiceAreaHeader';
 
@@ -26,10 +24,6 @@ export default function ServiceArea({
   const {
     state,
     setRadius,
-    addArea,
-    removeArea,
-    addPincode,
-    removePincode,
     setServiceLocation,
   } = useServiceArea();
   const [isLocating, setIsLocating] = useState(false);
@@ -57,14 +51,36 @@ export default function ServiceArea({
     setLocationError(null);
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        let city = '';
+        let stateName = '';
+        let pin = '';
+        let address = '';
+
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.address) {
+              city = data.address.city || data.address.town || data.address.village || '';
+              stateName = data.address.state || '';
+              pin = data.address.postcode || '';
+              address = data.display_name || '';
+            }
+          }
+        } catch (err) {
+           console.error('Geocoding failed:', err);
+        }
+
         setServiceLocation({
-          city: undefined,
-          fullAddress: undefined,
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          pincode: undefined,
-          state: undefined,
+          city: city || undefined,
+          fullAddress: address || undefined,
+          latitude: lat,
+          longitude: lng,
+          pincode: pin || undefined,
+          state: stateName || undefined,
         });
         setIsLocating(false);
       },
@@ -134,19 +150,61 @@ export default function ServiceArea({
               </div>
             )}
           </div>
+
+          <div className="mt-6 space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wider">
+                Street Address
+              </label>
+              <textarea
+                rows={3}
+                placeholder="e.g. Flat/House No, Building, Area, Street Address"
+                value={state.fullAddress || ''}
+                onChange={(e) => setServiceLocation({ fullAddress: e.target.value })}
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all resize-none"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wider">
+                  City
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Gurgaon"
+                  value={state.city || ''}
+                  onChange={(e) => setServiceLocation({ city: e.target.value })}
+                  className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wider">
+                  State
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Haryana"
+                  value={state.state || ''}
+                  onChange={(e) => setServiceLocation({ state: e.target.value })}
+                  className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wider">
+                Pincode
+              </label>
+              <input
+                type="text"
+                maxLength={6}
+                placeholder="e.g. 122001"
+                value={state.pincode || ''}
+                onChange={(e) => setServiceLocation({ pincode: e.target.value.replace(/\D/g, '') })}
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all"
+              />
+            </div>
+          </div>
         </section>
-
-        <PreferredAreasInput
-          selectedAreas={state.preferredAreas}
-          onAddArea={addArea}
-          onRemoveArea={removeArea}
-        />
-
-        <PincodeMapping
-          pincodes={state.pincodes}
-          onAddPincode={addPincode}
-          onRemovePincode={removePincode}
-        />
 
         <ServiceAreaFooter
           onPrevious={onPrevious}
@@ -156,20 +214,12 @@ export default function ServiceArea({
 
       {/* Sticky Summary Sidebar */}
       <div className="hidden lg:block">
-        <CoverageSummary
-          radius={state.radius}
-          areasCount={state.preferredAreas.length}
-          pincodesCount={state.pincodes.length}
-        />
+        <CoverageSummary radius={state.radius} />
       </div>
 
       {/* Mobile Summary (below content) */}
       <div className="lg:hidden">
-        <CoverageSummary
-          radius={state.radius}
-          areasCount={state.preferredAreas.length}
-          pincodesCount={state.pincodes.length}
-        />
+        <CoverageSummary radius={state.radius} />
       </div>
     </div>
   );

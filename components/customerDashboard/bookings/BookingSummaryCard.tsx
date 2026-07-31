@@ -3,7 +3,7 @@ import type { CustomerBooking } from '@/types/customerBooking.types';
 interface Props {
   booking: CustomerBooking;
 }
-
+//
 export default function BookingSummaryCard({ booking }: Props) {
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -22,7 +22,7 @@ export default function BookingSummaryCard({ booking }: Props) {
         <div className="flex items-center justify-between border-b border-slate-100 pb-2">
           <span>Payment Status</span>
           <span className="font-medium text-slate-900">
-            {booking.paymentStatus}
+            {booking.paymentStatus || booking.bookingPaymentStatus || 'N/A'}
           </span>
         </div>
         <div className="flex items-center justify-between border-b border-slate-100 pb-2">

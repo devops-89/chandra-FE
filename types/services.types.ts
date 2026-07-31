@@ -1,7 +1,7 @@
 export interface BookingFormField {
   name: string;
   label: string;
-  type: 'text' | 'number' | 'email' | 'tel' | 'select' | 'checkbox' | 'file' | 'multi-file';
+  type: 'text' | 'number' | 'email' | 'tel' | 'textarea' | 'select' | 'checkbox' | 'file' | 'multi-file';
   required: boolean;
   placeholder?: string;
   options?: Array<{ value: string; label: string; price?: number }>;

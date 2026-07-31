@@ -9,7 +9,7 @@ import NavbarLinks from '@/components/common/NavbarLinks';
 import NavbarLogo from '@/components/common/NavbarLogo';
 import { getDashboardPathForRole } from '@/lib/authApi/redirectUtils';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { logout } from '@/redux/slices/authSlice';
+import { logoutUser } from '@/redux/slices/authSlice';
 
 const PublicNavbar = () => {
   const router = useRouter();
@@ -36,8 +36,8 @@ const PublicNavbar = () => {
     router.push(getDashboardPathForRole(role));
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
     router.push('/');
   };
 

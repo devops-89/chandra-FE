@@ -1,11 +1,9 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
-
-
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { AuthControllers } from '@/api/authControllers';
 import { formatSubmissionDate } from '@/lib/utils/dateUtils';
 
 import StatusActionButtons from './common/StatusActionButtons';
@@ -41,6 +39,9 @@ export default function PendingStatus({
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
+  const [username, setUsername] = useState<string | null>(null);
+  const [resolvedDate, setResolvedDate] = useState<string>('--');
+
   useEffect(() => {
     let active = true;
     requestAnimationFrame(() => {
@@ -48,43 +49,50 @@ export default function PendingStatus({
         setMounted(true);
       }
     });
+
+    const fetchProfile = async () => {
+      try {
+        const response = await AuthControllers.getProfile();
+        if (active && response.data) {
+          // Handle both { data: { user: {...} } } and { data: {...} }
+          const userData = ('user' in response.data) ? (response.data as any).user : response.data;
+          
+          if (userData.username) {
+            setUsername(userData.username);
+          }
+          
+          const appliedAt = userData.technicianProfile?.createdAt ?? userData.createdAt;
+          if (appliedAt) {
+            setResolvedDate(formatSubmissionDate(appliedAt));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile:', err);
+        // Fallback to localStorage
+        try {
+          const raw = localStorage.getItem('user');
+          if (raw && active) {
+            const stored = JSON.parse(raw);
+            if (stored.username) {
+              setUsername(stored.username);
+            }
+            const appliedAt = stored.technicianProfile?.createdAt ?? stored.createdAt;
+            if (appliedAt) {
+              setResolvedDate(formatSubmissionDate(appliedAt));
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+    };
+
+    fetchProfile();
+
     return () => {
       active = false;
     };
   }, []);
-
-  // Read username and registration date from localStorage.user
-  let username: string | null = null;
-  let resolvedDate = '--';
-
-  try {
-    const raw = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-    if (raw) {
-      const stored = JSON.parse(raw) as {
-        username?: string;
-        createdAt?: string;
-        updatedAt?: string;
-        technicianProfile?: {
-          createdAt?: string;
-          status?: string;
-          updatedAt?: string;
-        };
-      };
-      if (stored.username) username = stored.username;
-
-      // Use the actual application submission date from data.technicianProfile.createdAt
-      // Fall back to user.createdAt
-      const appliedAt =
-        stored.technicianProfile?.createdAt ??
-        stored.createdAt;
-
-      if (appliedAt) {
-        resolvedDate = formatSubmissionDate(appliedAt);
-      }
-    }
-  } catch {
-    // Malformed localStorage — use defaults
-  }
 
   const handleRefresh = async () => {
     try {

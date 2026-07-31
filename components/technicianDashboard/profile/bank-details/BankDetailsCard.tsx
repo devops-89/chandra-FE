@@ -1,14 +1,16 @@
 'use client';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-
 import { useAppSelector } from '@/redux/hooks';
+import { useRouter } from 'next/navigation';
 
 export default function BankDetailsCard() {
+  const router = useRouter();
   const technician = useAppSelector(
     (state) => state.technicianProfile.profile
   );
 
-  const profile = technician?.technicianProfile;
+  const payoutAccount = technician?.technicianProfile?.payoutAccounts?.find((acc: any) => acc.accountType === 'BANK_ACCOUNT');
+
   return (
     <div
       className="
@@ -36,8 +38,8 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            {profile
-            ? `${profile.accountHolderName}`
+            {payoutAccount
+            ? `${payoutAccount.accountHolderName}`
             : 'Loading...'}
           </p>
         </div>
@@ -48,8 +50,8 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            {profile
-            ? `${profile.accountNumber}`
+            {payoutAccount
+            ? `${payoutAccount.accountNumber}`
             : 'Loading...'}
           </p>
         </div>
@@ -60,8 +62,8 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            {profile
-            ? `${profile.ifscCode}`
+            {payoutAccount
+            ? `${payoutAccount.ifscCode}`
             : 'Loading...'}
           </p>
         </div>
@@ -71,16 +73,17 @@ export default function BankDetailsCard() {
           </p>
 
           <p className="font-semibold">
-            {profile
-            ? `${profile.bankName}`
+            {payoutAccount
+            ? `${payoutAccount.bankName}`
             : 'Loading...'}
           </p>
         </div>
       </div>
 
       <button
+        onClick={() => router.push('/technician/profile/edit')}
         className="
-          mt-6
+          mt-auto
           w-full
           py-3
           rounded-2xl

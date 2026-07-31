@@ -1,12 +1,41 @@
+'use client';
+
+import { useState, useEffect } from "react";
 import RevenueCards from "./RevenueCards";
+import { AdminControllers } from "@/api/adminControllers";
+import { Box } from "@mui/material";
+import PageLoader from "@/components/adminDashboard/shared/PageLoader";
 
 const FinanceOverview = () => {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await AdminControllers.getDashboardStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard stats", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return <PageLoader />;
+  }
+
+  const data = stats || {};
+
   return (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-      <RevenueCards title="Total Revenue" value="₹12.8L" />
-      <RevenueCards title="Pending Payouts" value="₹58K" />
-      <RevenueCards title="Transactions" value="1,245" />
-      <RevenueCards title="Success Rate" value="98.5%" />
+      <RevenueCards title="Total Revenue" value={`₹${data.totalRevenue?.toLocaleString('en-IN') || 0}`} />
+      <RevenueCards title="Technician Payouts" value={`₹${data.totalTechnicianPayout?.toLocaleString('en-IN') || 0}`} />
+      <RevenueCards title="Pending Transactions" value={`${data.pendingTransactionCount?.toLocaleString('en-IN') || 0}`} />
+      <RevenueCards title="Successful Payouts" value={`${data.successTechnicianPayoutCount?.toLocaleString('en-IN') || 0}`} />
     </div>
   );
 };

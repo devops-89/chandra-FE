@@ -11,7 +11,7 @@ interface Props {
 }
 
 const ManualAssignmentPanel = ({ bookings }: Props) => {
-  const [assignTarget, setAssignTarget] =
+  const [_assignTarget, _setAssignTarget] =
     useState<AdminBooking | null>(null);
 
   const unassigned = bookings.filter(
@@ -137,7 +137,7 @@ const ManualAssignmentPanel = ({ bookings }: Props) => {
               </div>
 
               <button
-                onClick={() => setAssignTarget(booking)}
+                onClick={() => _setAssignTarget(booking)}
                 className="cursor-pointer rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
               >
                 Assign Now

@@ -1,4 +1,5 @@
 'use client';
+import { MuiTelInput } from 'mui-tel-input';
 interface BasicInfoFieldsProps {
   firstName:        string;
   lastName:         string;
@@ -85,13 +86,22 @@ export default function BasicInfoFields({
 
         <div>
           <label className="mb-2 block text-xs font-medium md:text-sm">Phone Number</label>
-          <input
-            type="tel"
-            placeholder="+91 9876543210"
+          <MuiTelInput
+            defaultCountry="IN"
+            forceCallingCode
+            placeholder=""
             value={phoneNumber}
-            onChange={(e) => onPhoneNumberChange(e.target.value)}
+            onChange={(val) => onPhoneNumberChange(val)}
             onBlur={onPhoneNumberBlur}
-            className={fieldCls(phoneNumberError)}
+            error={!!phoneNumberError}
+            sx={{
+              width: '100%',
+              '& .MuiOutlinedInput-root': {
+                height: { xs: '3rem', md: '3rem' },
+                borderRadius: { xs: '0.5rem', md: '0.75rem' },
+                backgroundColor: 'transparent',
+              },
+            }}
           />
           {phoneNumberError && <p className="mt-1 text-xs text-red-500">{phoneNumberError}</p>}
         </div>

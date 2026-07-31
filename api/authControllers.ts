@@ -1,4 +1,3 @@
-import { authPublicApi, authSecuredApi, userSecuredApi, userPublicApi } from './config';
 import type {
   ForgotPasswordRequest,
   ForgotPasswordResponse,
@@ -16,6 +15,10 @@ import type {
   VerifyOtpRequest,
   VerifyOtpResponse,
 } from '@/types/auth.types';
+
+import { authPublicApi, authSecuredApi, userPublicApi } from './config';
+
+let getProfilePromise: Promise<GetProfileResponse> | null = null;
 
 export const AuthControllers = {
   login: async (payload: LoginRequest): Promise<LoginResponse> => {
@@ -66,7 +69,13 @@ export const AuthControllers = {
   registerCustomer: async (payload: RegisterCustomerRequest): Promise<RegisterCustomerResponse> => {
     try {
       const formData = new FormData();
-      formData.append('phone', payload.phone);
+      const phoneParts = payload.phone.split(' ');
+      if (phoneParts.length >= 2) {
+        formData.append('countryCode', phoneParts[0]);
+        formData.append('phone', phoneParts.slice(1).join('').replace(/\s/g, ''));
+      } else {
+        formData.append('phone', payload.phone);
+      }
       if (payload.email) formData.append('email', payload.email);
       formData.append('username', payload.username);
       formData.append('firstName', payload.firstName);
@@ -85,17 +94,24 @@ export const AuthControllers = {
 
   registerTechnician: async (
     payload: RegisterTechnicianRequest,
-    technicianProfile: any,
-    files: any
+    technicianProfile: Record<string, unknown>,
+    files: Record<string, Blob | string | undefined | null>
   ): Promise<RegisterTechnicianResponse> => {
     try {
       const formData = new FormData();
+      if (payload.technicianId) formData.append('technicianId', String(payload.technicianId));
       if (payload.email) formData.append('email', payload.email);
-      formData.append('username', payload.username);
-      formData.append('phone', payload.phone);
-      formData.append('firstName', payload.firstName);
+      if (payload.username) formData.append('username', payload.username);
+      const phoneParts = payload.phone ? payload.phone.split(' ') : [];
+      if (phoneParts.length >= 2) {
+        formData.append('countryCode', phoneParts[0]);
+        formData.append('phone', phoneParts.slice(1).join('').replace(/\s/g, ''));
+      } else if (payload.phone) {
+        formData.append('phone', payload.phone);
+      }
+      if (payload.firstName) formData.append('firstName', payload.firstName);
       if (payload.lastName) formData.append('lastName', payload.lastName);
-      formData.append('password', payload.password);
+      if (payload.password) formData.append('password', payload.password);
       formData.append('technicianProfile', JSON.stringify(technicianProfile));
 
       if (files.selfieUrl) formData.append('selfieUrl', files.selfieUrl);
@@ -104,7 +120,7 @@ export const AuthControllers = {
       if (files.policeCertUrl) formData.append('policeCertUrl', files.policeCertUrl);
       if (files.tradeLicenseUrl) formData.append('tradeLicenseUrl', files.tradeLicenseUrl);
 
-      const response = await userPublicApi.post<RegisterTechnicianResponse>('/technician/auth/register-technician', formData, {
+      const response = await userPublicApi.post<RegisterTechnicianResponse>('/users/register', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -114,27 +130,25 @@ export const AuthControllers = {
   },
 
   getProfile: async (): Promise<GetProfileResponse> => {
-    try {
-      const response = await authSecuredApi.get<GetProfileResponse>('/auth/profile');
-      const resData = response.data;
-      if (typeof window !== 'undefined' && resData.data) {
-        try {
-          const stored = JSON.parse(localStorage.getItem('user') ?? '{}');
-          if (resData.data.createdAt) stored.createdAt = resData.data.createdAt;
-          if (resData.data.technicianProfile) {
-            stored.technicianProfile = {
-              ...stored.technicianProfile,
-              createdAt: resData.data.technicianProfile.createdAt,
-              status: resData.data.technicianProfile.status,
-              updatedAt: resData.data.technicianProfile.updatedAt,
-            };
-          }
-          localStorage.setItem('user', JSON.stringify(stored));
-        } catch {
-          // ignore
-        }
+    if (getProfilePromise) return getProfilePromise;
+    getProfilePromise = (async () => {
+      try {
+        const response = await authSecuredApi.get<GetProfileResponse>('/auth/profile');
+        return response.data;
+      } finally {
+        getProfilePromise = null;
       }
-      return resData;
+    })();
+    return getProfilePromise;
+  },
+
+  logout: async (): Promise<{ success: boolean; message: string }> => {
+    try {
+      const refreshToken =
+        (typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null) || '';
+
+      const response = await authSecuredApi.post('/auth/logout', { refreshToken });
+      return response.data;
     } catch (error) {
       throw error;
     }

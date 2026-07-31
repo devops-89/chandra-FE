@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 
+import { useAppSelector } from '@/redux/hooks';
 import { onboardingSteps } from '@/constants/technicianApplication/onboardingSteps';
 import { isOnboardingLockEnabled, isStepComplete } from '@/lib/onboarding/onboardingProgress';
 
@@ -20,6 +21,8 @@ const stepRoutes = [
 
 export default function OnboardingSidebar({ currentStep }: Props) {
   const lockEnabled = isOnboardingLockEnabled();
+  const { user } = useAppSelector((state) => state.auth);
+  const isExistingTechnician = Boolean(user && user.role === 'TECHNICIAN');
 
   return (
     <aside className="w-72 shrink-0 sticky top-0 h-screen overflow-y-auto p-6">
@@ -31,9 +34,11 @@ export default function OnboardingSidebar({ currentStep }: Props) {
 
       <div className="mt-8 space-y-3">
         {onboardingSteps.map((step, index) => {
+          if (isExistingTechnician && index === 0) return null;
+
           const isActive  = index === currentStep;
-          // A step is accessible when: lock is off, OR it's step 0, OR the previous step is done
-          const accessible = !lockEnabled || index === 0 || isStepComplete(index - 1);
+          // A step is accessible when: lock is off, OR it's step 0 (or step 1 for existing techs), OR the previous step is done
+          const accessible = !lockEnabled || (isExistingTechnician ? index === 1 : index === 0) || isStepComplete(index - 1);
           const done       = lockEnabled && isStepComplete(index);
 
           if (!accessible) {

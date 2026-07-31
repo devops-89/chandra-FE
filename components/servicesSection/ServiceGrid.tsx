@@ -1,8 +1,13 @@
 'use client';
 
 import Grid from '@mui/material/Grid';
+import Pagination from '@mui/material/Pagination';
 import { AlertCircle, Loader2, PackageOpen } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+
+import 'swiper/css';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchServices } from '@/redux/slices/servicesSlice';
@@ -13,14 +18,18 @@ interface ServiceGridProps {
   /**
    * Base URL prefix for service detail links.
    * Defaults to '/services' (public route).
-   * Pass '/dashboard/customer/services' to link into the dashboard.
+   * Pass '/customer/services' to link into the dashboard.
    */
   linkPrefix?: string;
+  useSwiper?: boolean;
 }
 
-export function ServiceGrid({ linkPrefix = '/services' }: ServiceGridProps) {
+export function ServiceGrid({ linkPrefix = '/services', useSwiper = false }: ServiceGridProps) {
   const dispatch = useAppDispatch();
   const { items: services, isLoading, error } = useAppSelector((state) => state.services);
+  
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 3;
 
   useEffect(() => {
     dispatch(fetchServices());
@@ -105,21 +114,88 @@ export function ServiceGrid({ linkPrefix = '/services' }: ServiceGridProps) {
     },
   }));
 
-  return (
-    <Grid container spacing={3}>
-      {mappedServices.map((service) => (
-        <Grid
-          key={service.id}
-          size={{
-          xs: 12,
-          sm: 6,
-          md: 4,
-          lg: 3,
-        }}
+  const totalPages = Math.ceil(mappedServices.length / itemsPerPage);
+  
+  // Calculate index ranges
+  const startIndex = (page - 1) * itemsPerPage;
+  const currentItems = mappedServices.slice(startIndex, startIndex + itemsPerPage);
+
+  const getGridSize = (itemsCount: number) => {
+    if (itemsCount === 1) {
+      return { xs: 12 };
+    }
+    if (itemsCount === 2) {
+      return { xs: 12, md: 6 };
+    }
+    return { xs: 12, sm: 6, md: 4, lg: 4 }; // For 3 items, take 1/3 width (lg: 4)
+  };
+
+  if (useSwiper) {
+    return (
+      <div className="flex flex-col gap-12 w-full mt-4">
+        <Swiper
+          modules={[Autoplay]}
+          spaceBetween={32}
+          slidesPerView={1}
+          loop={true}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
+          breakpoints={{
+            640: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+          }}
+          className="w-full pb-8"
         >
-          <ServiceCard service={service} linkPrefix={linkPrefix} />
-        </Grid>
-      ))}
-    </Grid>
+          {mappedServices.map((service) => (
+            <SwiperSlide key={service.id} className="h-auto">
+              <ServiceCard service={service} linkPrefix={linkPrefix} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-12 w-full">
+      <Grid container spacing={4} sx={{ width: '100%', margin: 0 }}>
+        {currentItems.map((service) => (
+          <Grid
+            key={service.id}
+            size={getGridSize(currentItems.length)}
+            sx={{ display: 'flex' }}
+          >
+            <div className="w-full flex">
+              <ServiceCard service={service} linkPrefix={linkPrefix} />
+            </div>
+          </Grid>
+        ))}
+      </Grid>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-4 mb-8">
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(_, value) => setPage(value)}
+            color="primary"
+            size="large"
+            sx={{
+              '& .MuiPaginationItem-root': {
+                fontSize: '1rem',
+                borderRadius: '8px',
+              },
+              '& .Mui-selected': {
+                backgroundColor: '#059669 !important',
+                color: 'white',
+              }
+            }}
+          />
+        </div>
+      )}
+    </div>
   );
 }

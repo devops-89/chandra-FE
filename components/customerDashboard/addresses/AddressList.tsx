@@ -1,11 +1,30 @@
 'use client';
 
-import { useAppSelector } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { useState, useEffect } from 'react';
+import { fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TablePagination,
+} from '@mui/material';
 
-import AddressCard from './AddressCard';
+import AddressTableRow from './AddressTableRow';
 
 export default function AddressList() {
-  const { profile, isLoading } = useAppSelector((state) => state.customerProfile);
+  const dispatch = useAppDispatch();
+  const { profile, addressesPagination, isLoading } = useAppSelector((state) => state.customerProfile);
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 10;
+
+  useEffect(() => {
+    dispatch(fetchCustomerAddresses({ page: page + 1, limit: rowsPerPage }));
+  }, [dispatch, page]);
 
   if (isLoading) {
     return (
@@ -26,19 +45,44 @@ export default function AddressList() {
     );
   }
 
-  // Map backend Address model to the fields expected by AddressCard component
-  const addresses = backendAddresses.map((addr) => ({
-    id: addr.id.toString(),
-    label: addr.label && addr.label.trim() ? addr.label : (addr.isDefault ? 'Default Address' : `${addr.city}, ${addr.state}`),
-    address: addr.fullAddress,
-    isDefault: addr.isDefault,
-  }));
+  const addresses = backendAddresses;
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const totalItems = addressesPagination?.total || addresses.length;
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      {addresses.map((address) => (
-        <AddressCard key={address.id} address={address} />
-      ))}
-    </div>
+    <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 4, boxShadow: 'none', border: '1px solid #e2e8f0' }}>
+      <TableContainer>
+        <Table sx={{ minWidth: 650 }} aria-label="addresses table">
+          <TableHead sx={{ bgcolor: '#f8fafc' }}>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>ID</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>Address</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>City</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>State</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>Pincode</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: '#475569' }}>Date</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, color: '#475569' }}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {addresses.map((address) => (
+              <AddressTableRow key={address.id} address={address} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[10]}
+        component="div"
+        count={totalItems}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+      />
+    </Paper>
   );
 }

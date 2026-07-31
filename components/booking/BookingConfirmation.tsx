@@ -23,7 +23,7 @@ export function BookingConfirmationContent() {
 
   const handleDashboardRedirect = () => {
     clearBooking();
-    router.push('/dashboard/customer');
+    router.push('/customer/dashboard');
   };
 
   return (
@@ -59,7 +59,7 @@ export function BookingConfirmationContent() {
               Back To Home
             </Link>
             <Link
-              href="/dashboard/customer"
+              href="/customer/dashboard"
               onClick={handleDashboardRedirect}
               className="rounded-full border border-slate-300 px-8 py-4 text-center font-semibold text-slate-700 transition-all duration-300 hover:bg-slate-100"
             >

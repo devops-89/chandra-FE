@@ -10,37 +10,27 @@ import {
 export const customerDashboardSidebarLinks = [
   {
     label: 'Dashboard',
-    href: '/dashboard/customer',
+    href: '/customer/dashboard',
     icon: LayoutDashboard,
   },
   {
     label: 'Services',
-    href: '/dashboard/customer/services',
+    href: '/customer/services',
     icon: Sparkles,
   },
   {
     label: 'My Bookings',
-    href: '/dashboard/customer/bookings',
+    href: '/customer/bookings',
     icon: CalendarDays,
   },
   {
     label: 'Addresses',
-    href: '/dashboard/customer/addresses',
+    href: '/customer/addresses',
     icon: MapPin,
   },
   // {
   //   label: 'Support',
-  //   href: '/dashboard/customer/support',
+  //   href: '/customer/support',
   //   icon: Headphones,
   // },
-  {
-    label: 'Profile',
-    href: '/dashboard/customer/profile',
-    icon: User,
-  },
-  {
-    label: 'Invoices',
-    href: '/dashboard/customer/invoices',
-    icon: Receipt,
-  },
 ] as const;

@@ -1,9 +1,9 @@
-import { TokenPaymentControllers } from '@/api/tokenPaymentControllers';
 import {
   createAsyncThunk,
   createSlice,
 } from '@reduxjs/toolkit';
 
+import { TokenPaymentControllers } from '@/api/tokenPaymentControllers';
 import type { TokenPaymentLink } from '@/types/customer/tokenPayment.types';
 
 interface TokenPaymentState {

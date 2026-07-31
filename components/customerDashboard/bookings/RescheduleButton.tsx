@@ -6,7 +6,6 @@ interface Props {
   disabled?: boolean;
   onClick: () => void;
 }
-
 export default function RescheduleButton({ disabled, onClick }: Props) {
   return (
     <button

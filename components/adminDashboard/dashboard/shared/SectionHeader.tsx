@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useRouter } from 'next/navigation';
@@ -21,7 +21,7 @@ export default function SectionHeader({
 
       {actionText && (
         <button className="flex items-center gap-1 hover:underline cursor-pointer text-emerald-700 font-medium"
-          onClick={() => router.push('/dashboard/admin/technicians')}>
+          onClick={() => router.push('/admin/technicians')}>
           {actionText}
 
           <ChevronRightIcon

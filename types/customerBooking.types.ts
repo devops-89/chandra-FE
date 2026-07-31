@@ -12,20 +12,26 @@ export interface BookingAddress {
 
 export interface BookingTechnician {
   id: number;
-  name: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
   phone: string;
-  rating: string;
+  rating?: string;
 }
 
 export interface CustomerBooking {
-  bookingId: number;
+  bookingId?: number; // legacy
+  id?: number;
   status: string;
-  paymentStatus: string;
+  paymentStatus?: string;
+  bookingPaymentStatus?: string;
 
   service: BookingService | null;
   address: BookingAddress;
 
-  scheduledAtIst: string;
+  scheduledAtIst?: string;
+  scheduledAt?: string;
   totalAmount: string | null;
 
   isEmergency: boolean;

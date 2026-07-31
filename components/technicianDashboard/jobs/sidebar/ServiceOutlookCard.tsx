@@ -1,8 +1,21 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useAppSelector } from '@/redux/hooks';
+import { selectNearbyJobs } from '@/redux/selectors/nearbyJobsSelectors';
 
 export default function ServiceOutlookCard() {
+  const jobs = useAppSelector(selectNearbyJobs);
+  
+  const availableJobsCount = jobs.length;
+  
+  const totalEarnings = jobs.reduce((sum, job) => {
+    const amount = parseFloat(job.payout.replace(/[^0-9.]/g, '')) || 0;
+    return sum + amount;
+  }, 0);
+  
+  const avgPayout = availableJobsCount > 0 ? (totalEarnings / availableJobsCount).toFixed(0) : 0;
+
   return (
     <motion.div
       whileHover={{ y: -3 }}
@@ -34,7 +47,7 @@ export default function ServiceOutlookCard() {
           text-white
         "
       >
-        4
+        {availableJobsCount}
       </h2>
 
       <p
@@ -57,7 +70,7 @@ export default function ServiceOutlookCard() {
               text-white
             "
           >
-            $113
+            ₹{avgPayout}
           </h4>
 
           <p className="text-white/90">
@@ -73,7 +86,7 @@ export default function ServiceOutlookCard() {
               text-white
             "
           >
-            $450
+            ₹{totalEarnings.toFixed(0)}
           </h4>
 
           <p className="text-white/90">

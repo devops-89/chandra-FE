@@ -23,28 +23,23 @@ export default function PublicRoute({ children }: PublicRouteProps) {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    let role = reduxRole;
-
-    if (!role) {
-      try {
-        const userStr = localStorage.getItem('user');
-        if (userStr) role = JSON.parse(userStr)?.role;
-      } catch {
-        // ignore malformed JSON
-      }
-    }
-
-    // If Redux has not hydrated yet but a persisted user exists, treat the
-    // session as authenticated and send them to their dashboard immediately.
-    if (reduxAuthenticated || role) {
-      router.replace(handlePostAuthRedirect(role));
+    // If Redux is authenticated and we have the role, redirect them
+    if (reduxAuthenticated && reduxRole) {
+      router.replace(handlePostAuthRedirect(reduxRole));
       return;
     }
 
-    const id = setTimeout(() => setChecking(false), 0);
-    return () => clearTimeout(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const checkToken = () => {
+      const token = localStorage.getItem('accessToken');
+      if (!token && !reduxAuthenticated) {
+        setChecking(false);
+      }
+    };
+
+    checkToken();
+    const interval = setInterval(checkToken, 500);
+    return () => clearInterval(interval);
+  }, [reduxAuthenticated, reduxRole, router]);
 
   if (checking) return null;
 

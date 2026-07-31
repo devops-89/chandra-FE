@@ -11,6 +11,8 @@ export interface NearbyJob {
   duration: string;
   payout: string;
   urgency: 'Urgent' | 'Normal';
+  lat?: string;
+  lng?: string;
 }
 
 export interface NearbyJobsFilters {

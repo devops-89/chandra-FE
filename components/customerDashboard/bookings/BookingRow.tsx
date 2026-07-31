@@ -1,4 +1,5 @@
-
+import { IconButton, TableCell, TableRow } from '@mui/material';
+import { Eye } from 'lucide-react';
 import Link from 'next/link';
 
 import type { CustomerBooking } from '@/types/customerBooking.types';
@@ -8,7 +9,7 @@ import StatusBadge from './StatusBadge';
 interface Props {
   booking: CustomerBooking;
 }
-
+//
 function parseIstDate(dateStr: string): Date {
   if (!dateStr) return new Date(NaN);
   const cleanStr = dateStr.trim();
@@ -50,7 +51,8 @@ function parseIstDate(dateStr: string): Date {
 export default function BookingRow({
   booking,
 }: Props) {
-  const parsedDate = parseIstDate(booking.scheduledAtIst);
+  const dateToParse = booking.scheduledAt || booking.scheduledAtIst || '';
+  const parsedDate = parseIstDate(dateToParse);
   const formattedDate = isNaN(parsedDate.getTime())
     ? 'N/A'
     : parsedDate.toLocaleDateString('en-IN', {
@@ -58,40 +60,45 @@ export default function BookingRow({
       });
 
   return (
-    <tr className="border-b">
-      <td className="px-4 py-4 text-slate-700">
-        #{booking.bookingId}
-      </td>
+    <TableRow hover>
+      <TableCell className="font-medium">
+        B-{booking.id || booking.bookingId}
+      </TableCell>
 
-      <td className="px-4 py-4 text-slate-700">
+      <TableCell>
+        {booking.technician
+          ? `${booking.technician.firstName || ''} ${booking.technician.lastName || ''}`.trim() || booking.technician.name || booking.technician.username || 'N/A'
+          : 'Pending Assignment'}
+      </TableCell>
+
+      <TableCell>
         {booking.service?.name ?? 'N/A'}
-      </td>
+      </TableCell>
 
-      <td className="px-4 py-4 text-slate-700">
+      <TableCell>
         {formattedDate}
-      </td>
+      </TableCell>
 
-      <td className="px-4 py-4 text-slate-700">
+      <TableCell>
         ₹{booking.totalAmount ?? '0.00'}
-      </td>
+      </TableCell>
 
-      <td className="px-4 py-4">
+      <TableCell>
         <StatusBadge
           status={booking.status}
         />
-      </td>
+      </TableCell>
 
-      <td className="px-4 py-4">
+      <TableCell align="right">
         <Link
-          href={`/dashboard/customer/bookings/${booking.bookingId}`}
-          className="
-            text-emerald-700
-            hover:underline
-          "
+          href={`/customer/bookings/${booking.id || booking.bookingId}`}
+          title="View Details"
         >
-          View Details
+          <IconButton size="small" sx={{ color: '#059669' }}>
+            <Eye size={18} />
+          </IconButton>
         </Link>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 }

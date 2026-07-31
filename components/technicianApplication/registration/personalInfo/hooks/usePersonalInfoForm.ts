@@ -1,9 +1,12 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
-import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
-import type { PersonalInfoFormData, ValidationErrors } from '@/types/technicianApplication/personalInfo.types';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
+
+import { AuthControllers } from '@/api/authControllers';
+import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
+import { useAppDispatch } from '@/redux/hooks';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
+import type { PersonalInfoFormData, ValidationErrors } from '@/types/technicianApplication/personalInfo.types';
 
 
 function validateFirstName(v: string): string | undefined {
@@ -67,6 +70,7 @@ function toSavedFormData(value: Partial<PersonalInfoFormData>): PersonalInfoForm
 
 export function usePersonalInfoForm() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   // ── Form state ───────────────────────────────────────────────────────────
   const [formData, setFormData] = useState<PersonalInfoFormData>({
@@ -88,7 +92,6 @@ export function usePersonalInfoForm() {
 
   // ── Registration state ───────────────────────────────────────────────────
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [apiError, setApiError] = useState('');
 
   // ── Restore from sessionStorage on mount ───────────────────────────────────
   useEffect(() => {
@@ -122,7 +125,6 @@ export function usePersonalInfoForm() {
   const handleChange = useCallback(
     (field: keyof PersonalInfoFormData, value: string) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
-      if (apiError) setApiError('');
       // Reset OTP state when contact details change after OTP was sent.
       if (field === 'phoneNumber' && otpSent) {
         setOtpSent(false);
@@ -134,7 +136,7 @@ export function usePersonalInfoForm() {
       if (!touched[field]) return;
       setErrors((prev) => ({ ...prev, [field]: FIELD_VALIDATORS[field](value) }));
     },
-    [touched, apiError, otpSent],
+    [touched, otpSent],
   );
 
   const handleBlur = useCallback(
@@ -210,9 +212,11 @@ export function usePersonalInfoForm() {
   // ── Step 3: Register ─────────────────────────────────────────────────────
   const handleRegister = useCallback(async (): Promise<void> => {
     if (!validateForm()) return;
-    if (!otpVerified) { setApiError('Please verify your mobile number with OTP first'); return; }
+    if (!otpVerified) { 
+      dispatch(showSnackbar({ message: 'Please verify your mobile number with OTP first', severity: 'error' })); 
+      return; 
+    }
 
-    setApiError('');
     setIsSubmitting(true);
     try {
       // Save data client-side in sessionStorage
@@ -222,7 +226,7 @@ export function usePersonalInfoForm() {
       markStepComplete(0);
       router.push('/technician/onboarding/skills-equipment');
     } catch (_err: unknown) {
-      setApiError('Registration preparation failed. Please try again.');
+      dispatch(showSnackbar({ message: 'Registration preparation failed. Please try again.', severity: 'error' }));
     } finally {
       setIsSubmitting(false);
     }
@@ -238,7 +242,7 @@ export function usePersonalInfoForm() {
     setOtp,
     handleSendOtp, handleVerifyOtp,
     // register
-    isSubmitting, apiError,
+    isSubmitting,
     handleRegister,
   };
 }

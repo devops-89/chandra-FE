@@ -1,8 +1,14 @@
 'use client';
 
 import QrCode2Icon from '@mui/icons-material/QrCode2';
+import { useAppSelector } from '@/redux/hooks';
+import { useRouter } from 'next/navigation';
 
 export default function UpiCard() {
+  const router = useRouter();
+  const technician = useAppSelector((state) => state.technicianProfile.profile);
+  const upiAccount = technician?.technicianProfile?.payoutAccounts?.find((acc: any) => acc.accountType === 'VPA');
+
   return (
     <div
       className="
@@ -33,7 +39,7 @@ export default function UpiCard() {
           </p>
         
           <p className="font-semibold">
-            Vikram Singh
+            {technician?.firstName} {technician?.lastName}
           </p>
         </div>
         
@@ -43,11 +49,12 @@ export default function UpiCard() {
           </p>
         
           <p className="font-semibold">
-            vikram@upi
+            {upiAccount?.upiId || 'Loading...'}
           </p>
         </div>
         </div>
       <button
+        onClick={() => router.push('/technician/profile/edit')}
         className="
           mt-auto
           w-full

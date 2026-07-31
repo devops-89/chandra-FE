@@ -2,25 +2,35 @@
 
 import { useEffect } from 'react';
 
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
 
 import AvailabilityCard from './availability/AvailabilityCard';
-import BankDetailsCard from './bank-details/BankDetailsCard';
-import UpiCard from './bank-details/UpiCard';
 import DocumentsCard from './documents/DocumentsCard';
 import ProfileHero from './overview/ProfileHero';
 import ProfileStats from './overview/ProfileStats';
 import PersonalInfoCard from './personal-info/PersonalInfoCard';
 import ProfessionalInfoCard from './professional-info/ProfessionalInfoCard';
-import NotificationSettings from './settings/NotificationSettings';
+import BankDetailsCard from './bank-details/BankDetailsCard';
+import UpiCard from './bank-details/UpiCard';
 
 export default function ProfileContent() {
   const dispatch = useAppDispatch();
+  const { isLoading, profile: technician } = useAppSelector((state) => state.technicianProfile);
+  const upiAccount = technician?.technicianProfile?.payoutAccounts?.find((acc: any) => acc.accountType === 'VPA');
+  const bankAccount = technician?.technicianProfile?.payoutAccounts?.find((acc: any) => acc.accountType === 'BANK_ACCOUNT');
 
   useEffect(() => {
     dispatch(fetchTechnicianProfile());
   }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -44,18 +54,19 @@ export default function ProfileContent() {
         <div className="col-span-12 xl:col-span-6">
           <AvailabilityCard />
         </div>
+        
+        {upiAccount && (
+          <div className="col-span-12 xl:col-span-6 flex">
+            <UpiCard />
+          </div>
+        )}
+        
+        {bankAccount && (
+          <div className="col-span-12 xl:col-span-6 flex">
+            <BankDetailsCard />
+          </div>
+        )}
 
-        <div className="col-span-12 xl:col-span-4">
-          <BankDetailsCard />
-        </div>
-
-        <div className="col-span-12 xl:col-span-4">
-          <UpiCard />
-        </div>
-
-        <div className="col-span-12 xl:col-span-4">
-          <NotificationSettings />
-        </div>
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ import BasicInfoStep from './BasicInfoStep';
 import PricingStep from './PricingStep';
 import SpecificationsStep from './SpecificationsStep';
 
-/* ─── Step Config ────────────────────────────────────────────────── */
+/* â”€â”€â”€ Step Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const STEPS = [
   { id: 0, label: 'Service Info', icon: Info },
   { id: 1, label: 'Specifications', icon: ClipboardList },
@@ -47,8 +47,9 @@ export interface Specification {
   values: string[];
 }
 
-/* ─── Master form state ──────────────────────────────────────────── */
+/* â”€â”€â”€ Master form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export type FormData = {
+  // Step 1 â€” Service Info
   // Step 1 — Service Info
   name: string;
   description: string;
@@ -58,11 +59,11 @@ export type FormData = {
 
   // Step 2 — Pricing
   serviceBasePrice: string;
-  perHourRate: string;
-  perKmRate: string;
+  isServiceBasePriceApplied: boolean;
   platformFee: string;
+  isPlatformFeeApplied: boolean;
   gst: string;
-  emergencyCharge: string;
+  isGstApplied: boolean;
 };
 
 export type FormErrors = Partial<Record<string, string>>;
@@ -74,14 +75,14 @@ const INITIAL: FormData = {
   isActive: true,
   specifications: [],
   serviceBasePrice: '',
-  perHourRate: '',
-  perKmRate: '',
+  isServiceBasePriceApplied: true,
   platformFee: '',
+  isPlatformFeeApplied: false,
   gst: '',
-  emergencyCharge: '',
+  isGstApplied: false,
 };
 
-/* ─── Per-step validation ────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────────────────── */
 function validateStep(step: number, data: FormData): FormErrors {
   const errors: FormErrors = {};
 
@@ -121,11 +122,8 @@ function validateStep(step: number, data: FormData): FormErrors {
       errors.serviceBasePrice = 'Enter a valid amount.';
 
     const numericFields: Array<[keyof FormData, string]> = [
-      ['perHourRate', 'Per hour rate'],
-      ['perKmRate', 'Per KM rate'],
       ['platformFee', 'Platform fee'],
       ['gst', 'GST %'],
-      ['emergencyCharge', 'Emergency charge'],
     ];
     for (const [field, label] of numericFields) {
       const val = data[field] as string;
@@ -137,14 +135,14 @@ function validateStep(step: number, data: FormData): FormErrors {
   return errors;
 }
 
-/* ─── Slide animation variants ──────────────────────────────────── */
+/* â”€â”€â”€ Slide animation variants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const variants = {
   enter: (d: number) => ({ x: d > 0 ? 40 : -40, opacity: 0 }),
   center: { x: 0, opacity: 1 },
   exit: (d: number) => ({ x: d > 0 ? -40 : 40, opacity: 0 }),
 };
 
-/* ─── Inline field error ─────────────────────────────────────────── */
+/* â”€â”€â”€ Inline field error â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
@@ -159,7 +157,7 @@ export function FieldError({ message }: { message?: string }) {
   );
 }
 
-/* ─── Main form ──────────────────────────────────────────────────── */
+/* â”€â”€â”€ Main form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export default function AddServiceForm() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -218,11 +216,17 @@ export default function AddServiceForm() {
         isActive: data.isActive,
         specifications: data.specifications,
         serviceBasePrice: Number(data.serviceBasePrice),
-        perHourRate: data.perHourRate ? Number(data.perHourRate) : undefined,
-        perKmRate: data.perKmRate ? Number(data.perKmRate) : undefined,
+        isServiceBasePriceApplied: data.isServiceBasePriceApplied,
         platformFee: data.platformFee ? Number(data.platformFee) : undefined,
+        isPlatformFeeApplied: data.isPlatformFeeApplied,
         gst: data.gst ? Number(data.gst) : undefined,
-        emergencyCharge: data.emergencyCharge ? Number(data.emergencyCharge) : undefined,
+        isGstApplied: data.isGstApplied,
+        isSurgeEnabled: false,
+        isDistanceKmApplied: false,
+        isWeekendApplied: false,
+        isPeakHourApplied: false,
+        isEmergencyApplied: false,
+        isPerHourRateApplied: false,
       })
     );
 
@@ -238,12 +242,12 @@ export default function AddServiceForm() {
     setSubmitted(true);
 
     await new Promise((resolve) => setTimeout(resolve, 2500));
-    router.push('/dashboard/admin/services');
+    router.push('/admin/services');
   };
 
   const hasErrors = touched && Object.keys(errors).length > 0;
 
-  /* ── Success screen ──────────────────────────────────────────── */
+  /* â”€â”€ Success screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   if (submitted) {
     return (
       <motion.div
@@ -275,7 +279,7 @@ export default function AddServiceForm() {
             <span className="font-semibold text-slate-700">{data.name}</span> has
             been added to the services catalogue.
           </p>
-          <p className="mt-2 text-slate-500">Redirecting to Services…</p>
+          <p className="mt-2 text-slate-500">Redirecting to Servicesâ€¦</p>
         </div>
         <div className="flex gap-3">
           <button
@@ -294,7 +298,7 @@ export default function AddServiceForm() {
           </button>
           <button
             type="button"
-            onClick={() => router.push('/dashboard/admin/services')}
+            onClick={() => router.push('/admin/services')}
             className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
           >
             View Services
@@ -314,7 +318,7 @@ export default function AddServiceForm() {
         </div>
         <button
           type="button"
-          onClick={() => router.push('/dashboard/admin/services')}
+          onClick={() => router.push('/admin/services')}
           className="flex items-center gap-2 self-start sm:self-auto rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
         >
           <ChevronLeft size={16} />
@@ -385,7 +389,7 @@ export default function AddServiceForm() {
             })()}
             <div className="flex-1 min-w-0">
               <h2 className="font-semibold text-slate-900">
-                Step {step + 1} of {STEPS.length} — {STEPS[step].label}
+                Step {step + 1} of {STEPS.length} â€” {STEPS[step].label}
               </h2>
               <p className="text-xs text-slate-500">{STEP_SUBTITLES[step]}</p>
             </div>
@@ -467,11 +471,11 @@ export default function AddServiceForm() {
                 <PricingStep
                   data={{
                     serviceBasePrice: data.serviceBasePrice,
-                    perHourRate: data.perHourRate,
-                    perKmRate: data.perKmRate,
+                    isServiceBasePriceApplied: data.isServiceBasePriceApplied,
                     platformFee: data.platformFee,
+                    isPlatformFeeApplied: data.isPlatformFeeApplied,
                     gst: data.gst,
-                    emergencyCharge: data.emergencyCharge,
+                    isGstApplied: data.isGstApplied,
                   }}
                   errors={errors}
                   onChange={update}
@@ -521,7 +525,7 @@ export default function AddServiceForm() {
               className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
             >
               <ClipboardList size={16} />
-              {isPublishing ? 'Publishing…' : 'Publish Service'}
+              {isPublishing ? 'Publishingâ€¦' : 'Publish Service'}
             </button>
           )}
         </div>

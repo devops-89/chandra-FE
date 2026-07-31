@@ -1,4 +1,3 @@
-import { userSecuredApi } from './config';
 import type {
   AdminService,
   ApiService,
@@ -7,6 +6,8 @@ import type {
   ServiceStatus,
   UpdateServiceRequest,
 } from '@/types/admin/service.types';
+
+import { userSecuredApi } from './config';
 
 function normalizeService(raw: ApiService): AdminService {
   const status: ServiceStatus = raw.isActive ? 'Active' : 'Inactive';
@@ -31,14 +32,27 @@ function normalizeService(raw: ApiService): AdminService {
     gst: toNum(p?.gst),
     emergencyCharge: toNum(p?.emergencyCharge),
     status,
-    bookings: raw.bookings ?? 0,
+    bookings: raw.totalBookings ?? raw.bookings ?? 0,
     specifications: raw.specifications,
   };
 }
 
 export const ServiceControllers = {
-  getAllServices: async (): Promise<AdminService[]> => {
-    const response = await userSecuredApi.get<GetAllServicesResponse>('/users/service/all');
+  getAllServices: async (params?: { search?: string; status?: boolean }): Promise<AdminService[]> => {
+    let token = null;
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('adminAccessToken') || localStorage.getItem('accessToken');
+    }
+    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+    
+    let url = '/users/service/all?page=1&limit=1000';
+    if (params?.search) {
+      url += `&search=${encodeURIComponent(params.search)}`;
+    }
+    if (params?.status !== undefined) {
+      url += `&status=${params.status}`;
+    }
+    const response = await userSecuredApi.get<GetAllServicesResponse>(url, config);
     const outer = response.data.data;
     let raw: ApiService[];
 
@@ -80,32 +94,44 @@ export const ServiceControllers = {
     formData.append('isActive', String(payload.isActive ?? true));
     formData.append('serviceBasePrice', String(payload.serviceBasePrice));
 
-    formData.append('perHourRate', String(payload.perHourRate ?? 0));
-    formData.append('perKmRate', String(payload.perKmRate ?? 0));
+    formData.append('isServiceBasePriceApplied', String(payload.isServiceBasePriceApplied ?? true));
     formData.append('platformFee', String(payload.platformFee ?? 0));
+    formData.append('isPlatformFeeApplied', String(payload.isPlatformFeeApplied ?? false));
     formData.append('gst', String(payload.gst ?? 0));
-    formData.append('emergencyCharge', String(payload.emergencyCharge ?? 0));
+    formData.append('isGstApplied', String(payload.isGstApplied ?? false));
+
     formData.append('weekendMultiplier', String(payload.weekendMultiplier ?? 1.0));
     formData.append('peakHourMultiplier', String(payload.peakHourMultiplier ?? 1.0));
     formData.append('peakHours', JSON.stringify(payload.peakHours ?? []));
     formData.append('freeDistanceKm', String(payload.freeDistanceKm ?? 0));
     formData.append('distanceChargePerKm', String(payload.distanceChargePerKm ?? 0));
     formData.append('surgeFactor', String(payload.surgeFactor ?? 1.0));
+
     formData.append('isSurgeEnabled', String(payload.isSurgeEnabled ?? false));
+    formData.append('isDistanceKmApplied', String(payload.isDistanceKmApplied ?? false));
+    formData.append('isWeekendApplied', String(payload.isWeekendApplied ?? false));
+    formData.append('isPeakHourApplied', String(payload.isPeakHourApplied ?? false));
+    formData.append('isEmergencyApplied', String(payload.isEmergencyApplied ?? false));
+    formData.append('isPerHourRateApplied', String(payload.isPerHourRateApplied ?? false));
 
     if (payload.icon) formData.append('icon', payload.icon);
     formData.append('specifications', JSON.stringify(payload.specifications || []));
 
-    await userSecuredApi.post('/users/admin/service', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    await userSecuredApi.post('/users/admin/service', formData);
   },
 
   updateService: async (payload: UpdateServiceRequest): Promise<void> => {
     const { id, ...body } = payload;
-    await userSecuredApi.patch(`/users/update/service/${id}`, body, {
-      headers: { 'Content-Type': 'application/json' },
+    const formData = new FormData();
+    Object.entries(body).forEach(([key, value]) => {
+      if (key === 'specifications') {
+        formData.append(key, JSON.stringify(value || []));
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, String(value));
+      }
     });
+
+    await userSecuredApi.patch(`/users/update/service/${id}`, formData);
   },
 
   deleteService: async (id: number | string): Promise<void> => {

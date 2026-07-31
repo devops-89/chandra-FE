@@ -7,7 +7,7 @@ import { useState } from 'react';
 import NavbarLinks from '@/components/common/NavbarLinks';
 import { getDashboardPathForRole } from '@/lib/authApi/redirectUtils';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { logout } from '@/redux/slices/authSlice';
+import { logoutUser } from '@/redux/slices/authSlice';
 
 const MobileMenu = () => {
   const router = useRouter();
@@ -33,8 +33,8 @@ const MobileMenu = () => {
     router.push(getDashboardPathForRole(role));
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
     closeMenu();
     router.push('/');
   };

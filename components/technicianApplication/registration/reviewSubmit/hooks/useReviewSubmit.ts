@@ -1,9 +1,7 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
-
-
 import { useCallback, useEffect, useState } from 'react';
 
+import { AuthControllers } from '@/api/authControllers';
 import { getAreaKm } from '@/data/technicianOnboarding/serviceAreaData';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
@@ -74,6 +72,7 @@ function buildInitialState(): ReviewSubmitState {
     hasACGauges: false,
     hasSafetyEquipment: false,
     hasVehicle: false,
+    gst: '',
     verificationStatus: {
       documents: DOCUMENT_NAMES.map((d) => ({ id: d.id, name: d.name, status: 'pending' })),
       completedCount: 0,
@@ -81,7 +80,6 @@ function buildInitialState(): ReviewSubmitState {
     },
     serviceArea: {
       radius: 0,
-      areas: [],
     },
   };
 }
@@ -94,7 +92,7 @@ export const useReviewSubmit = () => {
 
   const [state, setState] = useState<ReviewSubmitState>(buildInitialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { user } = useAppSelector((state) => state.auth);
 
   // ── Seed UI state from all sessionStorage keys on mount ──────────────────
   useEffect(() => {
@@ -107,9 +105,7 @@ export const useReviewSubmit = () => {
           hasSavedDocumentData
           && !hasAllRequiredFiles(aadharFile)
         ) {
-          setSubmitError(REUPLOAD_DOCUMENTS_MESSAGE);
-        } else {
-          setSubmitError(null);
+          // Do nothing on mount, will validate on submit
         }
       } catch {
         // ignore malformed document metadata
@@ -134,6 +130,18 @@ export const useReviewSubmit = () => {
                 selfieUrl: '',
               },
             };
+          } else if (user) {
+            next = {
+              ...next,
+              profile: {
+                ...next.profile,
+                name: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
+                title: 'Technician',
+                experience: 0,
+                location: '',
+                selfieUrl: '',
+              },
+            };
           }
         } catch { /* ignore */ }
 
@@ -152,6 +160,7 @@ export const useReviewSubmit = () => {
               hasACGauges: s.hasACGauges ?? next.hasACGauges,
               hasSafetyEquipment: s.hasSafetyEquipment ?? next.hasSafetyEquipment,
               hasVehicle: s.hasVehicle ?? next.hasVehicle,
+              gst: typeof s.gst === 'string' ? s.gst : '',
               profile: {
                 ...next.profile,
                 experience: s.yearsOfExperience ?? 0,
@@ -204,7 +213,6 @@ export const useReviewSubmit = () => {
               ...next,
               serviceArea: {
                 radius: a.radius ?? 0,
-                areas: a.preferredAreas ?? [],
                 ...(location ?? {}),
               },
             };
@@ -223,11 +231,11 @@ export const useReviewSubmit = () => {
                 method === 'upi'
                   ? { payoutMethod: 'upi', upiId: b.upiId ?? '' }
                   : {
-                      payoutMethod: 'bank-transfer',
-                      accountHolderName: b.accountHolderName ?? '',
-                      accountNumber: b.accountNumber ?? '',
-                      ifscCode: b.ifscCode ?? '',
-                    },
+                    payoutMethod: 'bank-transfer',
+                    accountHolderName: b.accountHolderName ?? '',
+                    accountNumber: b.accountNumber ?? '',
+                    ifscCode: b.ifscCode ?? '',
+                  },
             };
           }
         } catch { /* ignore */ }
@@ -242,14 +250,19 @@ export const useReviewSubmit = () => {
   // ── Final submit: build multipart and POST /users/register ────────────────
   const handleSubmit = useCallback(async (): Promise<{ success: boolean; error?: unknown }> => {
     setIsSubmitting(true);
-    setSubmitError(null);
     try {
       // ── Read personal info ────────────────────────────────────────────────
       const registerRaw = sessionStorage.getItem('registerData');
-      if (!registerRaw) {
+      let registerData;
+      if (registerRaw) {
+        registerData = JSON.parse(registerRaw);
+      } else if (user && user.role === 'TECHNICIAN') {
+        registerData = {
+          technicianId: user.id,
+        };
+      } else {
         throw new Error('Personal information is missing. Please complete the Personal Info step again.');
       }
-      const registerData = JSON.parse(registerRaw);
 
       // ── Read skills & equipments ──────────────────────────────────────────
       const skillsRaw = sessionStorage.getItem('skillsEquipmentData');
@@ -293,44 +306,50 @@ export const useReviewSubmit = () => {
 
       // ── Build technicianProfile JSON ──────────────────────────────────────
       const technicianProfile = {
-        yearsOfExperience:  (skillsData.yearsOfExperience  as number)  ?? 0,
-        languages:          (skillsData.languages           as string[]) ?? [],
-        services:           (skillsData.services            as { serviceId: number }[]) ?? [],
-        brandExpertise:     (skillsData.brandExpertise      as { brandName: string }[]) ?? [],
-        hasLadder:          (skillsData.hasLadder           as boolean) ?? false,
-        hasACGauges:        (skillsData.hasACGauges         as boolean) ?? false,
+        yearsOfExperience: (skillsData.yearsOfExperience as number) ?? 0,
+        languages: (skillsData.languages as string[]) ?? [],
+        services: (skillsData.services as { serviceId: number }[]) ?? [],
+        brandExpertise: (skillsData.brandExpertise as { brandName: string }[]) ?? [],
+        hasLadder: (skillsData.hasLadder as boolean) ?? false,
+        hasACGauges: (skillsData.hasACGauges as boolean) ?? false,
         hasSafetyEquipment: (skillsData.hasSafetyEquipment as boolean) ?? false,
-        hasVehicle:         (skillsData.hasVehicle          as boolean) ?? false,
+        hasVehicle: (skillsData.hasVehicle as boolean) ?? false,
         serviceRadiusKm,
+        // GST (only when filled)
+        ...(typeof skillsData.gst === 'string' && skillsData.gst.trim()
+          ? { gst: skillsData.gst.trim() }
+          : {}
+        ),
         // ── Payout method (mutually exclusive) ────────────────────────────
         ...(payoutMethod === 'upi'
           ? { upiId: bankData.upiId as string }
           : {
-              accountHolderName: (bankData.accountHolderName as string) ?? '',
-              accountNumber:     (bankData.accountNumber      as string) ?? '',
-              ifscCode:          (bankData.ifscCode           as string) ?? '',
-              bankName:          (bankData.bankName           as string) ?? '',
-            }
+            accountHolderName: (bankData.accountHolderName as string) ?? '',
+            accountNumber: (bankData.accountNumber as string) ?? '',
+            ifscCode: (bankData.ifscCode as string) ?? '',
+            bankName: (bankData.bankName as string) ?? '',
+          }
         ),
         // ── Location (only when captured) ─────────────────────────────────
         ...(serviceLocation && {
-          address:   serviceLocation.fullAddress,
-          latitude:  serviceLocation.latitude,
+          address: serviceLocation.fullAddress,
+          latitude: serviceLocation.latitude,
           longitude: serviceLocation.longitude,
-          city:      serviceLocation.city,
-          state:     serviceLocation.state,
-          pincode:   serviceLocation.pincode,
+          city: serviceLocation.city,
+          state: serviceLocation.state,
+          pincode: serviceLocation.pincode,
         }),
       };
 
       // ── Single multipart POST ─────────────────────────────────────────────
       const response = await AuthControllers.registerTechnician(
         {
-          email: registerData.email.trim(),
-          username: registerData.username.trim(),
-          phone: registerData.phoneNumber.trim(),
-          firstName: registerData.firstName.trim(),
-          lastName: registerData.lastName.trim(),
+          technicianId: registerData.technicianId,
+          email: registerData.email?.trim(),
+          username: registerData.username?.trim(),
+          phone: registerData.phoneNumber?.trim(),
+          firstName: registerData.firstName?.trim(),
+          lastName: registerData.lastName?.trim(),
           password: registerData.password,
         },
         technicianProfile,
@@ -343,36 +362,36 @@ export const useReviewSubmit = () => {
         },
       );
 
-      const { user, tokens } = response.data;
+      const { user: responseUser, tokens } = response.data;
 
       // ── Replace blob URLs with real S3 URLs from the registration response ──
-      const profile = user.technicianProfile;
+      const profile = responseUser.technicianProfile;
       if (profile) {
         const s3Urls = {
-          selfieUrl:      profile.selfieUrl      ?? null,
-          aadharUrl:      profile.aadharUrl      ?? null,
-          panUrl:         profile.panUrl         ?? null,
-          policeCertUrl:  profile.policeCertUrl  ?? null,
+          selfieUrl: profile.selfieUrl ?? null,
+          aadharUrl: profile.aadharUrl ?? null,
+          panUrl: profile.panUrl ?? null,
+          policeCertUrl: profile.policeCertUrl ?? null,
           tradeLicenseUrl: profile.tradeLicenseUrl ?? null,
         };
         sessionStorage.setItem('documentUploadData', JSON.stringify(s3Urls));
       }
 
       // ── Persist tokens + user — survives page refresh and tab close ─────
-      localStorage.setItem('user',         JSON.stringify(user));
-      localStorage.setItem('accessToken',  tokens.accessToken);
+      localStorage.setItem('user', JSON.stringify(responseUser));
+      localStorage.setItem('accessToken', tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
 
       dispatch(setCredentials({
         user: {
-          id:        user.id,
-          email:     user.email,
-          username:  user.username,
-          firstName: user.firstName,
-          lastName:  user.lastName,
-          role:      user.role,
+          id: responseUser.id,
+          email: responseUser.email,
+          username: responseUser.username,
+          firstName: responseUser.firstName,
+          lastName: responseUser.lastName,
+          role: responseUser.role,
         },
-        accessToken:  tokens.accessToken,
+        accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       }));
 
@@ -384,12 +403,11 @@ export const useReviewSubmit = () => {
       const msg =
         (error as { response?: { data?: { message?: string } } })?.response?.data?.message
         ?? (error instanceof Error ? error.message : 'Submission failed. Please try again.');
-      setSubmitError(msg);
-      return { success: false, error };
+      return { success: false, error: msg };
     } finally {
       setIsSubmitting(false);
     }
-  }, [selfieFile, aadharFile, panFile, policeCertFile, tradeLicenseFile, dispatch]);
+  }, [selfieFile, aadharFile, panFile, policeCertFile, tradeLicenseFile, dispatch, user]);
 
   const updateProfileData = useCallback(
     (profileData: Partial<ReviewSubmitState['profile']>) => {
@@ -404,7 +422,6 @@ export const useReviewSubmit = () => {
   return {
     state,
     isSubmitting,
-    submitError,
     handleSubmit,
     updateProfileData,
   };

@@ -1,11 +1,13 @@
 export interface ActiveJob {
   id: string;
-
+  rawId: number;
   serviceType: string;
+  serviceId?: number;
 
   title: string;
 
   customerName: string;
+  customerPhone?: string;
 
   customerRating: number;
 

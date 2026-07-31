@@ -165,12 +165,13 @@ export interface RegisterCustomerResponse {
 
 /** Sent as multipart/form-data to POST /users/register (TECHNICIAN role) */
 export interface RegisterTechnicianRequest {
+  technicianId?: number;
   email?: string;
-  username: string;
-  phone: string;
-  firstName: string;
+  username?: string;
+  phone?: string;
+  firstName?: string;
   lastName?: string;
-  password: string;
+  password?: string;
 }
 
 export interface TechnicianProfile {
@@ -178,7 +179,6 @@ export interface TechnicianProfile {
   userId: number;
   status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
   serviceRadiusKm: number;
-  preferredAreas: string[];
   pincodes: string[];
   hasLadder: boolean;
   hasACGauges: boolean;
@@ -256,7 +256,6 @@ export interface ApiTechnicianProfileData {
   yearsOfExperience: number | null;
   languages: string[];
   serviceRadiusKm: number;
-  preferredAreas: string[];
   pincodes: string[];
   aadharUrl?: string | null;
   panUrl: string | null;
@@ -288,6 +287,7 @@ export interface GetProfileResponse {
   statusCode: number;
   message: string;
   data: {
+    id: number;
     email: string;
     username: string;
     phone: string;

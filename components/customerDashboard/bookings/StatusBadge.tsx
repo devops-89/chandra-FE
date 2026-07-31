@@ -3,7 +3,6 @@ import type { CustomerBooking } from '@/types/customerBooking.types';
 interface Props {
   status: CustomerBooking['status'];
 }
-
 export default function StatusBadge({
   status,
 }: Props) {

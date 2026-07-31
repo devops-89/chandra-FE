@@ -22,14 +22,14 @@ export function getDashboardPathForRole(role?: string | null): string {
   const normalizedRole = role?.toUpperCase();
 
   if (normalizedRole === 'ADMIN') {
-    return '/dashboard/admin';
+    return '/admin/dashboard';
   }
 
   if (normalizedRole === 'TECHNICIAN') {
-    return '/dashboard/technician';
+    return '/technician/dashboard';
   }
 
-  return '/dashboard/customer';
+  return '/customer/dashboard';
 }
 
 function isSafeInternalRedirect(path: string): boolean {
@@ -43,15 +43,15 @@ function isRedirectAllowedForRole(path: string, role?: string | null): boolean {
 
   const normalizedRole = role?.toUpperCase();
 
-  if (path.startsWith('/dashboard/admin')) {
+  if (path.startsWith('/admin')) {
     return normalizedRole === 'ADMIN';
   }
 
-  if (path.startsWith('/dashboard/technician')) {
+  if (path.startsWith('/technician/dashboard')) {
     return normalizedRole === 'TECHNICIAN';
   }
 
-  if (path.startsWith('/dashboard/customer') || path.startsWith('/booking')) {
+  if (path.startsWith('/customer') || path.startsWith('/booking')) {
     return normalizedRole !== 'ADMIN' && normalizedRole !== 'TECHNICIAN';
   }
 
@@ -73,8 +73,8 @@ export function handlePostAuthRedirect(role?: string | null): string {
   return fallbackPath;
 }
 
-// ─── Technician-specific redirect ────────────────────────────────────────────
-// Imported lazily to avoid circular deps — called only from LoginForm for TECHNICIAN role.
+// â”€â”€â”€ Technician-specific redirect â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Imported lazily to avoid circular deps â€” called only from LoginForm for TECHNICIAN role.
 
 import {
   firstIncompleteRoute,
@@ -92,12 +92,12 @@ function normalizeStatus(status?: string | null): string {
  * Called with the response from GET /auth/profile.
  *
  * Priority:
- *   1. No technicianProfile → /technician/onboarding/register
- *   2. profile.status === 'PENDING_APPROVAL' → pending-verification
+ *   1. No technicianProfile â†’ /technician/onboarding/register
+ *   2. profile.status === 'PENDING_APPROVAL' â†’ pending-verification
  *   3. profile.isVerified === true OR user.status === 'ACTIVE' AND onboarding complete
- *      → /dashboard/technician
- *   4. profile.status === 'INCOMPLETE' → sync bitmask from profile → firstIncompleteRoute()
- *   5. Fallback → /dashboard/technician
+ *      â†’ /technician/dashboard
+ *   4. profile.status === 'INCOMPLETE' â†’ sync bitmask from profile â†’ firstIncompleteRoute()
+ *   5. Fallback â†’ /technician/dashboard
  */
 export function getTechnicianRedirectPath(params: {
   userStatus: string;
@@ -107,29 +107,32 @@ export function getTechnicianRedirectPath(params: {
   const normalizedUserStatus = normalizeStatus(userStatus);
   const normalizedProfileStatus = normalizeStatus(technicianProfile?.status);
 
+  // If a technician logs in but hasn't created a profile, Step 0 (account creation) is inherently complete.
+  // We pass a dummy ID to set the Step 0 bit in the local storage mask.
+  const profileToSync = (technicianProfile || { id: -1 }) as Partial<ApiTechnicianProfileData>;
+
+  // Always sync bitmask from backend
+  syncProgressFromProfile({
+    id:                profileToSync.id as any,
+    services:          profileToSync.services as any,
+    yearsOfExperience: profileToSync.yearsOfExperience,
+    languages:         profileToSync.languages as any,
+    aadharUrl:         profileToSync.aadharUrl,
+    panUrl:            profileToSync.panUrl,
+    policeCertUrl:     profileToSync.policeCertUrl,
+    tradeLicenseUrl:   profileToSync.tradeLicenseUrl,
+    selfieUrl:         profileToSync.selfieUrl,
+    serviceAreas:      profileToSync.serviceAreas as any,
+    accountHolderName: profileToSync.accountHolderName,
+    accountNumber:     profileToSync.accountNumber,
+    ifscCode:          profileToSync.ifscCode,
+    status:            profileToSync.status,
+  });
+
   // 1. No profile created yet
   if (!technicianProfile) {
-    return '/technician/onboarding/register';
+    return firstIncompleteRoute();
   }
-
-  // Always sync bitmask from backend — overwrites any stale localStorage state.
-  // This is the key to surviving localStorage.clear() — every login re-syncs.
-  syncProgressFromProfile({
-    id:                technicianProfile.id,
-    services:          technicianProfile.services,
-    yearsOfExperience: technicianProfile.yearsOfExperience,
-    languages:         technicianProfile.languages,
-    aadharUrl:         technicianProfile.aadharUrl,
-    panUrl:            technicianProfile.panUrl,
-    policeCertUrl:     technicianProfile.policeCertUrl,
-    tradeLicenseUrl:   technicianProfile.tradeLicenseUrl,
-    selfieUrl:         technicianProfile.selfieUrl,
-    serviceAreas:      technicianProfile.serviceAreas,
-    accountHolderName: technicianProfile.accountHolderName,
-    accountNumber:     technicianProfile.accountNumber,
-    ifscCode:          technicianProfile.ifscCode,
-    status:            technicianProfile.status,
-  });
 
   // 2. Submitted for admin review
   if (normalizedProfileStatus === 'PENDING_APPROVAL') {
@@ -138,14 +141,14 @@ export function getTechnicianRedirectPath(params: {
 
   // 3. Verified technician or active user with complete onboarding
   if (technicianProfile.isVerified || (normalizedUserStatus === 'ACTIVE' && isOnboardingComplete())) {
-    return '/dashboard/technician';
+    return '/technician/dashboard';
   }
 
-  // 4. Incomplete onboarding — go to first gap (bitmask already synced above)
+  // 4. Incomplete onboarding â€” go to first gap (bitmask already synced above)
   if (normalizedProfileStatus === 'PENDING_APPROVAL') {
     return firstIncompleteRoute();
   }
 
   // 5. Fallback
-  return '/dashboard/technician';
+  return '/technician/dashboard';
 }

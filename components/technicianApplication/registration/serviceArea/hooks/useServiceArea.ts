@@ -6,7 +6,6 @@ import type { ServiceAreaState } from '@/types/technicianOnboarding/serviceArea.
 
 const initialState: ServiceAreaState = {
   radius: 0, // 5 km default
-  preferredAreas: [],
   pincodes: [],
 };
 
@@ -45,22 +44,6 @@ export const useServiceArea = () => {
     }));
   }, []);
 
-  const addArea = useCallback((area: string) => {
-    setState((prev) => ({
-      ...prev,
-      preferredAreas: prev.preferredAreas.includes(area)
-        ? prev.preferredAreas
-        : [...prev.preferredAreas, area],
-    }));
-  }, []);
-
-  const removeArea = useCallback((area: string) => {
-    setState((prev) => ({
-      ...prev,
-      preferredAreas: prev.preferredAreas.filter((a) => a !== area),
-    }));
-  }, []);
-
   const addPincode = useCallback((pincode: string) => {
     setState((prev) => ({
       ...prev,
@@ -78,10 +61,10 @@ export const useServiceArea = () => {
   }, []);
 
   const setServiceLocation = useCallback(
-    (location: Pick<
+    (location: Partial<Pick<
       ServiceAreaState,
       'latitude' | 'longitude' | 'fullAddress' | 'city' | 'state' | 'pincode'
-    >) => {
+    >>) => {
       setState((prev) => ({
         ...prev,
         ...location,
@@ -93,8 +76,6 @@ export const useServiceArea = () => {
   return {
     state,
     setRadius,
-    addArea,
-    removeArea,
     addPincode,
     removePincode,
     setServiceLocation,

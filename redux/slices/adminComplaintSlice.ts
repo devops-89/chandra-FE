@@ -1,6 +1,6 @@
-import { AdminControllers } from '@/api/adminControllers';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { AdminControllers } from '@/api/adminControllers';
 import type {
   AdminComplaint,
   AdminComplaintListItem,
@@ -55,14 +55,14 @@ export const fetchAdminComplaints = createAsyncThunk<
     complaints: AdminComplaintListItem[];
     pagination: ComplaintPagination;
   },
-  void,
+  string | undefined,
   { rejectValue: string }
 >(
   'adminComplaint/fetchAll',
 
-  async (_, { rejectWithValue }) => {
+  async (status, { rejectWithValue }) => {
     try {
-      return await AdminControllers.getAdminComplaints();
+      return await AdminControllers.getAdminComplaints(status);
     } catch (err) {
       return rejectWithValue(
         err instanceof Error

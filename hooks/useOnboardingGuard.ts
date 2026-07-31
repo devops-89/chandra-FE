@@ -1,10 +1,8 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
-
-
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
+import { AuthControllers } from '@/api/authControllers';
 import { getTechnicianRedirectPath } from '@/lib/authApi/redirectUtils';
 import {
   firstIncompleteRoute,
@@ -62,13 +60,22 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
           const res = await AuthControllers.getProfile();
           const technicianProfile = res.data?.technicianProfile;
 
-          if (technicianProfile) {
+          if (res.data?.role === 'TECHNICIAN') {
             const redirectPath = getTechnicianRedirectPath({
               userStatus: res.data.status,
-              technicianProfile,
+              technicianProfile: technicianProfile || null,
             });
-            router.replace(redirectPath);
-            return;
+            
+            const currentPath = window.location.pathname;
+            if (redirectPath === '/technician/dashboard' && currentPath.startsWith('/technician') && !currentPath.startsWith('/technician/onboarding')) {
+              // User is on a valid authenticated technician page (like profile, earnings), do not redirect
+              return;
+            } else if (currentPath !== redirectPath) {
+              router.replace(redirectPath);
+              return;
+            } else {
+              return; // We are exactly on the redirect path
+            }
           }
         } catch {
           // Profile fetch failed — fall through to the existing guard logic.
@@ -99,6 +106,8 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
               ifscCode:          p.ifscCode,
               status:            p.status,
             });
+          } else if (res.data?.role === 'TECHNICIAN') {
+            syncProgressFromProfile({ id: -1 }); // Dummy ID to mark step 0 complete
           }
         } catch {
           // Profile fetch failed — bitmask stays as-is, guard uses existing value

@@ -5,7 +5,11 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 
 import { useAppSelector } from '@/redux/hooks';
 
-export default function PanCard() {
+interface PanCardProps {
+  onView: (url: string, title: string) => void;
+}
+
+export default function PanCard({ onView }: PanCardProps) {
   const technician = useAppSelector(
     (state) => state.technicianProfile.profile
   );
@@ -39,7 +43,15 @@ export default function PanCard() {
       </div>
 
       {panUrl && (
-        <VerifiedIcon className="text-emerald-500" />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => onView(panUrl, 'PAN Card')}
+            className="text-emerald-600 text-sm font-medium hover:underline cursor-pointer bg-transparent border-none p-0"
+          >
+            View
+          </button>
+          <VerifiedIcon className="text-emerald-500" />
+        </div>
       )}
     </div>
   );

@@ -93,6 +93,11 @@ export interface ApiService {
   subcategory?: string;
   duration?: string;
   bookings?: number;
+  totalBookings?: number;
+  pendingBookings?: number;
+  acceptedBookings?: number;
+  cancelledBookings?: number;
+  completedBookings?: number;
   createdAt?: string;
   updatedAt?: string;
   specifications?: {
@@ -129,12 +134,24 @@ export interface UpdateServiceRequest {
   isActive: boolean;
 
   serviceBasePrice: number;
-
+  isServiceBasePriceApplied?: boolean;
+  
   perHourRate?: number;
   perKmRate?: number;
-  platformFee?: number;
-  gst?: number;
   emergencyCharge?: number;
+
+  platformFee?: number;
+  isPlatformFeeApplied?: boolean;
+  
+  gst?: number;
+  isGstApplied?: boolean;
+
+  isDistanceKmApplied?: boolean;
+  isWeekendApplied?: boolean;
+  isPeakHourApplied?: boolean;
+  isEmergencyApplied?: boolean;
+  isPerHourRateApplied?: boolean;
+  isSurgeEnabled?: boolean;
 
   specifications?: {
     name: string;
@@ -158,11 +175,11 @@ export interface CreateServiceRequest {
   }[];
 
   serviceBasePrice: number;
-  perHourRate?: number;
-  perKmRate?: number;
+  isServiceBasePriceApplied?: boolean;
   platformFee?: number;
+  isPlatformFeeApplied?: boolean;
   gst?: number;
-  emergencyCharge?: number;
+  isGstApplied?: boolean;
   weekendMultiplier?: number;
   peakHourMultiplier?: number;
   peakHours?: { start: number; end: number }[];
@@ -170,5 +187,10 @@ export interface CreateServiceRequest {
   distanceChargePerKm?: number;
   surgeFactor?: number;
   isSurgeEnabled?: boolean;
+  isDistanceKmApplied?: boolean;
+  isWeekendApplied?: boolean;
+  isPeakHourApplied?: boolean;
+  isEmergencyApplied?: boolean;
+  isPerHourRateApplied?: boolean;
 }
 

@@ -27,9 +27,10 @@ export interface TechnicianProfile {
   createdAt: string;
   updatedAt: string;
 
-  services: unknown[];
-  brandExpertise: unknown[];
-  locations: unknown[];
+  services: { serviceId: number; service: { id: number; name: string } }[];
+  brandExpertise: { brandName: string }[];
+  locations: { city: string; state: string; pincode: string; fullAddress: string; latitude?: string; longitude?: string; serviceRadiusKm?: number; }[];
+  payoutAccounts?: { accountType?: string; upiId?: string; accountHolderName?: string; bankName?: string; accountNumber?: string; ifscCode?: string; }[];
 }
 
 export interface TechnicianUser {
@@ -41,6 +42,7 @@ export interface TechnicianUser {
   phone: string;
   emergencyContact: string | null;
   profileImage: string | null;
+  overallRating: string;
 
   role: string;
   status: string;
@@ -49,16 +51,12 @@ export interface TechnicianUser {
   lastLoginAt: string;
 
   technicianProfile: TechnicianProfile;
+  payoutAccounts?: { accountType?: string; upiId?: string; accountHolderName?: string; bankName?: string; accountNumber?: string; ifscCode?: string; }[];
 }
 
 export interface TechnicianProfileResponse {
   success: boolean;
   statusCode: number;
   message: string;
-
-  data: {
-    success: boolean;
-    message: string;
-    data: TechnicianUser;
-  };
+  data: TechnicianUser;
 }

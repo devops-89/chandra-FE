@@ -7,7 +7,9 @@ import UploadDropzone from './UploadDropzone';
 export default function DocumentUploadCard({
   document,
   isUploaded,
+  uploadedFile,
   onUpload,
+  onRemove,
 }: DocumentUploadCardProps) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6">
@@ -40,8 +42,10 @@ export default function DocumentUploadCard({
         documentName={document.id}
         acceptedFormats={document.acceptedFormats}
         onUpload={onUpload}
+        onRemove={onRemove}
         isUploaded={isUploaded}
         fileName={document.name}
+        fileUrl={uploadedFile?.fileUrl}
       />
     </div>
   );

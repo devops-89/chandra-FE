@@ -6,8 +6,6 @@ import type { CoverageSummaryProps } from '@/types/technicianOnboarding/serviceA
 
 export default function CoverageSummary({
   radius,
-  areasCount,
-  pincodesCount,
 }: CoverageSummaryProps) {
   const areaOption = getAreaByValue(radius);
   const kmValue = areaOption?.km || 5;
@@ -24,20 +22,6 @@ export default function CoverageSummary({
           <span className="text-gray-700 text-sm">Service Area</span>
           <span className="text-2xl font-bold text-emerald-700">{kmValue}</span>
           <span className="text-gray-500 text-sm">km</span>
-        </div>
-
-        <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
-          <span className="text-gray-700 text-sm">Preferred Areas</span>
-          <span className="text-2xl font-bold text-orange-600">
-            {areasCount}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <span className="text-gray-700 text-sm">Pincodes</span>
-          <span className="text-2xl font-bold text-blue-600">
-            {pincodesCount}
-          </span>
         </div>
       </div>
 

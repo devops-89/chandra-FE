@@ -1,5 +1,11 @@
 'use client';
 
+import {
+  IconButton,
+  InputAdornment,
+  TextField,
+} from '@mui/material';
+import { MuiTelInput } from 'mui-tel-input';
 import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -10,10 +16,33 @@ import { useSignupForm } from '@/hooks/useSignupForm';
 
 import OtpModal from './OtpModal';
 
-const inputClassName =
-  'h-11 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20';
-
-const errorClassName = 'text-xs font-medium text-red-600';
+const textFieldStyles = {
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '12px',
+    backgroundColor: '#fff',
+    '& fieldset': {
+      borderColor: '#e2e8f0',
+    },
+    '&:hover fieldset': {
+      borderColor: '#059669',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#059669',
+    },
+  },
+  '& .MuiInputLabel-root': {
+    color: '#64748b',
+    fontSize: '0.875rem',
+  },
+  '& .MuiInputLabel-root.Mui-focused': {
+    color: '#059669',
+  },
+  '& .MuiFormHelperText-root': {
+    marginLeft: '4px',
+    fontSize: '0.75rem',
+    fontWeight: 500,
+  },
+};
 
 export const SignupForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -92,136 +121,143 @@ export const SignupForm = () => {
                 </p>
               </div>
 
-              {/* API error banner */}
-              {formApiError && (
-                <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                  <p className="text-sm font-medium text-red-700">{formApiError}</p>
-                </div>
-              )}
+
 
               {/* First + Last name */}
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="grid gap-1.5">
-                  <span className="text-sm font-medium text-slate-700">First name</span>
-                  <input
-                    className={inputClassName}
-                    name="firstName"
-                    type="text"
-                    autoComplete="given-name"
-                    value={form.firstName}
-                    onChange={(e) => handleChange('firstName', e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
-                  />
-                  {errors.firstName && <span className={errorClassName}>{errors.firstName}</span>}
-                </label>
+                <TextField
+                  label="First name"
+                  variant="outlined"
+                  fullWidth
+                  name="firstName"
+                  autoComplete="given-name"
+                  value={form.firstName}
+                  onChange={(e) => handleChange('firstName', e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName}
+                  sx={textFieldStyles}
+                />
 
-                <label className="grid gap-1.5">
-                  <span className="text-sm font-medium text-slate-700">Last name</span>
-                  <input
-                    className={inputClassName}
-                    name="lastName"
-                    type="text"
-                    autoComplete="family-name"
-                    value={form.lastName}
-                    onChange={(e) => handleChange('lastName', e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
-                  />
-                  {errors.lastName && <span className={errorClassName}>{errors.lastName}</span>}
-                </label>
+                <TextField
+                  label="Last name"
+                  variant="outlined"
+                  fullWidth
+                  name="lastName"
+                  autoComplete="family-name"
+                  value={form.lastName}
+                  onChange={(e) => handleChange('lastName', e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
+                  error={!!errors.lastName}
+                  helperText={errors.lastName}
+                  sx={textFieldStyles}
+                />
               </div>
 
               {/* Username */}
-              <label className="grid gap-1.5">
-                <span className="text-sm font-medium text-slate-700">Username</span>
-                <input
-                  className={inputClassName}
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  placeholder="e.g. john_doe"
-                  value={form.username}
-                  onChange={(e) => handleChange('username', e.target.value)}
-                />
-                {errors.username && <span className={errorClassName}>{errors.username}</span>}
-              </label>
+              <TextField
+                label="Username"
+                placeholder="e.g. john_doe"
+                variant="outlined"
+                fullWidth
+                name="username"
+                autoComplete="username"
+                value={form.username}
+                onChange={(e) => handleChange('username', e.target.value)}
+                error={!!errors.username}
+                helperText={errors.username}
+                sx={textFieldStyles}
+              />
 
               {/* Mobile Number */}
-              <label className="grid gap-1.5">
-                <span className="text-sm font-medium text-slate-700">Mobile Number</span>
-                <input
-                  className={inputClassName}
-                  name="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  value={form.phone}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, ''); // Only digits
-                    handleChange('phone', value.slice(0, 10));       // Max 10 digits
-                  }}
-                />
-                {errors.phone && <span className={errorClassName}>{errors.phone}</span>}
-              </label>
+              <MuiTelInput
+                label="Mobile Number"
+                variant="outlined"
+                fullWidth
+                defaultCountry="IN"
+                forceCallingCode
+                placeholder=""
+                name="phone"
+                autoComplete="tel"
+                value={form.phone}
+                onChange={(val) => handleChange('phone', val)}
+                error={!!errors.phone}
+                helperText={errors.phone}
+                sx={textFieldStyles}
+              />
 
               {/* Email */}
-              <label className="grid gap-1.5">
-                <span className="text-sm font-medium text-slate-700">Email (optional)</span>
-                <input
-                  className={inputClassName}
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  value={form.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                />
-                {errors.email && <span className={errorClassName}>{errors.email}</span>}
-              </label>
+              <TextField
+                label="Email (optional)"
+                variant="outlined"
+                fullWidth
+                name="email"
+                type="email"
+                autoComplete="email"
+                value={form.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                error={!!errors.email}
+                helperText={errors.email}
+                sx={textFieldStyles}
+              />
 
               {/* Password */}
-              <label className="grid gap-1.5">
-                <span className="text-sm font-medium text-slate-700">Password</span>
-                <div className="relative">
-                  <input
-                    className={`${inputClassName} w-full pr-10`}
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    value={form.password}
-                    onChange={(e) => handleChange('password', e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-                {errors.password && <span className={errorClassName}>{errors.password}</span>}
-              </label>
+              <TextField
+                label="Password"
+                variant="outlined"
+                fullWidth
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                value={form.password}
+                onChange={(e) => handleChange('password', e.target.value)}
+                error={!!errors.password}
+                helperText={errors.password}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                          sx={{ color: '#94a3b8' }}
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={textFieldStyles}
+              />
 
               {/* Confirm password */}
-              <label className="grid gap-1.5">
-                <span className="text-sm font-medium text-slate-700">Confirm password</span>
-                <div className="relative">
-                  <input
-                    className={`${inputClassName} w-full pr-10`}
-                    name="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    value={form.confirmPassword}
-                    onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                  >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-                {errors.confirmPassword && (
-                  <span className={errorClassName}>{errors.confirmPassword}</span>
-                )}
-              </label>
+              <TextField
+                label="Confirm password"
+                variant="outlined"
+                fullWidth
+                name="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                value={form.confirmPassword}
+                onChange={(e) => handleChange('confirmPassword', e.target.value)}
+                error={!!errors.confirmPassword}
+                helperText={errors.confirmPassword}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          edge="end"
+                          sx={{ color: '#94a3b8' }}
+                        >
+                          {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={textFieldStyles}
+              />
 
               {/* Terms */}
               <label className="flex items-start gap-3 text-sm text-slate-700">
@@ -235,7 +271,7 @@ export const SignupForm = () => {
                 <span>
                   I agree to the terms and conditions.
                   {errors.termsAccepted && (
-                    <span className={"mt-1 block ${errorClassName}"}>{errors.termsAccepted}</span>
+                    <span className="mt-1 block text-xs font-medium text-red-600">{errors.termsAccepted}</span>
                   )}
                 </span>
               </label>

@@ -18,7 +18,7 @@ export function ServiceCard({
   linkPrefix = '/services',
 }: ServiceCardExtendedProps) {
   return (
-    <Link href={`${linkPrefix}/${service.slug}`} className="block h-full">
+    <Link href={`${linkPrefix}/${service.slug}`} className="block h-full w-full">
       <div className="flex hover:shadow-lg bg-white border border-[#E8E2D6] transition-all duration-300 h-full flex-col overflow-hidden justify-between rounded-2xl cursor-pointer">
         <ServiceImage
           src={service.image}

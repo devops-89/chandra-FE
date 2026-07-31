@@ -1,44 +1,50 @@
 'use client';
 
-import { useAppSelector } from '@/redux/hooks';
-
+import { useJobContext } from '../JobContext';
 import StepperItem from './StepperItem';
 
 export default function JobStepper() {
-  const currentJob = useAppSelector((state) => state.activeJobs.currentJob);
-  const status = currentJob?.status || 'assigned';
-  const statusOrder = ['assigned', 'accepted', 'travelling', 'started', 'completed'];
+  const currentJob = useJobContext();
+  const status = currentJob?.status || 'accepted';
+  const statusOrder = ['accepted', 'enroute', 'arrived', 'ongoing', 'completed'];
   const currentIndex = statusOrder.indexOf(status.toLowerCase());
+  const isCancelled = status.toLowerCase() === 'cancelled';
 
   const steps = [
     {
-      label: 'Assigned',
-      completed: currentIndex > 0,
+      label: 'Accepted',
+      completed: currentIndex >= 0,
       active: currentIndex === 0,
+      isCancelled: isCancelled,
     },
     {
-      label: 'Accepted',
-      completed: currentIndex > 1,
+      label: 'Enroute',
+      completed: currentIndex >= 1,
       active: currentIndex === 1,
     },
     {
-      label: 'Travelling',
-      completed: currentIndex > 2,
+      label: 'Arrived',
+      completed: currentIndex >= 2,
       active: currentIndex === 2,
     },
     {
-      label: 'Started',
-      completed: currentIndex > 3,
+      label: 'Ongoing',
+      completed: currentIndex >= 3,
       active: currentIndex === 3,
     },
     {
       label: 'Completed',
-      completed: currentIndex === 4,
+      completed: currentIndex >= 4,
       active: currentIndex === 4,
     },
   ];
 
-  const progressPercent = `${currentIndex * 25}%`;
+  let progressPercent = `${currentIndex * 25}%`;
+  if (isCancelled) {
+    progressPercent = '0%';
+  } else if (currentIndex === -1) {
+    progressPercent = '0%';
+  }
 
   return (
     <div className="relative mt-6">
@@ -57,26 +63,27 @@ export default function JobStepper() {
 
       {/* Dynamic Progress Line */}
       <div
-        className="
+        className={`
           absolute
           top-5
           left-0
           h-1
-          bg-emerald-500
           rounded-full
           transition-all
           duration-300
-        "
+          ${isCancelled ? 'bg-red-500' : 'bg-emerald-500'}
+        `}
         style={{ width: progressPercent }}
       />
 
       <div className="relative flex justify-between">
-        {steps.map((step) => (
+        {steps.map((step, index) => (
           <StepperItem
             key={step.label}
             label={step.label}
             completed={step.completed}
             active={step.active}
+            isCancelled={isCancelled && index === 0} // only show cancelled X on the first node
           />
         ))}
       </div>

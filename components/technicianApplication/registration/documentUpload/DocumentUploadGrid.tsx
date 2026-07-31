@@ -8,11 +8,13 @@ import DocumentUploadCard from './DocumentUploadCard';
 interface DocumentUploadGridProps {
   uploadedDocuments: Record<string, UploadedFile>;
   onUpload: (file: UploadedFile, rawFile: File) => void;
+  onRemove: (documentId: string) => void;
 }
 
 export default function DocumentUploadGrid({
   uploadedDocuments,
   onUpload,
+  onRemove,
 }: DocumentUploadGridProps) {
   const documents = getDocumentUploadData();
 
@@ -23,7 +25,9 @@ export default function DocumentUploadGrid({
           key={document.id}
           document={document}
           isUploaded={!!uploadedDocuments[document.id]}
+          uploadedFile={uploadedDocuments[document.id]}
           onUpload={onUpload}
+          onRemove={onRemove}
         />
       ))}
     </div>

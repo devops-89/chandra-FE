@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
-
+import Link from 'next/link';
+import { Avatar } from '@mui/material';
 import { useAppSelector } from '@/redux/hooks';
 
 import VerificationBadge from './VerificationBadge';
@@ -10,6 +10,7 @@ export default function ProfileHero() {
   const technician = useAppSelector(
     (state) => state.technicianProfile.profile
   );
+  
   return (
     <div
       className="
@@ -32,16 +33,17 @@ export default function ProfileHero() {
             border-emerald-100
           "
         >
-          <Image
+          <Avatar
             src={
               technician?.profileImage ??
-              '/images/technician-avatar.png'
+              undefined
             }
             alt="Technician"
-            width={120}
-            height={120}
-            className="h-full w-full object-cover"
-          />
+            sx={{ width: '100%', height: '100%' }}
+          >
+            {technician?.firstName?.charAt(0) || 'T'}
+            {technician?.lastName?.charAt(0) || 'U'}
+          </Avatar>
         </div>
 
         <div className="flex-1 text-center md:text-left">
@@ -52,7 +54,7 @@ export default function ProfileHero() {
               : 'Loading...'}
             </h2>
 
-            <VerificationBadge />
+            <VerificationBadge status={technician?.technicianProfile?.status} />
           </div>
 
           <p className="mt-2 text-slate-500">
@@ -75,7 +77,8 @@ export default function ProfileHero() {
           </p>
         </div>
 
-        <button
+        <Link
+          href="/technician/profile/edit"
           className="
             px-6
             py-3
@@ -86,10 +89,11 @@ export default function ProfileHero() {
             cursor-pointer
             hover:bg-emerald-700
             transition-all
+            inline-block
           "
         >
           Edit Profile
-        </button>
+        </Link>
       </div>
     </div>
   );

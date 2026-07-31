@@ -1,6 +1,5 @@
 export interface ServiceAreaState {
   radius: number; // 0-5 representing km values
-  preferredAreas: string[];
   pincodes: string[];
   latitude?: number;
   longitude?: number;
@@ -26,12 +25,6 @@ export interface AreaSelectorProps {
   onChange: (value: number) => void;
 }
 
-export interface PreferredAreasInputProps {
-  selectedAreas: string[];
-  onAddArea: (area: string) => void;
-  onRemoveArea: (area: string) => void;
-}
-
 export interface PincodeMappingProps {
   pincodes: string[];
   onAddPincode: (pincode: string) => void;
@@ -40,11 +33,15 @@ export interface PincodeMappingProps {
 
 export interface CoverageSummaryProps {
   radius: number;
-  areasCount: number;
-  pincodesCount: number;
 }
 
 export interface ServiceAreaFooterProps {
   onPrevious: () => void;
   onSubmit: () => void;
+}
+
+export interface PreferredAreasInputProps {
+  selectedAreas: string[];
+  onAddArea: (area: string) => void;
+  onRemoveArea: (area: string) => void;
 }

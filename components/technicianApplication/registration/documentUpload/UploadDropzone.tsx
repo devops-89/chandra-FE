@@ -9,8 +9,10 @@ export default function UploadDropzone({
   documentName,
   acceptedFormats,
   onUpload,
+  onRemove,
   isUploaded = false,
   fileName,
+  fileUrl,
 }: UploadDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,11 +30,22 @@ export default function UploadDropzone({
 
   if (isUploaded && fileName) {
     return (
-      <div className="border-2 border-emerald-700 bg-emerald-50 rounded-lg p-6 text-center">
-        <span className="material-symbols-outlined text-emerald-700 text-4xl mb-2 block">
-          check_circle
-        </span>
-        <p className="text-sm font-medium text-gray-900 mb-1">
+      <div className="border-2 border-emerald-700 bg-emerald-50 rounded-lg p-4 text-center relative group">
+        <button
+          onClick={() => onRemove(documentName)}
+          className="absolute -top-2 -right-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          aria-label="Remove document"
+        >
+          <span className="material-symbols-outlined text-sm block">close</span>
+        </button>
+        {fileUrl ? (
+          <img src={fileUrl} alt={fileName} className="h-16 mx-auto mb-2 rounded object-cover" />
+        ) : (
+          <span className="material-symbols-outlined text-emerald-700 text-4xl mb-2 block">
+            check_circle
+          </span>
+        )}
+        <p className="text-sm font-medium text-gray-900 mb-1 line-clamp-1" title={fileName}>
           {fileName}
         </p>
         <p className="text-xs text-gray-600">Upload successful</p>

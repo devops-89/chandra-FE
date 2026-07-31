@@ -1,8 +1,14 @@
 'use client';
 
 import MyLocationIcon from '@mui/icons-material/MyLocation';
+import { useAppSelector } from '@/redux/hooks';
 
 export default function ServiceRadius() {
+  const technician = useAppSelector((state) => state.technicianProfile.profile);
+  const location = technician?.technicianProfile?.locations?.[0];
+  const radius = location?.serviceRadiusKm || 15;
+  const address = location?.fullAddress || location?.city || 'Covering Nearby Areas';
+
   return (
     <div className="flex gap-4">
       <MyLocationIcon className="text-emerald-500" />
@@ -13,7 +19,7 @@ export default function ServiceRadius() {
         </p>
 
         <p className="font-semibold">
-          15 Km
+          {radius} Km
         </p>
 
         <div className="mt-4">
@@ -21,15 +27,15 @@ export default function ServiceRadius() {
             <div
               className="
                 h-full
-                w-[75%]
                 bg-emerald-500
                 rounded-full
               "
+              style={{ width: `${Math.min((radius / 50) * 100, 100)}%` }}
             />
           </div>
 
-          <p className="mt-2 text-sm text-slate-500">
-            Covering Gurgaon & Nearby Areas
+          <p className="mt-2 text-sm text-slate-500 line-clamp-1">
+            {address}
           </p>
         </div>
       </div>

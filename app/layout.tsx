@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import ReduxProvider from '@/redux/Provider';
+import GlobalSnackbar from '@/components/common/GlobalSnackbar';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -33,12 +34,13 @@ export default function RootLayout({
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
         />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ReduxProvider>
           {children}
+          <GlobalSnackbar />
         </ReduxProvider>
       </body>
     </html>

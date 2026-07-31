@@ -52,6 +52,38 @@ export default function SkillsSection() {
           </p>
         )}
       </div>
+      
+      {profile?.languages && profile.languages.length > 0 && (
+        <div className="mt-6">
+          <h4
+            className="
+              text-sm
+              text-slate-500
+              mb-4
+            "
+          >
+            Languages Known
+          </h4>
+          <div className="flex flex-wrap gap-3">
+            {profile.languages.map((lang) => (
+              <span
+                key={lang}
+                className="
+                  px-4
+                  py-2
+                  rounded-full
+                  bg-purple-100
+                  text-purple-700
+                  text-sm
+                  font-medium
+                "
+              >
+                {lang}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

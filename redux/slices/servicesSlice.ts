@@ -1,7 +1,7 @@
-import { ServiceControllers } from '@/api/serviceControllers';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { ServiceControllers } from '@/api/serviceControllers';
 import type { AdminService, CreateServiceRequest, UpdateServiceRequest } from '@/types/admin/service.types';
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -24,13 +24,13 @@ const initialState: ServicesState = {
 
 export const fetchServices = createAsyncThunk<
   AdminService[],
-  void,
+  { search?: string; status?: boolean } | undefined,
   { rejectValue: string }
 >(
   'services/fetchAll',
-  async (_arg, { rejectWithValue }) => {
+  async (params, { rejectWithValue }) => {
     try {
-      return await ServiceControllers.getAllServices();
+      return await ServiceControllers.getAllServices(params);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : 'Failed to load services.';

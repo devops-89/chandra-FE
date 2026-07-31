@@ -1,5 +1,6 @@
 'use client';
 
+import { Alert, Snackbar } from '@mui/material';
 import { LifeBuoy, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -25,30 +26,29 @@ export default function RaiseTicketModal({
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
-
-  if (!open) return null;
+  
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
   const handleClose = () => {
     setTitle('');
     setDescription('');
-    setSuccess('');
-    setError('');
     onClose();
   };
 
   const handleSubmit = async () => {
-    setSuccess('');
-    setError('');
-
     if (!title.trim() || !description.trim()) {
-      setError('Please fill in all required fields.');
+      setSnackbarMessage('Please fill in all required fields.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
       return;
     }
 
     if (!serviceId) {
-      setError('Service information is missing for this booking.');
+      setSnackbarMessage('Service information is missing for this booking.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
       return;
     }
 
@@ -62,25 +62,33 @@ export default function RaiseTicketModal({
         })
       ).unwrap();
 
-      setSuccess('Support ticket submitted successfully.');
+      setSnackbarMessage('Support ticket submitted successfully.');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+      
       setTitle('');
       setDescription('');
+      onClose(); // Close the modal upon success
     } catch (err) {
-      setError(
+      setSnackbarMessage(
         typeof err === 'string' ? err : 'Failed to submit ticket. Please try again.'
       );
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-      onClick={handleClose}
-    >
-      <div
-        className="w-full max-w-lg rounded-2xl bg-white shadow-2xl flex flex-col overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <>
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+          onClick={handleClose}
+        >
+          <div
+            className="w-full max-w-lg rounded-2xl bg-white shadow-2xl flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-100">
           <div className="flex items-center gap-3">
@@ -103,31 +111,6 @@ export default function RaiseTicketModal({
 
         {/* Body */}
         <div className="px-6 py-5 space-y-4">
-          {/* Pre-filled read-only fields */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">
-                Booking ID
-              </label>
-              <input
-                type="text"
-                value={bookingId}
-                readOnly
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 cursor-not-allowed outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">
-                Service ID
-              </label>
-              <input
-                type="text"
-                value={serviceId ?? '—'}
-                readOnly
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 cursor-not-allowed outline-none"
-              />
-            </div>
-          </div>
 
           {/* Editable fields */}
           <div>
@@ -139,7 +122,6 @@ export default function RaiseTicketModal({
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
-                setError('');
               }}
               placeholder="Briefly describe the issue..."
               className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
@@ -155,24 +137,11 @@ export default function RaiseTicketModal({
               value={description}
               onChange={(e) => {
                 setDescription(e.target.value);
-                setError('');
               }}
               placeholder="Provide full details of your issue..."
               className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
             />
           </div>
-
-          {error && (
-            <div className="rounded-xl bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-700">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="rounded-xl bg-emerald-50 border border-emerald-100 px-3 py-2 text-sm text-emerald-700">
-              {success}
-            </div>
-          )}
         </div>
 
         {/* Footer */}
@@ -197,5 +166,22 @@ export default function RaiseTicketModal({
         </div>
       </div>
     </div>
+  )}
+      
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }

@@ -1,3 +1,5 @@
+import { BOOKING_STATUS, BOOKING_PAYMENT_STATUS } from '../enums';
+
 export interface BookingService {
   id: number;
   name: string;
@@ -12,22 +14,27 @@ export interface BookingAddress {
 
 export interface BookingCustomer {
   id: number;
-  name: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
   phone: string;
 }
 
 export interface BookingTechnician {
   id: number;
-  name: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
   phone: string;
 }
 
 export interface AdminBooking {
-  bookingId: number;
+  id?: number;
+  bookingId?: number;
 
-  status: string;
+  status: BOOKING_STATUS;
 
-  paymentStatus: string;
+  paymentStatus: BOOKING_PAYMENT_STATUS;
 
   service: BookingService | null;
 
@@ -48,6 +55,12 @@ export interface AdminBooking {
   customer: BookingCustomer;
 
   technician: BookingTechnician | null;
+
+  customerRating?: number | null;
+  customerReview?: string | null;
+  technicianRating?: number | null;
+  technicianReview?: string | null;
+  reviewStatus?: string;
 }
 
 export interface BookingPagination {

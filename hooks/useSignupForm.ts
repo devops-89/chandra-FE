@@ -1,14 +1,13 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
-
-
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { AuthControllers } from '@/api/authControllers';
 import { handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
 import { validateSignup } from '@/lib/validator/signup.validator';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 import type { SignupErrors, SignupFormData } from '@/types/auth.types';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -62,12 +61,20 @@ export const useSignupForm = () => {
   const handleChange = (name: keyof SignupFormData, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
-    if (formApiError) setFormApiError('');
   };
 
   const extractError = (error: unknown): string => {
-    const err = error as { response?: { data?: { message?: string } } };
-    return err?.response?.data?.message ?? 'Something went wrong. Please try again.';
+    const err = error as { response?: { data?: { message?: string }; status?: number }; request?: unknown };
+    if (err?.response) {
+      const status = err.response.status;
+      const backendMsg = err.response.data?.message;
+      if (backendMsg) return backendMsg;
+      if (status === 401 || status === 403) return 'Invalid credentials';
+      return 'Server error. Please try again.';
+    } else if (err?.request !== undefined) {
+      return 'Unable to reach the server. Please check your connection or try again later.';
+    }
+    return 'Something went wrong. Please try again.';
   };
 
   // ── Step 1: Validate form + call Generate OTP ─────────────────────────────
@@ -91,7 +98,7 @@ export const useSignupForm = () => {
       // OTP sent — open the modal
       setShowOtpModal(true);
     } catch (error: unknown) {
-      setFormApiError(extractError(error));
+      dispatch(showSnackbar({ message: extractError(error), severity: 'error' }));
     } finally {
       setIsSendingOtp(false);
     }
@@ -141,7 +148,7 @@ export const useSignupForm = () => {
       const redirectPath = handlePostAuthRedirect();
       router.push(redirectPath);
     } catch (error: unknown) {
-      setOtpApiError(extractError(error));
+      dispatch(showSnackbar({ message: extractError(error), severity: 'error' }));
     } finally {
       setIsVerifying(false);
     }
