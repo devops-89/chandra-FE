@@ -11,7 +11,7 @@ interface OtpModalProps {
   /** True while the parent is calling verifyOtp + registerCustomer + login */
   isVerifying: boolean;
   /** Server-side error from the verify / register step */
-  apiError: string;
+  apiError?: string;
   /** Called with the 6-digit string when the user clicks Verify */
   onVerify: (otp: string) => void;
   /** Called when the user clicks the × or "Back" */
@@ -142,13 +142,7 @@ export default function OtpModal({
           <p className="mt-0.5 text-sm font-semibold text-slate-700 break-all">{identifier}</p>
         </div>
 
-        {/* API error */}
-        {apiError && (
-          <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-            <p className="text-sm font-medium text-red-700">{apiError}</p>
-          </div>
-        )}
+
 
         {/* OTP input boxes */}
         <div className="mb-6 flex justify-center gap-3">

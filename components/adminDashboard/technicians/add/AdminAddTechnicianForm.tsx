@@ -20,6 +20,7 @@ export default function AdminAddTechnicianForm() {
       firstName: '',
       lastName: '',
       email: '',
+      username: '',
       phone: '',
       password: '',
     },
@@ -27,6 +28,7 @@ export default function AdminAddTechnicianForm() {
       firstName: Yup.string().required('First name is required'),
       lastName: Yup.string().required('Last name is required'),
       email: Yup.string().email('Invalid email address').required('Email is required'),
+      username: Yup.string().required('Username is required').min(3, 'Username must be at least 3 characters'),
       phone: Yup.string().test('is-valid-phone', 'Invalid phone number', (value) => {
         if (!value) return false;
         return matchIsValidTel(value);
@@ -105,6 +107,17 @@ export default function AdminAddTechnicianForm() {
             onBlur={formik.handleBlur}
             error={formik.touched.email && Boolean(formik.errors.email)}
             helperText={formik.touched.email && formik.errors.email}
+            fullWidth
+            variant="outlined"
+          />
+          <TextField
+            label="Username"
+            name="username"
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.username && Boolean(formik.errors.username)}
+            helperText={formik.touched.username && formik.errors.username}
             fullWidth
             variant="outlined"
           />

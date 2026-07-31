@@ -99,18 +99,19 @@ export const AuthControllers = {
   ): Promise<RegisterTechnicianResponse> => {
     try {
       const formData = new FormData();
+      if (payload.technicianId) formData.append('technicianId', String(payload.technicianId));
       if (payload.email) formData.append('email', payload.email);
-      formData.append('username', payload.username);
-      const phoneParts = payload.phone.split(' ');
+      if (payload.username) formData.append('username', payload.username);
+      const phoneParts = payload.phone ? payload.phone.split(' ') : [];
       if (phoneParts.length >= 2) {
         formData.append('countryCode', phoneParts[0]);
         formData.append('phone', phoneParts.slice(1).join('').replace(/\s/g, ''));
-      } else {
+      } else if (payload.phone) {
         formData.append('phone', payload.phone);
       }
-      formData.append('firstName', payload.firstName);
+      if (payload.firstName) formData.append('firstName', payload.firstName);
       if (payload.lastName) formData.append('lastName', payload.lastName);
-      formData.append('password', payload.password);
+      if (payload.password) formData.append('password', payload.password);
       formData.append('technicianProfile', JSON.stringify(technicianProfile));
 
       if (files.selfieUrl) formData.append('selfieUrl', files.selfieUrl);
@@ -119,7 +120,7 @@ export const AuthControllers = {
       if (files.policeCertUrl) formData.append('policeCertUrl', files.policeCertUrl);
       if (files.tradeLicenseUrl) formData.append('tradeLicenseUrl', files.tradeLicenseUrl);
 
-      const response = await userPublicApi.post<RegisterTechnicianResponse>('/technician/auth/register-technician', formData, {
+      const response = await userPublicApi.post<RegisterTechnicianResponse>('/users/register', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -145,7 +146,7 @@ export const AuthControllers = {
     try {
       const refreshToken =
         (typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null) || '';
-      
+
       const response = await authSecuredApi.post('/auth/logout', { refreshToken });
       return response.data;
     } catch (error) {

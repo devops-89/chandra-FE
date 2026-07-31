@@ -109,7 +109,7 @@ export function getTechnicianRedirectPath(params: {
 
   // If a technician logs in but hasn't created a profile, Step 0 (account creation) is inherently complete.
   // We pass a dummy ID to set the Step 0 bit in the local storage mask.
-  const profileToSync = technicianProfile || { id: -1 };
+  const profileToSync = (technicianProfile || { id: -1 }) as Partial<ApiTechnicianProfileData>;
 
   // Always sync bitmask from backend
   syncProgressFromProfile({

@@ -61,10 +61,10 @@ export const useServiceArea = () => {
   }, []);
 
   const setServiceLocation = useCallback(
-    (location: Pick<
+    (location: Partial<Pick<
       ServiceAreaState,
       'latitude' | 'longitude' | 'fullAddress' | 'city' | 'state' | 'pincode'
-    >) => {
+    >>) => {
       setState((prev) => ({
         ...prev,
         ...location,

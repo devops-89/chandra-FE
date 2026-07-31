@@ -1,27 +1,27 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import {
-  Avatar,
-  Box,
-  Button,
-  Collapse,
-  Divider,
-  Grid,
-  Paper,
-  TextField,
-  Typography,
-  CircularProgress,
-  IconButton
-} from '@mui/material';
 import { Edit as EditIcon, Save as SaveIcon } from '@mui/icons-material';
+import {
+    Avatar,
+    Box,
+    Button,
+    CircularProgress,
+    Collapse,
+    Divider,
+    Grid,
+    IconButton,
+    Paper,
+    TextField,
+    Typography
+} from '@mui/material';
+import { useFormik } from 'formik';
 import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
+import { useEffect, useRef, useState } from 'react';
+import * as Yup from 'yup';
 
+import { CustomerControllers } from '@/api/customerControllers';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
-import { CustomerControllers } from '@/api/customerControllers';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 export default function ProfileContent() {

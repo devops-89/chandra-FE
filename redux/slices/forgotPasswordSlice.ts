@@ -47,24 +47,15 @@ export const forgotPassword = createAsyncThunk<
   async (payload, { rejectWithValue }) => {
     try {
       return await AuthControllers.forgotPassword(payload);
-    } catch (err: unknown) {
-  const message =
-    err &&
-    typeof err === 'object' &&
-    'response' in err
-      ? (
-          err as {
-            response?: {
-              data?: {
-                message?: string;
-              };
-            };
-          }
-        ).response?.data?.message
-      : undefined;
-
-  return rejectWithValue(message ?? 'Failed to send OTP');
-}
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; request?: unknown };
+      if (err?.response) {
+        return rejectWithValue(err.response.data?.message ?? 'Failed to send OTP');
+      } else if (err?.request !== undefined) {
+        return rejectWithValue('Unable to reach the server. Please check your connection or try again later.');
+      }
+      return rejectWithValue('Something went wrong. Please try again.');
+    }
   }
 );
 
@@ -78,12 +69,14 @@ export const resetPassword = createAsyncThunk<
   async (payload, { rejectWithValue }) => {
     try {
       return await AuthControllers.resetPassword(payload);
-    } catch (err) {
-      return rejectWithValue(
-        err instanceof Error
-          ? err.message
-          : 'Failed to reset password'
-      );
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; request?: unknown };
+      if (err?.response) {
+        return rejectWithValue(err.response.data?.message ?? 'Failed to reset password');
+      } else if (err?.request !== undefined) {
+        return rejectWithValue('Unable to reach the server. Please check your connection or try again later.');
+      }
+      return rejectWithValue('Something went wrong. Please try again.');
     }
   }
 );
@@ -97,25 +90,16 @@ export const verifyForgotPasswordOtp = createAsyncThunk<
   async (payload, { rejectWithValue }) => {
     try {
       return await AuthControllers.verifyOtp(payload);
-    } catch (err: unknown) {
-        const message =
-            err &&
-            typeof err === 'object' &&
-            'response' in err
-            ? (
-                err as {
-                    response?: {
-                    data?: {
-                        message?: string;
-                    };
-                    };
-                }
-                ).response?.data?.message
-            : undefined;
-
-        return rejectWithValue(message ?? 'Failed to verify OTP');
-        }
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; request?: unknown };
+      if (err?.response) {
+        return rejectWithValue(err.response.data?.message ?? 'Failed to verify OTP');
+      } else if (err?.request !== undefined) {
+        return rejectWithValue('Unable to reach the server. Please check your connection or try again later.');
+      }
+      return rejectWithValue('Something went wrong. Please try again.');
     }
+  }
 );
 
 const forgotPasswordSlice = createSlice({

@@ -1,5 +1,5 @@
 import axios, { type AxiosError, type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
-import { setupCache, buildMemoryStorage } from 'axios-cache-interceptor';
+import { buildMemoryStorage, setupCache } from 'axios-cache-interceptor';
 
 import { logout, updateTokens } from '@/redux/slices/authSlice';
 import { getAppStore } from '@/redux/storeAccessor';

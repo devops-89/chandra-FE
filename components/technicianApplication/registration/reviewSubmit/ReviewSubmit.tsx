@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 
 import { ServiceControllers } from '@/api/serviceControllers';
 import { markStepComplete } from '@/lib/onboarding/onboardingProgress';
+import { useAppDispatch } from '@/redux/hooks';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 import type { AdminService } from '@/types/admin/service.types';
 
 import { containerVariants } from './animations/reviewAnimations';
@@ -48,7 +50,8 @@ function clearOnboardingSessionStorage() {
 
 export default function ReviewSubmit() {
   const router = useRouter();
-  const { state, isSubmitting, submitError, handleSubmit } = useReviewSubmit();
+  const dispatch = useAppDispatch();
+  const { state, isSubmitting, handleSubmit } = useReviewSubmit();
 
   // ── Fetch services and build id->name map for display ──────────────────────
   const [serviceNameMap, setServiceNameMap] = useState<Map<number, string>>(new Map());
@@ -83,6 +86,8 @@ export default function ReviewSubmit() {
       clearOnboardingSessionStorage();
       markStepComplete(5);
       router.push('/technician/onboarding/pending-verification');
+    } else {
+      dispatch(showSnackbar({ message: String(result.error), severity: 'error' }));
     }
   };
 
@@ -143,13 +148,7 @@ export default function ReviewSubmit() {
         </motion.div>
       </motion.div>
 
-      {/* Submission error banner */}
-      {submitError && (
-        <div className="mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium flex items-start gap-3">
-          <span className="material-symbols-outlined text-red-500 shrink-0">error</span>
-          <span>{submitError}</span>
-        </div>
-      )}
+
 
       {/* Final Action Section */}
       <LaunchSection
