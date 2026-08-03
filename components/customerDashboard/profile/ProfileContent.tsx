@@ -63,6 +63,11 @@ export default function ProfileContent() {
       }),
     }),
     onSubmit: async (values) => {
+      if (!formik.dirty) {
+        dispatch(showSnackbar({ message: 'No changes detected', severity: 'info' }));
+        setIsEditing(false);
+        return;
+      }
       setIsUpdating(true);
       try {
         const formData = new FormData();
@@ -392,7 +397,7 @@ export default function ProfileContent() {
                     variant="contained"
                     color="success"
                     startIcon={isUpdating ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
-                    disabled={isUpdating}
+                    disabled={isUpdating || !formik.dirty}
                     sx={{ px: 4, borderRadius: 2 }}
                   >
                     Save Changes
