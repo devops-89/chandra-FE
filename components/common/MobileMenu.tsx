@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import NavbarLinks from '@/components/common/NavbarLinks';
@@ -11,9 +11,12 @@ import { logoutUser } from '@/redux/slices/authSlice';
 
 const MobileMenu = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
+  const isTechnicianRoute = pathname === '/technician' || pathname.startsWith('/technician/');
 
   const closeMenu = () => {
     setIsOpen(false);
@@ -91,7 +94,7 @@ const MobileMenu = () => {
             </button>
           </div>
         ) : (
-          <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 min-[420px]:grid-cols-2 sm:mt-4 sm:gap-3 sm:pt-4">
+          <div className={`mt-3 grid gap-2 border-t border-slate-100 pt-3 sm:mt-4 sm:gap-3 sm:pt-4 ${isTechnicianRoute ? 'grid-cols-1' : 'grid-cols-1 min-[420px]:grid-cols-2'}`}>
             <Link
               href="/login"
               onClick={closeMenu}
@@ -99,13 +102,15 @@ const MobileMenu = () => {
             >
               Login
             </Link>
-            <Link
-              href="/signup"
-              onClick={closeMenu}
-              className="inline-flex h-10 items-center justify-center rounded-full bg-emerald-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:h-11"
-            >
-              Signup
-            </Link>
+            {!isTechnicianRoute && (
+              <Link
+                href="/signup"
+                onClick={closeMenu}
+                className="inline-flex h-10 items-center justify-center rounded-full bg-emerald-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:h-11"
+              >
+                Signup
+              </Link>
+            )}
           </div>
         )}
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import MobileMenu from '@/components/common/MobileMenu';
@@ -13,8 +13,11 @@ import { logoutUser } from '@/redux/slices/authSlice';
 
 const PublicNavbar = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const reduxAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
+  const isTechnicianRoute = pathname === '/technician' || pathname.startsWith('/technician/');
 
   // Fallback: read localStorage to cover the Redux re-hydration gap on page refresh.
   // Without this, Login/Signup buttons flash briefly before Redux catches up.
@@ -73,12 +76,14 @@ const PublicNavbar = () => {
             >
               Login
             </Link>
-            <Link
-              href="/signup"
-              className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-600 px-5 text-sm font-semibold text-white shadow-sm shadow-emerald-900/10 transition-colors duration-200 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-            >
-              Signup
-            </Link>
+            {!isTechnicianRoute && (
+              <Link
+                href="/signup"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-600 px-5 text-sm font-semibold text-white shadow-sm shadow-emerald-900/10 transition-colors duration-200 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+              >
+                Signup
+              </Link>
+            )}
           </div>
         )}
 
