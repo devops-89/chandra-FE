@@ -1,6 +1,6 @@
-﻿# HiChandra Frontend â€” Master Project Context
+# HiChandra Frontend â€” Master Project Context
 
-> **Last updated:** July 16, 2026
+> **Last updated:** August 3, 2026
 > **Purpose:** Permanent handoff document. Paste this file into any new chat to restore full project context instantly.
 
 ---
@@ -30,10 +30,11 @@ Roles:
 | Animation | Framer Motion v12 |
 | State | Redux Toolkit + legacy Zustand booking store |
 | HTTP | Axios (with refresh token rotation interceptor) |
-| Package manager | pnpm |
+| Package manager | pnpm (`pnpm dev` runs `next dev --turbopack`) |
 | React Compiler | Enabled in `next.config.ts` |
 
 Config notes:
+- **Dev Server Port:** Runs on Next.js default port `3000` (via `"dev": "next dev --turbopack"` in `package.json`).
 - `allowedDevOrigins` updated per network IP
 - `images.remotePatterns` allows Google images and `*.s3.eu-north-1.amazonaws.com`
 - `images.minimumCacheTTL: 3600`

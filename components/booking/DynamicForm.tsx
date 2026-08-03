@@ -73,17 +73,19 @@ export default function DynamicForm({
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-slate-900">Configure Service</h2>
-      <p className="mt-2 text-sm text-slate-500">Please provide the details below to customize your service</p>
+      <div className="text-center sm:text-left">
+        <h2 className="text-xl font-semibold text-slate-900">Configure Service</h2>
+        <p className="mt-1 text-sm text-slate-500">Please provide the details below to customize your service</p>
+      </div>
 
-      <div className="mt-6 space-y-6 max-w-xl mx-auto">
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         {specifications.map((spec) => {
           const value = formData[spec.id];
           const hasError = !!errors[spec.name];
           const fieldId = `spec-${spec.name.replace(/\s+/g, '-').toLowerCase()}`;
 
           return (
-            <div key={spec.id} className="flex flex-col">
+            <div key={spec.id} className={`flex flex-col ${spec.type === 'image' ? 'col-span-1 md:col-span-2' : ''}`}>
               <label htmlFor={fieldId} className="mb-2 text-sm font-medium text-slate-700 flex items-center justify-between">
                 <span>
                   {spec.name} {spec.isRequired && <span className="text-red-500">*</span>}

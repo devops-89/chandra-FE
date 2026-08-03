@@ -363,16 +363,23 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   const isLastStep = currentStep === STEP_DETAILS;
 
   return (
-    <section className="bg-white py-4 md:py-2">
+    <section className="bg-white py-4 md:py-6">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-          <div className="sticky top-0 z-30 bg-white py-4">
-            <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">Complete Your Booking</h1>
+          {/* Header section matching diagram layout */}
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-slate-200 pb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">Complete Your Booking</h1>
+              <p className="mt-1 text-base font-medium text-slate-600">
+                Selected Service: <span className="font-semibold text-emerald-600">{currentService || resolvedService?.name || 'Service'}</span>
+              </p>
+            </div>
+            <div className="mt-2 sm:mt-0 text-sm font-semibold text-slate-500">
+              {currentStep + 1}. {BOOKING_STEPS[currentStep]}
+            </div>
           </div>
 
-          <BookingStepper steps={BOOKING_STEPS} activeStep={currentStep} />
-
-          <div className="mt-8 rounded-3xl bg-white p-6 shadow-xl md:p-8 lg:p-10">
+          <div className="mt-6 rounded-3xl bg-white p-6 shadow-xl md:p-8 lg:p-10">
 
             {/* ── Step 0: Dynamic Form ───────────────────────────────── */}
             {currentStep === STEP_DYNAMIC_FORM && (
@@ -461,19 +468,6 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
           </div>
         </div>
       </div>
-      {/* 
-      <TokenPaymentModal
-        open={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        onSuccess={() => {
-          setIsPaymentModalOpen(false);
-          router.push(summaryPath);
-        }}
-        service={currentService}
-        date={date}
-        slot={slot}
-      />
-      */}
     </section>
   );
 }

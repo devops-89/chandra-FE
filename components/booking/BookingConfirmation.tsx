@@ -6,6 +6,7 @@ import React from 'react';
 
 import PublicFooter from '@/components/common/PublicFooter';
 import PublicNavbar from '@/components/common/PublicNavbar';
+import { BookingControllers } from '@/api/bookingControllers';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
 
 // ─── Layout-agnostic content ──────────────────────────────────────────────────
@@ -14,15 +15,43 @@ export function BookingConfirmationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const idQuery = searchParams.get('id');
-  
-  const { service, servicePrice, date, slot, clearBooking } = useBookingStore();
 
-  const bookingId = idQuery ? `B-${idQuery}` : createTemporaryBookingId(service, date, slot);
+  const { service: storedService, servicePrice: storedPrice, date: storedDate, slot: storedSlot, clearBooking } = useBookingStore();
+  const [bookingData, setBookingData] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState<boolean>(!!idQuery);
 
   React.useEffect(() => {
-    const timer = setTimeout(() => clearBooking(), 20000);
-    return () => clearTimeout(timer);
-  }, [clearBooking]);
+    if (!idQuery) return;
+    let isMounted = true;
+    
+    BookingControllers.getCustomerBookingById(Number(idQuery))
+      .then((data) => {
+        if (isMounted && data) {
+          setBookingData(data);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch booking confirmation details:', err);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [idQuery]);
+
+  const bookingId = idQuery ? `B-${idQuery}` : createTemporaryBookingId(storedService, storedDate, storedSlot);
+  
+  const displayService = bookingData?.service?.name || storedService || '-';
+  const displayPrice = bookingData?.totalAmount ?? bookingData?.service?.price ?? storedPrice;
+  const displayDate = bookingData?.scheduledAt 
+    ? new Date(bookingData.scheduledAt).toISOString().split('T')[0]
+    : storedDate || '-';
+  const displaySlot = bookingData?.scheduledAt 
+    ? new Date(bookingData.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : storedSlot || '-';
 
   const handleDashboardRedirect = () => {
     clearBooking();
@@ -46,12 +75,12 @@ export function BookingConfirmationContent() {
 
           <div className="mt-10 rounded-3xl border border-slate-200 bg-slate-50 p-6 text-left">
             <InfoRow label="Booking ID" value={bookingId} />
-            <InfoRow label="Service"    value={service} />
-            {servicePrice && servicePrice > 0 && (
-              <InfoRow label="Service Price" value={`₹${servicePrice}`} />
+            <InfoRow label="Service"    value={loading ? 'Loading...' : displayService} />
+            {displayPrice && Number(displayPrice) > 0 && (
+              <InfoRow label="Service Price" value={`₹${displayPrice}`} />
             )}
-            <InfoRow label="Date"      value={date} />
-            <InfoRow label="Time Slot" value={slot} />
+            <InfoRow label="Date"      value={loading ? 'Loading...' : displayDate} />
+            <InfoRow label="Time Slot" value={loading ? 'Loading...' : displaySlot} />
           </div>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
