@@ -1,18 +1,21 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 
 // Sub-component for handling file object preview with cleanup to prevent memory leaks
 function ImagePreview({ file }: { file: File }) {
-  const preview = useMemo(() => {
-    return URL.createObjectURL(file);
-  }, [file]);
+  const [preview, setPreview] = useState<string>('');
 
   useEffect(() => {
+    // Create blob URL only once when file changes
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+
+    // Cleanup: revoke only when component unmounts or file actually changes
     return () => {
-      URL.revokeObjectURL(preview);
+      URL.revokeObjectURL(objectUrl);
     };
-  }, [preview]);
+  }, [file]);
 
   if (!preview) return null;
 
