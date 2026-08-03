@@ -53,6 +53,7 @@ export interface UpdateAddressRequest {
 
 export interface CustomerAddress {
   id: number;
+  label: string;
   fullAddress: string;
   city: string;
   state: string;

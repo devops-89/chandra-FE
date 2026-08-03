@@ -94,7 +94,7 @@ export const updateCustomerProfile = createAsyncThunk<
 // ─── Fetch Customer Addresses ───────────────────────────────────────
 
 export const fetchCustomerAddresses = createAsyncThunk<
-  { profile: CustomerProfile | null; addresses: Address[], pagination?: any },
+  { addresses: Address[]; pagination?: unknown },
   { page?: number; limit?: number } | void,
   { rejectValue: string }
 >(
@@ -103,48 +103,33 @@ export const fetchCustomerAddresses = createAsyncThunk<
     try {
       const { data: addresses, pagination } = await CustomerControllers.getCustomerAddresses({
         page: params?.page ?? 1,
-        limit: params?.limit ?? 10
+        limit: params?.limit ?? 10,
       });
-      
-      let profile: CustomerProfile | null = null;
-      try {
-        profile = await CustomerControllers.getCustomerProfile();
-      } catch {
-        // Profile fetch is optional for addresses
-      }
 
-      // Convert CustomerAddress to Address type for profile
+      // Map CustomerAddress → Address (label comes back from the API as part of each record)
       const convertedAddresses: Address[] = addresses.map((addr) => ({
         id: addr.id,
-        userId: 0, // Not provided by this endpoint
+        userId: 0,
         latitude: addr.latitude,
         longitude: addr.longitude,
         fullAddress: addr.fullAddress,
         city: addr.city,
         state: addr.state,
         pincode: addr.pincode,
-        label: '', // Not provided by this endpoint
+        label: addr.label ?? '',
         isDefault: addr.isDefault,
         isActive: true,
         createdAt: addr.createdAt,
         updatedAt: addr.updatedAt,
       }));
 
-      // If profile exists, merge addresses into it
-      if (profile) {
-        profile.addresses = convertedAddresses;
-      }
-
-      return { profile, addresses: convertedAddresses, pagination };
+      return { addresses: convertedAddresses, pagination };
     } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : 'Failed to fetch addresses';
-
-      return rejectWithValue(message);
+      return rejectWithValue(
+        err instanceof Error ? err.message : 'Failed to fetch addresses',
+      );
     }
-  }
+  },
 );
 
 export const updateAddress = createAsyncThunk<
@@ -246,29 +231,27 @@ const customerProfileSlice = createSlice({
 
     .addCase(fetchCustomerAddresses.fulfilled, (state, action) => {
       state.isLoading = false;
-      // Always prefer the profile from the thunk if it exists
-      if (action.payload.profile) {
-        state.profile = action.payload.profile;
-      } else {
-        // Otherwise, merge addresses into existing profile or create a stub
-        if (!state.profile) {
-          state.profile = {
-            id: 0,
-            firstName: '',
-            lastName: '',
-            email: '',
-            username: '',
-            phone: '',
-            emergencyContact: null,
-            profileImage: null,
-            role: 'customer',
-            status: 'active',
-            createdAt: new Date().toISOString(),
-            lastLoginAt: new Date().toISOString(),
-            addresses: [],
-          };
-        }
-        state.profile.addresses = action.payload.addresses;
+      // Merge fetched addresses into existing profile (or create a stub if none exists)
+      if (!state.profile) {
+        state.profile = {
+          id: 0,
+          firstName: '',
+          lastName: '',
+          email: '',
+          username: '',
+          phone: '',
+          emergencyContact: null,
+          profileImage: null,
+          role: 'customer',
+          status: 'active',
+          createdAt: new Date().toISOString(),
+          lastLoginAt: new Date().toISOString(),
+          addresses: [],
+        };
+      }
+      state.profile.addresses = action.payload.addresses;
+      if (action.payload.pagination) {
+        state.addressesPagination = action.payload.pagination;
       }
     })
 
