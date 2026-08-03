@@ -49,9 +49,6 @@ export default function PersonalInfoForm() {
       animate="visible"
     >
       <motion.div className="space-y-6 md:space-y-8" variants={containerVariants}>
-
-
-
         {/* Basic fields */}
         <motion.div variants={itemVariants}>
           <BasicInfoFields
@@ -60,21 +57,21 @@ export default function PersonalInfoForm() {
             username={formData.username}
             phoneNumber={formData.phoneNumber}
             email={formData.email}
-            firstNameError={touched.firstName    ? errors.firstName    : undefined}
-            lastNameError={touched.lastName      ? errors.lastName     : undefined}
-            usernameError={touched.username      ? errors.username     : undefined}
-            phoneNumberError={touched.phoneNumber? errors.phoneNumber  : undefined}
-            emailError={touched.email            ? errors.email        : undefined}
-            onFirstNameChange={(v)   => handleChange('firstName',   v)}
-            onLastNameChange={(v)    => handleChange('lastName',    v)}
-            onUsernameChange={(v)    => handleChange('username',    v)}
+            firstNameError={touched.firstName ? errors.firstName : undefined}
+            lastNameError={touched.lastName ? errors.lastName : undefined}
+            usernameError={touched.username ? errors.username : undefined}
+            phoneNumberError={touched.phoneNumber ? errors.phoneNumber : undefined}
+            emailError={touched.email ? errors.email : undefined}
+            onFirstNameChange={(v) => handleChange('firstName', v)}
+            onLastNameChange={(v) => handleChange('lastName', v)}
+            onUsernameChange={(v) => handleChange('username', v)}
             onPhoneNumberChange={(v) => handleChange('phoneNumber', v)}
-            onEmailChange={(v)       => handleChange('email',       v)}
-            onFirstNameBlur={()    => handleBlur('firstName')}
-            onLastNameBlur={()     => handleBlur('lastName')}
-            onUsernameBlur={()     => handleBlur('username')}
-            onPhoneNumberBlur={()  => handleBlur('phoneNumber')}
-            onEmailBlur={()        => handleBlur('email')}
+            onEmailChange={(v) => handleChange('email', v)}
+            onFirstNameBlur={() => handleBlur('firstName')}
+            onLastNameBlur={() => handleBlur('lastName')}
+            onUsernameBlur={() => handleBlur('username')}
+            onPhoneNumberBlur={() => handleBlur('phoneNumber')}
+            onEmailBlur={() => handleBlur('email')}
           />
         </motion.div>
 
@@ -84,7 +81,7 @@ export default function PersonalInfoForm() {
             password={formData.password}
             passwordError={touched.password ? errors.password : undefined}
             onPasswordChange={(v) => handleChange('password', v)}
-            onPasswordBlur={()   => handleBlur('password')}
+            onPasswordBlur={() => handleBlur('password')}
             showPassword={showPassword}
             onTogglePassword={() => setShowPassword((p) => !p)}
           />
@@ -182,7 +179,7 @@ export default function PersonalInfoForm() {
 
           <motion.div variants={itemVariants} className="pb-4 md:pb-0">
             <ContinueButton
-              onClick={() => {}}
+              onClick={() => { }}
               isDisabled={isSubmitting || !otpVerified}
               label={isSubmitting ? 'Creating Account...' : 'Create Account'}
             />

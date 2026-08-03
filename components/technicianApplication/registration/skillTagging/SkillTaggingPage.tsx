@@ -403,10 +403,6 @@ export default function SkillTaggingPage() {
 
       {/* ── 4. Brand Expertise ────────────────────────────────────────────── */}
       <section>
-        <SectionTitle
-          title="Brand Expertise"
-          subtitle="Add brands you have specific expertise with."
-        />
         <BrandExpertiseInput
           tags={state.brandExpertise}
           onAddTag={handleAddBrand}
@@ -431,11 +427,10 @@ export default function SkillTaggingPage() {
             onChange={(e) => handleGstChange(e.target.value)}
             placeholder="22AAAAA0000A1Z5"
             maxLength={15}
-            className={`w-full h-12 border rounded-xl px-4 text-base focus:outline-none focus:ring-2 transition ${
-              gstError
-                ? 'border-red-400 focus:ring-red-200 focus:border-red-500'
-                : 'border-slate-300 focus:ring-emerald-500 focus:border-transparent'
-            }`}
+            className={`w-full h-12 border rounded-xl px-4 text-base focus:outline-none focus:ring-2 transition ${gstError
+              ? 'border-red-400 focus:ring-red-200 focus:border-red-500'
+              : 'border-slate-300 focus:ring-emerald-500 focus:border-transparent'
+              }`}
           />
           {gstError ? (
             <p className="text-xs text-red-500 mt-1">{gstError}</p>

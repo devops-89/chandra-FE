@@ -49,7 +49,7 @@ export interface Specification {
 
 /* â”€â”€â”€ Master form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export type FormData = {
-  // Step 1 â€” Service Info
+  // Step 1 Service Info
   // Step 1 — Service Info
   name: string;
   description: string;
@@ -157,7 +157,7 @@ export function FieldError({ message }: { message?: string }) {
   );
 }
 
-/* â”€â”€â”€ Main form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Main form */
 export default function AddServiceForm() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -279,7 +279,7 @@ export default function AddServiceForm() {
             <span className="font-semibold text-slate-700">{data.name}</span> has
             been added to the services catalogue.
           </p>
-          <p className="mt-2 text-slate-500">Redirecting to Servicesâ€¦</p>
+          <p className="mt-2 text-slate-500">Redirecting to Services...</p>
         </div>
         <div className="flex gap-3">
           <button
@@ -389,7 +389,7 @@ export default function AddServiceForm() {
             })()}
             <div className="flex-1 min-w-0">
               <h2 className="font-semibold text-slate-900">
-                Step {step + 1} of {STEPS.length} â€” {STEPS[step].label}
+                Step {step + 1} of {STEPS.length} {STEPS[step].label}
               </h2>
               <p className="text-xs text-slate-500">{STEP_SUBTITLES[step]}</p>
             </div>
@@ -512,7 +512,7 @@ export default function AddServiceForm() {
             <button
               type="button"
               onClick={handleNext}
-              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
+              className="flex items-center cursor-pointer gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
             >
               Next
               <ChevronRight size={16} />
@@ -522,10 +522,10 @@ export default function AddServiceForm() {
               type="button"
               onClick={handleSubmit}
               disabled={isPublishing}
-              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center cursor-pointer gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
             >
               <ClipboardList size={16} />
-              {isPublishing ? 'Publishingâ€¦' : 'Publish Service'}
+              {isPublishing ? 'Publishing' : 'Publish Service'}
             </button>
           )}
         </div>

@@ -1,35 +1,35 @@
 'use client';
 import { MuiTelInput } from 'mui-tel-input';
 interface BasicInfoFieldsProps {
-  firstName:        string;
-  lastName:         string;
-  username:         string;
-  phoneNumber:      string;
-  email:            string;
-  firstNameError?:  string;
-  lastNameError?:   string;
-  usernameError?:   string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  phoneNumber: string;
+  email: string;
+  firstNameError?: string;
+  lastNameError?: string;
+  usernameError?: string;
   phoneNumberError?: string;
-  emailError?:      string;
-  onFirstNameChange:  (v: string) => void;
-  onLastNameChange:   (v: string) => void;
-  onUsernameChange:   (v: string) => void;
-  onPhoneNumberChange:(v: string) => void;
-  onEmailChange:      (v: string) => void;
-  onFirstNameBlur:  () => void;
-  onLastNameBlur:   () => void;
-  onUsernameBlur:   () => void;
-  onPhoneNumberBlur:() => void;
-  onEmailBlur:      () => void;
+  emailError?: string;
+  onFirstNameChange: (v: string) => void;
+  onLastNameChange: (v: string) => void;
+  onUsernameChange: (v: string) => void;
+  onPhoneNumberChange: (v: string) => void;
+  onEmailChange: (v: string) => void;
+  onFirstNameBlur: () => void;
+  onLastNameBlur: () => void;
+  onUsernameBlur: () => void;
+  onPhoneNumberBlur: () => void;
+  onEmailBlur: () => void;
 }
 
 const fieldCls = (hasError?: string) =>
   `w-full h-12 border rounded-lg md:rounded-xl px-4 text-sm md:text-base
    focus:outline-none focus:ring-2 focus:border-transparent transition
    ${hasError
-     ? 'border-red-500 focus:ring-red-500'
-     : 'border-slate-300 focus:ring-emerald-500'
-   }`;
+    ? 'border-red-500 focus:ring-red-500'
+    : 'border-slate-300 focus:ring-emerald-500'
+  }`;
 
 export default function BasicInfoFields({
   firstName, lastName, username, phoneNumber, email,
@@ -100,6 +100,17 @@ export default function BasicInfoFields({
                 height: { xs: '3rem', md: '3rem' },
                 borderRadius: { xs: '0.5rem', md: '0.75rem' },
                 backgroundColor: 'transparent',
+                '& fieldset': {
+                  borderColor: phoneNumberError ? '#ef4444' : '#cbd5e1',
+                  transition: 'all 150ms ease-in-out',
+                },
+                '&:hover fieldset': {
+                  borderColor: phoneNumberError ? '#ef4444' : '#10b981',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: phoneNumberError ? '#ef4444' : '#10b981 !important',
+                  borderWidth: '2px',
+                },
               },
             }}
           />

@@ -29,7 +29,7 @@ export default function TechnicianHeader({
 
   useEffect(() => {
     let socket: Socket | null = null;
-    
+
     const initSocket = async () => {
       try {
         const profileRes = await AuthControllers.getProfile();
@@ -42,10 +42,10 @@ export default function TechnicianHeader({
 
           socket.on('new_booking', (booking) => {
             setPopupNotification({ open: true, message: `New booking request received for ${booking?.serviceInfo?.name || 'a service'}!` });
-            
+
             // Dispatch custom event to trigger a refetch in dashboard components
             window.dispatchEvent(new Event('refresh_bookings'));
-            
+
             // Auto close after 5 seconds
             setTimeout(() => {
               setPopupNotification(prev => ({ ...prev, open: false }));
@@ -56,7 +56,7 @@ export default function TechnicianHeader({
         console.error('Socket initialization failed', e);
       }
     };
-    
+
     initSocket();
 
     return () => {
@@ -104,17 +104,15 @@ export default function TechnicianHeader({
         <button
           type="button"
           onClick={handleToggleOnline}
-          className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-300 ${
-            isOnline
+          className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-300 ${isOnline
               ? 'bg-primary text-white hover:bg-primary/90'
               : 'bg-surface-container text-secondary hover:bg-surface-container-high'
-          }`}
+            }`}
           aria-label={isOnline ? 'Click to go offline' : 'Click to go online'}
         >
           <div
-            className={`w-2 h-2 rounded-full ${
-              isOnline ? 'bg-white animate-pulse' : 'bg-outline-variant'
-            }`}
+            className={`w-2 h-2 rounded-full ${isOnline ? 'bg-white animate-pulse' : 'bg-outline-variant'
+              }`}
           />
           <span className="text-xs md:text-sm font-medium whitespace-nowrap">
             {isOnline ? 'Online' : 'Offline'}
