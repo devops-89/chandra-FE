@@ -8,11 +8,19 @@ export default function Footer() {
   return (
     <footer className="bg-[#fff8ed]">
       <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8 lg:px-10">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
-          <FooterBrand />
-          <FooterLinks />
-          <FooterContact />
-          <FooterProfessional />
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <FooterBrand />
+          </div>
+          <div className="lg:col-span-2">
+            <FooterLinks />
+          </div>
+          <div className="lg:col-span-3">
+            <FooterContact />
+          </div>
+          <div className="lg:col-span-2">
+            <FooterProfessional />
+          </div>
         </div>
 
         <FooterBottom />

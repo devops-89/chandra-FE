@@ -15,6 +15,21 @@ import { setCredentials } from '@/redux/slices/authSlice';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
 import type { User } from '@/types/auth.types';
 
+const textFieldStyles = {
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '0.5rem',
+    '&:hover fieldset': {
+      borderColor: '#10b981',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#059669',
+    },
+  },
+  '& .MuiInputLabel-root.Mui-focused': {
+    color: '#059669',
+  },
+};
+
 type LoginFormData = {
   identifier: string;
   password: string;
@@ -118,8 +133,8 @@ export const AdminLoginForm = () => {
   };
 
   return (
-    <main className="min-h-screen bg-[#fff8ed] px-4 py-6 sm:py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] sm:min-h-[calc(100vh-5rem)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 lg:flex-row">
+    <main className="min-h-screen bg-[#fff8ed] px-4 py-4 sm:py-10 sm:px-6 lg:px-8 flex items-center justify-center">
+      <div className="mx-auto flex min-h-0 sm:min-h-[calc(100vh-5rem)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 lg:flex-row">
         <section className="hidden lg:flex flex-1 flex-col justify-between p-8 text-white sm:p-10 relative overflow-hidden">
           <div className="absolute inset-0">
             <Image
@@ -143,7 +158,7 @@ export const AdminLoginForm = () => {
           </div>
         </section>
 
-        <section className="flex flex-1 items-center justify-center p-6 sm:p-10 min-h-[calc(100vh-3rem)] sm:min-h-0">
+        <section className="flex flex-1 items-center justify-center p-6 sm:p-10 min-h-0">
           <form
             className="grid w-full max-w-md gap-4"
             onSubmit={(e) => {
@@ -158,8 +173,6 @@ export const AdminLoginForm = () => {
               </p>
             </div>
 
-
-
             <TextField
               label="Email or Mobile Number"
               variant="outlined"
@@ -169,11 +182,7 @@ export const AdminLoginForm = () => {
               onChange={(e) => handleChange('identifier', e.target.value)}
               error={!!errors.identifier}
               helperText={errors.identifier}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '8px',
-                },
-              }}
+              sx={textFieldStyles}
             />
 
             <TextField
@@ -186,11 +195,7 @@ export const AdminLoginForm = () => {
               onChange={(e) => handleChange('password', e.target.value)}
               error={!!errors.password}
               helperText={errors.password}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '8px',
-                },
-              }}
+              sx={textFieldStyles}
               slotProps={{
                 input: {
                   endAdornment: (
