@@ -3,16 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { useAppSelector } from '@/redux/hooks';
-import { selectNearbyJobs } from '@/redux/selectors/nearbyJobsSelectors';
 import { BookingControllers } from '@/api/bookingControllers';
 
 import StatCard from './StatCard';
 
 export default function StatsGrid() {
   const router = useRouter();
-  const nearbyJobs = useAppSelector(selectNearbyJobs);
-  const activeJob = useAppSelector((state) => state.activeJobs.currentJob);
 
   const [earnings, setEarnings] = useState({
     todayEarnings: 0,
@@ -22,13 +18,10 @@ export default function StatsGrid() {
   useEffect(() => {
     const fetchEarnings = async () => {
       try {
-        // Use the payout stats API. The API gives totalEarning, thisWeekPayout, thisMonthPayout.
-        // We will map totalEarning to Wallet Balance and thisWeekPayout to Today's Earnings, or similar.
-        // Or since it's just dummy text in UI, we can use totalEarning and thisMonthPayout.
         const res = await BookingControllers.getPayoutStats();
         if (res?.data?.data) {
           setEarnings({
-            todayEarnings: res.data.data.thisWeekPayout || 0, // Fallback/map
+            todayEarnings: res.data.data.thisWeekPayout || 0,
             walletBalance: res.data.data.totalEarning || 0,
           });
         }
@@ -39,7 +32,7 @@ export default function StatsGrid() {
     fetchEarnings();
   }, []);
 
-    const [apiStats, setApiStats] = useState({
+  const [apiStats, setApiStats] = useState({
     availableServices: 0,
     activeServices: 0,
   });
@@ -73,6 +66,10 @@ export default function StatsGrid() {
       }
     };
     fetchApiStats();
+
+    const handleRefresh = () => fetchApiStats();
+    window.addEventListener('refresh_bookings', handleRefresh);
+    return () => window.removeEventListener('refresh_bookings', handleRefresh);
   }, []);
 
   const stats: Array<{ icon: string; title: string; value: string; badge?: string; actionText?: string; onClick: () => void }> = [

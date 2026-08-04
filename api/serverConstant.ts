@@ -1,4 +1,4 @@
 export const SERVER_ENDPOINTS = {
-  AUTH_BASEURL: 'http://13.60.29.184/api',
-  USER_BASEURL: 'http://13.60.29.184/api',
+  AUTH_BASEURL: 'http://192.168.1.10:8000/api',
+  USER_BASEURL: 'http://192.168.1.10:8001/api',
 };

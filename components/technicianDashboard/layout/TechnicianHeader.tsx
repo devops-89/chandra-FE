@@ -1,13 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { SERVER_ENDPOINTS } from '@/api/serverConstant';
+import type { Socket } from 'socket.io-client';
+
+import { io } from 'socket.io-client';
+
 import { AuthControllers } from '@/api/authControllers';
+import { SERVER_ENDPOINTS } from '@/api/serverConstant';
 
 export interface TechnicianHeaderProps {
   userName?: string;
-  userImage?: string;
+  _userImage?: string;
   isOnline?: boolean;
   onOnlineToggle?: (isOnline: boolean) => void;
   unreadNotifications?: number;
@@ -17,7 +20,7 @@ export interface TechnicianHeaderProps {
 
 export default function TechnicianHeader({
   // userName = 'Vikram',
-  userImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBIqqw-EcoftjiwYequdg0nCOe7VzpuDGWLAFJ9eXzs7cel5_qcIXWyColFlq7GxrExeD2ib0qpiNZAnIzE6hXWjAsIWO6UmYlX13hJRDpuqPiqrM2PyfyYnc38cK0k-cQDvzh72GtSC_I9S6VRijocQOZPDAoPSD1-jLBkzzthhOQ_F1rRMgkwFxczu8jHbJgwxra9dDt4ixt88tIFqPy_L2Lwmw9Eeh7THVhSsDJZjigsRKg6FpR6Bg4k0vWL73OWghLBzClZUdI',
+  _userImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBIqqw-EcoftjiwYequdg0nCOe7VzpuDGWLAFJ9eXzs7cel5_qcIXWyColFlq7GxrExeD2ib0qpiNZAnIzE6hXWjAsIWO6UmYlX13hJRDpuqPiqrM2PyfyYnc38cK0k-cQDvzh72GtSC_I9S6VRijocQOZPDAoPSD1-jLBkzzthhOQ_F1rRMgkwFxczu8jHbJgwxra9dDt4ixt88tIFqPy_L2Lwmw9Eeh7THVhSsDJZjigsRKg6FpR6Bg4k0vWL73OWghLBzClZUdI',
   isOnline: initialIsOnline = true,
   onOnlineToggle,
   unreadNotifications = 0,
@@ -40,16 +43,47 @@ export default function TechnicianHeader({
             transports: ['websocket', 'polling']
           });
 
+          const logDev = (event: string, payload?: unknown) => {
+            if (process.env.NODE_ENV !== 'production') {
+              console.warn(`[Socket Event] ${event}`, payload);
+            }
+          };
+
+          // 1. New Booking
           socket.on('new_booking', (booking) => {
-            setPopupNotification({ open: true, message: `New booking request received for ${booking?.serviceInfo?.name || 'a service'}!` });
+            logDev('new_booking', booking);
+            setPopupNotification({
+              open: true,
+              message: `New booking request received for ${booking?.serviceInfo?.name || booking?.service?.name || 'a service'}!`
+            });
 
-            // Dispatch custom event to trigger a refetch in dashboard components
-            window.dispatchEvent(new Event('refresh_bookings'));
+            window.dispatchEvent(new CustomEvent('refresh_bookings', {
+              detail: { action: 'add', booking, event: 'new_booking', timestamp: Date.now() }
+            }));
 
-            // Auto close after 5 seconds
             setTimeout(() => {
               setPopupNotification(prev => ({ ...prev, open: false }));
             }, 5000);
+          });
+
+          // 2. Booking Updated
+          socket.on('booking_updated', (booking) => {
+            logDev('booking_updated', booking);
+            window.dispatchEvent(new CustomEvent('refresh_bookings', {
+              detail: { action: 'update', booking, event: 'booking_updated', timestamp: Date.now() }
+            }));
+          });
+
+          // 3. Removal events (taken, accepted, cancelled, expired)
+          const removalEvents = ['booking_taken', 'booking_accepted', 'booking_cancelled', 'booking_expired'];
+          removalEvents.forEach((evtName) => {
+            socket!.on(evtName, (data) => {
+              logDev(evtName, data);
+              const bookingId = typeof data === 'object' ? (data?.id || data?.bookingId) : data;
+              window.dispatchEvent(new CustomEvent('refresh_bookings', {
+                detail: { action: 'remove', bookingId, event: evtName, timestamp: Date.now() }
+              }));
+            });
           });
         }
       } catch (e) {
@@ -71,13 +105,6 @@ export default function TechnicianHeader({
     setIsOnline(newState);
     onOnlineToggle?.(newState);
   };
-
-  const currentDate = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
 
   return (
     <header className="flex h-16 sm:h-20 items-center sticky top-0 z-30 justify-between bg-[#F8FAFC] border-b border-slate-200 px-4 sm:px-8 gap-3">
@@ -105,8 +132,8 @@ export default function TechnicianHeader({
           type="button"
           onClick={handleToggleOnline}
           className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-300 ${isOnline
-              ? 'bg-primary text-white hover:bg-primary/90'
-              : 'bg-surface-container text-secondary hover:bg-surface-container-high'
+            ? 'bg-primary text-white hover:bg-primary/90'
+            : 'bg-surface-container text-secondary hover:bg-surface-container-high'
             }`}
           aria-label={isOnline ? 'Click to go offline' : 'Click to go online'}
         >
