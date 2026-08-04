@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 
-import { useAppSelector } from '@/redux/hooks';
 import { onboardingSteps } from '@/constants/technicianApplication/onboardingSteps';
 import { isOnboardingLockEnabled, isStepComplete } from '@/lib/onboarding/onboardingProgress';
+import { useAppSelector } from '@/redux/hooks';
 
 type Props = {
   currentStep: number;

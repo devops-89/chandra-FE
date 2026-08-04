@@ -5,7 +5,7 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material';
-import { AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

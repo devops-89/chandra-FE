@@ -25,7 +25,7 @@ const Services = () => {
     if (statusFilter === 'Inactive') statusParam = false;
 
     dispatch(fetchServices({ search: searchValue, status: statusParam }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [searchValue, statusFilter]);
 
   const handleSearch = (value: string) => {

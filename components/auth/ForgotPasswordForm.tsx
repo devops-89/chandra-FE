@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, ArrowLeft, Loader2, Phone } from 'lucide-react';
+import { ArrowLeft, Loader2, Phone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

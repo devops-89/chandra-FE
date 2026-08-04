@@ -9,6 +9,7 @@ function ImagePreview({ file }: { file: File }) {
   useEffect(() => {
     // Create blob URL only once when file changes
     const objectUrl = URL.createObjectURL(file);
+     
     setPreview(objectUrl);
 
     // Cleanup: revoke only when component unmounts or file actually changes
@@ -21,7 +22,7 @@ function ImagePreview({ file }: { file: File }) {
 
   return (
     <div className="relative mt-3 h-36 w-36 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      { }
       <img src={preview} alt="Upload preview" className="h-full w-full object-cover" />
     </div>
   );

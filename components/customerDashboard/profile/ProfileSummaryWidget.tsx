@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Avatar, LinearProgress, Button, CircularProgress } from '@mui/material';
 import { Settings, Shield, Star } from '@mui/icons-material';
+import { Avatar, Box, Button, Card, CardContent, CircularProgress,LinearProgress, Typography } from '@mui/material';
 import Link from 'next/link';
+
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
 
 export default function ProfileSummaryWidget() {
   const dispatch = useAppDispatch();

@@ -14,7 +14,7 @@ const ServiceRow = ({ service, onEdit, onDelete }: Props) => {
   return (
     <tr className="border-b border-slate-100 transition-colors hover:bg-slate-50">
       <td className="p-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        { }
         <img
           width={48}
           height={48}

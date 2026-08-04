@@ -12,7 +12,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
   Tooltip,
   Typography,
 } from "@mui/material";

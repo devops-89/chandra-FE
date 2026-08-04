@@ -12,7 +12,6 @@ import type {
   CancelBookingResponse,
   CancelledBooking,
   CustomerBooking,
-  CustomerBookingsResponse,
 } from '@/types/customerBooking.types';
 
 import { userSecuredApi } from './config';
@@ -87,7 +86,7 @@ export const BookingControllers = {
 
   getBookingPaymentUrl: async (bookingId: number): Promise<string> => {
     const response = await userSecuredApi.get(`/bookings/${bookingId}/payment`);
-    console.log(response.data?.data?.data?.paymentUrl, 'paymentUrl')
+    console.warn(response.data?.data?.data?.paymentUrl, 'paymentUrl')
     return response.data?.data?.data?.paymentUrl || response.data?.data?.paymentUrl;
   },
 

@@ -48,7 +48,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
     const id = setTimeout(() => setCheckingAuth(false), 0);
     return () => clearTimeout(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []); // ← run ONLY on mount, not on every auth state change
 
   if (checkingAuth) {

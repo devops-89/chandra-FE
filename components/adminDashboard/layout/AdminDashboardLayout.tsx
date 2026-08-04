@@ -49,7 +49,7 @@ export default function AdminDashboardLayout({ children }: Props) {
 
     const id = setTimeout(() => setCheckingAuth(false), 0);
     return () => clearTimeout(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []); // mount-only — same pattern as DashboardLayout
 
   if (checkingAuth) {

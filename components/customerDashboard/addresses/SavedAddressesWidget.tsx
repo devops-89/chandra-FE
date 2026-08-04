@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Box, Card, CardHeader, CardContent, Typography, Button, IconButton, CircularProgress } from '@mui/material';
-import { LocationOn, ChevronRight, Edit } from '@mui/icons-material';
+import { ChevronRight,LocationOn } from '@mui/icons-material';
+import { Box, Button, Card, CardContent, CardHeader, CircularProgress,Typography } from '@mui/material';
 import Link from 'next/link';
+
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
 
 export default function SavedAddressesWidget() {
   const dispatch = useAppDispatch();

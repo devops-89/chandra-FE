@@ -5,7 +5,7 @@ import { Box, Button, Card, CardContent, Typography } from '@mui/material';
 import Link from "next/link";
 
 interface ActiveBookingCardProps {
-  activeBooking: any;
+  activeBooking: unknown;
 }
 //hello
 const ActiveBookingCard = ({ activeBooking }: ActiveBookingCardProps) => {

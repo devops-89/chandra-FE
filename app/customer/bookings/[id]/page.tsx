@@ -15,7 +15,6 @@ import DashboardLayout from '@/components/customerDashboard/layout/DashboardLayo
 import type {
   CancelledBooking,
   CustomerBooking,
-  CustomerBookingsResponse,
 } from '@/types/customerBooking.types';
 
 export default function BookingDetailsPage() {

@@ -34,8 +34,11 @@ export default function TimeSlotSelector({
   // Sync local state when the slot prop changes externally
   useEffect(() => {
     const p = parseSlot(slot);
+     
     setHour(p.hour);
+     
     setMinute(p.minute);
+     
     setPeriod(p.period);
   }, [slot]);
 

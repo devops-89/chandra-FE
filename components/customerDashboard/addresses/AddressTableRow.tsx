@@ -1,8 +1,8 @@
 'use client';
 
-import { Edit, Loader2, Trash2, X, MapPin } from 'lucide-react';
+import { Dialog,IconButton, TableCell, TableRow } from '@mui/material';
+import { Edit, Loader2, MapPin,Trash2, X } from 'lucide-react';
 import { useState } from 'react';
-import { TableRow, TableCell, IconButton, Chip, Dialog } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { deleteAddress, updateAddress } from '@/redux/slices/customerProfileSlice';

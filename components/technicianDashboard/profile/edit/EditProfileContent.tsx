@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
 import BankDetailsTab from './tabs/BankDetailsTab';
 import DocumentsTab from './tabs/DocumentsTab';
 import PersonalInfoTab from './tabs/PersonalInfoTab';

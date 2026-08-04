@@ -1,13 +1,13 @@
 'use client';
 
+import 'swiper/css';
+
 import Grid from '@mui/material/Grid';
 import Pagination from '@mui/material/Pagination';
 import { AlertCircle, Loader2, PackageOpen } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
-
-import 'swiper/css';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchServices } from '@/redux/slices/servicesSlice';

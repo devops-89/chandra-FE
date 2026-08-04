@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect,useState } from 'react';
 
 import { BookingControllers } from '@/api/bookingControllers';
 
@@ -19,7 +19,7 @@ interface NormalizedJob {
   distance?: string;
   serviceType?: string;
   customerName?: string;
-  payout?: number;
+  payout?: string;
   schedule?: string;
   _optimisticAt?: number;
   _rawSocket?: Record<string, unknown>;
@@ -155,7 +155,7 @@ export default function NearbyJobsGrid() {
 
   const handleAccept = async (job: NormalizedJob) => {
     try {
-      await BookingControllers.acceptBooking(job.id);
+      await BookingControllers.acceptBooking(Number(job.id));
       router.push('/technician/bookings');
     } catch (error) {
       console.error('Error accepting booking', error);
@@ -183,7 +183,7 @@ export default function NearbyJobsGrid() {
         const customer = job.customer as Record<string, string> | null;
         const customerName = customer ? `${customer.firstName} ${customer.lastName}` : job.customerName || 'Customer';
         const distance = job.distance || '2.4 Km';
-        const payout = job.totalAmount || job.payout || 0;
+        const payout = String(job.totalAmount ?? job.payout ?? 0);
 
         return (
           <JobCard
@@ -196,7 +196,7 @@ export default function NearbyJobsGrid() {
             variant={idx % 2 === 0 ? 'green' : 'blue'}
             onAccept={() => handleAccept(job)}
             onReject={() => {
-              setJobs(jobs.filter(j => (j.id || j._id) !== (job.id || job._id)));
+              setJobs((prevJobs) => prevJobs.filter((j) => (j.id || j._id) !== (job.id || job._id)));
             }}
           />
         );

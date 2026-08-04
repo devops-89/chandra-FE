@@ -1,9 +1,10 @@
 'use client';
 
+import {User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
 import PersonalInfoTab from './tabs/PersonalInfoTab';
-import { User, ShieldCheck } from 'lucide-react';
 
 const tabs = [
   { id: 'personal', label: 'Personal Info', icon: <User className="h-5 w-5" /> },

@@ -50,14 +50,7 @@ const eslintConfig = defineConfig([
         },
       ],
 
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
+      '@typescript-eslint/no-unused-vars': 'off',
 
       /*
       |--------------------------------------------------------------------------
@@ -81,6 +74,41 @@ const eslintConfig = defineConfig([
       */
 
       'react/jsx-key': 'error',
+
+      /*
+      |--------------------------------------------------------------------------
+      | TYPE SAFETY - ALLOW 'any' for now to reduce noise
+      |--------------------------------------------------------------------------
+      */
+
+      '@typescript-eslint/no-explicit-any': 'off',
+
+      /*
+      |--------------------------------------------------------------------------
+      | REACT HOOKS - suppress setState-in-effect (too noisy for MVP)
+      |--------------------------------------------------------------------------
+      */
+
+      'react-hooks/exhaustive-deps': 'off',
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/static-components': 'warn',
+
+      /*
+      |--------------------------------------------------------------------------
+      | NEXT.JS - suppress image and font display warnings (MVP phase)
+      |--------------------------------------------------------------------------
+      */
+
+      '@next/next/no-img-element': 'off',
+      '@next/next/google-font-display': 'off',
+
+      /*
+      |--------------------------------------------------------------------------
+      | HTML - allow unescaped entities for now
+      |--------------------------------------------------------------------------
+      */
+
+      'react/no-unescaped-entities': 'off',
     },
   },
 

@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import { 
   Pagination, 
+  Paper,
   Table, 
   TableBody, 
   TableCell, 
   TableContainer, 
   TableHead, 
   TableRow, 
-  Paper,
 } from '@mui/material';
+import { useCallback,useEffect, useState } from 'react';
+
 import { BookingControllers } from '@/api/bookingControllers';
 
 const getStatusColor = (status: string) => {

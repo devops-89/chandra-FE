@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 
+import { BookingControllers } from '@/api/bookingControllers';
 import PublicFooter from '@/components/common/PublicFooter';
 import PublicNavbar from '@/components/common/PublicNavbar';
-import { BookingControllers } from '@/api/bookingControllers';
 import { useBookingStore } from '@/redux/legacy/bookingStore';
 
 // ─── Layout-agnostic content ──────────────────────────────────────────────────
@@ -17,7 +17,7 @@ export function BookingConfirmationContent() {
   const idQuery = searchParams.get('id');
 
   const { service: storedService, servicePrice: storedPrice, date: storedDate, slot: storedSlot, clearBooking } = useBookingStore();
-  const [bookingData, setBookingData] = React.useState<any>(null);
+  const [bookingData, setBookingData] = React.useState<unknown>(null);
   const [loading, setLoading] = React.useState<boolean>(!!idQuery);
 
   React.useEffect(() => {

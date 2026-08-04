@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, ArrowLeft, Eye, EyeOff, KeyRound,Loader2, Phone } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, KeyRound,Loader2, Phone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';

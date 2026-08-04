@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2, X, MapPin } from 'lucide-react';
+import { Loader2, MapPin,X } from 'lucide-react';
 import { useState } from 'react';
 
 import { useAppDispatch } from '@/redux/hooks';

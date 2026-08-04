@@ -110,14 +110,14 @@ export default function BasicInfoStep({ data, errors, onChange, existingIconUrl 
         >
           {/* Preview or placeholder */}
           {data.icon ? (
-            // eslint-disable-next-line @next/next/no-img-element
+             
             <img
               src={URL.createObjectURL(data.icon)}
               alt="Service icon preview"
               className="h-12 w-12 rounded-xl object-cover ring-2 ring-emerald-100"
             />
           ) : existingIconUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
+             
             <img
               src={existingIconUrl}
               alt="Current service icon"

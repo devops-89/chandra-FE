@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { TextField, Button, CircularProgress, Select, MenuItem, FormControl, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, FormHelperText } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
-import { TechnicianControllers } from '@/api/technicianControllers';
-import { showSnackbar } from '@/redux/slices/snackbarSlice';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText,IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { useFormik } from 'formik';
+import { useState } from 'react';
 import * as yup from 'yup';
+
+import { TechnicianControllers } from '@/api/technicianControllers';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
+import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
 
 const validationSchema = yup.object({
   accountType: yup.string().required('Payout method is required'),
@@ -68,7 +69,7 @@ export default function BankDetailsTab() {
       try {
         setLoading(true);
         // Clean up payload based on type
-        let payload: any = { accountType: values.accountType };
+        const payload: any = { accountType: values.accountType };
         if (values.accountType === 'VPA') {
           payload.upiId = values.upiId;
         } else {

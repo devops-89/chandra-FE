@@ -1,6 +1,7 @@
 'use client';
 
-import { LocationOn, CheckCircle } from '@mui/icons-material';
+import { CheckCircle,LocationOn } from '@mui/icons-material';
+
 import { useAppSelector } from '@/redux/hooks';
 
 export default function AddressInfo() {

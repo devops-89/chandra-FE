@@ -1,9 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-import { AdminControllers } from '@/api/adminControllers';
 import { ArrowBack as ArrowBackIcon, Info as InfoIcon } from '@mui/icons-material';
 import {
   Avatar,
@@ -13,10 +9,12 @@ import {
   CircularProgress,
   Grid,
   Paper,
-  Typography,
-  Rating
-} from '@mui/material';
+  Rating,
+  Typography} from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
+import { AdminControllers } from '@/api/adminControllers';
 import { BOOKING_STATUS } from '@/types/enums';
 
 interface Props {
@@ -32,6 +30,18 @@ const getStatusColor = (status: string) => {
   if (s === BOOKING_STATUS.CANCELLED) return { bgcolor: "#fee2e2", color: "#b91c1c", border: "1px solid rgba(185, 28, 28, 0.2)" }; // Red
   return { bgcolor: "#f1f5f9", color: "#475569", border: "1px solid rgba(71, 85, 105, 0.2)" };
 };
+
+const InfoItem = ({ label, value }: { label: string, value: React.ReactNode }) => (
+  <Box sx={{ display: 'flex', alignItems: 'flex-start', p: 2, borderRadius: 3, transition: 'all 0.3s ease', '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', transform: 'translateY(-2px)' } }}>
+    <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: 'rgba(5, 150, 105, 0.1)', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
+      <InfoIcon sx={{ fontSize: 22 }} />
+    </Box>
+    <Box>
+      <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>{label}</Typography>
+      <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary', wordBreak: 'break-word' }}>{value || "—"}</Typography>
+    </Box>
+  </Box>
+);
 
 const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
   const router = useRouter();
@@ -65,18 +75,6 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
 
   const customerName = ((booking.customer?.firstName || '') + ' ' + (booking.customer?.lastName || '')).trim() || booking.customer?.username || 'Unknown Customer';
   const technicianName = booking.technician ? ((booking.technician?.firstName || '') + ' ' + (booking.technician?.lastName || '')).trim() || booking.technician?.username : 'Unassigned';
-
-  const InfoItem = ({ label, value }: { label: string, value: React.ReactNode }) => (
-    <Box sx={{ display: 'flex', alignItems: 'flex-start', p: 2, borderRadius: 3, transition: 'all 0.3s ease', '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', transform: 'translateY(-2px)' } }}>
-      <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: 'rgba(5, 150, 105, 0.1)', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
-        <InfoIcon sx={{ fontSize: 22 }} />
-      </Box>
-      <Box>
-        <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>{label}</Typography>
-        <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary', wordBreak: 'break-word' }}>{value || "—"}</Typography>
-      </Box>
-    </Box>
-  );
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, minHeight: '100vh', bgcolor: '#f8fafc' }}>

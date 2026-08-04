@@ -146,7 +146,7 @@ export default function SelfieVerificationCard({
       ) : image ? (
         <div className="mb-6">
           <div className="w-40 h-40 mx-auto mb-4 rounded-full overflow-hidden border-4 border-emerald-700">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            { }
             <img
               src={image.fileUrl}
               alt="Selfie"

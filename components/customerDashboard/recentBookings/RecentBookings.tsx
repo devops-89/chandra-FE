@@ -1,6 +1,5 @@
 "use client";
 
-import { useRecentBookings } from "@/hooks/useRecentBookings";
 import { ChevronRight } from '@mui/icons-material';
 import {
   Box,
@@ -10,6 +9,8 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography
 } from '@mui/material';
 import Link from 'next/link';
+
+import { useRecentBookings } from "@/hooks/useRecentBookings";
 
 const RecentBookings = () => {
   const { bookings } = useRecentBookings();

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { CalendarClock, CheckCircle2, ClipboardList, UserCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import { AdminControllers } from '@/api/adminControllers';
 
 import BookingStatusCards from './BookingStatusCards';

@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+
 import FinanceBookingDetails from "@/components/adminDashboard/finance/bookings/FinanceBookingDetails";
 
 export default function FinanceBookingDetailsPage() {

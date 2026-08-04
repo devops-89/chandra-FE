@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 
 import AddressSelector from '@/components/booking/AddressSelector';
 import BookingDetailsForm from '@/components/booking/BookingDetailsForm';
-import BookingStepper from '@/components/booking/BookingStepper';
 import type { SpecFormValue } from '@/components/booking/DynamicForm';
 // ConfirmButton is kept for backward compat elsewhere; nav uses inline button on last step
 import DynamicForm from '@/components/booking/DynamicForm';
@@ -93,7 +92,7 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
     if (!resolvedService || resolvedService.id !== currentServiceId) {
       dispatch(fetchServiceById(currentServiceId));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [currentServiceId]);
 
   // ── Fetch customer profile (needed for address list in step 1) ────────────
@@ -147,11 +146,11 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
   // Keep name/phone in sync when profile arrives (first load)
   useEffect(() => {
     if (profile) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       if (!name) setName(`${profile.firstName} ${profile.lastName}`.trim());
       if (!phone) setPhone(profile.phone);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [profile]);
 
   // ── Global error ──────────────────────────────────────────────────────────
@@ -345,12 +344,12 @@ export default function UnifiedBookingPage({ service, serviceId, summaryPath = '
           customerAddressId: selectedAddressId,
           isEmergency: false,
           scheduledAt: scheduledAt,
-          serviceSpecifications: serviceSpecifications as any,
+          serviceSpecifications: serviceSpecifications as unknown,
         };
         const response = await dispatch(createBooking(payload)).unwrap();
         router.push(`/booking/confirmation?id=${response.id}`);
-      } catch (err: any) {
-        setError(typeof err === 'string' ? err : err?.message || 'Booking failed. Please try again.');
+      } catch (err: unknown) {
+        setError(typeof err === 'string' ? err : (err as Error)?.message || 'Booking failed. Please try again.');
       } finally {
         setIsSubmitting(false);
       }

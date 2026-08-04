@@ -1,11 +1,12 @@
 'use client';
 
+import { Avatar, CircularProgress, IconButton } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+
 import { CustomerControllers } from '@/api/customerControllers';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
-import { Avatar, CircularProgress, IconButton } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
 
 export default function PersonalInfoTab() {
   const dispatch = useAppDispatch();

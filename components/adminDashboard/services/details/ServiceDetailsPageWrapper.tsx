@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Box, CircularProgress,Typography } from '@mui/material';
+import { CheckCircle, ChevronLeft, ClipboardList, Clock, DollarSign, Info, PenTool, ShieldAlert,Tag, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Info, CheckCircle, Tag, DollarSign, PenTool, ClipboardList, Clock, Truck, ShieldAlert } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import { AdminControllers } from '@/api/adminControllers';
 import type { AdminService } from '@/types/admin/service.types';
-import { Box, CircularProgress, Typography, IconButton } from '@mui/material';
 
 export default function ServiceDetailsPageWrapper({ serviceId }: { serviceId: number }) {
   const router = useRouter();
@@ -98,7 +99,7 @@ export default function ServiceDetailsPageWrapper({ serviceId }: { serviceId: nu
               <div className="shrink-0 flex flex-col items-center gap-3">
                 <div className="h-32 w-32 rounded-xl border border-slate-200 bg-slate-50 p-2 flex items-center justify-center overflow-hidden">
                   {(service as any).iconDownloadUrl || (service as any).iconUrl || service.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
+                     
                     <img 
                       src={(service as any).iconDownloadUrl || (service as any).iconUrl || service.image} 
                       alt={service.name} 

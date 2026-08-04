@@ -5,8 +5,8 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { MuiTelInput } from 'mui-tel-input';
-import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';

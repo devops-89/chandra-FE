@@ -11,7 +11,7 @@ export default function ContactInfoCard() {
         transition={{
           duration: 0.6,
           delay: 0.2,
-          ease: 'easeOut' as any,
+          ease: 'easeOut' as unknown,
         }}
       className="bg-white
         rounded-4xl

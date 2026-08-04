@@ -1,10 +1,10 @@
 'use client';
 
-import { LogOut, X, ChevronRight } from 'lucide-react';
+import { Box, Menu, MenuItem, Typography } from '@mui/material';
+import { ChevronRight,LogOut, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { Menu, MenuItem, Box, Typography } from '@mui/material';
+import { useEffect,useState } from 'react';
 
 import { customerDashboardSidebarLinks } from '@/constants/customerDashboard/sidebar/customerDashboardSidebarLinks';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';

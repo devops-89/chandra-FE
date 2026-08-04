@@ -1,5 +1,5 @@
-import PayoutTable from "@/components/adminDashboard/finance/payouts/PayoutTable";
 import FinanceOverview from "@/components/adminDashboard/finance/overview/FinanceOverview";
+import PayoutTable from "@/components/adminDashboard/finance/payouts/PayoutTable";
 
 export default function PayoutsPage() {
   return (

@@ -2,17 +2,17 @@
 
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useEffect } from 'react';
-import HeroBookingCard from '@/components/customerDashboard/overview/HeroBookingCard';
-import ActiveBookingCard from '@/components/customerDashboard/activeBooking/ActiveBookingCard';
-import ProfileSummaryWidget from '@/components/customerDashboard/profile/ProfileSummaryWidget';
-import SavedAddressesWidget from '@/components/customerDashboard/addresses/SavedAddressesWidget';
-import ServicesWidget from '@/components/customerDashboard/services/ServicesWidget';
 
+import ActiveBookingCard from '@/components/customerDashboard/activeBooking/ActiveBookingCard';
+import SavedAddressesWidget from '@/components/customerDashboard/addresses/SavedAddressesWidget';
+import HeroBookingCard from '@/components/customerDashboard/overview/HeroBookingCard';
+import ProfileSummaryWidget from '@/components/customerDashboard/profile/ProfileSummaryWidget';
+import ServicesWidget from '@/components/customerDashboard/services/ServicesWidget';
+import { useActiveBooking } from "@/hooks/useActiveBooking";
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchCustomerDashboardStats } from '@/redux/slices/customerDashboardSlice';
-import { fetchCustomerProfile, fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
+import { fetchCustomerAddresses,fetchCustomerProfile } from '@/redux/slices/customerProfileSlice';
 import { fetchServices } from '@/redux/slices/servicesSlice';
-import { useActiveBooking } from "@/hooks/useActiveBooking";
 
 export default function CustomerDashboard() {
   const dispatch = useAppDispatch();

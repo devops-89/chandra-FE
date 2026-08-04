@@ -1,7 +1,7 @@
 'use client';
 
+import { matchIsValidTel,MuiTelInput } from 'mui-tel-input';
 import { useState } from 'react';
-import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
 
 import type { AvailabilityFormData } from '@/types/serviceAvailability.types';
 

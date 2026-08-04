@@ -1,10 +1,7 @@
 "use client";
 
-import { Bell, Menu, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Menu } from "lucide-react";
 
-import { useAppSelector } from "@/redux/hooks";
-import type { User } from "@/types/auth.types";
 
 interface AdminHeaderProps {
   onMenuClick: () => void;

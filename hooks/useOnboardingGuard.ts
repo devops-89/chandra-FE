@@ -132,5 +132,5 @@ export function useOnboardingGuard({ stepIndex }: { stepIndex: number }): void {
     };
 
     run();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 }

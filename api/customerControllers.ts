@@ -6,13 +6,13 @@ import type {
   GetCustomerAddressesResponse,
   UpdateAddressRequest,
 } from '@/types/address.types';
+import type { CustomerDashboardStats } from '@/types/customer/dashboard.types';
 import type {
   CustomerProfile,
   CustomerProfileResponse,
   UpdateCustomerProfileRequest,
   UpdateCustomerProfileResponse,
 } from '@/types/customer/profile.types';
-import type { CustomerDashboardStats } from '@/types/customer/dashboard.types';
 
 import { authSecuredApi, userSecuredApi } from './config';
 

@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import StatCard from './StatCard';
+import { useEffect,useState } from 'react';
+
 import { BookingControllers } from '@/api/bookingControllers';
+
+import StatCard from './StatCard';
 
 export default function StatsGrid() {
   const [stats, setStats] = useState({

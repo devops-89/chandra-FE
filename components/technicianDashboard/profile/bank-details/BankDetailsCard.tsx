@@ -1,7 +1,8 @@
 'use client';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import { useAppSelector } from '@/redux/hooks';
 import { useRouter } from 'next/navigation';
+
+import { useAppSelector } from '@/redux/hooks';
 
 export default function BankDetailsCard() {
   const router = useRouter();

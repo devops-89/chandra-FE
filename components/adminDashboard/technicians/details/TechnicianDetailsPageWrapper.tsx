@@ -1,30 +1,69 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-
-import { ArrowBack as ArrowBackIcon, Info as InfoIcon, InsertDriveFile as DocIcon, CheckCircle as CheckIcon, Cancel as CancelIcon, Close as CloseIcon } from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, Cancel as CancelIcon, CheckCircle as CheckIcon, Close as CloseIcon,Info as InfoIcon, InsertDriveFile as DocIcon } from '@mui/icons-material';
 import {
   Box,
   Button,
   Chip,
   CircularProgress,
-  Grid,
-  Paper,
-  Typography,
-  Divider,
-  Link,
   Dialog,
-  DialogTitle,
   DialogContent,
-  IconButton
-} from '@mui/material';
+  DialogTitle,
+  Grid,
+  IconButton,
+  Paper,
+  Typography} from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { userSecuredApi } from '@/api/config';
 
 interface Props {
   technicianId: string;
 }
+
+interface DocumentLinkProps {
+  label: string;
+  url: string;
+  onView: (doc: { url: string; label: string }) => void;
+}
+
+function DocumentLink({ label, url, onView }: DocumentLinkProps) {
+  if (!url) return null;
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
+      <DocIcon sx={{ color: '#64748b', mr: 2 }} />
+      <Box sx={{ flex: 1 }}>
+        <Typography variant="body2" sx={{ fontWeight: 600 }}>{label}</Typography>
+        <Typography
+          onClick={() => onView({ url, label })}
+          sx={{ fontSize: '0.875rem', color: '#0ea5e9', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+        >
+          View Document
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+
+const InfoItem = ({ label, value }: { label: string; value: React.ReactNode }) => (
+  <Box sx={{ display: 'flex', alignItems: 'flex-start', p: 2, borderRadius: 3, transition: 'all 0.3s ease', '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', transform: 'translateY(-2px)' } }}>
+    <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: 'rgba(5, 150, 105, 0.1)', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
+      <InfoIcon sx={{ fontSize: 22 }} />
+    </Box>
+    <Box sx={{ flex: 1 }}>
+      <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>{label}</Typography>
+      <Typography variant="body1" component="div" sx={{ fontWeight: 600, color: 'text.primary', wordBreak: 'break-word' }}>{value || "—"}</Typography>
+    </Box>
+  </Box>
+);
+
+const BooleanItem = ({ label, isTrue }: { label: string; isTrue: boolean }) => (
+  <Box sx={{ display: 'flex', alignItems: 'center', p: 1.5, borderRadius: 2, bgcolor: isTrue ? '#d1fae5' : '#fee2e2' }}>
+    {isTrue ? <CheckIcon sx={{ color: '#047857', mr: 1, fontSize: 20 }} /> : <CancelIcon sx={{ color: '#b91c1c', mr: 1, fontSize: 20 }} />}
+    <Typography variant="body2" sx={{ fontWeight: 600, color: isTrue ? '#047857' : '#b91c1c' }}>{label}</Typography>
+  </Box>
+);
 
 const TechnicianDetailsPageWrapper = ({ technicianId }: Props) => {
   const router = useRouter();
@@ -65,43 +104,6 @@ const TechnicianDetailsPageWrapper = ({ technicianId }: Props) => {
   const name = ((technician.firstName || '') + ' ' + (technician.lastName || '')).trim() || technician.username || 'Unknown';
   const profile = technician.technicianProfile || {};
   const status = profile.status || 'NO_PROFILE';
-
-  const InfoItem = ({ label, value }: { label: string, value: React.ReactNode }) => (
-    <Box sx={{ display: 'flex', alignItems: 'flex-start', p: 2, borderRadius: 3, transition: 'all 0.3s ease', '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', transform: 'translateY(-2px)' } }}>
-      <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: 'rgba(5, 150, 105, 0.1)', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
-        <InfoIcon sx={{ fontSize: 22 }} />
-      </Box>
-      <Box sx={{ flex: 1 }}>
-        <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>{label}</Typography>
-        <Typography variant="body1" component="div" sx={{ fontWeight: 600, color: 'text.primary', wordBreak: 'break-word' }}>{value || "—"}</Typography>
-      </Box>
-    </Box>
-  );
-
-  const BooleanItem = ({ label, isTrue }: { label: string, isTrue: boolean }) => (
-    <Box sx={{ display: 'flex', alignItems: 'center', p: 1.5, borderRadius: 2, bgcolor: isTrue ? '#d1fae5' : '#fee2e2' }}>
-      {isTrue ? <CheckIcon sx={{ color: '#047857', mr: 1, fontSize: 20 }} /> : <CancelIcon sx={{ color: '#b91c1c', mr: 1, fontSize: 20 }} />}
-      <Typography variant="body2" sx={{ fontWeight: 600, color: isTrue ? '#047857' : '#b91c1c' }}>{label}</Typography>
-    </Box>
-  );
-
-  const DocumentLink = ({ label, url }: { label: string, url: string }) => {
-    if (!url) return null;
-    return (
-      <Box sx={{ display: 'flex', alignItems: 'center', p: 2, border: '1px solid #e2e8f0', borderRadius: 2 }}>
-        <DocIcon sx={{ color: '#64748b', mr: 2 }} />
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="body2" sx={{ fontWeight: 600 }}>{label}</Typography>
-          <Typography 
-            onClick={() => setSelectedDoc({ url, label })} 
-            sx={{ fontSize: '0.875rem', color: '#0ea5e9', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
-          >
-            View Document
-          </Typography>
-        </Box>
-      </Box>
-    );
-  };
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, minHeight: '100vh', bgcolor: '#f8fafc' }}>
@@ -232,11 +234,11 @@ const TechnicianDetailsPageWrapper = ({ technicianId }: Props) => {
               Documents
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {profile.selfieUrl && <DocumentLink label="Selfie Photo" url={profile.selfieUrl} />}
-              {profile.aadharUrl && <DocumentLink label="Aadhar Card" url={profile.aadharUrl} />}
-              {profile.panUrl && <DocumentLink label="PAN Card" url={profile.panUrl} />}
-              {profile.policeCertUrl && <DocumentLink label="Police Certificate" url={profile.policeCertUrl} />}
-              {profile.tradeLicenseUrl && <DocumentLink label="Trade License" url={profile.tradeLicenseUrl} />}
+              {profile.selfieUrl && <DocumentLink label="Selfie Photo" url={profile.selfieUrl} onView={setSelectedDoc} />}
+              {profile.aadharUrl && <DocumentLink label="Aadhar Card" url={profile.aadharUrl} onView={setSelectedDoc} />}
+              {profile.panUrl && <DocumentLink label="PAN Card" url={profile.panUrl} onView={setSelectedDoc} />}
+              {profile.policeCertUrl && <DocumentLink label="Police Certificate" url={profile.policeCertUrl} onView={setSelectedDoc} />}
+              {profile.tradeLicenseUrl && <DocumentLink label="Trade License" url={profile.tradeLicenseUrl} onView={setSelectedDoc} />}
               
               {!profile.selfieUrl && !profile.aadharUrl && !profile.panUrl && !profile.policeCertUrl && !profile.tradeLicenseUrl && (
                 <Typography variant="body2" color="text.secondary">No documents uploaded.</Typography>

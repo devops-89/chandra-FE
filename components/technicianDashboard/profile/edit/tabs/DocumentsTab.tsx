@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Button, CircularProgress, IconButton, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
+import { Button, CircularProgress, Dialog, DialogContent,DialogTitle, IconButton } from '@mui/material';
+import {useRef, useState } from 'react';
+
 import { TechnicianControllers } from '@/api/technicianControllers';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
+import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
 
 export default function DocumentsTab() {
   const dispatch = useAppDispatch();

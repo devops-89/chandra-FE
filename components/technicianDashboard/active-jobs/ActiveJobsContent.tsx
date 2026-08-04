@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useAppDispatch } from '@/redux/hooks';
-import { setLoading, setError } from '@/redux/slices/activeJobsSlice';
-import { BookingControllers } from '@/api/bookingControllers';
-
 import { Pagination } from '@mui/material';
+import { useEffect, useState } from 'react';
+
+import { BookingControllers } from '@/api/bookingControllers';
+import { useAppDispatch } from '@/redux/hooks';
+import { setError,setLoading } from '@/redux/slices/activeJobsSlice';
+import { BOOKING_STATUS } from '@/types/enums';
+import type { ActiveJob } from '@/types/technicianDashboard/activeJobs.types';
 
 import ActiveJobCard from './details/ActiveJobCard';
 import JobStatusTabs from './header/JobStatusTabs';
-import type { ActiveJob } from '@/types/technicianDashboard/activeJobs.types';
-import { BOOKING_STATUS } from '@/types/enums';
 
 export default function ActiveJobsContent() {
   const dispatch = useAppDispatch();
