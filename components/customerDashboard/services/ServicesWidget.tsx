@@ -4,10 +4,9 @@ import { BuildCircle,ChevronRight } from '@mui/icons-material';
 import { Box, Button, Card, CardContent, CardHeader, CircularProgress,Typography } from '@mui/material';
 import Link from 'next/link';
 
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { useAppSelector } from '@/redux/hooks';
 
 export default function ServicesWidget() {
-  const dispatch = useAppDispatch();
   const { items: services, isLoading } = useAppSelector((state) => state.services);
 
   const displayServices = services.slice(0, 2);
@@ -24,7 +23,7 @@ export default function ServicesWidget() {
             href="/customer/services" 
             endIcon={<ChevronRight />}
             color="success"
-            sx={{ fontWeight: 600 }}
+            sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '1rem' } }}
           >
             View All
           </Button>

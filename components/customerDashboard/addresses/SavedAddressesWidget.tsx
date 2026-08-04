@@ -26,7 +26,7 @@ export default function SavedAddressesWidget() {
             endIcon={<ChevronRight />}
             color="success"
             size="small"
-            sx={{ fontWeight: 600 }}
+            sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '1rem' } }}
           >
             Manage
           </Button>

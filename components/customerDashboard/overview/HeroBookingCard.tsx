@@ -1,9 +1,9 @@
 'use client';
 
-import { Box, Card, CardContent, CircularProgress, Grid,Typography } from '@mui/material';
+import { Box, Card, CardContent, CircularProgress, Typography } from '@mui/material';
 
 import { DASHBOARD_STATS_DATA } from '@/constants/customerDashboard/sidebar/dashboardStats';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { useAppSelector } from '@/redux/hooks';
 import type { StatsCardProps } from '@/types/dashboardTypes/dashboardOverview.types';
 
 function StatsCard({ icon: Icon, title, value, isHighlighted = false }: StatsCardProps) {
@@ -55,8 +55,6 @@ function StatsCard({ icon: Icon, title, value, isHighlighted = false }: StatsCar
 }
 
 export default function HeroBookingCard() {
-  const dispatch = useAppDispatch();
-
   const { stats, isLoading } = useAppSelector(
     (state) => state.customerDashboard,
   );
@@ -91,18 +89,18 @@ export default function HeroBookingCard() {
           <CircularProgress color="success" />
         </Box>
       ) : (
-        <Grid container spacing={3}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr', lg: 'repeat(4, 1fr)' }, gap: 3 }}>
           {dashboardStats.map((stat, index) => (
-            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+            <Box key={index}>
               <StatsCard
                 icon={stat.icon}
                 title={stat.title}
                 value={stat.value}
                 isHighlighted={stat.isHighlighted}
               />
-            </Grid>
+            </Box>
           ))}
-        </Grid>
+        </Box>
       )}
     </Box>
   );

@@ -39,7 +39,7 @@ export default function ProfileSummaryWidget() {
             href="/customer/profile"
             size="small"
             startIcon={<Settings fontSize="small" />}
-            sx={{ color: 'text.secondary', '&:hover': { bgcolor: 'grey.100' } }}
+            sx={{ color: 'text.secondary', '&:hover': { bgcolor: 'grey.100' }, fontSize: { xs: '0.75rem', sm: '1rem' } }}
           >
             Manage
           </Button>

@@ -18,8 +18,12 @@ export default function AddAddressButton() {
           gap-2
           rounded-xl
           bg-emerald-600
-          px-5
-          py-3
+          px-3
+          py-2
+          sm:px-5
+          sm:py-3
+          text-sm
+          sm:text-base
           font-medium
           text-white
           cursor-pointer
@@ -27,7 +31,7 @@ export default function AddAddressButton() {
           transition-colors
         "
       >
-        <Plus size={18} />
+        <Plus size={11} className="sm:w-4.5 sm:h-4.5" />
         Add Address
       </button>
 
