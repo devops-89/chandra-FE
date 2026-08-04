@@ -141,7 +141,7 @@ export default function TransactionsTable() {
             )}
           </>
         ) : (
-          <div className="text-center py-12 text-slate-500 border border-slate-200 rounded-[24px]">
+          <div className="text-center py-12 text-slate-500 border border-slate-200 rounded-3xl">
             No transactions found.
           </div>
         )}
