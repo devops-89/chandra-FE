@@ -25,6 +25,7 @@ export default function AddAddressButton() {
           cursor-pointer
           hover:bg-emerald-700
           transition-colors
+          justify-center
         "
       >
         <Plus size={18} />

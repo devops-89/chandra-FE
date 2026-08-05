@@ -254,7 +254,7 @@ const BookingsTable = () => {
                     {/* Booking ID */}
                     <TableCell sx={{ fontSize: 13 }}>
                       <Typography variant="caption" sx={{ fontWeight: 700, color: '#059669', letterSpacing: '0.04em' }}>
-                        #{booking.bookingId || booking.id}
+                        B-{booking.bookingId || booking.id}
                       </Typography>
                     </TableCell>
 

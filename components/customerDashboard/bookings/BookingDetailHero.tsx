@@ -25,9 +25,8 @@ export default function BookingDetailHero({
   isPaymentLoading = false,
 }: Props) {
   const isActive =
-    booking.status !== 'CANCELLED' &&
-    booking.status !== 'COMPLETED' &&
-    booking.status !== 'REJECTED';
+    booking.status === 'PENDING' || 
+    booking.status === 'ACCEPTED';
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -52,7 +51,8 @@ export default function BookingDetailHero({
           </p>
 
           <div className="flex items-center gap-2 flex-wrap justify-end mt-2">
-            {(booking.paymentStatus || booking.bookingPaymentStatus) !== 'SUCCESS' && 
+            {booking.status !== 'CANCELLED' &&
+             (booking.paymentStatus || booking.bookingPaymentStatus) !== 'SUCCESS' && 
              (booking.paymentStatus || booking.bookingPaymentStatus) !== 'PAID' && (
               <button
                 type="button"

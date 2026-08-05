@@ -22,10 +22,6 @@ export const footerContent = {
       label: 'Terms of Service',
       href: '/terms-of-service',
     },
-    {
-      label: 'Cookies Policy',
-      href: '/cookies-policy',
-    },
   ],
 
   contact: {

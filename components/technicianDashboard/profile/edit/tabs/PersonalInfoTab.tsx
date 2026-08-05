@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { TextField, Button, CircularProgress, Avatar, IconButton } from '@mui/material';
+import { PhotoCamera } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
 import { TechnicianControllers } from '@/api/technicianControllers';
@@ -135,7 +136,7 @@ export default function PersonalInfoTab() {
               boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
             }}
           >
-            <span className="material-symbols-outlined text-sm">file_upload</span>
+            <PhotoCamera fontSize="small" />
           </IconButton>
         </div>
       </div>

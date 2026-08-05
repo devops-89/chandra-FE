@@ -6,7 +6,8 @@ export type BookingTab =
   | 'all'
   | 'pending'
   | 'accepted'
-  | 'completed';
+  | 'completed'
+  | 'cancelled';
 
 interface Props {
   active: BookingTab;
@@ -19,6 +20,7 @@ const BookingTabs = ({ active, onChange }: Props) => {
     { id: 'pending', label: 'Pending' },
     { id: 'accepted', label: 'Accepted' },
     { id: 'completed', label: 'Completed' },
+    { id: 'cancelled', label: 'Cancelled' },
   ];
 
   return (

@@ -63,12 +63,6 @@ const PayoutTable = () => {
         elevation={0}
         sx={{ border: "1px solid #e2e8f0", borderRadius: 3, overflow: "hidden" }}
       >
-        <Box sx={{ p: 2.5, backgroundColor: "#059669", color: "#fff" }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            Technician Payouts
-          </Typography>
-        </Box>
-
         <TableContainer>
           <Table size="small" sx={{ minWidth: 800 }}>
             <TableHead>
@@ -88,20 +82,17 @@ const PayoutTable = () => {
                 <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   Payment Status
                 </TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }} align="center">
-                  Actions
-                </TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">Loading...</TableCell>
+                  <TableCell colSpan={5} align="center">Loading...</TableCell>
                 </TableRow>
               ) : payments.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">No payouts found.</TableCell>
+                  <TableCell colSpan={5} align="center">No payouts found.</TableCell>
                 </TableRow>
               ) : payments.map((payout) => {
                 const paymentStatusConfig = STATUS_CHIP[payout.status] ?? {
@@ -155,16 +146,6 @@ const PayoutTable = () => {
                           color: paymentStatusConfig.color,
                         }}
                       />
-                    </TableCell>
-
-                    {/* Actions */}
-                    <TableCell align="center">
-                      <button
-                        onClick={() => handleOpenReleaseModal(payout)}
-                        className="text-emerald-600 hover:text-emerald-700 font-semibold text-xs transition-colors cursor-pointer"
-                      >
-                        View
-                      </button>
                     </TableCell>
                   </TableRow>
                 );

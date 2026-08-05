@@ -26,7 +26,15 @@ export default function GlobalSnackbar() {
         onClose={handleClose} 
         severity={severity} 
         variant="filled" 
-        sx={{ width: '100%', borderRadius: '12px', boxShadow: 3 }}
+        sx={{ 
+          width: 'auto',
+          maxWidth: { xs: '90vw', sm: '400px' },
+          borderRadius: '12px', 
+          boxShadow: 3,
+          fontSize: { xs: '0.8rem', sm: '0.875rem' },
+          py: { xs: 0.5, sm: 1 },
+          px: { xs: 1.5, sm: 2 }
+        }}
       >
         {message}
       </Alert>

@@ -6,6 +6,8 @@ import { useState } from 'react';
 
 import { useServiceManager } from '@/hooks/useServiceManager';
 import type { AdminService, EditServiceFormData } from '@/types/admin/service.types';
+import { useAppDispatch } from '@/redux/hooks';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
 import type { Specification } from '../addService/AddServiceForm';
 import SpecificationsStep from '../addService/SpecificationsStep';
@@ -98,6 +100,7 @@ function ServiceEditFields({
   onClose: () => void;
   onSave:  (data: EditServiceFormData) => void;
 }) {
+  const dispatch = useAppDispatch();
   const [form, setForm] = useState<EditServiceFormData>({
     id:              service.id,
     name:            service.name,
@@ -124,6 +127,28 @@ function ServiceEditFields({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const isChanged = 
+      form.name !== service.name ||
+      form.description !== service.description ||
+      form.isActive !== service.isActive ||
+      form.serviceBasePrice !== String(service.price) ||
+      form.perHourRate !== (service.perHourRate ? String(service.perHourRate) : '') ||
+      form.perKmRate !== (service.perKmRate ? String(service.perKmRate) : '') ||
+      form.platformFee !== (service.platformFee ? String(service.platformFee) : '') ||
+      form.gst !== (service.gst ? String(service.gst) : '') ||
+      form.emergencyCharge !== (service.emergencyCharge ? String(service.emergencyCharge) : '') ||
+      JSON.stringify(specifications) !== JSON.stringify((service.specifications ?? []).map((spec) => ({
+        ...spec,
+        id: String(spec.id),
+        values: spec.values ?? [],
+      })));
+
+    if (!isChanged) {
+      dispatch(showSnackbar({ message: 'No changes detected to update.', severity: 'info' }));
+      return;
+    }
+
     onSave({ ...form, specifications });
   };
 

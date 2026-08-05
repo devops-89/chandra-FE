@@ -47,6 +47,27 @@ export default function ServiceAreaTab() {
     initialValues: initialFormValues,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      if (editingLocId) {
+        const locToEdit: any = locations.find((l: any) => l.id === editingLocId);
+        if (locToEdit) {
+          const hasChanged = 
+            values.city !== (locToEdit.city || '') ||
+            values.state !== (locToEdit.state || '') ||
+            values.pincode !== (locToEdit.pincode || '') ||
+            values.fullAddress !== (locToEdit.fullAddress || '') ||
+            values.serviceRadiusKm !== (locToEdit.serviceRadiusKm || 15) ||
+            values.latitude !== (locToEdit.latitude || 28.6139) ||
+            values.longitude !== (locToEdit.longitude || 77.2090) ||
+            values.isActive !== (locToEdit.isActive ?? true) ||
+            values.isDefault !== (locToEdit.isDefault ?? true);
+            
+          if (!hasChanged) {
+            dispatch(showSnackbar({ message: 'No changes detected to update.', severity: 'info' }));
+            setModalOpen(false);
+            return;
+          }
+        }
+      }
       try {
         setLoading(true);
         if (editingLocId) {

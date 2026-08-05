@@ -65,6 +65,24 @@ export default function BankDetailsTab() {
     initialValues: initialFormValues,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      if (editingAccId) {
+        const accToEdit = payoutAccounts.find((a: any) => a.id === editingAccId);
+        if (accToEdit) {
+          const hasChanged = 
+            values.accountType !== (accToEdit.accountType || 'VPA') ||
+            values.upiId !== (accToEdit.upiId || '') ||
+            values.accountHolderName !== (accToEdit.accountHolderName || '') ||
+            values.bankName !== (accToEdit.bankName || '') ||
+            values.accountNumber !== (accToEdit.accountNumber || '') ||
+            values.ifscCode !== (accToEdit.ifscCode || '');
+            
+          if (!hasChanged) {
+            dispatch(showSnackbar({ message: 'No changes detected to update.', severity: 'info' }));
+            setModalOpen(false);
+            return;
+          }
+        }
+      }
       try {
         setLoading(true);
         // Clean up payload based on type

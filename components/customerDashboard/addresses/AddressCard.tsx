@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { deleteAddress, updateAddress } from '@/redux/slices/customerProfileSlice';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 import type { Props } from '@/types/addressTypes/address.types';
 
 export default function AddressCard({
@@ -92,6 +93,21 @@ export default function AddressCard({
     }
 
     const finalLabel = label === 'Other' ? (customLabel.trim() || 'Other') : label;
+
+    const hasChanged = 
+      fullAddress.trim() !== (backendAddress?.fullAddress ?? address.address) ||
+      city.trim() !== (backendAddress?.city ?? '') ||
+      state.trim() !== (backendAddress?.state ?? '') ||
+      pincode.trim() !== (backendAddress?.pincode ?? '') ||
+      latitude !== (backendAddress?.latitude?.toString() ?? '28.6139') ||
+      longitude !== (backendAddress?.longitude?.toString() ?? '77.2090') ||
+      finalLabel !== (backendAddress?.label ?? address.label);
+
+    if (!hasChanged) {
+      dispatch(showSnackbar({ message: 'No changes detected to update.', severity: 'info' }));
+      setIsEditOpen(false);
+      return;
+    }
 
     setIsSubmitting(true);
     try {

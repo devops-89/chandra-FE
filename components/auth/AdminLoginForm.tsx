@@ -22,6 +22,21 @@ type LoginFormData = {
 
 type LoginErrors = Partial<LoginFormData>;
 
+const textFieldStyles = {
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '0.5rem',
+    '&:hover fieldset': {
+      borderColor: '#10b981',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#059669',
+    },
+  },
+  '& .MuiInputLabel-root.Mui-focused': {
+    color: '#059669',
+  },
+};
+
 export const AdminLoginForm = () => {
   const router = useRouter();
   const [form, setForm] = useState<LoginFormData>({ identifier: '', password: '' });
@@ -169,11 +184,7 @@ export const AdminLoginForm = () => {
               onChange={(e) => handleChange('identifier', e.target.value)}
               error={!!errors.identifier}
               helperText={errors.identifier}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '8px',
-                },
-              }}
+              sx={textFieldStyles}
             />
 
             <TextField
@@ -186,11 +197,7 @@ export const AdminLoginForm = () => {
               onChange={(e) => handleChange('password', e.target.value)}
               error={!!errors.password}
               helperText={errors.password}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '8px',
-                },
-              }}
+              sx={textFieldStyles}
               slotProps={{
                 input: {
                   endAdornment: (

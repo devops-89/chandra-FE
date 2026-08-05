@@ -37,6 +37,13 @@ const nearbyJobsSlice = createSlice({
       state.jobs = action.payload;
     },
 
+    addJob: (
+      state,
+      action: PayloadAction<NearbyJob>
+    ) => {
+      state.jobs.unshift(action.payload);
+    },
+
     selectJob: (
       state,
       action: PayloadAction<NearbyJob>
@@ -94,6 +101,7 @@ const nearbyJobsSlice = createSlice({
 
 export const {
   setJobs,
+  addJob,
   selectJob,
   clearSelectedJob,
   setServiceTypeFilter,

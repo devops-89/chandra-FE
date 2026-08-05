@@ -43,10 +43,41 @@ export default function TechnicianHeader({
           socket.on('new_booking', (booking) => {
             setPopupNotification({ open: true, message: `New booking request received for ${booking?.serviceInfo?.name || 'a service'}!` });
             
-            // Dispatch custom event to trigger a refetch in dashboard components
-            window.dispatchEvent(new Event('refresh_bookings'));
+            console.log("🔔 NEW BOOKING DATA FROM WEBSOCKET:", booking);
+            
+            // Dispatch custom event to trigger a local state update in dashboard components
+            window.dispatchEvent(new CustomEvent('new_booking_data', { detail: booking }));
             
             // Auto close after 5 seconds
+            setTimeout(() => {
+              setPopupNotification(prev => ({ ...prev, open: false }));
+            }, 5000);
+          });
+
+          socket.on('booking_assigned', (jobDetails) => {
+            console.log("Admin manually assigned a job to you:", jobDetails);
+            setPopupNotification({ open: true, message: `You have been assigned a new job for ${jobDetails?.serviceInfo?.name || 'a service'} by the admin!` });
+            
+            // Adding a delay to ensure backend has fully committed the data before refetching
+            setTimeout(() => {
+              window.dispatchEvent(new Event('refresh_bookings'));
+            }, 1500);
+            
+            // Auto close after 5 seconds
+            setTimeout(() => {
+              setPopupNotification(prev => ({ ...prev, open: false }));
+            }, 5000);
+          });
+
+          socket.on('booking_cancelled', (data) => {
+            console.log("Booking cancelled by customer:", data);
+            setPopupNotification({ open: true, message: `A customer has cancelled their booking.` });
+            
+            // Trigger refresh so that active jobs list updates
+            setTimeout(() => {
+              window.dispatchEvent(new Event('refresh_bookings'));
+            }, 1500);
+            
             setTimeout(() => {
               setPopupNotification(prev => ({ ...prev, open: false }));
             }, 5000);

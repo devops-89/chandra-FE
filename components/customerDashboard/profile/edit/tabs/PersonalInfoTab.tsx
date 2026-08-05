@@ -67,6 +67,19 @@ export default function PersonalInfoTab() {
   };
 
   const handleSubmit = async () => {
+    const hasChanged = 
+      formData.firstName !== (profile?.firstName || '') ||
+      formData.lastName !== (profile?.lastName || '') ||
+      formData.email !== (profile?.email || '') ||
+      formData.phone !== (profile?.phone || '') ||
+      formData.emergencyContact !== (profile?.emergencyContact || '') ||
+      formData.profileImage !== null;
+
+    if (!hasChanged) {
+      dispatch(showSnackbar({ message: 'No changes detected to update.', severity: 'info' }));
+      return;
+    }
+
     try {
       setLoading(true);
       const data = new FormData();

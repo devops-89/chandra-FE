@@ -1,6 +1,6 @@
 'use client';
 
-import { Edit as EditIcon, Save as SaveIcon } from '@mui/icons-material';
+import { Edit as EditIcon, Save as SaveIcon, PhotoCamera } from '@mui/icons-material';
 import {
     Avatar,
     Box,
@@ -130,12 +130,13 @@ export default function ProfileContent() {
           boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.05)',
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
           <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary' }}>
             Profile Summary
           </Typography>
           <Button
             variant="outlined"
+            size="small"
             startIcon={<EditIcon />}
             onClick={() => setIsEditing(!isEditing)}
             color={isEditing ? 'inherit' : 'success'}
@@ -193,7 +194,7 @@ export default function ProfileContent() {
                         boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
                       }}
                     >
-                      <span className="material-symbols-outlined text-sm">file_upload</span>
+                      <PhotoCamera fontSize="small" />
                     </IconButton>
                   </>
                 )}
@@ -222,55 +223,55 @@ export default function ProfileContent() {
           <Grid size={{ xs: 12, md: 8 }}>
             <Grid container spacing={3} sx={{ mt: { xs: 0, md: 2 } }}>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                     First Name:
                   </Typography>
-                  <Typography variant="body1" sx={{ color: 'text.primary' }}>
+                  <Typography variant="body1" sx={{ color: 'text.primary', wordBreak: 'break-word' }}>
                     {profile?.firstName || '-'}
                   </Typography>
                 </Box>
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                     Last Name:
                   </Typography>
-                  <Typography variant="body1" sx={{ color: 'text.primary' }}>
+                  <Typography variant="body1" sx={{ color: 'text.primary', wordBreak: 'break-word' }}>
                     {profile?.lastName || '-'}
                   </Typography>
                 </Box>
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                     Phone Number:
                   </Typography>
-                  <Typography variant="body1" sx={{ color: 'text.primary' }}>
+                  <Typography variant="body1" sx={{ color: 'text.primary', wordBreak: 'break-word' }}>
                     {profile?.phone || '-'}
                   </Typography>
                 </Box>
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                     Emergency Contact:
                   </Typography>
-                  <Typography variant="body1" sx={{ color: 'text.primary' }}>
+                  <Typography variant="body1" sx={{ color: 'text.primary', wordBreak: 'break-word' }}>
                     {profile?.emergencyContact || '-'}
                   </Typography>
                 </Box>
               </Grid>
               
               <Grid size={{ xs: 12, sm: 6 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                     Account Status:
                   </Typography>
-                  <Typography variant="body1" sx={{ color: 'success.main', fontWeight: 600, textTransform: 'capitalize' }}>
+                  <Typography variant="body1" sx={{ color: 'success.main', fontWeight: 600, textTransform: 'capitalize', wordBreak: 'break-word' }}>
                     {profile?.status || '-'}
                   </Typography>
                 </Box>
@@ -374,7 +375,7 @@ export default function ProfileContent() {
               </Grid>
 
               <Grid size={{ xs: 12 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 2 }}>
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', sm: 'row' }, justifyContent: 'flex-end', mt: 2, gap: 2 }}>
                   <Button
                     variant="text"
                     color="inherit"
@@ -384,6 +385,8 @@ export default function ProfileContent() {
                       setPreviewImage(profile?.profileImage || null);
                     }}
                     disabled={isUpdating}
+                    fullWidth
+                    sx={{ width: { xs: '100%', sm: 'auto' } }}
                   >
                     Cancel
                   </Button>
@@ -393,7 +396,8 @@ export default function ProfileContent() {
                     color="success"
                     startIcon={isUpdating ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
                     disabled={isUpdating}
-                    sx={{ px: 4, borderRadius: 2 }}
+                    fullWidth
+                    sx={{ px: 4, borderRadius: 2, width: { xs: '100%', sm: 'auto' } }}
                   >
                     Save Changes
                   </Button>

@@ -16,114 +16,123 @@ export default function ServiceProgress() {
       className="
         rounded-3xl
         bg-amber-300
-        p-8
+        p-6
+        sm:p-8
         shadow-sm
+        w-full
       "
     >
       <h3
         className="
-          mb-8
-          text-xl
+          mb-6
+          sm:mb-8
+          text-lg
+          sm:text-xl
           font-semibold
         "
       >
         Active Service Progress
       </h3>
 
-      <div className="flex items-center justify-between">
-        {STEPS.map((step, index) => {
-          const Icon = step.icon;
+      <div className="overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="flex items-center justify-between min-w-[500px]">
+          {STEPS.map((step, index) => {
+            const Icon = step.icon;
 
-          const completed =
-            index < CURRENT_STEP;
+            const completed =
+              index < CURRENT_STEP;
 
-          const active =
-            index === CURRENT_STEP;
+            const active =
+              index === CURRENT_STEP;
 
-          return (
-            <div
-              key={step.label}
-              className="
-                relative
-                flex
-                flex-1
-                flex-col
-                items-center
-              "
-            >
-              {index !== STEPS.length - 1 && (
-                <div
-                  className={`
-                    absolute
-                    left-1/2
-                    top-5
-                    h-1
-                    w-full
-                    ${
-                      index < CURRENT_STEP
-                        ? 'bg-emerald-600'
-                        : 'bg-slate-200'
-                    }
-                  `}
-                />
-              )}
-
-              {active ? (
-                <motion.div
-                  animate={{
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 2,
-                  }}
-                  className="
-                    z-10
-                    flex
-                    h-10
-                    w-10
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-emerald-600
-                    text-white
-                  "
-                >
-                  <Icon size={18} />
-                </motion.div>
-              ) : (
-                <div
-                  className={`
-                    z-10
-                    flex
-                    h-10
-                    w-10
-                    items-center
-                    justify-center
-                    rounded-full
-                    ${
-                      completed
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-slate-200 text-slate-500'
-                    }
-                  `}
-                >
-                  <Icon size={18} />
-                </div>
-              )}
-
-              <span
+            return (
+              <div
+                key={step.label}
                 className="
-                  mt-3
-                  text-sm
-                  font-medium
+                  relative
+                  flex
+                  flex-1
+                  flex-col
+                  items-center
                 "
               >
-                {step.label}
-              </span>
-            </div>
-          );
-        })}
+                {index !== STEPS.length - 1 && (
+                  <div
+                    className={`
+                      absolute
+                      left-1/2
+                      top-5
+                      h-1
+                      w-full
+                      ${
+                        index < CURRENT_STEP
+                          ? 'bg-emerald-600'
+                          : 'bg-slate-200/50'
+                      }
+                    `}
+                  />
+                )}
+
+                {active ? (
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.1, 1],
+                    }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 2,
+                    }}
+                    className="
+                      z-10
+                      flex
+                      h-10
+                      w-10
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-emerald-600
+                      text-white
+                    "
+                  >
+                    <Icon size={18} />
+                  </motion.div>
+                ) : (
+                  <div
+                    className={`
+                      z-10
+                      flex
+                      h-10
+                      w-10
+                      items-center
+                      justify-center
+                      rounded-full
+                      ${
+                        completed
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-white text-slate-400'
+                      }
+                    `}
+                  >
+                    <Icon size={18} />
+                  </div>
+                )}
+
+                <span
+                  className="
+                    mt-3
+                    text-xs
+                    sm:text-sm
+                    font-medium
+                    text-center
+                    px-2
+                  "
+                >
+                  {step.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

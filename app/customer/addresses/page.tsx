@@ -18,7 +18,7 @@ export default function AddressesPage() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-slate-950">Addresses</h1>
             <p className="text-slate-500">Manage your saved locations.</p>

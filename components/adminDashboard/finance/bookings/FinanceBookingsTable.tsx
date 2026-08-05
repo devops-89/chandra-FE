@@ -74,12 +74,6 @@ const FinanceBookingsTable = () => {
       </div>
 
       <Paper elevation={0} sx={{ border: "1px solid #e2e8f0", borderRadius: 3, overflow: "hidden" }}>
-        <Box sx={{ p: 2.5, backgroundColor: "#059669", color: "#fff" }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            Completed Bookings
-          </Typography>
-        </Box>
-
         <TableContainer>
           <Table size="small" sx={{ minWidth: 800 }}>
             <TableHead>

@@ -3,7 +3,7 @@ import type { PublicNavigationItem } from '@/types/navigation.types';
 export const publicNavItems: PublicNavigationItem[] = [
   {
     label: 'Home',
-    href: '#home',
+    href: '/',
   },
   {
     label: 'Services',
@@ -11,10 +11,10 @@ export const publicNavItems: PublicNavigationItem[] = [
   },
   {
     label: 'About',
-    href: '#about',
+    href: '/about',
   },
   {
     label: 'Contact',
-    href: '#contact',
+    href: '/contact',
   },
 ];

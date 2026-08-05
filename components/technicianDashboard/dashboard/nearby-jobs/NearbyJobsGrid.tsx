@@ -28,7 +28,27 @@ export default function NearbyJobsGrid() {
 
     const handleRefresh = () => fetchAvailable();
     window.addEventListener('refresh_bookings', handleRefresh);
-    return () => window.removeEventListener('refresh_bookings', handleRefresh);
+
+    const handleNewBooking = (event: any) => {
+      const b = event.detail;
+      if (b && b.bookingId) {
+        const newJob = {
+          id: b.bookingId,
+          service: { name: b.serviceInfo?.name },
+          customer: { firstName: b.customerInfo?.firstName, lastName: b.customerInfo?.lastName },
+          distance: '2.4 Km',
+          totalAmount: b.bookingInfo?.priceBreakdown?.technicianEarning || b.bookingInfo?.totalAmount,
+          scheduledAt: b.bookingInfo?.scheduledAt,
+        };
+        setJobs(prev => [newJob, ...prev]);
+      }
+    };
+    window.addEventListener('new_booking_data', handleNewBooking);
+
+    return () => {
+      window.removeEventListener('refresh_bookings', handleRefresh);
+      window.removeEventListener('new_booking_data', handleNewBooking);
+    };
   }, []);
 
   const handleAccept = async (job: any) => {

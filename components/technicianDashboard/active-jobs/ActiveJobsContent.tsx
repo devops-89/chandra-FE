@@ -5,7 +5,7 @@ import { useAppDispatch } from '@/redux/hooks';
 import { setLoading, setError } from '@/redux/slices/activeJobsSlice';
 import { BookingControllers } from '@/api/bookingControllers';
 
-import { Pagination } from '@mui/material';
+import { Pagination, Stack } from '@mui/material';
 
 import ActiveJobCard from './details/ActiveJobCard';
 import JobStatusTabs from './header/JobStatusTabs';
@@ -104,25 +104,25 @@ export default function ActiveJobsContent() {
           ))}
 
           {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-8">
-              <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={(event, value) => setPage(value)}
-                  color="primary"
-                  sx={{
-                    '& .MuiPaginationItem-root': {
-                      color: '#0f172a', // slate-900
-                      fontFamily: 'inherit',
-                    },
-                    '& .Mui-selected': {
-                      backgroundColor: '#10b981 !important', // emerald-500
-                      color: '#ffffff',
-                    },
-                  }}
-                />
-            </div>
+          {totalPages >= 1 && (
+            <Stack spacing={2} className="items-center mt-8 pb-4">
+              <Pagination 
+                count={totalPages} 
+                page={page} 
+                onChange={(e, val) => setPage(val)} 
+                color="standard" 
+                shape="rounded"
+                sx={{
+                  '& .MuiPaginationItem-root.Mui-selected': {
+                    backgroundColor: '#059669',
+                    color: 'white',
+                    '&:hover': {
+                      backgroundColor: '#047857',
+                    }
+                  }
+                }}
+              />
+            </Stack>
           )}
         </div>
       ) : (

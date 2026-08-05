@@ -128,7 +128,9 @@ export default function SkillsAndServicesTab() {
   const handleSaveServices = async () => {
     try {
       setLoading(true);
-      await TechnicianControllers.updateTechnicianServices(selectedServiceIds);
+      // Filter out any stale/inactive service IDs that might still be in the profile
+      const validServiceIds = selectedServiceIds.filter(id => allServices.some(s => s.id === id));
+      await TechnicianControllers.updateTechnicianServices(validServiceIds);
       dispatch(fetchTechnicianProfile());
       dispatch(showSnackbar({ message: 'Services updated successfully', severity: 'success' }));
       setServicesModalOpen(false);

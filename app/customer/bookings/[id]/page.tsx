@@ -164,8 +164,8 @@ export default function BookingDetailsPage() {
         </div>
 
         {loading ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-500">
-            Loading booking details...
+          <div className="flex justify-center items-center py-24">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600" />
           </div>
         ) : error ? (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">

@@ -6,6 +6,12 @@ import { BookingControllers } from '@/api/bookingControllers';
 import { Loader2, ChevronDown } from 'lucide-react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 const statusConfig: Record<string, { bg: string; text: string; label: string }> = {
   assigned: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Assigned' },
@@ -47,6 +53,7 @@ export default function ActiveJobStatus({ onStatusUpdate }: { onStatusUpdate?: (
   const currentJob = useJobContext();
   const [isLoading, setIsLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   
   const status = currentJob?.status || 'accepted';
   const config = statusConfig[status.toLowerCase()] || statusConfig.accepted;
@@ -67,6 +74,11 @@ export default function ActiveJobStatus({ onStatusUpdate }: { onStatusUpdate?: (
     handleClose();
     if (!currentJob?.rawId || newStatus.toLowerCase() === status.toLowerCase()) return;
 
+    if (newStatus === 'CANCELLED') {
+      setCancelDialogOpen(true);
+      return;
+    }
+
     try {
       setIsLoading(true);
       await BookingControllers.updateBookingStatus(currentJob.rawId, newStatus);
@@ -76,6 +88,28 @@ export default function ActiveJobStatus({ onStatusUpdate }: { onStatusUpdate?: (
     } catch (error) {
       console.error('Failed to update status:', error);
       alert('Failed to update status. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleConfirmCancel = async () => {
+    setCancelDialogOpen(false);
+    if (!currentJob?.rawId) return;
+
+    try {
+      setIsLoading(true);
+      await BookingControllers.cancelBooking({ 
+        bookingId: currentJob.rawId,
+        cancellationReason: 'Cancelled by technician'
+      });
+      if (onStatusUpdate) {
+        onStatusUpdate('CANCELLED');
+      }
+      window.dispatchEvent(new Event('refresh_bookings'));
+    } catch (error) {
+      console.error('Failed to cancel booking:', error);
+      alert('Failed to cancel booking. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -155,6 +189,35 @@ export default function ActiveJobStatus({ onStatusUpdate }: { onStatusUpdate?: (
           </MenuItem>
         ))}
       </Menu>
+
+      <Dialog open={cancelDialogOpen} onClose={() => setCancelDialogOpen(false)} sx={{ '& .MuiDialog-paper': { borderRadius: '16px', padding: '16px' } }}>
+        <DialogTitle sx={{ fontWeight: 'bold', color: '#0f172a', paddingBottom: '8px' }}>
+          Cancel Booking
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: '#475569' }}>
+            Are you sure you want to cancel this booking? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ padding: '16px' }}>
+          <Button onClick={() => setCancelDialogOpen(false)} sx={{ color: '#64748b', fontWeight: 600 }}>
+            No, keep it
+          </Button>
+          <Button 
+            onClick={handleConfirmCancel} 
+            variant="contained" 
+            sx={{ 
+              backgroundColor: '#ef4444', 
+              color: 'white', 
+              fontWeight: 600,
+              boxShadow: 'none',
+              '&:hover': { backgroundColor: '#dc2626', boxShadow: 'none' } 
+            }}
+          >
+            Yes, Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

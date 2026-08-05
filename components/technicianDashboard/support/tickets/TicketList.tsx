@@ -19,7 +19,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Typography
+  Typography,
+  Box,
+  Card
 } from '@mui/material';
 import { Visibility as ViewIcon, Add as AddIcon } from '@mui/icons-material';
 import { BookingControllers } from '@/api/bookingControllers';
@@ -161,7 +163,7 @@ export default function TicketList() {
           </div>
         ) : tickets.length > 0 ? (
           <>
-            <Paper elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: 3, overflow: 'hidden' }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: 3, overflow: 'hidden', display: { xs: 'none', md: 'block' } }}>
               <TableContainer>
                 <Table sx={{ minWidth: 800 }}>
                   <TableHead>
@@ -212,7 +214,43 @@ export default function TicketList() {
               </TableContainer>
             </Paper>
 
-            {totalPages > 1 && (
+            {/* Mobile View */}
+            <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 2 }}>
+              {tickets.map((ticket) => (
+                <Card key={ticket.id} variant="outlined" sx={{ borderRadius: 3, p: 2, bgcolor: 'white', borderColor: '#e2e8f0' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                      {ticket.id}
+                    </Typography>
+                    <TicketStatusBadge status={ticket.status} />
+                  </Box>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
+                    {ticket.subject}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                    Booking: {ticket.bookingId ? ticket.bookingId : '-'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Service: {ticket.category}
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="caption" color="text.secondary">
+                      {ticket.createdAt}
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => handleTicketClick(ticket.rawId)}
+                      sx={{ textTransform: 'none', borderRadius: 2 }}
+                    >
+                      View Details
+                    </Button>
+                  </Box>
+                </Card>
+              ))}
+            </Box>
+
+            {totalPages > 0 && (
               <div className="flex justify-center mt-8">
                 <Pagination
                   count={totalPages}

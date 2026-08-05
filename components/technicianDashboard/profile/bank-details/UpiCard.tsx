@@ -56,16 +56,19 @@ export default function UpiCard() {
       <button
         onClick={() => router.push('/technician/profile/edit')}
         className="
-          mt-auto
+          mt-6
           w-full
-          py-3
-          rounded-2xl
+          sm:w-auto
+          px-8
+          py-2.5
+          rounded-xl
           border
-          cursor-pointer
           bg-emerald-600
           hover:bg-emerald-700
           text-white
           font-semibold
+          cursor-pointer
+          transition-colors
         "
       >
         Update UPI

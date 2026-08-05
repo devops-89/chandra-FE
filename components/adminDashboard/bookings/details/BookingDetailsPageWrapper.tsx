@@ -4,7 +4,17 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { AdminControllers } from '@/api/adminControllers';
-import { ArrowBack as ArrowBackIcon, Info as InfoIcon } from '@mui/icons-material';
+import { 
+  ArrowBack as ArrowBackIcon, 
+  Info as InfoIcon,
+  CalendarToday as CalendarIcon,
+  Person as PersonIcon,
+  Phone as PhoneIcon,
+  LocationOn as LocationIcon,
+  Build as BuildIcon,
+  Payments as PaymentsIcon,
+  Description as DescriptionIcon
+} from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -66,14 +76,14 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
   const customerName = ((booking.customer?.firstName || '') + ' ' + (booking.customer?.lastName || '')).trim() || booking.customer?.username || 'Unknown Customer';
   const technicianName = booking.technician ? ((booking.technician?.firstName || '') + ' ' + (booking.technician?.lastName || '')).trim() || booking.technician?.username : 'Unassigned';
 
-  const InfoItem = ({ label, value }: { label: string, value: React.ReactNode }) => (
-    <Box sx={{ display: 'flex', alignItems: 'flex-start', p: 2, borderRadius: 3, transition: 'all 0.3s ease', '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', transform: 'translateY(-2px)' } }}>
-      <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: 'rgba(5, 150, 105, 0.1)', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
-        <InfoIcon sx={{ fontSize: 22 }} />
+  const InfoItem = ({ label, value, icon }: { label: string, value: React.ReactNode, icon?: React.ReactNode }) => (
+    <Box sx={{ display: 'flex', alignItems: 'flex-start', p: 2, borderRadius: 3, border: '1px solid #f8fafc', bgcolor: '#fafafa', transition: 'all 0.2s ease', '&:hover': { bgcolor: '#f1f5f9', borderColor: '#e2e8f0', transform: 'translateY(-1px)' } }}>
+      <Box sx={{ p: 1.5, borderRadius: '10px', bgcolor: '#ffffff', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.02)', border: '1px solid #f1f5f9' }}>
+        {icon || <InfoIcon sx={{ fontSize: 20 }} />}
       </Box>
-      <Box>
-        <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>{label}</Typography>
-        <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary', wordBreak: 'break-word' }}>{value || "—"}</Typography>
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 700, mb: 0.25, textTransform: 'uppercase', letterSpacing: '0.04em', fontSize: '0.7rem' }}>{label}</Typography>
+        <Typography variant="body1" sx={{ fontWeight: 600, color: '#0f172a', wordBreak: 'break-word', fontSize: '0.95rem' }}>{value || "—"}</Typography>
       </Box>
     </Box>
   );
@@ -82,7 +92,7 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
     <Box sx={{ p: { xs: 2, md: 4 }, minHeight: '100vh', bgcolor: '#f8fafc' }}>
       <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: '#0f172a' }}>Booking Details #{booking.id || booking.bookingId}</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#0f172a' }}>Booking Details</Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>View full details of this service request.</Typography>
         </Box>
         <Button
@@ -107,7 +117,7 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
 
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 4 }}>
         {/* Left Card: Summary */}
-        <Box sx={{ width: { xs: '100%', lg: '35%' }, flexShrink: 0 }}>
+        <Box sx={{ width: { xs: '100%', lg: '35%' }, flexShrink: 0, position: 'sticky', top: 24 }}>
           <Paper 
             sx={{ 
               borderRadius: 4, 
@@ -115,8 +125,7 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)', 
               border: '1px solid rgba(255,255,255,0.5)',
               bgcolor: '#ffffff',
-              position: 'sticky',
-              top: 24
+              mb: 3
             }} 
           >
             <Box sx={{ height: 120, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', position: 'relative' }}>
@@ -173,6 +182,29 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
               </Box>
             </Box>
           </Paper>
+
+          {/* Cancellation Reason Red Block */}
+          {booking.status === 'CANCELLED' && booking.cancellationReason && (
+            <Paper
+              sx={{
+                p: 2.5,
+                borderRadius: 4,
+                bgcolor: '#fff1f2', // soft rose background
+                border: '1px solid #ffe4e6',
+                boxShadow: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1
+              }}
+            >
+              <Typography variant="caption" sx={{ fontWeight: 800, color: '#e11d48', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                <InfoIcon sx={{ fontSize: 16 }} /> Cancelled by Customer
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#881337', fontWeight: 500, lineHeight: 1.6 }}>
+                {booking.cancellationReason}
+              </Typography>
+            </Paper>
+          )}
         </Box>
 
         {/* Right Card: Full Details */}
@@ -190,24 +222,24 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
               <Box component="span" sx={{ width: 8, height: 24, bgcolor: '#059669', borderRadius: 4, mr: 2 }} />
               Service & Details
             </Typography>
-            
-            <Grid container spacing={2}>
+                     <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <InfoItem label="Service Requested" value={booking.service?.name} />
+                <InfoItem icon={<BuildIcon fontSize="small" />} label="Service Requested" value={booking.service?.name} />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <InfoItem label="Scheduled Date" value={new Date(booking.scheduledAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })} />
+                <InfoItem icon={<CalendarIcon fontSize="small" />} label="Scheduled Date" value={new Date(booking.scheduledAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })} />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <InfoItem label="Technician Assigned" value={technicianName} />
+                <InfoItem icon={<PersonIcon fontSize="small" />} label="Technician Assigned" value={technicianName} />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <InfoItem label="Technician Phone" value={booking.technician?.phone || 'N/A'} />
+                <InfoItem icon={<PhoneIcon fontSize="small" />} label="Technician Phone" value={booking.technician?.phone || 'N/A'} />
               </Grid>
               
               {booking.address && (
                 <Grid size={{ xs: 12 }}>
                   <InfoItem 
+                    icon={<LocationIcon fontSize="small" />}
                     label="Service Address" 
                     value={`${booking.address.fullAddress || ''}, ${booking.address.city || ''}, ${booking.address.state || ''} - ${booking.address.pincode || ''}`} 
                   />
@@ -233,7 +265,7 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
                     const label = specDef.name;
                     return (
                       <Grid size={{ xs: 12, sm: 6 }} key={idx}>
-                        <InfoItem label={label} value={spec.value} />
+                        <InfoItem icon={<DescriptionIcon fontSize="small" />} label={label} value={spec.value} />
                       </Grid>
                     );
                   })}
@@ -251,46 +283,46 @@ const BookingDetailsPageWrapper = ({ bookingId }: Props) => {
                 <Grid container spacing={2}>
                   {booking.service?.pricingRule?.isServiceBasePriceApplied && (
                     <Grid size={{ xs: 12, sm: 6 }}>
-                      <InfoItem label="Base Price" value={`₹${booking.priceBreakdown.serviceBasePrice || 0}`} />
+                      <InfoItem icon={<PaymentsIcon fontSize="small" />} label="Base Price" value={`₹${booking.priceBreakdown.serviceBasePrice || 0}`} />
                     </Grid>
                   )}
                   {booking.service?.pricingRule?.isSurgeEnabled && (
                     <Grid size={{ xs: 12, sm: 6 }}>
-                      <InfoItem label="Surge Charge" value={`₹${booking.priceBreakdown.surgeCharge || 0}`} />
+                      <InfoItem icon={<PaymentsIcon fontSize="small" />} label="Surge Charge" value={`₹${booking.priceBreakdown.surgeCharge || 0}`} />
                     </Grid>
                   )}
                   {booking.service?.pricingRule?.isDistanceKmApplied && (
                     <Grid size={{ xs: 12, sm: 6 }}>
-                      <InfoItem label="Distance Charge" value={`₹${booking.priceBreakdown.distanceCharge || 0}`} />
+                      <InfoItem icon={<PaymentsIcon fontSize="small" />} label="Distance Charge" value={`₹${booking.priceBreakdown.distanceCharge || 0}`} />
                     </Grid>
                   )}
                   {booking.service?.pricingRule?.isWeekendApplied && (
                     <Grid size={{ xs: 12, sm: 6 }}>
-                      <InfoItem label="Weekend Charge" value={`₹${booking.priceBreakdown.weekendCharge || 0}`} />
+                      <InfoItem icon={<PaymentsIcon fontSize="small" />} label="Weekend Charge" value={`₹${booking.priceBreakdown.weekendCharge || 0}`} />
                     </Grid>
                   )}
                   {booking.service?.pricingRule?.isPeakHourApplied && (
                     <Grid size={{ xs: 12, sm: 6 }}>
-                      <InfoItem label="Peak Hour Charge" value={`₹${booking.priceBreakdown.peakHourCharge || 0}`} />
+                      <InfoItem icon={<PaymentsIcon fontSize="small" />} label="Peak Hour Charge" value={`₹${booking.priceBreakdown.peakHourCharge || 0}`} />
                     </Grid>
                   )}
                   {booking.service?.pricingRule?.isEmergencyApplied && (
                     <Grid size={{ xs: 12, sm: 6 }}>
-                      <InfoItem label="Emergency Charge" value={`₹${booking.priceBreakdown.emergencyCharge || 0}`} />
+                      <InfoItem icon={<PaymentsIcon fontSize="small" />} label="Emergency Charge" value={`₹${booking.priceBreakdown.emergencyCharge || 0}`} />
                     </Grid>
                   )}
                   {booking.service?.pricingRule?.isPlatformFeeApplied && (
                     <Grid size={{ xs: 12, sm: 6 }}>
-                      <InfoItem label="Platform Fee" value={`₹${booking.priceBreakdown.platformFee || 0}`} />
+                      <InfoItem icon={<PaymentsIcon fontSize="small" />} label="Platform Fee" value={`₹${booking.priceBreakdown.platformFee || 0}`} />
                     </Grid>
                   )}
                   {booking.service?.pricingRule?.isGstApplied && (
                     <Grid size={{ xs: 12, sm: 6 }}>
-                      <InfoItem label="GST" value={`₹${booking.priceBreakdown.gst || 0}`} />
+                      <InfoItem icon={<PaymentsIcon fontSize="small" />} label="GST" value={`₹${booking.priceBreakdown.gst || 0}`} />
                     </Grid>
                   )}
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoItem label="Total Amount" value={`₹${booking.totalAmount || 0}`} />
+                    <InfoItem icon={<PaymentsIcon fontSize="small" />} label="Total Amount" value={`₹${booking.totalAmount || 0}`} />
                   </Grid>
                 </Grid>
               </>

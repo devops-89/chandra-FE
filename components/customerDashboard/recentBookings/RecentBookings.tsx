@@ -54,64 +54,103 @@ const RecentBookings = () => {
           <Typography variant="body2" color="text.disabled">Your recent bookings will appear here.</Typography>
         </Box>
       ) : (
-        <TableContainer>
-          <Table sx={{ minWidth: 650 }}>
-            <TableHead sx={{ bgcolor: 'grey.50' }}>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>ID</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Service</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Date</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Status</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 600, color: 'text.secondary' }}>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bookings.map((booking: any) => (
-                <TableRow 
-                  key={booking.id}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: 'grey.50' } }}
-                >
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                      #{booking.id || booking.bookingId}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {booking.service?.name || booking.serviceName || "Service"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary">
-                      {booking.scheduledAt 
-                        ? new Date(booking.scheduledAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                        : booking.bookingDate || "-"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={booking.status} 
-                      size="small"
-                      color={getStatusColor(booking.status) as any}
-                      sx={{ fontWeight: 600, borderRadius: 1 }}
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Button 
-                      component={Link}
-                      href={`/customer/bookings/${booking.id || booking.bookingId}`}
-                      size="small"
-                      color="success"
-                      sx={{ fontWeight: 600 }}
-                    >
-                      View
-                    </Button>
-                  </TableCell>
+        <>
+          <TableContainer sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Table sx={{ minWidth: 650 }}>
+              <TableHead sx={{ bgcolor: 'grey.50' }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>ID</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Service</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Date</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Status</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, color: 'text.secondary' }}>Action</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {bookings.map((booking: any) => (
+                  <TableRow 
+                    key={booking.id}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: 'grey.50' } }}
+                  >
+                    <TableCell>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                        B-{booking.id || booking.bookingId}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {booking.service?.name || booking.serviceName || "Service"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        {booking.scheduledAt 
+                          ? new Date(booking.scheduledAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                          : booking.bookingDate || "-"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={booking.status} 
+                        size="small"
+                        color={getStatusColor(booking.status) as any}
+                        sx={{ fontWeight: 600, borderRadius: 1 }}
+                      />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Button 
+                        component={Link}
+                        href={`/customer/bookings/${booking.id || booking.bookingId}`}
+                        size="small"
+                        color="success"
+                        sx={{ fontWeight: 600 }}
+                      >
+                        View
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 2, p: 2 }}>
+            {bookings.map((booking: any) => (
+              <Card key={booking.id} variant="outlined" sx={{ borderRadius: 2, p: 2, borderColor: 'divider' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                    B-{booking.id || booking.bookingId}
+                  </Typography>
+                  <Chip 
+                    label={booking.status} 
+                    size="small"
+                    color={getStatusColor(booking.status) as any}
+                    sx={{ fontWeight: 600, borderRadius: 1 }}
+                  />
+                </Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5 }}>
+                  {booking.service?.name || booking.serviceName || "Service"}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  {booking.scheduledAt 
+                    ? new Date(booking.scheduledAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    : booking.bookingDate || "-"}
+                </Typography>
+                <Button 
+                  component={Link}
+                  href={`/customer/bookings/${booking.id || booking.bookingId}`}
+                  size="small"
+                  color="success"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ fontWeight: 600 }}
+                >
+                  View Details
+                </Button>
+              </Card>
+            ))}
+          </Box>
+        </>
       )}
     </Card>
   );

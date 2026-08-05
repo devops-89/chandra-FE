@@ -10,6 +10,9 @@ import {
   TableHead, 
   TableRow, 
   Paper,
+  Box,
+  Card,
+  Typography
 } from '@mui/material';
 import { BookingControllers } from '@/api/bookingControllers';
 
@@ -70,7 +73,7 @@ export default function TransactionsTable() {
           </div>
         ) : payments.length > 0 ? (
           <>
-            <Paper elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: '24px', overflow: 'hidden' }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: '24px', overflow: 'hidden', display: { xs: 'none', md: 'block' } }}>
               <TableContainer>
                 <Table sx={{ minWidth: 800 }}>
                   <TableHead>
@@ -118,7 +121,40 @@ export default function TransactionsTable() {
               </TableContainer>
             </Paper>
 
-            {totalPages > 1 && (
+            {/* Mobile View */}
+            <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 2 }}>
+              {payments.map((payment) => {
+                const dateStr = new Date(payment.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                const customerName = payment.customer ? `${payment.customer.firstName} ${payment.customer.lastName}` : 'N/A';
+                
+                return (
+                  <Card key={payment.id} variant="outlined" sx={{ borderRadius: '24px', p: 3, bgcolor: 'white', borderColor: '#e2e8f0' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                        PAY-{payment.id}
+                      </Typography>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(payment.status)}`}>
+                        {payment.status}
+                      </span>
+                    </Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, fontSize: '1.1rem' }}>
+                      ₹{payment.amount}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                      Booking: {payment.bookingId}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                      Customer: {customerName}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Date: {dateStr}
+                    </Typography>
+                  </Card>
+                );
+              })}
+            </Box>
+
+            {totalPages > 0 && (
               <div className="flex justify-center mt-8">
                 <Pagination
                   count={totalPages}

@@ -2,12 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Snackbar, Alert } from '@mui/material';
+import { Snackbar, Alert, Pagination, Stack } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectNearbyJobs, selectNearbyJobsFilters } from '@/redux/selectors/nearbyJobsSelectors';
 import { setCurrentJob } from '@/redux/slices/activeJobsSlice';
-import { setJobs } from '@/redux/slices/nearbyJobsSlice';
+import { setJobs, addJob } from '@/redux/slices/nearbyJobsSlice';
 import type { NearbyJob } from '@/types/technicianDashboard/nearbyJobs.types';
 import { BookingControllers } from '@/api/bookingControllers';
 
@@ -22,12 +22,19 @@ export default function JobList() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'info' | 'error'>('success');
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchBookings = async () => {
+      setLoading(true);
       try {
-        const response = await BookingControllers.getTechnicianActiveBookings(1, 10, filters.serviceType);
+        const response = await BookingControllers.getTechnicianActiveBookings(page, 10, filters.serviceType);
         if (response?.data?.data) {
+          if (response.data.pagination) {
+            setTotalPages(response.data.pagination.totalPages || 1);
+          }
           const dismissedStr = localStorage.getItem('dismissedBookings');
           const dismissedIds = dismissedStr ? JSON.parse(dismissedStr) : [];
           
@@ -69,6 +76,8 @@ export default function JobList() {
         }
       } catch (error) {
         console.error('Failed to fetch technician bookings:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchBookings();
@@ -76,10 +85,46 @@ export default function JobList() {
     const handleRefresh = () => fetchBookings();
     window.addEventListener('refresh_bookings', handleRefresh);
 
+    const handleNewBooking = (event: any) => {
+      const b = event.detail;
+      if (b && b.bookingId) {
+        const customerName = b.customerInfo ? `${b.customerInfo.firstName || ''} ${b.customerInfo.lastName || ''}`.trim() : 'Unknown Customer';
+        const serviceName = b.serviceInfo?.name || 'General Service';
+        let scheduleStr = 'Today, 10:00 AM';
+        if (b.bookingInfo?.scheduledAt) {
+          scheduleStr = new Date(b.bookingInfo.scheduledAt).toLocaleString('en-US', {
+            month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+          });
+        }
+        
+        const newJob = {
+          id: b.bookingId,
+          serviceType: serviceName,
+          title: `${serviceName} Request`,
+          customerName: customerName,
+          rating: 4.8,
+          reviews: 120,
+          location: b.addressInfo?.fullAddress || b.addressInfo?.city || 'Unknown Location',
+          distance: '2.4 Km',
+          schedule: scheduleStr,
+          duration: '2 Hours',
+          payout: `₹${b.bookingInfo?.priceBreakdown?.technicianEarning || b.bookingInfo?.totalAmount || 500}`,
+          urgency: 'Normal' as const,
+          lat: b.addressInfo?.latitude,
+          lng: b.addressInfo?.longitude,
+        };
+        
+        // Use functional state update to prepend the new job to existing jobs from Redux
+        dispatch(addJob(newJob));
+      }
+    };
+    window.addEventListener('new_booking_data', handleNewBooking);
+
     return () => {
       window.removeEventListener('refresh_bookings', handleRefresh);
+      window.removeEventListener('new_booking_data', handleNewBooking);
     };
-  }, [dispatch, filters.serviceType]);
+  }, [dispatch, filters.serviceType, page]);
 
   const handleAccept = async (job: NearbyJob) => {
     try {
@@ -169,7 +214,11 @@ export default function JobList() {
 
   return (
     <div className="space-y-6">
-      {filteredJobs.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600" />
+        </div>
+      ) : filteredJobs.length === 0 ? (
         <div className="text-center py-12 bg-white border border-slate-200 rounded-3xl shadow-sm">
           <span className="material-symbols-outlined text-slate-300 text-5xl mb-3">search_off</span>
           <p className="text-slate-500 font-medium">No nearby bookings match your active filters.</p>
@@ -184,6 +233,27 @@ export default function JobList() {
             onViewDetails={() => setSelectedDetailsJob(job)}
           />
         ))
+      )}
+
+      {totalPages >= 1 && filteredJobs.length > 0 && (
+        <Stack spacing={2} className="items-center mt-8 pb-4">
+          <Pagination 
+            count={totalPages} 
+            page={page} 
+            onChange={(e, val) => setPage(val)} 
+            color="standard" 
+            shape="rounded"
+            sx={{
+              '& .MuiPaginationItem-root.Mui-selected': {
+                backgroundColor: '#059669',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: '#047857',
+                }
+              }
+            }}
+          />
+        </Stack>
       )}
 
       {/* View Details Modal */}
