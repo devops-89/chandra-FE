@@ -23,7 +23,7 @@ const initialState: CustomerBookingsState = {
 
 export const fetchCustomerBookings = createAsyncThunk<
   { bookings: CustomerBooking[]; pagination: any },
-  { page?: number; limit?: number } | undefined,
+  { page?: number; limit?: number; status?: string } | undefined,
   { rejectValue: string }
 >(
   'customerBookings/fetch',
@@ -32,7 +32,8 @@ export const fetchCustomerBookings = createAsyncThunk<
     try {
       const page = params?.page || 1;
       const limit = params?.limit || 10;
-      return await BookingControllers.getCustomerBookings(page, limit);
+      const status = params?.status;
+      return await BookingControllers.getCustomerBookings(page, limit, status);
     } catch (err) {
       return rejectWithValue(
         err instanceof Error

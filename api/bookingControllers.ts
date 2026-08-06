@@ -67,8 +67,12 @@ export const BookingControllers = {
     return response.data.data.data;
   },
 
-  getCustomerBookings: async (page = 1, limit = 10): Promise<{ bookings: CustomerBooking[], pagination: any }> => {
-    const response = await userSecuredApi.get<any>(`/bookings/all?page=${page}&limit=${limit}`);
+  getCustomerBookings: async (page = 1, limit = 10, status?: string): Promise<{ bookings: CustomerBooking[], pagination: any }> => {
+    let url = `/bookings/all?page=${page}&limit=${limit}`;
+    if (status && status !== 'ALL') {
+      url += `&status=${status}`;
+    }
+    const response = await userSecuredApi.get<any>(url);
     return {
       bookings: response.data?.data?.data || [],
       pagination: response.data?.data?.pagination || null,

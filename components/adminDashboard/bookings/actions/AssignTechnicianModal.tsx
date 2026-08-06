@@ -88,7 +88,7 @@ const AssignTechnicianModal = ({ open, booking, onClose, onAssign }: Props) => {
           <div>
             <h2 className="text-xl font-semibold text-slate-900">Assign Technician</h2>
             <p className="text-sm text-slate-500 mt-1">
-              Select a technician for Booking <span className="font-medium text-emerald-600">#{booking?.bookingId || booking?.id}</span>
+              Select a technician for Booking <span className="font-medium text-emerald-600">B-{booking?.bookingId || booking?.id}</span>
             </p>
           </div>
           <button

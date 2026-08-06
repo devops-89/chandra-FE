@@ -475,7 +475,7 @@ const ComplaintsTable = () => {
                   >
                     {/* Complaint ID */}
                     <TableCell sx={{ fontSize: 13, fontWeight: 700, color: '#ef4444' }}>
-                      #{complaint.id}
+                      C-{complaint.id}
                     </TableCell>
 
                     {/* Customer Name Avatar format */}
@@ -618,7 +618,7 @@ const ComplaintsTable = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <Box>
                     <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', mb: 0.5 }}>
-                      Complaint #{selectedComplaint.id}
+                      Complaint C-{selectedComplaint.id}
                     </Typography>
                     <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>
                       {selectedComplaint.title}
@@ -673,7 +673,7 @@ const ComplaintsTable = () => {
                       BOOKING
                     </Typography>
                     <Typography sx={{ fontSize: '0.95rem', fontWeight: 600, color: '#1e293b' }}>
-                      #{selectedComplaint.booking?.id || 'N/A'}
+                      B-{selectedComplaint.booking?.id || 'N/A'}
                     </Typography>
                     <Typography sx={{ fontSize: '0.8rem', color: '#64748b' }}>
                       Status: {selectedComplaint.booking?.status || 'N/A'}

@@ -21,10 +21,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import BookingRow from './BookingRow';
+import CustomerBookingTabs, { type CustomerBookingTab } from './CustomerBookingTabs';
 
 export default function BookingTable() {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<CustomerBookingTab>('all');
   const itemsPerPage = 10;
 
   const {
@@ -37,8 +39,17 @@ export default function BookingTable() {
   );
 
   useEffect(() => {
-    dispatch(fetchCustomerBookings({ page, limit: itemsPerPage }));
-  }, [dispatch, page, itemsPerPage]);
+    dispatch(fetchCustomerBookings({ 
+      page, 
+      limit: itemsPerPage, 
+      status: activeTab === 'all' ? undefined : activeTab.toUpperCase() 
+    }));
+  }, [dispatch, page, itemsPerPage, activeTab]);
+
+  const handleTabChange = (tab: CustomerBookingTab) => {
+    setActiveTab(tab);
+    setPage(1);
+  };
 
   if (isLoading && bookings.length === 0) {
     return (
@@ -75,6 +86,7 @@ export default function BookingTable() {
   return (
     <div className="flex flex-col gap-6">
       <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 4, boxShadow: 'none', border: '1px solid #e2e8f0' }}>
+        <CustomerBookingTabs active={activeTab} onChange={handleTabChange} />
         <>
           <TableContainer sx={{ display: { xs: 'none', md: 'block' } }}>
             <Table sx={{ minWidth: 720 }}>

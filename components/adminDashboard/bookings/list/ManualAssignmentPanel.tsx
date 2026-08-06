@@ -112,7 +112,7 @@ const ManualAssignmentPanel = ({ bookings }: Props) => {
             >
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600">
-                  #{booking.bookingId}
+                  B-{booking.bookingId}
                 </span>
 
                 <p className="mt-0.5 text-xs text-slate-400">

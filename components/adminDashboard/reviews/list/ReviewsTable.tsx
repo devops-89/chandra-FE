@@ -75,20 +75,27 @@ const ReviewsTable = () => {
   const fetchReviews = async () => {
     try {
       setLoading(true);
+      setError(null);
       const revStatus = currentTab === 'ALL' ? undefined : currentTab;
-      // Fetch up to 1000 bookings to filter them locally and have accurate pagination
-      const response = await AdminControllers.getAdminBookings(1, 1000, 'COMPLETED', undefined, revStatus);
       
-      if (response.bookings) {
+      const fetchPromise = AdminControllers.getAdminBookings(1, 100, 'COMPLETED', undefined, revStatus);
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 10000));
+      
+      const response = await Promise.race([fetchPromise, timeoutPromise]) as any;
+      
+      if (response && response.bookings) {
         const filteredBookings = response.bookings.filter(
           (b: any) => b.customerReview || b.customerRating || b.technicianReview || b.technicianRating
         );
         setReviews(filteredBookings);
         setTotalCount(filteredBookings.length);
+      } else {
+        setReviews([]);
+        setTotalCount(0);
       }
     } catch (err) {
       console.error('Failed to fetch reviews:', err);
-      setError('Failed to load reviews.');
+      setError('Failed to load reviews. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -165,7 +172,7 @@ const ReviewsTable = () => {
                     <TableRow key={review.id} hover sx={{ '&:last-child td': { borderBottom: 0 } }}>
                       {/* Booking ID */}
                       <TableCell sx={{ fontSize: 13, fontWeight: 600, color: '#1e293b' }}>
-                        #{review.id}
+                        B-{review.id}
                       </TableCell>
 
                       {/* Customer */}
@@ -263,7 +270,7 @@ const ReviewsTable = () => {
                   Review Details
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#64748b', mt: 0.5, fontWeight: 500 }}>
-                  Booking ID: <Box component="span" sx={{ color: '#0f172a', fontWeight: 700 }}>#{selectedBooking.id}</Box> | Service: <Box component="span" sx={{ color: '#059669', fontWeight: 700 }}>{selectedBooking.service?.name || 'Unknown'}</Box>
+                  Booking ID: <Box component="span" sx={{ color: '#0f172a', fontWeight: 700 }}>B-{selectedBooking.id}</Box> | Service: <Box component="span" sx={{ color: '#059669', fontWeight: 700 }}>{selectedBooking.service?.name || 'Unknown'}</Box>
                 </Typography>
               </Box>
               <IconButton onClick={() => setSelectedBooking(null)} size="small" sx={{ color: '#64748b' }}>

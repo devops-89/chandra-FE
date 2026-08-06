@@ -17,7 +17,7 @@ export default function ActiveJobsTable() {
         const res = await AdminControllers.getAdminBookings(1, 5, 'ACCEPTED');
         
         const mappedJobs = res.bookings.map((b: any) => ({
-          id: `#${b.id}`,
+          id: `B-${b.id}`,
           customer: `${b.customer?.firstName || ''} ${b.customer?.lastName || ''}`.trim() || 'Unknown',
           technician: b.technician ? `${b.technician.firstName || ''} ${b.technician.lastName || ''}`.trim() || 'Unassigned' : 'Unassigned',
           category: b.service?.name || 'Unknown',

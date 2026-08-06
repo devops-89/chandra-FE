@@ -137,7 +137,7 @@ export default function BookingDetailsPage() {
       setIsPaymentLoading(true);
       const bookingId = booking.id || booking.bookingId;
       if (!bookingId) return;
-      const callbackUrl = `${window.location.origin}/customer/bookings`;
+      const callbackUrl = `/customer/bookings/${bookingId}`;
       const paymentUrl = await BookingControllers.getBookingPaymentUrl(bookingId, callbackUrl);
       if (paymentUrl) {
         setTimeout(() => {
