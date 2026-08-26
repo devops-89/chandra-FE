@@ -23,7 +23,16 @@ let getProfilePromise: Promise<GetProfileResponse> | null = null;
 export const AuthControllers = {
   login: async (payload: LoginRequest): Promise<LoginResponse> => {
     try {
-      const response = await authPublicApi.post<LoginResponse>('/auth/login', payload);
+      const identifierParts = payload.identifier.split(' ');
+      const rawIdentifier =
+        identifierParts.length >= 2
+          ? identifierParts.slice(1).join('').replace(/\s/g, '')
+          : payload.identifier.trim();
+
+      const response = await authPublicApi.post<LoginResponse>('/auth/login', {
+        ...payload,
+        identifier: rawIdentifier,
+      });
       return response.data;
     } catch (error) {
       throw error;
@@ -83,7 +92,7 @@ export const AuthControllers = {
       formData.append('password', payload.password);
       formData.append('customerAddress', JSON.stringify(payload.customerAddress));
 
-      const response = await userPublicApi.post<RegisterCustomerResponse>('/customer/auth/register-customer', formData, {
+      const response = await userPublicApi.post<RegisterCustomerResponse>('/users/register', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;

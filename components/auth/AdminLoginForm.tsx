@@ -1,12 +1,11 @@
 'use client';
-import { AuthControllers } from '@/api/authControllers';
-
-import { AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Button, CircularProgress,IconButton, InputAdornment, TextField } from '@mui/material';
+import { Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { TextField, Button, InputAdornment, IconButton, CircularProgress } from '@mui/material';
 
+import { AuthControllers } from '@/api/authControllers';
 import { loginContent } from '@/constants/auth/loginContent';
 import { validateIdentifier } from '@/lib/validator/identifier.validator';
 import { validatePassword } from '@/lib/validator/password.validator';

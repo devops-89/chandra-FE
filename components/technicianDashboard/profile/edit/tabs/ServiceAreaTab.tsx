@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { TextField, Button, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Switch, FormControlLabel } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
-import { TechnicianControllers } from '@/api/technicianControllers';
-import { showSnackbar } from '@/redux/slices/snackbarSlice';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel,IconButton, Switch, TextField } from '@mui/material';
 import { useFormik } from 'formik';
+import { useState } from 'react';
 import * as yup from 'yup';
+
+import { TechnicianControllers } from '@/api/technicianControllers';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
+import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
 
 const validationSchema = yup.object({
   city: yup.string().required('City is required'),

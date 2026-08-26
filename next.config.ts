@@ -6,8 +6,8 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   allowedDevOrigins: [
-    '192.168.31.242',
-    '192.168.1.45'
+    '192.168.1.14',
+    '192.168.220.1'
   ],
   images: {
     minimumCacheTTL: 3600,
@@ -33,7 +33,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://13.53.114.78/api/:path*',
+        destination: 'http://192.168.1.4:8000/api/:path*',
       },
     ];
   },

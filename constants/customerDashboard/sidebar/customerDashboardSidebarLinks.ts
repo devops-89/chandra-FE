@@ -2,9 +2,7 @@ import {
   CalendarDays,
   LayoutDashboard,
   MapPin,
-  Receipt,
   Sparkles,
-  User,
 } from 'lucide-react';
 
 export const customerDashboardSidebarLinks = [

@@ -219,6 +219,7 @@ export default function EditServiceFormPageVersion({ initialData }: { initialDat
           name: data.name,
           description: data.description,
           isActive: data.isActive,
+          icon: data.icon,
           specifications: data.specifications.map(s => ({
             name: s.name,
             type: s.type,

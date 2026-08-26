@@ -126,6 +126,10 @@ export const ServiceControllers = {
     Object.entries(body).forEach(([key, value]) => {
       if (key === 'specifications') {
         formData.append(key, JSON.stringify(value || []));
+      } else if (key === 'icon') {
+        if (value instanceof File) {
+          formData.append(key, value);
+        }
       } else if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }

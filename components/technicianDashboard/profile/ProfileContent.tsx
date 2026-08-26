@@ -6,13 +6,13 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchTechnicianProfile } from '@/redux/slices/technicianProfileSlice';
 
 import AvailabilityCard from './availability/AvailabilityCard';
+import BankDetailsCard from './bank-details/BankDetailsCard';
+import UpiCard from './bank-details/UpiCard';
 import DocumentsCard from './documents/DocumentsCard';
 import ProfileHero from './overview/ProfileHero';
 import ProfileStats from './overview/ProfileStats';
 import PersonalInfoCard from './personal-info/PersonalInfoCard';
 import ProfessionalInfoCard from './professional-info/ProfessionalInfoCard';
-import BankDetailsCard from './bank-details/BankDetailsCard';
-import UpiCard from './bank-details/UpiCard';
 
 export default function ProfileContent() {
   const dispatch = useAppDispatch();

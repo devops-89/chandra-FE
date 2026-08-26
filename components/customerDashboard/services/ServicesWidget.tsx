@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Box, Card, CardHeader, CardContent, Typography, Button, CircularProgress } from '@mui/material';
-import { ChevronRight, BuildCircle } from '@mui/icons-material';
+import { BuildCircle,ChevronRight } from '@mui/icons-material';
+import { Box, Button, Card, CardContent, CardHeader, CircularProgress,Typography } from '@mui/material';
 import Link from 'next/link';
+
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchServices } from '@/redux/slices/servicesSlice';
 
 export default function ServicesWidget() {
   const dispatch = useAppDispatch();

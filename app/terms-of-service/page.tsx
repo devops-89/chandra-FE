@@ -1,6 +1,7 @@
 import React from 'react';
-import PublicNavbar from '@/components/common/PublicNavbar';
+
 import PublicFooter from '@/components/common/PublicFooter';
+import PublicNavbar from '@/components/common/PublicNavbar';
 
 export default function TermsOfServicePage() {
   return (

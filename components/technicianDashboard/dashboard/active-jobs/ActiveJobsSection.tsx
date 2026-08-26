@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import ActiveJobHeader from './ActiveJobHeader';
-import ActiveJobCard from '../../active-jobs/details/ActiveJobCard';
+import { useEffect,useState } from 'react';
+
 import { BookingControllers } from '@/api/bookingControllers';
+
+import ActiveJobCard from '../../active-jobs/details/ActiveJobCard';
+import ActiveJobHeader from './ActiveJobHeader';
 
 export default function ActiveJobsSection() {
   const [jobs, setJobs] = useState<any[]>([]);

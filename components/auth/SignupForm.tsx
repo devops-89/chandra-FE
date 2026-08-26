@@ -5,15 +5,18 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { MuiTelInput } from 'mui-tel-input';
-import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
 import { signupContent } from '@/constants/auth/signupContent';
 import { useSignupForm } from '@/hooks/useSignupForm';
+import { useAppDispatch } from '@/redux/hooks';
+import { showSnackbar } from '@/redux/slices/snackbarSlice';
 
+import { AddressForm } from '../common/AddressForm';
 import OtpModal from './OtpModal';
 
 const textFieldStyles = {
@@ -47,14 +50,22 @@ const textFieldStyles = {
 export const SignupForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+  const dispatch = useAppDispatch();
 
   const {
+    step,
     form,
     errors,
     formApiError,
+    addressData,
+    addressError,
     isSendingOtp,
     handleChange,
-    handleSubmit,
+    handleNextStep,
+    handleBackStep,
+    handleAddressChange,
+    handleAddressSubmit,
     showOtpModal,
     otpApiError,
     isVerifying,
@@ -63,6 +74,53 @@ export const SignupForm = () => {
     handleResendOtp,
     handleCloseOtpModal,
   } = useSignupForm();
+
+  const handleFetchLocation = () => {
+    if (!navigator.geolocation) {
+      dispatch(showSnackbar({ message: 'Geolocation is not supported by your browser', severity: 'error' }));
+      return;
+    }
+    
+    setIsFetchingLocation(true);
+    
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      handleAddressChange({ latitude: lat.toString(), longitude: lng.toString() });
+      
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        if (!response.ok) throw new Error('Failed to fetch address');
+        const data = await response.json();
+        
+        if (data.address) {
+          const updates: any = {};
+          if (data.address.city || data.address.town || data.address.village) {
+            updates.city = data.address.city || data.address.town || data.address.village;
+          }
+          if (data.address.state) {
+            updates.state = data.address.state;
+          }
+          if (data.address.postcode) {
+            updates.pincode = data.address.postcode;
+          }
+          if (data.display_name) {
+            updates.fullAddress = data.display_name;
+          }
+          handleAddressChange(updates);
+          dispatch(showSnackbar({ message: 'Location details automatically filled!', severity: 'success' }));
+        }
+      } catch (err) {
+        console.error("Geocoding failed:", err);
+        dispatch(showSnackbar({ message: 'Failed to auto-detect address details. Please fill them manually.', severity: 'error' }));
+      } finally {
+        setIsFetchingLocation(false);
+      }
+    }, (err) => {
+      dispatch(showSnackbar({ message: `Location error: ${err.message}`, severity: 'error' }));
+      setIsFetchingLocation(false);
+    });
+  };
 
   return (
     <>
@@ -105,14 +163,16 @@ export const SignupForm = () => {
           </section>
 
           {/* ── Right panel ── */}
-          <section className="flex flex-1 items-center justify-center p-6 sm:p-10 min-h-[calc(100vh-3rem)] sm:min-h-0">
+          <section className="flex flex-1 items-center justify-center p-6 sm:p-10 min-h-[calc(100vh-3rem)] sm:min-h-0 overflow-y-auto">
             <form
               className="grid w-full max-w-md gap-4"
-              onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}
+              onSubmit={(e) => { e.preventDefault(); step === 1 ? handleNextStep() : handleAddressSubmit(); }}
             >
               {/* Heading */}
               <div>
-                <h2 className="text-2xl font-bold text-slate-950">Sign up</h2>
+                <h2 className="text-2xl font-bold text-slate-950">
+                  {step === 1 ? 'Sign up' : 'Add Address'}
+                </h2>
                 <p className="mt-2 text-sm text-slate-600">
                   Already have an account?{' '}
                   <Link href="/login" className="font-semibold text-emerald-700 hover:text-emerald-800">
@@ -123,168 +183,205 @@ export const SignupForm = () => {
 
 
 
-              {/* First + Last name */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <TextField
-                  label="First name"
-                  variant="outlined"
-                  fullWidth
-                  name="firstName"
-                  autoComplete="given-name"
-                  value={form.firstName}
-                  onChange={(e) => handleChange('firstName', e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
-                  error={!!errors.firstName}
-                  helperText={errors.firstName}
-                  sx={textFieldStyles}
-                />
+              {step === 1 && (
+                <>
+                  {/* First + Last name */}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <TextField
+                      label="First name"
+                      variant="outlined"
+                      fullWidth
+                      name="firstName"
+                      autoComplete="given-name"
+                      value={form.firstName}
+                      onChange={(e) => handleChange('firstName', e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
+                      error={!!errors.firstName}
+                      helperText={errors.firstName}
+                      sx={textFieldStyles}
+                    />
 
-                <TextField
-                  label="Last name"
-                  variant="outlined"
-                  fullWidth
-                  name="lastName"
-                  autoComplete="family-name"
-                  value={form.lastName}
-                  onChange={(e) => handleChange('lastName', e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
-                  error={!!errors.lastName}
-                  helperText={errors.lastName}
-                  sx={textFieldStyles}
-                />
-              </div>
+                    <TextField
+                      label="Last name"
+                      variant="outlined"
+                      fullWidth
+                      name="lastName"
+                      autoComplete="family-name"
+                      value={form.lastName}
+                      onChange={(e) => handleChange('lastName', e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
+                      error={!!errors.lastName}
+                      helperText={errors.lastName}
+                      sx={textFieldStyles}
+                    />
+                  </div>
 
-              {/* Username */}
-              <TextField
-                label="Username"
-                placeholder="e.g. john_doe"
-                variant="outlined"
-                fullWidth
-                name="username"
-                autoComplete="username"
-                value={form.username}
-                onChange={(e) => handleChange('username', e.target.value)}
-                error={!!errors.username}
-                helperText={errors.username}
-                sx={textFieldStyles}
-              />
+                  {/* Username */}
+                  <TextField
+                    label="Username"
+                    placeholder="e.g. john_doe"
+                    variant="outlined"
+                    fullWidth
+                    name="username"
+                    autoComplete="username"
+                    value={form.username}
+                    onChange={(e) => handleChange('username', e.target.value)}
+                    error={!!errors.username}
+                    helperText={errors.username}
+                    sx={textFieldStyles}
+                  />
 
-              {/* Mobile Number */}
-              <MuiTelInput
-                label="Mobile Number"
-                variant="outlined"
-                fullWidth
-                defaultCountry="IN"
-                forceCallingCode
-                placeholder=""
-                name="phone"
-                autoComplete="tel"
-                value={form.phone}
-                onChange={(val) => handleChange('phone', val)}
-                error={!!errors.phone}
-                helperText={errors.phone}
-                sx={textFieldStyles}
-              />
+                  {/* Mobile Number */}
+                  <MuiTelInput
+                    label="Mobile Number"
+                    variant="outlined"
+                    fullWidth
+                    defaultCountry="IN"
+                    forceCallingCode
+                    placeholder=""
+                    name="phone"
+                    autoComplete="tel"
+                    value={form.phone}
+                    onChange={(val) => handleChange('phone', val)}
+                    error={!!errors.phone}
+                    helperText={errors.phone}
+                    sx={textFieldStyles}
+                  />
 
-              {/* Email */}
-              <TextField
-                label="Email (optional)"
-                variant="outlined"
-                fullWidth
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={form.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                error={!!errors.email}
-                helperText={errors.email}
-                sx={textFieldStyles}
-              />
+                  {/* Email */}
+                  <TextField
+                    label="Email (optional)"
+                    variant="outlined"
+                    fullWidth
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    value={form.email}
+                    onChange={(e) => handleChange('email', e.target.value)}
+                    error={!!errors.email}
+                    helperText={errors.email}
+                    sx={textFieldStyles}
+                  />
 
-              {/* Password */}
-              <TextField
-                label="Password"
-                variant="outlined"
-                fullWidth
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="new-password"
-                value={form.password}
-                onChange={(e) => handleChange('password', e.target.value)}
-                error={!!errors.password}
-                helperText={errors.password}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                          sx={{ color: '#94a3b8' }}
-                        >
-                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                sx={textFieldStyles}
-              />
+                  {/* Password */}
+                  <TextField
+                    label="Password"
+                    variant="outlined"
+                    fullWidth
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    value={form.password}
+                    onChange={(e) => handleChange('password', e.target.value)}
+                    error={!!errors.password}
+                    helperText={errors.password}
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                              edge="end"
+                              sx={{ color: '#94a3b8' }}
+                            >
+                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                    sx={textFieldStyles}
+                  />
 
-              {/* Confirm password */}
-              <TextField
-                label="Confirm password"
-                variant="outlined"
-                fullWidth
-                name="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
-                autoComplete="new-password"
-                value={form.confirmPassword}
-                onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          edge="end"
-                          sx={{ color: '#94a3b8' }}
-                        >
-                          {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                sx={textFieldStyles}
-              />
+                  {/* Confirm password */}
+                  <TextField
+                    label="Confirm password"
+                    variant="outlined"
+                    fullWidth
+                    name="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    value={form.confirmPassword}
+                    onChange={(e) => handleChange('confirmPassword', e.target.value)}
+                    error={!!errors.confirmPassword}
+                    helperText={errors.confirmPassword}
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              edge="end"
+                              sx={{ color: '#94a3b8' }}
+                            >
+                              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                    sx={textFieldStyles}
+                  />
 
-              {/* Terms */}
-              <label className="flex items-start gap-3 text-sm text-slate-700">
-                <input
-                  className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                  name="termsAccepted"
-                  type="checkbox"
-                  checked={form.termsAccepted}
-                  onChange={(e) => handleChange('termsAccepted', e.target.checked)}
-                />
-                <span>
-                  I agree to the terms and conditions.
-                  {errors.termsAccepted && (
-                    <span className="mt-1 block text-xs font-medium text-red-600">{errors.termsAccepted}</span>
-                  )}
-                </span>
-              </label>
 
-              {/* Submit — triggers Generate OTP */}
-              <button
-                disabled={isSendingOtp}
-                className="mt-2 h-11 rounded-lg bg-emerald-600 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 flex items-center justify-center gap-2"
-                type="submit"
-              >
-                {isSendingOtp && <Loader2 className="h-4 w-4 animate-spin" />}
-                {isSendingOtp ? 'Sending OTP…' : 'Create account'}
-              </button>
+
+                  {/* Next Step */}
+                  <button
+                    className="mt-2 h-11 rounded-lg bg-emerald-600 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 flex items-center justify-center gap-2"
+                    type="submit"
+                  >
+                    Next
+                  </button>
+                </>
+              )}
+
+              {step === 2 && (
+                <>
+                  <AddressForm 
+                    data={addressData} 
+                    onChange={handleAddressChange}
+                    onFetchLocation={handleFetchLocation}
+                    isFetchingLocation={isFetchingLocation}
+                    error={addressError}
+                    hideDefaultCheckbox={true}
+                  />
+
+                  {/* Terms */}
+                  <div className="mt-6">
+                    <label className="flex items-start gap-3 text-sm text-slate-700">
+                      <input
+                        className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                        name="termsAccepted"
+                        type="checkbox"
+                        checked={form.termsAccepted}
+                        onChange={(e) => handleChange('termsAccepted', e.target.checked)}
+                      />
+                      <span>
+                        I agree to the terms and conditions.
+                        {errors.termsAccepted && (
+                          <span className="mt-1 block text-xs font-medium text-red-600">{errors.termsAccepted}</span>
+                        )}
+                      </span>
+                    </label>
+                  </div>
+                  <div className="flex gap-3 mt-4">
+                    <button
+                      type="button"
+                      onClick={handleBackStep}
+                      disabled={isSendingOtp}
+                      className="flex-1 h-11 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 flex items-center justify-center"
+                    >
+                      Back
+                    </button>
+                    <button
+                      disabled={isSendingOtp}
+                      className="flex-1 h-11 rounded-lg bg-emerald-600 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex items-center justify-center gap-2 disabled:opacity-50"
+                      type="submit"
+                    >
+                      {isSendingOtp && <Loader2 className="h-4 w-4 animate-spin" />}
+                      {isSendingOtp ? 'Sending OTP…' : 'Register'}
+                    </button>
+                  </div>
+                </>
+              )}
             </form>
           </section>
 

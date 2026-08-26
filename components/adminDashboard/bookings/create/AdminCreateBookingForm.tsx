@@ -1,10 +1,5 @@
 'use client';
 
-import { AdminControllers } from '@/api/adminControllers';
-import AdminDynamicBookingFields from './AdminDynamicBookingFields';
-import { FieldValue } from '@/components/booking/DynamicBookingFields';
-import { AdminService } from '@/types/admin/service.types';
-import { BookingFormField } from '@/types/services.types';
 import {
   Alert,
   Box,
@@ -21,11 +16,18 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import { useFormik } from 'formik';
 import { AlertCircle, Calendar, User, Wrench } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useFormik } from 'formik';
 import * as yup from 'yup';
+
+import { AdminControllers } from '@/api/adminControllers';
+import type { FieldValue } from '@/components/booking/DynamicBookingFields';
+import type { AdminService } from '@/types/admin/service.types';
+import type { BookingFormField } from '@/types/services.types';
+
+import AdminDynamicBookingFields from './AdminDynamicBookingFields';
 
 const baseSchema = yup.object({
   customerId: yup.string().required('Customer is required'),

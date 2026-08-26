@@ -1,9 +1,10 @@
 'use client';
 
-import AdminCreateBookingForm from '@/components/adminDashboard/bookings/create/AdminCreateBookingForm';
-import { useRouter } from 'next/navigation';
-import { Button } from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { Button } from '@mui/material';
+import { useRouter } from 'next/navigation';
+
+import AdminCreateBookingForm from '@/components/adminDashboard/bookings/create/AdminCreateBookingForm';
 
 export default function CreateBookingPage() {
   const router = useRouter();

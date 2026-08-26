@@ -1,7 +1,7 @@
 'use client';
 
+import { Handshake, Speed, SupportAgent,Verified } from '@mui/icons-material';
 import { motion } from 'framer-motion';
-import { Handshake, Verified, Speed, SupportAgent } from '@mui/icons-material';
 
 const values = [
   {

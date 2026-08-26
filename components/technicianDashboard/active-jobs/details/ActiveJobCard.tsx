@@ -3,13 +3,14 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
-import { JobContext } from '../JobContext';
+import type { ActiveJob } from '@/types/technicianDashboard/activeJobs.types';
+
 import QuickActions from '../actions/QuickActions';
+import { JobContext } from '../JobContext';
 import ProgressTracker from '../tracker/ProgressTracker';
 import ActiveJobInfo from './ActiveJobInfo';
 import ActiveJobStatus from './ActiveJobStatus';
 import CustomerDetails from './CustomerDetails';
-import type { ActiveJob } from '@/types/technicianDashboard/activeJobs.types';
 
 export default function ActiveJobCard({ 
   currentJob, 

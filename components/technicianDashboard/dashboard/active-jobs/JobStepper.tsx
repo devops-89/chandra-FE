@@ -1,6 +1,5 @@
 'use client';
 
-import { useAppSelector } from '@/redux/hooks';
 
 export default function JobStepper({ status: initialStatus }: { status?: string }) {
   const status = initialStatus || 'assigned';

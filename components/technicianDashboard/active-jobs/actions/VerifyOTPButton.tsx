@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
-import OtpModal from '@/components/auth/OtpModal';
-import { useJobContext } from '../JobContext';
+import { useState } from 'react';
 
 import { BookingControllers } from '@/api/bookingControllers';
+import OtpModal from '@/components/auth/OtpModal';
+
+import { useJobContext } from '../JobContext';
 
 export default function VerifyOTPButton({ onStatusUpdate }: { onStatusUpdate?: (status: string) => void }) {
   const currentJob = useJobContext();

@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Box,
   Chip,
   Paper,
   Table,
@@ -10,7 +9,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 

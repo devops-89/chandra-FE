@@ -12,7 +12,6 @@ import type {
   CancelBookingResponse,
   CancelledBooking,
   CustomerBooking,
-  CustomerBookingsResponse,
 } from '@/types/customerBooking.types';
 
 import { userSecuredApi } from './config';

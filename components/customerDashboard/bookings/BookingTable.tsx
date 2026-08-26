@@ -1,8 +1,10 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerBookings } from '@/redux/slices/customerBookingSlice';
 import {
+  Box,
+  Button,
+  Card,
+  Chip,
   Paper,
   Table,
   TableBody,
@@ -11,14 +13,12 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Box,
-  Card,
-  Typography,
-  Chip,
-  Button
-} from '@mui/material';
+  Typography} from '@mui/material';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { fetchCustomerBookings } from '@/redux/slices/customerBookingSlice';
 
 import BookingRow from './BookingRow';
 import CustomerBookingTabs, { type CustomerBookingTab } from './CustomerBookingTabs';

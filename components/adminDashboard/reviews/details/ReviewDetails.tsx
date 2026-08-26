@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CircularProgress } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 import { ReviewControllers } from '@/api/reviewControllers';
 export interface ReviewData {
   id: string;

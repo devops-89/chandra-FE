@@ -1,8 +1,9 @@
 'use client';
 
 import QrCode2Icon from '@mui/icons-material/QrCode2';
-import { useAppSelector } from '@/redux/hooks';
 import { useRouter } from 'next/navigation';
+
+import { useAppSelector } from '@/redux/hooks';
 
 export default function UpiCard() {
   const router = useRouter();

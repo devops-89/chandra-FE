@@ -1,24 +1,20 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-
-import { ArrowBack as ArrowBackIcon, Info as InfoIcon, InsertDriveFile as DocIcon, CheckCircle as CheckIcon, Cancel as CancelIcon, Close as CloseIcon } from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, Cancel as CancelIcon, CheckCircle as CheckIcon, Close as CloseIcon,Info as InfoIcon, InsertDriveFile as DocIcon } from '@mui/icons-material';
 import {
   Box,
   Button,
   Chip,
   CircularProgress,
-  Grid,
-  Paper,
-  Typography,
-  Divider,
-  Link,
   Dialog,
-  DialogTitle,
   DialogContent,
-  IconButton
-} from '@mui/material';
+  DialogTitle,
+  Grid,
+  IconButton,
+  Paper,
+  Typography} from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { userSecuredApi } from '@/api/config';
 

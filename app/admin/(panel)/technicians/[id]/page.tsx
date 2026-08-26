@@ -1,5 +1,6 @@
+import type { Metadata } from 'next';
+
 import TechnicianDetailsPageWrapper from '@/components/adminDashboard/technicians/details/TechnicianDetailsPageWrapper';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Technician Details | Admin Dashboard',

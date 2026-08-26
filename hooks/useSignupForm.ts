@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { AuthControllers } from '@/api/authControllers';
-import { handlePostAuthRedirect } from '@/lib/authApi/redirectUtils';
+import { type AddressData,initialAddressData } from '@/components/common/AddressForm';
 import { validateSignup } from '@/lib/validator/signup.validator';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCredentials } from '@/redux/slices/authSlice';
@@ -23,16 +23,7 @@ const INITIAL_FORM: SignupFormData = {
   termsAccepted: false,
 };
 
-/** Default customer address — city/state/pincode filled by user later in profile */
-const DEFAULT_ADDRESS = {
-  latitude: 28.6139,
-  longitude: 77.209,
-  fullAddress: '',
-  city: '',
-  state: '',
-  pincode: '',
-  label: 'Home' as const,
-};
+
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -43,8 +34,13 @@ export const useSignupForm = () => {
   // Form state
   const [form, setForm] = useState<SignupFormData>(INITIAL_FORM);
   const [errors, setErrors] = useState<SignupErrors>({});
+  
+  // Address State (Step 2)
+  const [addressData, setAddressData] = useState<AddressData>(initialAddressData);
+  const [addressError, setAddressError] = useState<string | null>(null);
 
-  // Step state — controls whether the OTP modal is open
+  // Step state
+  const [step, setStep] = useState<1 | 2>(1);
   const [showOtpModal, setShowOtpModal] = useState(false);
 
   // Loading flags — each step gets its own flag for accurate button states
@@ -79,12 +75,41 @@ export const useSignupForm = () => {
 
   // ── Step 1: Validate form + call Generate OTP ─────────────────────────────
 
-  const handleSubmit = async () => {
+  // ── Step 1: Validate form + Move to Step 2 ──────────────────────────────
+  const handleNextStep = () => {
     const validationErrors = validateSignup(form);
+    
+    // Defer terms check to step 2
+    delete validationErrors.termsAccepted;
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
+    setStep(2);
+  };
+
+  const handleBackStep = () => {
+    setStep(1);
+  };
+
+  const handleAddressChange = (updates: Partial<AddressData>) => {
+    setAddressData((prev) => ({ ...prev, ...updates }));
+    setAddressError(null);
+  };
+
+  // ── Step 2: Validate address + call Generate OTP ──────────────────────────
+
+  const handleAddressSubmit = async () => {
+    if (!form.termsAccepted) return setAddressError('You must accept the terms and conditions');
+    if (!addressData.fullAddress.trim()) return setAddressError('Street address is required');
+    if (!addressData.city.trim()) return setAddressError('City is required');
+    if (!addressData.state.trim()) return setAddressError('State is required');
+    if (!addressData.pincode.trim()) return setAddressError('Pincode is required');
+    if (!/^\d{6}$/.test(addressData.pincode.trim())) return setAddressError('Pincode must be exactly a 6-digit number');
+    const latNum = parseFloat(addressData.latitude);
+    const lngNum = parseFloat(addressData.longitude);
+    if (isNaN(latNum) || isNaN(lngNum)) return setAddressError('Latitude and Longitude must be valid numbers');
 
     try {
       setFormApiError('');
@@ -117,6 +142,24 @@ export const useSignupForm = () => {
         otp,
       });
 
+      setShowOtpModal(false);
+
+      const finalLabel =
+        addressData.label === 'Other'
+          ? addressData.customLabel.trim() || 'Other'
+          : addressData.label;
+
+      const formattedAddress = {
+        latitude: parseFloat(addressData.latitude),
+        longitude: parseFloat(addressData.longitude),
+        fullAddress: addressData.fullAddress.trim(),
+        city: addressData.city.trim(),
+        state: addressData.state.trim(),
+        pincode: addressData.pincode.trim(),
+        label: finalLabel as 'Home' | 'Office' | 'Other',
+        isDefault: addressData.isDefault,
+      };
+
       // 2b. Register customer — use the username entered by the user
       await AuthControllers.registerCustomer({
         phone: form.phone.trim(),
@@ -125,12 +168,15 @@ export const useSignupForm = () => {
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim() || undefined,
         password: form.password,
-        customerAddress: DEFAULT_ADDRESS,
+        customerAddress: formattedAddress,
       });
 
       // 2c. Auto-login with the registered credentials
+      const phoneParts = form.phone.trim().split(' ');
+      const rawPhone = phoneParts.length >= 2 ? phoneParts.slice(1).join('').replace(/\s/g, '') : form.phone.trim();
+
       const loginResponse = await AuthControllers.login({
-        identifier: form.phone.trim(),
+        identifier: rawPhone,
         password: form.password,
       });
 
@@ -144,9 +190,8 @@ export const useSignupForm = () => {
       // Update Redux state
       dispatch(setCredentials({ user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken }));
 
-      // Redirect
-      const redirectPath = handlePostAuthRedirect();
-      router.push(redirectPath);
+      // Redirect directly to customer dashboard
+      router.push('/customer/dashboard');
     } catch (error: unknown) {
       dispatch(showSnackbar({ message: extractError(error), severity: 'error' }));
     } finally {
@@ -181,12 +226,18 @@ export const useSignupForm = () => {
 
   return {
     // Form
+    step,
     form,
     errors,
     formApiError,
+    addressData,
+    addressError,
     isSendingOtp,
     handleChange,
-    handleSubmit,
+    handleNextStep,
+    handleBackStep,
+    handleAddressChange,
+    handleAddressSubmit,
     // OTP modal
     showOtpModal,
     otpApiError,

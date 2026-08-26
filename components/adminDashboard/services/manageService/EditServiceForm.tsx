@@ -5,9 +5,9 @@ import { X } from 'lucide-react';
 import { useState } from 'react';
 
 import { useServiceManager } from '@/hooks/useServiceManager';
-import type { AdminService, EditServiceFormData } from '@/types/admin/service.types';
 import { useAppDispatch } from '@/redux/hooks';
 import { showSnackbar } from '@/redux/slices/snackbarSlice';
+import type { AdminService, EditServiceFormData } from '@/types/admin/service.types';
 
 import type { Specification } from '../addService/AddServiceForm';
 import SpecificationsStep from '../addService/SpecificationsStep';

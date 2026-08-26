@@ -1,7 +1,7 @@
 'use client';
 
+import { Engineering, TouchApp, VerifiedUser } from '@mui/icons-material';
 import { motion } from 'framer-motion';
-import { TouchApp, Engineering, VerifiedUser } from '@mui/icons-material';
 
 const steps = [
   {

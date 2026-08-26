@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+
 import { useAppSelector } from '@/redux/hooks';
 import { selectNearbyJobs } from '@/redux/selectors/nearbyJobsSelectors';
 

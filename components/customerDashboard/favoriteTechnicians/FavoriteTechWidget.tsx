@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Box, Card, CardHeader, CardContent, Typography, Avatar, Button, CircularProgress } from '@mui/material';
 import { ChevronRight, Star } from '@mui/icons-material';
+import { Avatar, Box, Button, Card, CardContent, CardHeader, CircularProgress,Typography } from '@mui/material';
 import Link from 'next/link';
+import { useEffect } from 'react';
+
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchFavouriteTechnicians } from '@/redux/slices/favouriteTechnicianSlice';
 

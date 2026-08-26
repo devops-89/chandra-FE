@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import {useState } from 'react';
 
 export function useTablePagination(tableKey: string, defaultPage = 0, defaultLimit = 10) {
   const [page, setPageState] = useState<number>(() => {

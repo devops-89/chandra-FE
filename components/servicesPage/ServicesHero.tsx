@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+
 import HeroDecorations from '@/components/heroSection/HeroDecorations';
 
 export default function ServicesHero() {

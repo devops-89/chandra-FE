@@ -1,21 +1,22 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { useState, useEffect } from 'react';
-import { fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
 import {
+  Box,
+  Card,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
-  Paper,
   TablePagination,
-  Box,
-  Card,
+  TableRow,
   Typography
 } from '@mui/material';
+import { useEffect,useState } from 'react';
+
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { fetchCustomerAddresses } from '@/redux/slices/customerProfileSlice';
 
 import AddressTableRow from './AddressTableRow';
 

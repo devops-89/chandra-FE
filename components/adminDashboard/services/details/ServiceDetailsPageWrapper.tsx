@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Box, CircularProgress,Typography } from '@mui/material';
+import { CheckCircle, ChevronLeft, ClipboardList, Clock, DollarSign, Info, PenTool, ShieldAlert,Tag, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Info, CheckCircle, Tag, DollarSign, PenTool, ClipboardList, Clock, Truck, ShieldAlert } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import { AdminControllers } from '@/api/adminControllers';
 import type { AdminService } from '@/types/admin/service.types';
-import { Box, CircularProgress, Typography, IconButton } from '@mui/material';
 
 export default function ServiceDetailsPageWrapper({ serviceId }: { serviceId: number }) {
   const router = useRouter();

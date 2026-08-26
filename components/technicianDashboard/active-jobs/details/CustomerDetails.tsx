@@ -6,6 +6,7 @@ import {
   Person,
   Star,
 } from '@mui/icons-material';
+
 import { useJobContext } from '../JobContext';
 
 export default function CustomerDetails() {

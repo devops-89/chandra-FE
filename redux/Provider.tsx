@@ -4,12 +4,11 @@ import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
+import { AuthControllers } from '@/api/authControllers';
 import type { User } from '@/types/auth.types';
 
 import { setCredentials } from './slices/authSlice';
 import { store } from './store';
-
-import { AuthControllers } from '@/api/authControllers';
 
 /**
  * Hydrates Redux auth state from API using the stored access token.

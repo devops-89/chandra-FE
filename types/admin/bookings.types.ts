@@ -1,4 +1,4 @@
-import { BOOKING_STATUS, BOOKING_PAYMENT_STATUS } from '../enums';
+import type { BOOKING_PAYMENT_STATUS,BOOKING_STATUS } from '../enums';
 
 export interface BookingService {
   id: number;

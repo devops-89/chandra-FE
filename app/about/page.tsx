@@ -1,9 +1,9 @@
-import PublicNavbar from '@/components/common/PublicNavbar';
-import PublicFooter from '@/components/common/PublicFooter';
-import { ChooseSection } from '@/components/chooseUsSection/ChooseSection';
 import AboutHero from '@/components/aboutSection/AboutHero';
-import AboutStats from '@/components/aboutSection/AboutStats';
 import AboutMission from '@/components/aboutSection/AboutMission';
+import AboutStats from '@/components/aboutSection/AboutStats';
+import { ChooseSection } from '@/components/chooseUsSection/ChooseSection';
+import PublicFooter from '@/components/common/PublicFooter';
+import PublicNavbar from '@/components/common/PublicNavbar';
 
 export default function AboutPage() {
   return (

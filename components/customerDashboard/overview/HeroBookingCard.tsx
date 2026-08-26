@@ -1,11 +1,9 @@
 'use client';
 
-import { Box, Card, CardContent, CircularProgress, Typography, Grid } from '@mui/material';
-import { useEffect } from 'react';
+import { Box, Card, CardContent, CircularProgress, Grid,Typography } from '@mui/material';
 
 import { DASHBOARD_STATS_DATA } from '@/constants/customerDashboard/sidebar/dashboardStats';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { fetchCustomerDashboardStats } from '@/redux/slices/customerDashboardSlice';
 import type { StatsCardProps } from '@/types/dashboardTypes/dashboardOverview.types';
 
 function StatsCard({ icon: Icon, title, value, isHighlighted = false }: StatsCardProps) {

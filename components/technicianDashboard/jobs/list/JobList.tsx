@@ -1,15 +1,15 @@
 'use client';
 
+import { Alert, Pagination, Snackbar, Stack } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { Snackbar, Alert, Pagination, Stack } from '@mui/material';
+import { useEffect,useState } from 'react';
 
+import { BookingControllers } from '@/api/bookingControllers';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectNearbyJobs, selectNearbyJobsFilters } from '@/redux/selectors/nearbyJobsSelectors';
 import { setCurrentJob } from '@/redux/slices/activeJobsSlice';
-import { setJobs, addJob } from '@/redux/slices/nearbyJobsSlice';
+import { addJob,setJobs } from '@/redux/slices/nearbyJobsSlice';
 import type { NearbyJob } from '@/types/technicianDashboard/nearbyJobs.types';
-import { BookingControllers } from '@/api/bookingControllers';
 
 import JobCard from './JobCard';
 

@@ -132,6 +132,7 @@ export interface UpdateServiceRequest {
   name: string;
   description: string;
   isActive: boolean;
+  icon?: File | null;
 
   serviceBasePrice: number;
   isServiceBasePriceApplied?: boolean;

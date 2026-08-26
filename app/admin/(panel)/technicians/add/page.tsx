@@ -1,5 +1,6 @@
+import type { Metadata } from 'next';
+
 import AdminAddTechnicianForm from '@/components/adminDashboard/technicians/add/AdminAddTechnicianForm';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Add Technician | Admin Dashboard',

@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 import { AdminControllers } from '@/api/adminControllers';
-import { AdminService } from '@/types/admin/service.types';
+import type { AdminService } from '@/types/admin/service.types';
+
 import EditServiceFormPageVersion from './EditServiceFormPageVersion';
 
 export default function EditServicePageWrapper({ serviceId }: { serviceId: string }) {

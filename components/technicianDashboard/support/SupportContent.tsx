@@ -1,7 +1,6 @@
 'use client';
 
 import FAQSection from './faq/FAQSection';
-import SupportTicketForm from './ticket-form/SupportTicketForm';
 import TicketList from './tickets/TicketList';
 
 export default function SupportContent() {

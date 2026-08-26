@@ -1,19 +1,19 @@
 'use client';
 
-import React from 'react';
 import { 
+  Checkbox, 
   FormControl, 
+  FormControlLabel, 
+  FormHelperText,
+  Grid,
   InputLabel, 
   MenuItem, 
   Select, 
-  TextField, 
-  Checkbox, 
-  FormControlLabel, 
-  FormHelperText,
-  Grid
-} from '@mui/material';
-import type { BookingFormField } from '@/types/services.types';
+  TextField} from '@mui/material';
+import React from 'react';
+
 import type { FieldValue } from '@/components/booking/DynamicBookingFields';
+import type { BookingFormField } from '@/types/services.types';
 
 export interface AdminDynamicBookingFieldsProps {
   fields: BookingFormField[];

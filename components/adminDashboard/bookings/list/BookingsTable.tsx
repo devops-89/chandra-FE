@@ -13,16 +13,15 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
   Tooltip,
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { useTablePagination } from '@/hooks/useTablePagination';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchAdminBookings } from '@/redux/slices/adminBookingSlice';
-import { useTablePagination } from '@/hooks/useTablePagination';
 import type { AdminBooking } from '@/types/admin/bookings.types';
 import { BOOKING_PAYMENT_STATUS, BOOKING_STATUS } from '@/types/enums';
 

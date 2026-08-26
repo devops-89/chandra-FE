@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Box, Card, Chip, CircularProgress, Divider, Grid, Typography, Button, Paper } from "@mui/material";
-import { ArrowLeft, User, Wrench, Wallet, MapPin, Phone, Mail, CalendarDays, Star, LayoutGrid, CheckCircle } from "lucide-react";
+import { Box, Button, Card, Chip, CircularProgress, Divider, Grid, Paper,Typography } from "@mui/material";
+import { ArrowLeft, CalendarDays, CheckCircle,LayoutGrid, Mail, MapPin, Phone, Star, User, Wallet, Wrench } from "lucide-react";
 import { useRouter } from "next/navigation";
-import PageLoader from "@/components/adminDashboard/shared/PageLoader";
+import { useEffect, useState } from "react";
 
 import { AdminControllers } from "@/api/adminControllers";
+import PageLoader from "@/components/adminDashboard/shared/PageLoader";
 
 export default function FinanceBookingDetails({ bookingId }: { bookingId: string | number }) {
   const [booking, setBooking] = useState<any>(null);

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import BookingsHeader from './header/BookingsHeader';
-import NearbyJobsContent from '../jobs/NearbyJobsContent';
+import { useEffect,useState } from 'react';
+
 import ActiveJobsContent from '../active-jobs/ActiveJobsContent';
+import NearbyJobsContent from '../jobs/NearbyJobsContent';
+import BookingsHeader from './header/BookingsHeader';
 
 export default function Bookings() {
   const [activeTab, setActiveTab] = useState<'new' | 'active'>('new');
