@@ -156,11 +156,10 @@ export const useSignupForm = () => {
         city: addressData.city.trim(),
         state: addressData.state.trim(),
         pincode: addressData.pincode.trim(),
-        label: finalLabel as 'Home' | 'Office' | 'Other',
+        label: finalLabel as 'Home' | 'Work' | 'Other',
         isDefault: addressData.isDefault,
       };
 
-      // 2b. Register customer — use the username entered by the user
       await AuthControllers.registerCustomer({
         phone: form.phone.trim(),
         email: form.email.trim() || undefined,
